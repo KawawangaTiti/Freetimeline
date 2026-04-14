@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FreeTimeline</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  background:#0f0f13;color:#e8e8f0;min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 20px;
+}
+.logo{font-size:2.2rem;font-weight:800;letter-spacing:-.5px;margin-bottom:10px}
+.logo span{color:#4a8fde}
+.tagline{color:#888;font-size:1rem;margin-bottom:60px;text-align:center}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:20px;max-width:960px;width:100%;
+}
+.card{
+  display:flex;flex-direction:column;align-items:flex-start;
+  padding:32px 28px;border-radius:14px;
+  border:1.5px solid #1e2030;
+  text-decoration:none;color:inherit;
+  transition:border-color .2s,transform .18s,box-shadow .18s;
+  background:#14141c;
+}
+.card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.card .icon{font-size:2.4rem;margin-bottom:16px}
+.card h2{font-size:1.2rem;font-weight:700;margin-bottom:10px;color:#fff}
+.card p{font-size:.95rem;color:#888;line-height:1.6;flex:1;margin-bottom:20px}
+.badge{
+  padding:9px 22px;border-radius:20px;font-size:.85rem;font-weight:700;
+  background:rgba(255,255,255,.1);color:#ccc;
+  border:1px solid rgba(255,255,255,.14);
+  transition:background .2s;
+}
+.universe{border-color:#1a1a3e}
+.universe:hover{border-color:#4a8fde}
+.universe .badge{background:rgba(74,143,222,.15);color:#4a8fde;border-color:rgba(74,143,222,.3)}
+.biography{border-color:#2a1e14}
+.biography:hover{border-color:#b07942}
+.biography .badge{background:rgba(176,121,66,.15);color:#b07942;border-color:rgba(176,121,66,.3)}
+.company{border-color:#0d2a24}
+.company:hover{border-color:#00ccaa}
+.company .badge{background:rgba(0,204,170,.15);color:#00ccaa;border-color:rgba(0,204,170,.3)}
+footer{margin-top:48px;color:#444;font-size:.8rem;text-align:center}
+</style>
+</head>
+<body>
+<div class="logo">&infin; Free<span>Timeline</span></div>
+<p class="tagline">Open any tool below directly in your browser &mdash; no internet required</p>
+<div class="grid">
+
+  <a href="universe.html" class="card universe">
+    <div class="icon">&#127756;</div>
+    <h2>Universe Timeline</h2>
+    <p>Map fictional worlds &mdash; DC, Marvel, your own stories. Track characters, events, and arcs across multiple universes.</p>
+    <span class="badge">Open Tool &rarr;</span>
+  </a>
+
+  <a href="biography.html" class="card biography">
+    <div class="icon">&#128214;</div>
+    <h2>Biography Timeline</h2>
+    <p>Your life story, visualised. Track milestones, relationships, and chapters across life tracks &mdash; all private, all local.</p>
+    <span class="badge">Open Tool &rarr;</span>
+  </a>
+
+  <div class="card company">
+    <div class="icon">&#127970;</div>
+    <h2>Chrono Ledger</h2>
+    <p>Track business milestones, hires, revenue events, contracts, and scenarios. Your company's living command center &mdash; Chronos Ledger.</p>
+    <span class="badge">Coming Soon</span>
+  </div>
+
+</div>
+<footer>All data is saved locally in your browser &mdash; nothing is uploaded anywhere.<br>Contact: support@freetimeline.pt</footer>
+</body>
+</html>
