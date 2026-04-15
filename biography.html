@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
-     crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>&#8734; LifeStory</title>
@@ -12,9 +10,9 @@
    ===================================================== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  font-family: 'Georgia', 'Cambria', 'Times New Roman', serif;
-  background: #f5f0e8;
-  color: #3a2e24;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', system-ui, sans-serif;
+  background: #f5efe6;
+  color: #2d1f12;
   overflow: hidden;
   height: 100vh;
   user-select: none;
@@ -28,44 +26,47 @@ body {
 #toolbar {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  background: #3d2b1f;
+  gap: 5px;
+  padding: 0 12px;
+  background: #1c1008;
   flex-shrink: 0;
-  min-height: 50px;
+  min-height: 52px;
   flex-wrap: wrap;
   z-index: 20;
-  box-shadow: 0 2px 8px rgba(40,28,16,0.45);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.05), 0 4px 20px rgba(0,0,0,0.5);
 }
 #toolbar .logo {
-  font-size: 15px; font-weight: 800; color: #f5e6d0;
-  margin-right: 6px; letter-spacing: 0.5px; white-space: nowrap;
-  font-family: 'Georgia', 'Cambria', serif;
+  font-size: 14px; font-weight: 700; color: #f0dfc0;
+  margin-right: 4px; letter-spacing: 0.3px; white-space: nowrap;
+  font-family: inherit;
 }
-.sep { width: 1px; height: 26px; background: rgba(255,255,255,0.18); margin: 0 3px; }
+.sep { width: 1px; height: 22px; background: rgba(255,255,255,0.12); margin: 0 2px; flex-shrink:0; }
 .btn {
-  padding: 7px 16px; border-radius: 6px; cursor: pointer;
-  font-size: 13px; font-family: inherit; white-space: nowrap;
-  transition: background 0.15s, border-color 0.15s;
-  border: 1px solid rgba(255,255,255,0.22);
-  background: rgba(255,255,255,0.09); color: #e8e8e8;
-  min-height: 34px;
+  padding: 0 14px; border-radius: 7px; cursor: pointer;
+  font-size: 12.5px; font-family: inherit; white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.12s;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.07); color: #d8c8b0;
+  min-height: 34px; display: inline-flex; align-items: center; gap: 5px;
+  letter-spacing: 0.1px;
 }
-.btn:hover { background: rgba(255,255,255,0.22); }
+.btn:focus-visible { outline: 2px solid #c4915a; outline-offset: 2px; }
+.btn:hover { background: rgba(255,255,255,0.16); color: #fff; border-color: rgba(255,255,255,0.22); }
 .btn.accent {
-  background: #b07942; border-color: #b07942; color: #fff; font-weight: 600;
+  background: #b07942; border-color: #c48a52; color: #fff; font-weight: 600;
+  box-shadow: 0 1px 8px rgba(176,121,66,0.3);
 }
-.btn.accent:hover { background: #96633a; border-color: #96633a; }
-.btn.light { background: #fff; border-color: #ccc; color: #333; }
-.btn.light:hover { background: #f2f2f2; }
-.btn.danger { background: #d9534f; border-color: #d9534f; color: #fff; }
-.btn.danger:hover { background: #b94240; border-color: #b94240; }
-.btn.sm { padding: 4px 10px; font-size: 12px; min-height: 28px; }
+.btn.accent:hover { background: #c48a52; border-color: #d4a064; box-shadow: 0 2px 12px rgba(176,121,66,0.45); }
+.btn.light { background: rgba(255,255,255,0.92); border-color: rgba(255,255,255,0.5); color: #2d1f12; }
+.btn.light:hover { background: #fff; }
+.btn.danger { background: #c0392b; border-color: #d9534f; color: #fff; }
+.btn.danger:hover { background: #a93226; border-color: #c0392b; }
+.btn.sm { padding: 0 10px; font-size: 11.5px; min-height: 28px; }
 
 /* =====================================================
    CANVAS AREA
    ===================================================== */
-#canvas-wrap { flex: 1; position: relative; overflow: hidden; background: #faf6ef; }
+#canvas-wrap { flex: 1; position: relative; overflow: hidden; background: #faf6ef; display: block; }
 #tl-canvas { display: block; cursor: grab; }
 #tl-canvas.dragging { cursor: grabbing; }
 
@@ -102,50 +103,54 @@ body {
    MODAL
    ===================================================== */
 #modal-bg {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.48);
+  position: fixed; inset: 0; background: rgba(15,8,0,0.62);
   z-index: 100; display: none; align-items: center; justify-content: center; padding: 16px;
+  backdrop-filter: blur(2px);
 }
 #modal-bg.open { display: flex; }
 .modal {
-  background: #fff; border-radius: 10px;
-  box-shadow: 0 24px 70px rgba(0,0,0,0.28);
+  background: #fff; border-radius: 14px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.32), 0 0 0 1px rgba(0,0,0,0.06);
   width: 600px; max-width: 100%; max-height: 92vh;
   display: flex; flex-direction: column; overflow: hidden;
-  animation: modalPop 0.16s ease;
+  animation: modalPop 0.18s cubic-bezier(0.34,1.56,0.64,1);
 }
 @keyframes modalPop {
-  from { transform: scale(0.94) translateY(-12px); opacity: 0; }
+  from { transform: scale(0.93) translateY(-10px); opacity: 0; }
   to   { transform: scale(1) translateY(0); opacity: 1; }
 }
 .modal-hd {
-  display: flex; align-items: flex-start; padding: 16px 18px;
-  border-bottom: 1px solid #eee; gap: 10px; flex-shrink: 0;
+  display: flex; align-items: flex-start; padding: 18px 20px 16px;
+  border-bottom: 1px solid #f0e8de; gap: 10px; flex-shrink: 0;
+  background: linear-gradient(135deg, #fffcf8 0%, #fff8f0 100%);
 }
 .modal-hd-txt { flex: 1; min-width: 0; }
-.m-crumb { font-size: 11px; color: #b0b0b0; margin-bottom: 2px; }
-.m-title { font-size: 16px; font-weight: 700; color: #111; }
-.modal-hd-btns { display: flex; gap: 6px; flex-shrink: 0; padding-top: 1px; }
-.modal-bd { flex: 1; overflow-y: auto; padding: 18px; }
+.m-crumb { font-size: 11px; color: #b8a090; margin-bottom: 3px; font-weight: 500; }
+.m-title { font-size: 16px; font-weight: 700; color: #1a0f06; letter-spacing: -0.2px; }
+.modal-hd-btns { display: flex; gap: 6px; flex-shrink: 0; padding-top: 2px; }
+.modal-bd { flex: 1; overflow-y: auto; padding: 20px; }
 .modal-ft {
-  padding: 12px 18px; border-top: 1px solid #eee;
+  padding: 14px 20px; border-top: 1px solid #f0e8de;
   display: flex; gap: 8px; justify-content: flex-end; flex-shrink: 0;
+  background: #faf6f0;
 }
 
 /* =====================================================
    FORM ELEMENTS
    ===================================================== */
-.fg { margin-bottom: 13px; }
-.fg label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 4px; }
+.fg { margin-bottom: 14px; }
+.fg label { display: block; font-size: 13px; font-weight: 600; color: #4a3828; margin-bottom: 5px; }
 .fg input, .fg textarea, .fg select {
-  width: 100%; padding: 7px 10px; border: 1px solid #d6d6d6;
-  border-radius: 5px; font-size: 13px; font-family: inherit;
-  background: #fafafa; color: #111; transition: border-color 0.15s;
+  width: 100%; padding: 8px 11px; border: 1.5px solid #d6d6d6;
+  border-radius: 6px; font-size: 13px; font-family: inherit;
+  background: #fafafa; color: #111; transition: border-color 0.15s, box-shadow 0.15s;
+  min-height: 36px;
 }
 .fg input:focus, .fg textarea:focus, .fg select:focus {
   outline: none; border-color: #b07942; background: #fff;
-  box-shadow: 0 0 0 2.5px rgba(176,121,66,0.18);
+  box-shadow: 0 0 0 3px rgba(176,121,66,0.2);
 }
-.fg textarea { resize: vertical; min-height: 78px; }
+.fg textarea { resize: vertical; min-height: 96px; }
 .fg .hint { font-size: 11px; color: #b0b0b0; margin-top: 3px; }
 input[type="color"] {
   width: 40px; height: 32px; padding: 2px; border: 1px solid #d0d0d0;
@@ -297,10 +302,10 @@ input[type="color"] {
 #notif {
   position: fixed; bottom: 26px; left: 50%;
   transform: translateX(-50%) translateY(12px);
-  background: #3d2b1f; color: #f5e6d0; padding: 9px 20px;
-  border-radius: 22px; font-size: 12px; z-index: 300;
+  background: #3d2b1f; color: #f5e6d0; padding: 10px 22px;
+  border-radius: 24px; font-size: 13px; z-index: 300;
   opacity: 0; transition: opacity 0.22s, transform 0.22s, background 0.18s, border-color 0.18s; pointer-events: none;
-  box-shadow: 0 6px 20px rgba(40,28,16,0.35);
+  box-shadow: 0 6px 24px rgba(40,28,16,0.4);
   border: 1px solid rgba(255,255,255,0.14);
   font-weight: 700;
 }
@@ -363,8 +368,8 @@ input[type="color"] {
    ===================================================== */
 #mobile-banner {
   display: none;
-  background: linear-gradient(90deg, #3d2b1f, #5a3a20);
-  border-bottom: 1px solid rgba(176,121,66,0.45);
+  background: linear-gradient(90deg, #1c1008, #2e1a08);
+  border-bottom: 1px solid rgba(176,121,66,0.25);
   color: #f5e6d0;
   font-size: 12px;
   padding: 7px 14px;
@@ -484,80 +489,259 @@ input[type="color"] {
 }
 
 
-/* === FILTER PANEL (outer wrapper) === */
+/* =====================================================
+   FILTER PANEL — single-bar dropdown design
+   ===================================================== */
 #filter-panel {
   display: flex;
   flex-direction: column;
-  background: #f0e8d8;
-  border-bottom: 2px solid #d4c4a8;
+  background: #251508;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
   flex-shrink: 0;
+  z-index: 15;
 }
 
-/* === UNIVERSE TOGGLE BAR === */
+/* Life tracks row (always visible, top row) */
 #uni-toggle-bar {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 14px;
-  background: #ede4d4;
-  border-bottom: 1px solid #d4c4a8;
+  gap: 5px;
+  padding: 5px 12px;
+  background: #1e1006;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
   flex-wrap: wrap;
-  min-height: 34px;
+  min-height: 32px;
   font-size: 11px;
 }
-.fp-label {
-  color: #6b4c2a; font-weight: 700; letter-spacing: .4px;
-  white-space: nowrap; font-size: 11px;
-}
-.uni-toggle-chip {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 3px 11px 3px 8px; border-radius: 16px;
-  font-weight: 700; font-size: 11px; cursor: pointer;
-  border: 2px solid transparent; user-select: none;
-  transition: all .15s; color: #fff;
-}
-.uni-toggle-chip.hidden-uni {
-  opacity: 0.45; text-decoration: line-through;
-}
-.uni-toggle-chip:hover { filter: brightness(0.85); transform: scale(1.04); }
 
-/* === CHARACTER FILTER BAR === */
-/* (kept below, now inside filter-panel) */
-/* === CHARACTER FILTER BAR === */
-#char-filter-bar {
+/* Main controls bar (single row) */
+#fp-controls-bar {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  background: #f5efe4;
-  flex-wrap: wrap;
-  min-height: 36px;
-  font-size: 12px;
+  gap: 4px;
+  padding: 4px 10px;
+  min-height: 38px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
-#char-filter-bar.active { background: #ede4d4; }
-.cf-label { color: #7a5c3a; font-weight: 600; letter-spacing: .4px; white-space: nowrap; }
-.cf-chip {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 12px 4px 9px; border-radius: 16px;
-  font-weight: 700; font-size: 12px; cursor: pointer;
-  border: 2px solid transparent; user-select: none;
+#fp-controls-bar::-webkit-scrollbar { display: none; }
+
+/* Search input in the bar */
+.fp-search-wrap {
+  display: flex;
+  align-items: center;
+  position: relative;
+  flex-shrink: 0;
+}
+.fp-search-wrap::before {
+  content: '🔍';
+  position: absolute;
+  left: 9px;
+  font-size: 11px;
+  pointer-events: none;
+  opacity: 0.6;
+}
+#ev-search-input {
+  padding: 5px 11px 5px 28px !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  background: rgba(255,255,255,0.07) !important;
+  color: #e0d0b8 !important;
+  font-size: 12px !important;
+  font-family: inherit !important;
+  outline: none !important;
+  width: 160px !important;
+  min-height: unset !important;
+  transition: border-color 0.15s, background 0.15s !important;
+}
+#ev-search-input:focus {
+  border-color: rgba(176,121,66,0.6) !important;
+  background: rgba(255,255,255,0.12) !important;
+  width: 200px !important;
+}
+#ev-search-input::placeholder { color: rgba(220,200,170,0.45) !important; }
+
+/* Separator in fp bar */
+.fp-vsep {
+  width: 1px; height: 18px;
+  background: rgba(255,255,255,0.1);
+  flex-shrink: 0; margin: 0 3px;
+}
+
+/* Each dropdown wrapper */
+.fp-drop {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Dropdown trigger button */
+.fp-drop-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 11px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: #c8b898;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  user-select: none;
+}
+.fp-drop-btn:hover {
+  background: rgba(255,255,255,0.13);
+  color: #f0e0c0;
+  border-color: rgba(255,255,255,0.2);
+}
+.fp-drop-btn.active {
+  background: rgba(176,121,66,0.22);
+  border-color: rgba(176,121,66,0.5);
+  color: #f0c878;
+}
+.fp-drop-btn .fp-arrow {
+  font-size: 9px;
+  opacity: 0.6;
+  transition: transform 0.15s;
+}
+.fp-drop.open .fp-drop-btn .fp-arrow { transform: rotate(180deg); }
+.fp-drop-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #b07942; color: #fff;
+  border-radius: 10px; font-size: 10px; font-weight: 700;
+  min-width: 16px; height: 16px; padding: 0 4px;
+  margin-left: 2px;
+}
+
+/* Dropdown panel (floating) */
+.fp-drop-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 280px;
+  max-width: 420px;
+  background: #2a1a0a;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03);
+  z-index: 200;
+  animation: fpDropIn 0.14s ease;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.fp-drop.open .fp-drop-panel { display: flex; }
+@keyframes fpDropIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fp-drop-panel-title {
+  width: 100%;
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(200,175,140,0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 4px;
+}
+.fp-drop-panel-inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  width: 100%;
+  align-items: center;
+}
+
+/* Labels inside dropdowns */
+.fp-label {
+  color: rgba(200,175,140,0.7); font-weight: 600; letter-spacing: .3px;
+  white-space: nowrap; font-size: 11px;
+}
+.cf-label { color: rgba(200,175,140,0.7); font-weight: 600; letter-spacing: .3px; white-space: nowrap; font-size: 11px; }
+
+/* Life track chips */
+.uni-toggle-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 10px 2px 7px; border-radius: 14px;
+  font-weight: 600; font-size: 11px; cursor: pointer;
+  border: 1.5px solid transparent; user-select: none;
   transition: all .15s; color: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+}
+.uni-toggle-chip.hidden-uni { opacity: 0.4; text-decoration: line-through; }
+.uni-toggle-chip:hover { filter: brightness(0.88); transform: scale(1.03); }
+
+/* Filter chips inside dropdowns */
+.cf-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px 3px 8px; border-radius: 14px;
+  font-weight: 600; font-size: 11.5px; cursor: pointer;
+  border: 1.5px solid transparent; user-select: none;
+  transition: all .15s; color: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
 }
 .cf-chip:hover { filter: brightness(0.88); }
 .cf-chip .cf-x { font-size: 10px; opacity: .7; }
-.cf-mode-btn {
-  padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700;
-  background: #e0e4f0; color: #4050a0; border: none; cursor: pointer;
-  letter-spacing: .5px;
-}
-.cf-mode-btn:hover { background: #c8d0f0; }
+
+/* Clear buttons inside dropdowns */
 .cf-clear {
-  padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600;
-  background: none; color: #a06070; border: 1px solid #e0b0bc; cursor: pointer;
+  padding: 3px 9px; border-radius: 8px; font-size: 11px; font-weight: 600;
+  background: rgba(255,255,255,0.06); color: #e09080;
+  border: 1px solid rgba(220,120,100,0.3); cursor: pointer;
+  transition: background 0.12s;
 }
-.cf-clear:hover { background: #fff0f3; }
-.cf-summary { color: #a0a8c0; margin-left: 2px; }
+.cf-clear:hover { background: rgba(220,100,80,0.15); }
+
+/* OR / mode toggle button */
+.cf-mode-btn {
+  padding: 3px 9px; border-radius: 8px; font-size: 10.5px; font-weight: 700;
+  background: rgba(100,120,240,0.15); color: #90a8f0;
+  border: 1px solid rgba(100,120,240,0.3); cursor: pointer;
+}
+.cf-mode-btn:hover { background: rgba(100,120,240,0.25); }
+.cf-summary { color: rgba(160,180,220,0.7); font-size: 11px; }
+
+/* Tone select inside dropdown */
+#tone-filter-select {
+  padding: 5px 10px !important;
+  border-radius: 7px !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  font-size: 12px !important;
+  font-family: inherit !important;
+  background: rgba(255,255,255,0.08) !important;
+  color: #e0d0b8 !important;
+  cursor: pointer !important;
+  min-height: unset !important;
+}
+
+/* Character filter bar — referenced by JS for active class; lives inside a dropdown panel */
+#char-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  width: 100%;
+}
+#char-filter-bar.active .cf-chip { box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
+
+/* cat-filter-bar, status-filter-bar, tag-filter-bar — inner containers in dropdowns */
+#cat-filter-bar, #status-filter-bar, #tag-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  width: 100%;
+}
+
+/* Mobile: collapse the controls bar, keep life tracks */
+@media (max-width: 767px) {
+  #fp-controls-bar { display: none; }
+  #uni-toggle-bar { min-height: 38px; padding: 6px 12px; }
+}
 
 /* === CONNECTION MAP === */
 .conn-map-wrap {
@@ -701,13 +885,18 @@ input[type="color"] {
    ===================================================== */
 .view-tabs { display: flex; gap: 2px; flex-shrink: 0; }
 .view-tab {
-  padding: 4px 12px; border-radius: 5px; cursor: pointer;
-  font-size: 11px; font-family: inherit; border: 1px solid transparent;
-  background: transparent; color: rgba(245,230,208,0.55);
+  padding: 0 11px; border-radius: 6px; cursor: pointer;
+  font-size: 12px; font-family: inherit; border: 1px solid transparent;
+  background: transparent; color: rgba(220,200,170,0.45);
   transition: all 0.15s; white-space: nowrap;
+  min-height: 30px; display: inline-flex; align-items: center;
 }
-.view-tab:hover { color: #f5e6d0; }
-.view-tab.active { background: rgba(176,121,66,0.25); border-color: rgba(176,121,66,0.5); color: #f5e6d0; font-weight: 700; }
+.view-tab:hover { color: rgba(240,220,190,0.85); background: rgba(255,255,255,0.07); }
+.view-tab.active {
+  background: rgba(176,121,66,0.2);
+  border-color: rgba(176,121,66,0.4);
+  color: #e8c080; font-weight: 600;
+}
 
 /* =====================================================
    FULL-PAGE VIEWS
@@ -876,6 +1065,97 @@ input[type="color"] {
   .kbd-section-label:first-of-type { margin-top: 0; }
   .kbd-btn { font-family: -apple-system, "Segoe UI", sans-serif !important; font-size: 10px !important; }
   #kbd-panel { overflow-y: auto; max-height: calc(100vh - 120px); }
+
+/* =====================================================
+   GO BACK BUTTON
+   ===================================================== */
+.btn.back-btn {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(245,230,208,0.28);
+  color: #e8d5bc;
+  font-size: 12px;
+  padding: 6px 13px;
+  min-height: 36px;
+  border-radius: 7px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+}
+.btn.back-btn:hover {
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+}
+
+/* =====================================================
+   EMPTY STATE
+   ===================================================== */
+#empty-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  background: transparent;
+}
+#empty-state.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.empty-state-inner {
+  text-align: center;
+  max-width: 420px;
+  padding: 40px 32px;
+  background: rgba(250,246,239,0.92);
+  border: 1.5px solid #e0d0b8;
+  border-radius: 18px;
+  box-shadow: 0 8px 40px rgba(61,43,31,0.10);
+}
+.empty-state-icon {
+  font-size: 52px;
+  margin-bottom: 18px;
+  line-height: 1;
+  filter: sepia(0.4) saturate(0.8);
+}
+.empty-state-title {
+  font-size: 19px;
+  font-weight: 800;
+  color: #3d2b1f;
+  margin-bottom: 12px;
+  font-family: 'Georgia', 'Cambria', serif;
+}
+.empty-state-msg {
+  font-size: 15px;
+  color: #7a5c3a;
+  line-height: 1.75;
+  margin-bottom: 26px;
+  font-family: 'Georgia', 'Cambria', serif;
+}
+.empty-state-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 26px;
+  border-radius: 8px;
+  background: #b07942;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, transform 0.12s;
+  box-shadow: 0 3px 14px rgba(176,121,66,0.32);
+}
+.empty-state-btn:hover {
+  background: #96633a;
+  transform: translateY(-1px);
+}
   </style>
 </head>
 <body>
@@ -887,6 +1167,8 @@ input[type="color"] {
 
   <!-- ==================== TOOLBAR ==================== -->
   <div id="toolbar">
+    <a href="index.html" class="btn back-btn" title="Return to the FreeTimeline menu">&#8592; Menu</a>
+    <div class="sep"></div>
     <span class="logo">&#8734; LifeStory</span>
     <div class="sep"></div>
     <button class="btn accent" onclick="UI.addEvent()">&#65291; Event</button>
@@ -926,89 +1208,139 @@ input[type="color"] {
     <div class="sep tb-secondary"></div>
     <button class="btn tb-secondary" style="background:#c4956a;border-color:#a67b5b;color:#fff;font-weight:700;font-size:13px;padding:6px 16px;" onclick="UI.help()" title="Help">❓ HELP</button>
   </div>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
-     crossorigin="anonymous"></script>
-<!-- Kind Cup -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-4135034633295293"
-     data-ad-slot="4786853046"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
+
   <!-- ==================== FILTER & SEARCH BAR ==================== -->
   <div id="filter-panel">
-    <!-- Mobile collapsible toggle -->
-    <div id="filter-panel-toggle" onclick="(function(){var r=document.getElementById('filter-panel-rows');r.classList.toggle('open');this.querySelector('.fpt-arrow').textContent=r.classList.contains('open')?'▲':'▼';}).call(this)">
+
+    <!-- Life tracks row (always visible) -->
+    <div id="uni-toggle-bar">
+      <span class="fp-label">📂 Tracks:</span>
+      <span id="uni-toggle-chips"></span>
+      <span id="uni-toggle-hint" style="color:rgba(180,150,110,0.5);font-size:11px;font-style:italic">Loading…</span>
+    </div>
+
+    <!-- Single controls bar -->
+    <div id="fp-controls-bar">
+
+      <!-- Search -->
+      <div class="fp-search-wrap">
+        <input type="text" id="ev-search-input" placeholder="Search events…" oninput="updateEventSearch(this.value)">
+      </div>
+
+      <div class="fp-vsep"></div>
+
+      <!-- Categories dropdown -->
+      <div class="fp-drop" id="fp-drop-cat">
+        <button class="fp-drop-btn" onclick="ftToggle('fp-drop-cat')">
+          🏷 Category <span class="fp-arrow">▾</span>
+        </button>
+        <div class="fp-drop-panel">
+          <div class="fp-drop-panel-title">Life Category</div>
+          <div class="fp-drop-panel-inner" id="cat-filter-bar">
+            <span id="cat-filter-chips" style="color:rgba(200,175,140,0.5);font-size:11px">Loading…</span>
+            <button class="cf-clear" id="cat-clear-btn" onclick="clearCatFilter()" style="display:none">&#10005; Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Emotional Tone dropdown -->
+      <div class="fp-drop" id="fp-drop-tone">
+        <button class="fp-drop-btn" onclick="ftToggle('fp-drop-tone')">
+          ❤️ Tone <span class="fp-arrow">▾</span>
+        </button>
+        <div class="fp-drop-panel" style="min-width:200px;flex-direction:column;gap:8px">
+          <div class="fp-drop-panel-title">Emotional Tone</div>
+          <select id="tone-filter-select" onchange="setToneFilter(this.value)">
+            <option value="">— All Tones —</option>
+            <option value="Exciting">Exciting</option>
+            <option value="Difficult">Difficult</option>
+            <option value="Transformative">Transformative</option>
+            <option value="Peaceful">Peaceful</option>
+            <option value="Bittersweet">Bittersweet</option>
+            <option value="Proud">Proud</option>
+            <option value="Anxious">Anxious</option>
+            <option value="Hopeful">Hopeful</option>
+            <option value="Confusing">Confusing</option>
+            <option value="Liberating">Liberating</option>
+            <option value="Painful">Painful</option>
+            <option value="Joyful">Joyful</option>
+            <option value="Overwhelming">Overwhelming</option>
+            <option value="Grateful">Grateful</option>
+            <option value="Uncertain">Uncertain</option>
+          </select>
+          <button class="cf-clear" id="tone-clear-btn" onclick="clearToneFilter()" style="display:none">&#10005; Clear tone</button>
+        </div>
+      </div>
+
+      <!-- Status dropdown -->
+      <div class="fp-drop" id="fp-drop-status">
+        <button class="fp-drop-btn" onclick="ftToggle('fp-drop-status')">
+          ⬤ Status <span class="fp-arrow">▾</span>
+        </button>
+        <div class="fp-drop-panel">
+          <div class="fp-drop-panel-title">Event Status</div>
+          <div class="fp-drop-panel-inner" id="status-filter-bar">
+            <span id="status-filter-chips" style="color:rgba(200,175,140,0.5);font-size:11px">Loading…</span>
+            <button class="cf-clear" id="status-clear-btn" onclick="clearStatusFilter()" style="display:none">&#10005; Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tags dropdown -->
+      <div class="fp-drop" id="fp-drop-tags">
+        <button class="fp-drop-btn" onclick="ftToggle('fp-drop-tags')">
+          🏷️ Tags <span class="fp-arrow">▾</span>
+        </button>
+        <div class="fp-drop-panel">
+          <div class="fp-drop-panel-title">Tags</div>
+          <div class="fp-drop-panel-inner" id="tag-filter-bar">
+            <span id="tag-filter-chips"><span style="color:rgba(200,175,140,0.4);font-size:11px">No tags yet</span></span>
+            <button class="cf-clear" id="tag-clear-btn" onclick="clearTagFilter()" style="display:none">&#10005; Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- People dropdown -->
+      <div class="fp-drop" id="fp-drop-people">
+        <button class="fp-drop-btn" onclick="ftToggle('fp-drop-people')">
+          👤 People <span class="fp-arrow">▾</span>
+        </button>
+        <div class="fp-drop-panel" style="min-width:320px">
+          <div class="fp-drop-panel-title">Key People</div>
+          <div id="char-filter-bar" class="fp-drop-panel-inner">
+            <span id="cf-chips"><span style="color:rgba(200,175,140,0.4);font-size:11px">Open a person's profile → click 📍 Pin</span></span>
+            <button class="cf-mode-btn" id="cf-mode-btn" onclick="toggleFilterMode()" style="display:none">OR</button>
+            <button class="cf-clear" id="cf-clear-btn" onclick="clearCharFilters()" style="display:none">&#10005; Clear</button>
+            <span class="cf-summary" id="cf-summary"></span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /#fp-controls-bar -->
+
+    <!-- Preserved for mobile JS reference (filter-panel-rows toggle) -->
+    <div id="filter-panel-rows" style="display:none"></div>
+    <!-- Mobile collapsible toggle (hidden on desktop) -->
+    <div id="filter-panel-toggle" onclick="(function(){var r=document.getElementById('filter-panel-rows');r.classList.toggle('open');this.querySelector('.fpt-arrow').textContent=r.classList.contains('open')?'▲':'▼';}).call(this)" style="display:none">
       <span>&#128269; Filters &amp; Tracks</span>
       <span class="fpt-arrow" style="margin-left:auto">&#9660;</span>
     </div>
-    <div id="filter-panel-rows">
-    <!-- Row 1: Life Track toggles -->
-    <div id="uni-toggle-bar">
-      <span class="fp-label">📂 LIFE TRACKS:</span>
-      <span id="uni-toggle-chips"><!-- filled by JS --></span>
-      <span id="uni-toggle-hint" style="color:#a0b0d0;font-size:11px;font-style:italic">Loading...</span>
-    </div>
-    <!-- Row 2: Category filter + Emotional Tone filter -->
-    <div id="cat-filter-bar" style="display:flex;align-items:center;gap:6px;padding:4px 14px;background:#f5ece0;border-bottom:1px solid #dcd0b8;flex-wrap:wrap;min-height:32px;font-size:11px;">
-      <span class="fp-label" style="color:#7a5c3a;">&#127981; LIFE CATEGORY:</span>
-      <span id="cat-filter-chips">Loading...</span>
-      <button class="cf-clear" id="cat-clear-btn" onclick="clearCatFilter()" style="display:none">&#10005; Clear</button>
-      <span style="width:1px;height:16px;background:rgba(120,100,80,0.25);display:inline-block;margin:0 4px;vertical-align:middle;flex-shrink:0"></span>
-      <span class="fp-label" style="color:#7a5c3a;">&#10084;&#65039; EMOTIONAL TONE:</span>
-      <select id="tone-filter-select" onchange="setToneFilter(this.value)" style="padding:2px 7px;border-radius:12px;border:1px solid #d4c4a8;font-size:11px;font-family:inherit;background:#fff;color:#333;cursor:pointer;max-width:150px;">
-        <option value="">— All —</option>
-        <option value="Exciting">Exciting</option>
-        <option value="Difficult">Difficult</option>
-        <option value="Transformative">Transformative</option>
-        <option value="Peaceful">Peaceful</option>
-        <option value="Bittersweet">Bittersweet</option>
-        <option value="Proud">Proud</option>
-        <option value="Anxious">Anxious</option>
-        <option value="Hopeful">Hopeful</option>
-        <option value="Confusing">Confusing</option>
-        <option value="Liberating">Liberating</option>
-        <option value="Painful">Painful</option>
-        <option value="Joyful">Joyful</option>
-        <option value="Overwhelming">Overwhelming</option>
-        <option value="Grateful">Grateful</option>
-        <option value="Uncertain">Uncertain</option>
-      </select>
-      <button class="cf-clear" id="tone-clear-btn" onclick="clearToneFilter()" style="display:none">&#10005; Clear</button>
-    </div>
-    <!-- Row 3: Status filter -->
-    <div id="status-filter-bar" style="display:flex;align-items:center;gap:6px;padding:4px 14px;background:#f0ebe0;border-bottom:1px solid #dcd0b8;flex-wrap:wrap;min-height:32px;font-size:11px;">
-      <span class="fp-label" style="color:#7a5c3a;">&#9679; STATUS:</span>
-      <span id="status-filter-chips">Loading...</span>
-      <button class="cf-clear" id="status-clear-btn" onclick="clearStatusFilter()" style="display:none">&#10005; Clear</button>
-    </div>
-    <!-- Row 3b: Tag filter -->
-    <div id="tag-filter-bar" style="display:flex;align-items:center;gap:6px;padding:4px 14px;background:#f8f2e8;border-bottom:1px solid #dcd0b8;flex-wrap:wrap;min-height:32px;font-size:11px;">
-      <span class="fp-label" style="color:#7a5c3a;">&#127991; TAGS:</span>
-      <span id="tag-filter-chips"><span style="color:#bbb;font-size:11px">No tags yet</span></span>
-      <button class="cf-clear" id="tag-clear-btn" onclick="clearTagFilter()" style="display:none">&#10005; Clear</button>
-    </div>
-    <!-- Row 4: Character filter + search -->
-    <div id="char-filter-bar">
-      <span class="cf-label">🔍 SEARCH:</span>
-      <input type="text" id="ev-search-input" placeholder="Type to find events…" oninput="updateEventSearch(this.value)"
-        style="padding:3px 10px;border-radius:14px;border:1.5px solid #d4c4a8;font-size:12px;font-family:inherit;background:#fff;color:#333;outline:none;width:180px;">
-      <span style="width:1px;height:18px;background:rgba(100,120,200,0.25);display:inline-block;margin:0 6px;vertical-align:middle"></span>
-      <span class="cf-label">👤 KEY PEOPLE:</span>
-      <span id="cf-chips"><span style="color:#b0b8cc;font-size:11px">Open a person's profile → click 📍 Pin to highlight their events</span></span>
-      <button class="cf-mode-btn" id="cf-mode-btn" onclick="toggleFilterMode()" style="display:none">OR</button>
-      <button class="cf-clear" id="cf-clear-btn" onclick="clearCharFilters()" style="display:none">✕ Clear</button>
-      <span class="cf-summary" id="cf-summary"></span>
-    </div>
-    </div><!-- /#filter-panel-rows -->
+
   </div>
 
   <!-- ==================== CANVAS ==================== -->
   <div id="canvas-wrap">
     <canvas id="tl-canvas"></canvas>
+
+    <!-- EMPTY STATE — shown when no events exist, hidden by JS once events are added -->
+    <div id="empty-state">
+      <div class="empty-state-inner">
+        <div class="empty-state-icon">📖</div>
+        <div class="empty-state-title">Your life timeline is empty</div>
+        <div class="empty-state-msg">Click <strong>+ Event</strong> to record your first memory, milestone, or life event. Every great story begins with a single moment.</div>
+        <button class="empty-state-btn" onclick="UI.addEvent()">&#65291; Add Your First Event</button>
+      </div>
+    </div>
 
     <div id="zoom-ctrl">
       <button class="zbtn" onclick="doZoom(1.25, null)" title="Zoom In  (+)">+</button>
@@ -6180,6 +6512,53 @@ function buildUniStats(uId) {
 
 
 </script>
-<div style="position:fixed;bottom:8px;left:0;right:0;text-align:center;font-size:11px;color:rgba(100,70,40,0.45);pointer-events:none;z-index:1;">Contact: support@freetimeline.pt</div>
+<!-- ==================== UI EXTRAS ==================== -->
+<script>
+/* -------------------------------------------------------
+   FILTER DROPDOWN TOGGLE
+   Opens/closes a .fp-drop by id. Closes others.
+   Does NOT touch any existing JS functions.
+------------------------------------------------------- */
+function ftToggle(id) {
+  var all = document.querySelectorAll('.fp-drop');
+  for (var i = 0; i < all.length; i++) {
+    if (all[i].id === id) {
+      all[i].classList.toggle('open');
+    } else {
+      all[i].classList.remove('open');
+    }
+  }
+}
+
+// Close all dropdowns when clicking outside
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.fp-drop')) {
+    document.querySelectorAll('.fp-drop.open').forEach(function(d) {
+      d.classList.remove('open');
+    });
+  }
+});
+
+/* -------------------------------------------------------
+   EMPTY STATE CONTROLLER
+   Polls S.events.length every 400ms. No existing JS touched.
+------------------------------------------------------- */
+(function() {
+  var _es = document.getElementById('empty-state');
+  if (!_es) return;
+  var _lastCount = -1;
+  function _upd() {
+    try {
+      var c = (typeof S !== 'undefined' && Array.isArray(S.events)) ? S.events.length : -1;
+      if (c === _lastCount) return;
+      _lastCount = c;
+      if (c === 0) _es.classList.add('visible');
+      else if (c > 0) _es.classList.remove('visible');
+    } catch(e) {}
+  }
+  setInterval(_upd, 400);
+  setTimeout(_upd, 600);
+})();
+</script>
 </body>
 </html>
