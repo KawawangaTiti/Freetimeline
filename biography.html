@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
-     crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>&#8734; LifeStory</title>
@@ -384,21 +382,10 @@ input[type="color"] {
   .tb-secondary { display: none !important; }
   #kbd-hint { display: none; }
   #filter-panel-toggle {
-    display: flex !important;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 10px;
-    cursor: pointer;
-    background: #ede4d4;
-    border-bottom: 1px solid #d4c4a8;
-    font-size: 11px;
-    color: #6b4c2a;
-    font-weight: 700;
-    flex-shrink: 0;
-    user-select: none;
+    display: none !important;
   }
-  #filter-panel-rows { display: none; }
-  #filter-panel-rows.open { display: block; }
+  #filter-panel-rows { display: none !important; }
+  #filter-panel-rows.open { display: none !important; }
 }
 #filter-panel-toggle { display: none; }
 
@@ -622,9 +609,9 @@ input[type="color"] {
 /* Dropdown panel (floating) */
 .fp-drop-panel {
   display: none;
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
+  position: fixed;
+  top: auto;
+  left: auto;
   min-width: 280px;
   max-width: 420px;
   background: #2a1a0a;
@@ -743,7 +730,75 @@ input[type="color"] {
 @media (max-width: 767px) {
   #fp-controls-bar { display: none; }
   #uni-toggle-bar { min-height: 38px; padding: 6px 12px; }
+  #fp-mobile-toggle {
+    display: flex !important;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background: #1e1006;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 11px;
+    color: #c8b898;
+    cursor: pointer;
+    user-select: none;
+    font-family: inherit;
+    font-weight: 600;
+  }
+  #fp-mobile-bar {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 12px;
+    background: #1e1006;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  #fp-mobile-bar.open { display: flex; }
+  .fp-mobile-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+  .fp-mobile-label {
+    font-size: 11px;
+    color: rgba(200,175,140,0.6);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    width: 100%;
+    margin-top: 6px;
+    margin-bottom: 2px;
+  }
+  .fp-mobile-label:first-child { margin-top: 0; }
+  #ev-search-input-mobile {
+    flex: 1;
+    min-width: 120px;
+    padding: 6px 10px !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    background: rgba(255,255,255,0.07) !important;
+    color: #e0d0b8 !important;
+    font-size: 12px !important;
+    font-family: inherit !important;
+    outline: none !important;
+  }
+  #ev-search-input-mobile::placeholder { color: rgba(220,200,170,0.45) !important; }
+  #tone-filter-select-mobile {
+    flex: 1;
+    min-width: 140px;
+    padding: 5px 8px !important;
+    border-radius: 7px !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    font-size: 12px !important;
+    font-family: inherit !important;
+    background: rgba(255,255,255,0.08) !important;
+    color: #e0d0b8 !important;
+    cursor: pointer !important;
+    min-height: unset !important;
+  }
 }
+#fp-mobile-toggle { display: none; }
+#fp-mobile-bar { display: none; }
 
 /* === CONNECTION MAP === */
 .conn-map-wrap {
@@ -1169,7 +1224,7 @@ input[type="color"] {
 
   <!-- ==================== TOOLBAR ==================== -->
   <div id="toolbar">
-    <a href="index.html" class="btn back-btn" title="Return to the FreeTimeline menu">&#8592; Menu</a>
+    <a href="/index-menu.html" class="btn back-btn" title="Return to the FreeTimeline menu">&#8592; Menu</a>
     <div class="sep"></div>
     <span class="logo">&#8734; LifeStory</span>
     <div class="sep"></div>
@@ -1233,7 +1288,7 @@ input[type="color"] {
 
       <!-- Categories dropdown -->
       <div class="fp-drop" id="fp-drop-cat">
-        <button class="fp-drop-btn" onclick="ftToggle('fp-drop-cat')">
+        <button class="fp-drop-btn" onclick="ftToggle('fp-drop-cat',event)">
           🏷 Category <span class="fp-arrow">▾</span>
         </button>
         <div class="fp-drop-panel">
@@ -1247,7 +1302,7 @@ input[type="color"] {
 
       <!-- Emotional Tone dropdown -->
       <div class="fp-drop" id="fp-drop-tone">
-        <button class="fp-drop-btn" onclick="ftToggle('fp-drop-tone')">
+        <button class="fp-drop-btn" onclick="ftToggle('fp-drop-tone',event)">
           ❤️ Tone <span class="fp-arrow">▾</span>
         </button>
         <div class="fp-drop-panel" style="min-width:200px;flex-direction:column;gap:8px">
@@ -1276,7 +1331,7 @@ input[type="color"] {
 
       <!-- Status dropdown -->
       <div class="fp-drop" id="fp-drop-status">
-        <button class="fp-drop-btn" onclick="ftToggle('fp-drop-status')">
+        <button class="fp-drop-btn" onclick="ftToggle('fp-drop-status',event)">
           ⬤ Status <span class="fp-arrow">▾</span>
         </button>
         <div class="fp-drop-panel">
@@ -1290,7 +1345,7 @@ input[type="color"] {
 
       <!-- Tags dropdown -->
       <div class="fp-drop" id="fp-drop-tags">
-        <button class="fp-drop-btn" onclick="ftToggle('fp-drop-tags')">
+        <button class="fp-drop-btn" onclick="ftToggle('fp-drop-tags',event)">
           🏷️ Tags <span class="fp-arrow">▾</span>
         </button>
         <div class="fp-drop-panel">
@@ -1304,7 +1359,7 @@ input[type="color"] {
 
       <!-- People dropdown -->
       <div class="fp-drop" id="fp-drop-people">
-        <button class="fp-drop-btn" onclick="ftToggle('fp-drop-people')">
+        <button class="fp-drop-btn" onclick="ftToggle('fp-drop-people',event)">
           👤 People <span class="fp-arrow">▾</span>
         </button>
         <div class="fp-drop-panel" style="min-width:320px">
@@ -1326,6 +1381,48 @@ input[type="color"] {
     <div id="filter-panel-toggle" onclick="(function(){var r=document.getElementById('filter-panel-rows');r.classList.toggle('open');this.querySelector('.fpt-arrow').textContent=r.classList.contains('open')?'▲':'▼';}).call(this)" style="display:none">
       <span>&#128269; Filters &amp; Tracks</span>
       <span class="fpt-arrow" style="margin-left:auto">&#9660;</span>
+    </div>
+
+    <!-- Mobile filter toggle button (shown only on mobile) -->
+    <div id="fp-mobile-toggle" onclick="(function(){var b=document.getElementById('fp-mobile-bar');b.classList.toggle('open');this.querySelector('.fm-arrow').textContent=b.classList.contains('open')?'▲':'▼';}).call(this)">
+      <span>&#128269; Search &amp; Filters</span>
+      <span class="fm-arrow" style="margin-left:auto">&#9660;</span>
+    </div>
+
+    <!-- Mobile filter bar (collapsible, shown only on mobile) -->
+    <div id="fp-mobile-bar">
+      <div class="fp-mobile-row">
+        <input type="text" id="ev-search-input-mobile" placeholder="&#128269; Search events…" oninput="updateEventSearch(this.value)">
+      </div>
+      <div class="fp-mobile-label">Emotional Tone</div>
+      <div class="fp-mobile-row">
+        <select id="tone-filter-select-mobile" onchange="setToneFilter(this.value)">
+          <option value="">— All Tones —</option>
+          <option value="Exciting">Exciting</option>
+          <option value="Difficult">Difficult</option>
+          <option value="Transformative">Transformative</option>
+          <option value="Peaceful">Peaceful</option>
+          <option value="Bittersweet">Bittersweet</option>
+          <option value="Proud">Proud</option>
+          <option value="Anxious">Anxious</option>
+          <option value="Hopeful">Hopeful</option>
+          <option value="Confusing">Confusing</option>
+          <option value="Liberating">Liberating</option>
+          <option value="Painful">Painful</option>
+          <option value="Joyful">Joyful</option>
+          <option value="Overwhelming">Overwhelming</option>
+          <option value="Grateful">Grateful</option>
+          <option value="Uncertain">Uncertain</option>
+        </select>
+      </div>
+      <div class="fp-mobile-label">Categories</div>
+      <div class="fp-mobile-row" id="cat-filter-bar-mobile">
+        <span id="cat-filter-chips-mobile" style="color:rgba(200,175,140,0.5);font-size:11px">Loading…</span>
+      </div>
+      <div class="fp-mobile-label">Tags</div>
+      <div class="fp-mobile-row" id="tag-filter-bar-mobile">
+        <span id="tag-filter-chips-mobile"><span style="color:rgba(200,175,140,0.4);font-size:11px">No tags yet</span></span>
+      </div>
     </div>
 
   </div>
@@ -5737,6 +5834,11 @@ let _kbdVisible = false;
 
 function updateEventSearch(val) {
   _searchText = (val || '').trim().toLowerCase();
+  // Sync both search inputs
+  const desktopIn = document.getElementById('ev-search-input');
+  if (desktopIn && desktopIn.value.trim().toLowerCase() !== _searchText) desktopIn.value = val || '';
+  const mobileIn = document.getElementById('ev-search-input-mobile');
+  if (mobileIn && mobileIn.value.trim().toLowerCase() !== _searchText) mobileIn.value = val || '';
   updateFilterBar();
   render();
 }
@@ -5759,6 +5861,11 @@ function setToneFilter(tone) {
   _toneFilter = tone || null;
   const clearBtn = document.getElementById('tone-clear-btn');
   if (clearBtn) clearBtn.style.display = _toneFilter ? '' : 'none';
+  // Sync both selects
+  const selDesktop = document.getElementById('tone-filter-select');
+  if (selDesktop) selDesktop.value = _toneFilter || '';
+  const selMobile = document.getElementById('tone-filter-select-mobile');
+  if (selMobile) selMobile.value = _toneFilter || '';
   render();
 }
 
@@ -5766,6 +5873,8 @@ function clearToneFilter() {
   _toneFilter = null;
   const sel = document.getElementById('tone-filter-select');
   if (sel) sel.value = '';
+  const selMobile = document.getElementById('tone-filter-select-mobile');
+  if (selMobile) selMobile.value = '';
   const clearBtn = document.getElementById('tone-clear-btn');
   if (clearBtn) clearBtn.style.display = 'none';
   render();
@@ -5816,6 +5925,7 @@ function clearTagFilter() {
 
 function updateTagFilterBar() {
   const chips = document.getElementById('tag-filter-chips');
+  const chipsMobile = document.getElementById('tag-filter-chips-mobile');
   const clearBtn = document.getElementById('tag-clear-btn');
   if (!chips) return;
 
@@ -5829,11 +5939,12 @@ function updateTagFilterBar() {
   const tagNames = Object.keys(allTags).sort();
   if (tagNames.length === 0) {
     chips.innerHTML = '<span style="color:#bbb;font-size:11px">No tags yet</span>';
+    if (chipsMobile) chipsMobile.innerHTML = '<span style="color:rgba(200,175,140,0.4);font-size:11px">No tags yet</span>';
     clearBtn.style.display = 'none';
     return;
   }
 
-  chips.innerHTML = tagNames.map(function(tag) {
+  const tagHtml = tagNames.map(function(tag) {
     var cnt = allTags[tag];
     var isActive = (_tagFilter === null || _tagFilter === tag);
     return '<span class="tag-filter-chip' + (isActive ? '' : ' inactive') + '" ' +
@@ -5842,11 +5953,15 @@ function updateTagFilterBar() {
       '</span>';
   }).join('');
 
+  chips.innerHTML = tagHtml;
+  if (chipsMobile) chipsMobile.innerHTML = tagHtml;
+
   clearBtn.style.display = _tagFilter ? '' : 'none';
 }
 
 function updateCatFilterBar() {
   const chips = document.getElementById('cat-filter-chips');
+  const chipsMobile = document.getElementById('cat-filter-chips-mobile');
   const clearBtn = document.getElementById('cat-clear-btn');
   if (!chips) return;
 
@@ -5856,7 +5971,7 @@ function updateCatFilterBar() {
   allCats.forEach(c => counts[c] = 0);
   S.events.forEach(ev => { if (ev.category && counts[ev.category] !== undefined) counts[ev.category]++; });
 
-  chips.innerHTML = allCats.map(cat => {
+  const catHtml = allCats.map(cat => {
     const info = CATEGORIES[cat];
     const cnt = counts[cat];
     const isActive = (_catFilter === null || _catFilter === cat);
@@ -5867,6 +5982,9 @@ function updateCatFilterBar() {
       (cnt > 0 ? ' <span style="opacity:0.8;font-size:10px">(' + cnt + ')</span>' : '') +
       '</span>';
   }).join('');
+
+  chips.innerHTML = catHtml;
+  if (chipsMobile) chipsMobile.innerHTML = catHtml;
 
   clearBtn.style.display = _catFilter ? '' : 'none';
 }
@@ -6521,15 +6639,44 @@ function buildUniStats(uId) {
    Opens/closes a .fp-drop by id. Closes others.
    Does NOT touch any existing JS functions.
 ------------------------------------------------------- */
-function ftToggle(id) {
+function ftToggle(id, event) {
+  /* Position the panel using fixed coords from the button's bounding rect.
+     This avoids clipping by overflow:auto on the parent bar. */
   var all = document.querySelectorAll('.fp-drop');
+  var wasOpen = false;
   for (var i = 0; i < all.length; i++) {
     if (all[i].id === id) {
-      all[i].classList.toggle('open');
-    } else {
-      all[i].classList.remove('open');
+      wasOpen = all[i].classList.contains('open');
     }
   }
+  for (var i = 0; i < all.length; i++) {
+    all[i].classList.remove('open');
+  }
+  if (!wasOpen) {
+    var target = document.getElementById(id);
+    if (target) {
+      var btn = target.querySelector('.fp-drop-btn');
+      var panel = target.querySelector('.fp-drop-panel');
+      if (btn && panel) {
+        var r = btn.getBoundingClientRect();
+        var panelW = parseInt(panel.style.minWidth) || 280;
+        var left = r.left;
+        // Don't let panel overflow the right edge of the viewport
+        if (left + panelW > window.innerWidth - 8) {
+          left = window.innerWidth - panelW - 8;
+        }
+        if (left < 8) left = 8;
+        panel.style.top = (r.bottom + 6) + 'px';
+        panel.style.left = left + 'px';
+        // Clamp max-height so it doesn't go off screen
+        var maxH = window.innerHeight - r.bottom - 16;
+        panel.style.maxHeight = Math.max(120, maxH) + 'px';
+        panel.style.overflowY = 'auto';
+      }
+      target.classList.add('open');
+    }
+  }
+  if (event) { event.stopPropagation(); }
 }
 
 // Close all dropdowns when clicking outside
@@ -6540,6 +6687,24 @@ document.addEventListener('click', function(e) {
     });
   }
 });
+
+// Reposition open dropdown panels on scroll/resize
+function repositionOpenDrops() {
+  var open = document.querySelector('.fp-drop.open');
+  if (!open) return;
+  var btn = open.querySelector('.fp-drop-btn');
+  var panel = open.querySelector('.fp-drop-panel');
+  if (!btn || !panel) return;
+  var r = btn.getBoundingClientRect();
+  var panelW = parseInt(panel.style.minWidth) || 280;
+  var left = r.left;
+  if (left + panelW > window.innerWidth - 8) left = window.innerWidth - panelW - 8;
+  if (left < 8) left = 8;
+  panel.style.top = (r.bottom + 6) + 'px';
+  panel.style.left = left + 'px';
+}
+window.addEventListener('scroll', repositionOpenDrops, true);
+window.addEventListener('resize', repositionOpenDrops);
 
 /* -------------------------------------------------------
    EMPTY STATE CONTROLLER
