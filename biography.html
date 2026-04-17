@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
-     crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>&#8734; LifeStory</title>
@@ -1215,6 +1213,36 @@ input[type="color"] {
   background: #96633a;
   transform: translateY(-1px);
 }
+  
+  /* === RANGE CONFIGURATOR === */
+  #range-cfg-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(20,10,0,0.6); z-index: 200;
+    align-items: flex-start; justify-content: center;
+    padding: 32px 16px; overflow-y: auto;
+  }
+  #range-cfg-overlay.open { display: flex; }
+  #range-cfg-panel {
+    background: #fff; border-radius: 14px; width: 520px; max-width: 100%;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.06);
+    padding: 26px 28px; animation: modalPop 0.18s cubic-bezier(0.34,1.56,0.64,1); flex-shrink: 0;
+  }
+  .rcfg-title { font-size: 16px; font-weight: 800; color: #1a0f06; margin-bottom: 5px; }
+  .rcfg-sub { font-size: 12px; color: #b0a090; margin-bottom: 18px; }
+  .rcfg-row { margin-bottom: 15px; }
+  .rcfg-lbl { font-size: 11px; font-weight: 700; color: #7a6850; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
+  .rcfg-sel { width: 100%; padding: 9px 12px; border: 1.5px solid #d6d6d6; border-radius: 8px;
+    font-size: 13px; font-family: inherit; background: #fafafa; color: #111; cursor: pointer; }
+  .rcfg-sel:focus { outline: none; border-color: #b07942; }
+  .rcfg-cust { display: none; margin-top: 7px; width: 100%; padding: 8px 12px; border: 1.5px solid #d6d6d6;
+    border-radius: 7px; font-size: 13px; font-family: inherit; background: #fff; color: #111; box-sizing: border-box; }
+  .rcfg-cust.show { display: block; }
+  .rcfg-cust:focus { outline: none; border-color: #b07942; }
+  .rcfg-hint { font-size: 11px; color: #aaa; margin-top: 4px; line-height: 1.5; }
+  .rcfg-warn { background: #fffbea; border: 1px solid #e8d88a;
+    border-radius: 8px; padding: 11px 14px; font-size: 12px; color: #7a6820; line-height: 1.65; margin-bottom: 18px; }
+  .rcfg-foot { display: flex; gap: 10px; justify-content: flex-end; padding-top: 14px;
+    border-top: 1px solid #f0e8de; margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -1226,7 +1254,7 @@ input[type="color"] {
 
   <!-- ==================== TOOLBAR ==================== -->
   <div id="toolbar">
-    <a href="/index-menu.html" class="btn back-btn" title="Return to the FreeTimeline menu">&#8592; Menu</a>
+    <button class="btn back-btn" title="Return to the FreeTimeline menu" onclick="goBackToMenu()" style="display:inline-flex;align-items:center;gap:5px;">&#8592; Menu</button>
     <div class="sep"></div>
     <span class="logo">&#8734; LifeStory</span>
     <div class="sep"></div>
@@ -1236,6 +1264,7 @@ input[type="color"] {
     <button class="btn accent tb-secondary" onclick="Store.saveHTML()" title="Save your timeline as a portable HTML file you can open anywhere" style="background:#6a8e5a;border-color:#5a7a4a;color:#fff;font-weight:700">&#128190; Save HTML</button>
     <button class="btn tb-secondary" onclick="Store.saveJSON()" title="Export all data as a JSON backup file">&#8595; Export JSON</button>
     <button class="btn tb-secondary" onclick="Store.importClick()" title="Load a previously saved HTML or JSON file">&#8593; Load</button>
+    <button class="btn danger tb-secondary" onclick="Store.blankTimeline()" title="Clear all Life Tracks, events, people, and connections after optional JSON export">Blank Timeline</button>
     <input type="file" id="file-in" accept=".html,.json" onchange="Store.importFile(event)" style="display:none">
     <div class="sep"></div>
     <div class="view-tabs">
@@ -1265,7 +1294,8 @@ input[type="color"] {
       <span id="track-h-val" style="font-size:10px;color:#b07942;width:26px">100</span>
     </label>
     <div class="sep tb-secondary"></div>
-    <button class="btn tb-secondary" style="background:#c4956a;border-color:#a67b5b;color:#fff;font-weight:700;font-size:13px;padding:6px 16px;" onclick="UI.help()" title="Help">❓ HELP</button>
+    <button class="btn tb-secondary" style="background:#e8d5c0;border-color:#c0a080;color:#7a5830;font-weight:700;font-size:12px;padding:6px 14px;" onclick="openRangeConfig()" title="Configure Timeline Range">📅 Range</button>
+      <button class="btn tb-secondary" style="background:#c4956a;border-color:#a67b5b;color:#fff;font-weight:700;font-size:13px;padding:6px 16px;" onclick="UI.help()" title="Help">❓ HELP</button>
   </div>
 
   <!-- ==================== FILTER & SEARCH BAR ==================== -->
@@ -1575,8 +1605,8 @@ let   TRACK_H = 100;   // height per life track (px) — user-configurable
 const EV_R    = 13;    // event circle radius (px)
 const OY      = 2000;  // origin year (world x = 0)
 const BPPY    = 110;   // base pixels per year at scale=1
-const YEAR_MIN = -200000;
-const YEAR_MAX = 20000;
+let YEAR_MIN = -200000;
+let YEAR_MAX = 20000;
 const MAX_SC  = 350;
 function getMinScale() {
   const c = CV();
@@ -1641,6 +1671,7 @@ let MS = [];
 let _editMediaList = [];
 let _charPhoto = null;  // base64 photo for character being edited
 let _meanwhileMode = false; // toggle meanwhile context in char timeline
+let _blankTemplateMode = false;
 
 /* =====================================================
    UTILITY HELPERS
@@ -1657,6 +1688,18 @@ function esc(s) {
 }
 
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+function isBlankTemplateState(d) {
+  const tracks = d.lifeTracks || d.universes || [];
+  const events = d.events || [];
+  const connections = d.connections || [];
+  const people = d.people || d.characters || [];
+  const affiliations = d.affiliations || [];
+  const hasNoContent = events.length === 0 && connections.length === 0 && people.length === 0 && affiliations.length === 0;
+  const hasNoTracks = tracks.length === 0;
+  const hasOnlyDefaultBlankTrack = tracks.length === 1 && String(tracks[0].name || '').trim().toLowerCase() === 'untitled';
+  return hasNoContent && (hasNoTracks || hasOnlyDefaultBlankTrack);
+}
 
 let _notifTimer;
 function notify(msg, type) {
@@ -1824,9 +1867,7 @@ function clampPanX() {
   const sxMaxDesired = c.width;
   const maxPanX = sxMinDesired - centerX() - wxMin * V.scale;
   const minPanX = sxMaxDesired - centerX() - wxMax * V.scale;
-  if (maxPanX > minPanX) {
-    V.panX = clamp(V.panX, minPanX, maxPanX);
-  }
+  if (maxPanX >= minPanX) V.panX = clamp(V.panX, minPanX, maxPanX);
 }
 
 /* =====================================================
@@ -1871,7 +1912,19 @@ function drawRuler(c, g) {
 
   const pxPerYr = BPPY * V.scale;
   let maj, isMon = false, isDay = false, isHour = false;
-  if      (pxPerYr < 0.008)  maj = 50000;
+  if      (pxPerYr < 3e-10)  maj = 2000000000;
+    else if (pxPerYr < 1e-9)   maj = 1000000000;
+    else if (pxPerYr < 3e-9)   maj = 500000000;
+    else if (pxPerYr < 1e-8)   maj = 200000000;
+    else if (pxPerYr < 3e-8)   maj = 100000000;
+    else if (pxPerYr < 1e-7)   maj = 50000000;
+    else if (pxPerYr < 3e-7)   maj = 20000000;
+    else if (pxPerYr < 1e-6)   maj = 10000000;
+    else if (pxPerYr < 3e-6)   maj = 5000000;
+    else if (pxPerYr < 1e-5)   maj = 1000000;
+    else if (pxPerYr < 3e-5)   maj = 500000;
+    else if (pxPerYr < 1e-4)   maj = 100000;
+    else if (pxPerYr < 0.008)  maj = 50000;
   else if (pxPerYr < 0.025)  maj = 20000;
   else if (pxPerYr < 0.06)   maj = 10000;
   else if (pxPerYr < 0.18)   maj = 5000;
@@ -1887,9 +1940,16 @@ function drawRuler(c, g) {
   else if (pxPerYr < 3500)   { maj = 1/12; isMon = true; }
   else if (pxPerYr < 30000)  { maj = 1/52; isDay = true; }
   else                        { maj = 1/365; isDay = true; }
-  const minor = maj / 5;
-
   const lyear = sy2yr(LEFT_W), ryear = sy2yr(W);
+  // Safety: cap major ticks to 200 on huge ranges
+    { const visTicks = Math.abs(ryear - lyear) / maj;
+      if (isFinite(visTicks) && visTicks > 200) {
+        const rawM = Math.abs(ryear - lyear) / 200;
+        const p = Math.pow(10, Math.floor(Math.log10(rawM)));
+        maj = Math.ceil(rawM / p) * p;
+      }
+    }
+    const minor = maj / 5;
 
   const maxTicks = 600;
   let tickCount = Math.abs(ryear - lyear) / minor;
@@ -1984,14 +2044,15 @@ function decYearToDate(dec) {
 }
 
 function formatLargeYear(yr) {
-  const abs = Math.abs(yr);
-  let lbl;
-  if (abs >= 1000000) lbl = (yr/1000000).toFixed(1) + 'M';
-  else if (abs >= 1000) lbl = (yr/1000).toFixed(abs >= 10000 ? 0 : 1) + 'K';
-  else lbl = String(yr);
-  if (yr < 0) lbl = lbl + ' BCE';
-  return lbl;
-}
+    const abs = Math.abs(yr);
+    let lbl;
+    if (abs >= 1e9) { const v = yr/1e9; lbl = (Math.abs(v - Math.round(v)) < 0.05 ? Math.round(v) : v.toFixed(1)) + ' Bn'; }
+    else if (abs >= 1000000) { const v = yr/1000000; lbl = (Math.abs(v - Math.round(v)) < 0.05 ? Math.round(v) : v.toFixed(1)) + 'M'; }
+    else if (abs >= 1000) lbl = (yr/1000).toFixed(abs >= 10000 ? 0 : 1) + 'K';
+    else lbl = String(yr);
+    if (yr < 0) lbl = lbl + ' BCE';
+    return lbl;
+  }
 
 /* ---- UNIVERSE TRACKS ---- */
 function drawTracks(c, g) {
@@ -3502,551 +3563,598 @@ const M = {
     this.crumb().textContent = '';
     this.ttl().textContent   = '\u{1F4D6} Help Guide — Your Life Story App';
     this.body().innerHTML = `
-<div class="help-tabs">
-  <button class="help-tab active" onclick="helpTab(0)">&#127775; Start Here</button>
-  <button class="help-tab" onclick="helpTab(1)">&#128197; Add First Event</button>
-  <button class="help-tab" onclick="helpTab(2)">&#128433; Move the Timeline</button>
-  <button class="help-tab" onclick="helpTab(3)">&#128100; People &amp; Relationships</button>
-  <button class="help-tab" onclick="helpTab(4)">&#128190; Save &amp; Backup</button>
-  <button class="help-tab" onclick="helpTab(5)">&#128274; Safety Tips</button>
-  <button class="help-tab" onclick="helpTab(6)">&#9997; Life Tracks</button>
-  <button class="help-tab" onclick="helpTab(7)">&#127991; Categories</button>
-  <button class="help-tab" onclick="helpTab(8)">&#128214; Journaling Tips</button>
-  <button class="help-tab" onclick="helpTab(9)">&#128161; Coming Soon</button>
-</div>
-
-<!-- ===== TAB 0: START HERE ===== -->
-<div class="help-section active">
-  <div class="h-section-title">&#127775; Welcome to Your Life Story App</div>
-
-  <div class="h-tip">
-    <strong>&#128075; Hello!</strong> This app is your personal place to record and preserve the important moments of your life — or someone else's life. Everything you add stays private on your own computer. Nothing is sent to the internet.
+  <div style="max-width:620px;margin:0 auto">
+  <div class="help-tabs">
+    <button class="help-tab active" style="min-height:38px" onclick="helpTab(0)">&#127775; Start Here</button>
+    <button class="help-tab" style="min-height:38px" onclick="helpTab(1)">&#128197; Add an Event</button>
+    <button class="help-tab" style="min-height:38px" onclick="helpTab(2)">&#128433; Moving Around</button>
+    <button class="help-tab" style="min-height:38px" onclick="helpTab(3)">&#128100; People</button>
+    <button class="help-tab" style="min-height:38px" onclick="helpTab(4)">&#128190; Save &amp; Backup</button>
+    <button class="help-tab" style="min-height:38px" onclick="helpTab(5)">&#128274; Safety Tips</button>
+    <button class="help-tab" style="min-height:38px" onclick="helpTab(6)">&#9997; Life Tracks</button>
+    <button class="help-tab" style="min-height:38px" onclick="helpTab(7)">&#127991; Categories</button>
+    <button class="help-tab" style="min-height:38px" onclick="helpTab(8)">&#9997; Shortcuts</button>
+    <button class="help-tab" style="min-height:38px" onclick="helpTab(9)">&#128228; Import &amp; Export</button>
+    <button class="help-tab" style="min-height:38px" onclick="helpTab(10)">&#128202; Large Timelines</button>
+    <button class="help-tab" style="min-height:38px" onclick="helpTab(11)">&#9993; Contact</button>
   </div>
 
-  <div class="h-section-title" style="margin-top:20px">What this app does</div>
-  <div class="h-block">
-    <p style="margin-bottom:14px">Think of it as a <strong>timeline of a life</strong> — like a very long piece of paper laid flat, with years marked along the top. You place events on that paper, and the app arranges them in order.</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:4px">
-      <div>
-        <div style="font-size:26px;margin-bottom:6px">&#128197;</div>
-        <strong style="font-size:17px">Life Events</strong><br>
-        <span style="font-size:15px;color:#444;line-height:1.7">Record important moments — a birth, a move, a job, a loss, a celebration. Each event gets its own dot on the timeline.</span>
+  <!-- ===== TAB 0: START HERE ===== -->
+  <div class="help-section active">
+    <div class="h-section-title">&#127775; Welcome to Your Biography Timeline</div>
+
+    <div class="h-tip">
+      <strong>&#128075; Hello, and welcome!</strong> This is your personal life timeline. It is a quiet, private place to write down your memories, mark important moments, and tell the story of your life &#8212; in your own words, at your own pace.
+    </div>
+
+    <div class="h-block">
+      <p style="font-size:16px;line-height:1.9;margin-bottom:14px"><strong>What Biography does:</strong> It lets you record the moments that mattered &#8212; a birth, a marriage, a move, a loss, a celebration. Each moment gets its own dot on a long, scrollable timeline. You can zoom in to read the details of a single year, or zoom out to see a whole lifetime at a glance.</p>
+      <p style="font-size:16px;line-height:1.9;margin:0">&#128274; <strong>Everything stays on your computer.</strong> Nothing is sent to the internet. Nothing is shared with anyone. Your life story is completely private.</p>
+    </div>
+
+    <div class="h-section-title" style="margin-top:22px">Good news before you start</div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#2ecc71">&#10003;</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Nothing can be accidentally deleted</div>
+        <div class="h-step-desc">The app will always ask you to confirm before removing anything. If you make a mistake, there is an Undo button in the toolbar that can reverse your last change.</div>
       </div>
-      <div>
-        <div style="font-size:26px;margin-bottom:6px">&#128194;</div>
-        <strong style="font-size:17px">Life Tracks</strong><br>
-        <span style="font-size:15px;color:#444;line-height:1.7">Separate rows for different parts of life — "Family", "Career", "Health". You can even track a second person alongside yourself.</span>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#3498db">&#10003;</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Your work saves automatically</div>
+        <div class="h-step-desc">The app quietly saves your work in this browser every minute. You do not need to press any Save button to keep the timeline itself. You only press Save when saving individual events, or when making a backup file.</div>
       </div>
-      <div>
-        <div style="font-size:26px;margin-bottom:6px">&#128100;</div>
-        <strong style="font-size:17px">People</strong><br>
-        <span style="font-size:15px;color:#444;line-height:1.7">Create a profile for anyone who mattered — your mother, a lifelong friend, a mentor. Link them to events and see how their paths crossed yours.</span>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#b07942">&#10003;</div>
+      <div class="h-step-body">
+        <div class="h-step-title">You do not need to start at the beginning</div>
+        <div class="h-step-desc">Start with whatever memory comes to mind first. It does not matter if it happened in 1950 or yesterday. One event is a perfect place to begin. You can always add more later.</div>
       </div>
-      <div>
-        <div style="font-size:26px;margin-bottom:6px">&#128190;</div>
-        <strong style="font-size:17px">Easy Backup</strong><br>
-        <span style="font-size:15px;color:#444;line-height:1.7">Save your entire timeline as a single file on your computer. Open it any time, on any computer — no internet needed.</span>
+    </div>
+
+    <div class="h-action-box">
+      <strong style="font-size:17px">Ready to begin?</strong><br><br>
+      Click the orange <strong>"+ Life Track"</strong> button at the top of the screen. This creates your first row on the timeline &#8212; give it a simple name like "My Life". Then click <strong>"+ Event"</strong> to add your first memory.
+    </div>
+  </div>
+
+  <!-- ===== TAB 1: ADD FIRST EVENT ===== -->
+  <div class="help-section">
+    <div class="h-section-title">&#128197; How to Add Your First Event</div>
+
+    <div class="h-tip">
+      An event is any moment worth remembering. A birthday, a wedding, a first job, a move to a new home. Big or small &#8212; if it mattered to you, it belongs here.
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#b07942">1</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Create a Life Track first</div>
+        <div class="h-step-desc">
+          Before adding an event, you need at least one <strong>Life Track</strong>. Think of this as a labelled row on your timeline &#8212; like a shelf to put your memories on.<br><br>
+          Click the <strong>"+ Life Track"</strong> button at the top of the screen. Give it a name (something simple like "My Life" is perfect). Choose a colour if you like. Then click Save.
+        </div>
+      </div>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#3498db">2</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Click the orange "+ Event" button</div>
+        <div class="h-step-desc">
+          You will find it in the toolbar at the very top of the screen. Click it and a form will open.
+        </div>
+      </div>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#2ecc71">3</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Fill in the details</div>
+        <div class="h-step-desc">
+          The form has a few fields. Here is what each one means:<br><br>
+          &#8226; <strong>Title</strong> &#8212; The name of your memory. Keep it short and clear. For example: <em>"Born in Lisbon"</em> or <em>"Started working at the factory"</em>.<br><br>
+          &#8226; <strong>Date</strong> &#8212; When it happened. Use the format: <em>day / month / year</em>. If you only know the year, that is perfectly fine &#8212; type <strong>XX</strong> for the parts you do not know (e.g. <em>XX/XX/1965</em> means sometime in 1965).<br><br>
+          &#8226; <strong>Description</strong> &#8212; The full story in your own words. This is optional, but it is the most valuable part. Write what it felt like, not just what happened.<br><br>
+          &#8226; <strong>Category</strong> &#8212; The type of event. Choose from the list: Birthday, Travel, Family, Career, and so on. This helps colour-code your timeline later.
+        </div>
+      </div>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#9b59b6">4</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Click Save</div>
+        <div class="h-step-desc">
+          Your event will appear on the timeline as a coloured dot. Click the dot at any time to read it again, or to make changes.
+        </div>
+      </div>
+    </div>
+
+    <div class="h-note">
+      &#128161; <strong>Do not worry about getting it perfect.</strong> You can always edit any event later. Just write what you remember today. You can come back and add more details another time.
+    </div>
+
+    <div class="h-tip">
+      <strong>A quick tip for writing descriptions:</strong> Try to capture how it felt, not just what happened. Instead of writing <em>"Got married in 1984"</em>, try: <em>"We got married on a rainy Saturday in May. We laughed all day."</em> Even one honest sentence will make this memory come alive for whoever reads it.
+    </div>
+  </div>
+
+  <!-- ===== TAB 2: MOVING AROUND ===== -->
+  <div class="help-section">
+    <div class="h-section-title">&#128433; Moving Around the Timeline</div>
+
+    <div class="h-tip">
+      The timeline is like a very long scroll of paper. You can slide it left to see older events, slide it right to see newer ones, zoom in to read the details of a single year, or zoom out to see your whole life at once.
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#3498db">1</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Scroll left to see older events</div>
+        <div class="h-step-desc">
+          Click and hold on any <strong>empty part</strong> of the timeline (not on an event dot), then drag your mouse to the left. The timeline will move with you, showing you earlier years.<br><br>
+          You can also use the <strong>left arrow key</strong> on your keyboard to nudge it gently.
+        </div>
+      </div>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#2ecc71">2</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Scroll right to see newer events</div>
+        <div class="h-step-desc">
+          Drag to the right, or press the <strong>right arrow key</strong>. This moves you forward in time.
+        </div>
+      </div>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#e74c3c">3</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Zoom in to see one month in detail</div>
+        <div class="h-step-desc">
+          Hold the <strong>Ctrl key</strong> on your keyboard and <strong>scroll your mouse wheel upward</strong>. The timeline zooms in, showing fewer years but in much more detail.<br><br>
+          You can also click the <strong>+</strong> button in the bottom-right corner of the screen.
+        </div>
+      </div>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#9b59b6">4</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Zoom out to see many years at once</div>
+        <div class="h-step-desc">
+          Hold <strong>Ctrl</strong> and <strong>scroll your mouse wheel downward</strong>. This zooms out so you can see more of your timeline at once.<br><br>
+          You can also click the <strong>&minus;</strong> button in the bottom-right corner.
+        </div>
+      </div>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#b07942">5</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Jump back to today &#8212; the Today button</div>
+        <div class="h-step-desc">
+          Click the <strong>"&#128345; Today"</strong> button in the toolbar. The timeline will immediately scroll to show the current date. Nothing is deleted. You are just moving the view.
+        </div>
+      </div>
+    </div>
+
+    <div class="h-note">
+      <strong>If the timeline looks wrong or you feel lost:</strong><br><br>
+      Click the <strong>"&#8962; Reset View"</strong> button in the toolbar. This returns the timeline to its normal position and zoom level. <strong>Nothing will be deleted.</strong> It only resets what you are looking at.
+    </div>
+  </div>
+
+  <!-- ===== TAB 3: PEOPLE ===== -->
+  <div class="help-section">
+    <div class="h-section-title">&#128100; Adding People and Relationships</div>
+
+    <div class="h-tip">
+      You can add people &#8212; family members, friends, important figures &#8212; and connect them to events in your timeline. This lets you see, at a glance, who was part of each moment in your story.
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#3498db">1</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Add a person</div>
+        <div class="h-step-desc">
+          Click the <strong>"People"</strong> tab at the top of the screen, then click <strong>"+ New Person"</strong>.<br><br>
+          You can record their name, a photo, their relationship to you (family, friend, colleague), and a short description of who they were. You only need a name &#8212; everything else is optional.
+        </div>
+      </div>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#2ecc71">2</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Connect a person to an event</div>
+        <div class="h-step-desc">
+          Open any event by clicking its dot on the timeline. Inside the event, scroll down to find the <strong>People</strong> section. Click <strong>"Link People"</strong> and choose the person from the list.<br><br>
+          Now that person is connected to that event. You can see all their events together on their profile.
+        </div>
+      </div>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#e74c3c">3</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Remove a connection</div>
+        <div class="h-step-desc">
+          Open the event and click the small <strong>&#10005;</strong> next to the person's name in the People section. This removes the connection only &#8212; it does not delete the person or the event. <strong>Nothing is lost.</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="h-tip">
+      &#128161; Adding or removing a connection does not delete anything. The person stays in your list. The event stays on the timeline. Only the link between them changes.
+    </div>
+  </div>
+
+  <!-- ===== TAB 4: SAVE & BACKUP ===== -->
+  <div class="help-section">
+    <div class="h-section-title">&#128190; Saving and Making Backups</div>
+
+    <div class="h-tip">
+      <strong>Good news:</strong> Your timeline saves automatically in this browser. You do not need to press Save for the timeline itself &#8212; only when saving individual events or making a backup file.
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#2ecc71">1</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Automatic saving &#8212; happens by itself</div>
+        <div class="h-step-desc">
+          The app quietly saves your timeline in this browser every minute. As long as you use the same browser on the same computer, your work will still be there next time you open the page.
+        </div>
+      </div>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#b07942">2</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Export &#8212; save a backup file to your computer</div>
+        <div class="h-step-desc">
+          Click the <strong>"&#128190; Save HTML"</strong> button in the toolbar at the top.<br><br>
+          This saves a backup file to your computer. It contains <strong>everything</strong> &#8212; all your events, people, notes, and photos. Give it a clear name like <em>my-life-story-2024.html</em> and save it somewhere safe, like your <strong>Documents folder</strong> or a <strong>USB memory stick</strong>.
+        </div>
+      </div>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#3498db">3</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Import &#8212; bring back a backup you saved before</div>
+        <div class="h-step-desc">
+          Click the <strong>"&#8593; Load"</strong> button in the toolbar and find the backup file on your computer.<br><br>
+          <strong>Important:</strong> Loading a file replaces everything that is currently in the timeline. Always make a new backup first if you want to keep your current work.
+        </div>
+      </div>
+    </div>
+
+    <div class="h-note" style="border-left:4px solid #e74c3c;background:#fef5f5;color:#7a1a1a">
+      &#9888;&#65039; <strong>Very important warning:</strong><br><br>
+      If you ever <strong>clear your browser history</strong>, the timeline saved in your browser <strong>will be erased</strong>. The backup file on your computer will survive this &#8212; which is exactly why keeping one is so important.<br><br>
+      We recommend <strong>exporting a backup once a month</strong>, or after adding many important events.
+    </div>
+  </div>
+
+  <!-- ===== TAB 5: SAFETY TIPS ===== -->
+  <div class="help-section">
+    <div class="h-section-title">&#128274; Safety Tips &#8212; Keeping Your Story Safe</div>
+
+    <div class="h-tip">
+      Think of the backup file like a printed photo album. Keep it somewhere safe. Here are a few simple habits that will protect years of your precious work.
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#e74c3c">1</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Always export a backup before clearing your browser history</div>
+        <div class="h-step-desc">
+          Clearing browser history removes the saved copy inside the browser. Before you do this, click <strong>"&#128190; Save HTML"</strong> to save your timeline as a file on your computer first.
+        </div>
+      </div>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#b07942">2</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Always export a backup before making major changes</div>
+        <div class="h-step-desc">
+          If you are about to delete a lot of events, or make big changes, save a backup file first. That way, if anything goes wrong, you can always go back to the previous version.
+        </div>
+      </div>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#3498db">3</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Keep your backup file in a safe place</div>
+        <div class="h-step-desc">
+          Do not leave your backup file only in one place. Try to keep it in at least two locations:<br><br>
+          &#8226; Your <strong>Documents folder</strong> on your computer<br>
+          &#8226; A <strong>USB memory stick</strong> kept somewhere safe at home<br><br>
+          Even just one backup in a safe folder is much better than none.
+        </div>
+      </div>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#9b59b6">4</div>
+      <div class="h-step-body">
+        <div class="h-step-title">You can always undo a mistake</div>
+        <div class="h-step-desc">
+          Made a mistake? Click the <strong>"&#8617; Undo"</strong> button in the toolbar. It reverses your last action. You can also press <strong>Ctrl + Z</strong> on your keyboard. You can undo up to 60 actions back.
+        </div>
+      </div>
+    </div>
+
+    <div class="h-note">
+      &#128161; Your life story is worth protecting. A backup takes about two seconds to make. Please do it regularly &#8212; at the end of every session if you can.
+    </div>
+  </div>
+
+  <!-- ===== TAB 6: LIFE TRACKS ===== -->
+  <div class="help-section">
+    <div class="h-section-title">&#9997; Life Tracks &#8212; Rows on Your Timeline</div>
+
+    <div class="h-tip">
+      A Life Track is one labelled row on your timeline. You can have just one row for your own life, or you can add extra rows &#8212; for example, one for "Family History" and one for "My Life".
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#3498db">1</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Create a Life Track</div>
+        <div class="h-step-desc">
+          Click <strong>"+ Life Track"</strong> in the toolbar. Give it a name &#8212; anything you like &#8212; and choose a colour. Then click Save. A new row will appear on the timeline.
+        </div>
+      </div>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#2ecc71">2</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Show or hide a Life Track</div>
+        <div class="h-step-desc">
+          Use the coloured buttons in the filter bar just below the toolbar. Click a button once to hide that row. Click it again to bring it back. The events are never deleted &#8212; the row is just hidden from view.
+        </div>
+      </div>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#e74c3c">3</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Edit or delete a Life Track</div>
+        <div class="h-step-desc">
+          Click the <strong>edit button</strong> next to a Life Track's name on the left panel. You can rename it or change its colour. To delete a Life Track, open its edit form and scroll to the red Delete button.<br><br>
+          <strong>Warning:</strong> Deleting a Life Track will delete all the events inside it too. Always export a backup first.
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="h-section-title" style="margin-top:20px">Where to begin</div>
-  <div class="h-action-box">
-    <strong style="font-size:17px">Step 1:</strong> Click the <strong>orange "+" button</strong> in the toolbar to add your first Life Track (a named row).<br><br>
-    <strong style="font-size:17px">Step 2:</strong> Then click <strong>"+ Event"</strong> to place your first memory on the timeline.<br><br>
-    <strong style="font-size:17px">Step 3:</strong> Click the <strong>Save HTML button</strong> regularly to keep a backup on your computer.
-  </div>
+  <!-- ===== TAB 7: CATEGORIES ===== -->
+  <div class="help-section">
+    <div class="h-section-title">&#127991; Categories &#8212; Colour-Coding Your Events</div>
 
-  <div class="h-note">
-    &#128161; <strong>You don't need to start at the beginning.</strong> Start with whatever comes to mind first — the year you got married, the day you retired, a childhood memory. One event is a fine place to begin. You can always add more later.
-  </div>
+    <div class="h-tip">
+      Categories are labels that give each event a colour and a type. For example, "Birthday" events might appear in gold, and "Career" events in blue. This makes it easy to spot the shape of your life at a glance.
+    </div>
 
-  <div class="h-tip">
-    &#128190; <strong>Your work saves automatically every minute.</strong> But the safest thing to do is click <strong>Save HTML</strong> in the toolbar when you finish each session — this saves everything to a file on your computer.
-  </div>
-</div>
+    <div class="h-block" style="line-height:1.9">
+      <strong>The built-in categories are:</strong><br><br>
+      &#11088; <strong>Milestone</strong> &#8212; Births, graduations, weddings, turning points<br>
+      &#127891; <strong>Education</strong> &#8212; School, university, courses<br>
+      &#128188; <strong>Career</strong> &#8212; Jobs, promotions, retirements<br>
+      &#10084;&#65039; <strong>Relationship</strong> &#8212; Meeting someone important<br>
+      &#127968; <strong>Home &amp; Place</strong> &#8212; Moving house, travel, places that mattered<br>
+      &#128157; <strong>Loss &amp; Grief</strong> &#8212; Bereavements and endings<br>
+      &#127381; <strong>Achievement</strong> &#8212; Things you worked for and earned<br>
+      &#128140; <strong>Health</strong> &#8212; Illness, recovery, and health events
+    </div>
 
-<!-- ===== TAB 1: ADD FIRST EVENT ===== -->
-<div class="help-section">
-  <div class="h-section-title">&#128197; How to Add Your First Life Event</div>
+    <div class="h-tip">
+      You can create your own custom categories. Click <strong>"&#127991; Categories"</strong> in the toolbar to add, rename, or change the colour of any category. Your changes apply right away.
+    </div>
 
-  <div class="h-tip">
-    An event is any moment worth remembering — big or small. A birthday, a wedding, a move, a job change, a health scare, a holiday. If it mattered to you, it belongs here.
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#b07942">1</div>
-    <div class="h-step-body">
-      <div class="h-step-title">First, create a Life Track</div>
-      <div class="h-step-desc">
-        Before you can add an event, you need at least one <strong>Life Track</strong> — think of this as a labelled row on your timeline, like "My Life" or "Family History".<br><br>
-        Click the <strong>"+ Life Track"</strong> button in the top toolbar. Give it a name (anything will do — you can change it later), pick a colour, and click Save.
+    <div class="h-step">
+      <div class="h-num" style="background:#b07942">1</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Filter by category</div>
+        <div class="h-step-desc">
+          Use the filter bar below the toolbar to show only certain types of events. Click a category button to show only events of that type. Click it again to turn the filter off. This is a great way to see, for example, all your "Career" events together.
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="h-step">
-    <div class="h-num" style="background:#3498db">2</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Add your first event</div>
-      <div class="h-step-desc">
-        Click the <strong>"+ Event"</strong> button in the top toolbar. A form will open asking you for:<br><br>
-        &#8226; <strong>Title</strong> — a short name for this moment (e.g. "Born in Dublin" or "Started new job")<br>
-        &#8226; <strong>Date</strong> — the year, month, and day. If you only know the year, that is fine.<br>
-        &#8226; <strong>Description</strong> — the story behind the event (optional, but worth writing)<br><br>
-        Only the <strong>title and date</strong> are required. Everything else can be added later.
+  <!-- ===== TAB 8: KEYBOARD SHORTCUTS ===== -->
+  <div class="help-section">
+    <div class="h-section-title">&#9997; Keyboard Shortcuts</div>
+
+    <div class="h-tip">
+      This tool is designed to be used with your mouse or touch screen. You do not need to use keyboard shortcuts at all. But if you would like to, here are the ones available.
+    </div>
+
+    <div class="h-block" style="line-height:2.1">
+      <strong style="font-size:16px">Moving around:</strong><br>
+      &#8226; <strong>Left Arrow key</strong> &#8212; Scroll the timeline left (toward older events)<br>
+      &#8226; <strong>Right Arrow key</strong> &#8212; Scroll the timeline right (toward newer events)<br>
+      &#8226; <strong>+ key</strong> &#8212; Zoom in<br>
+      &#8226; <strong>&minus; key</strong> &#8212; Zoom out<br>
+      &#8226; <strong>Ctrl + Scroll wheel</strong> &#8212; Zoom in or out with the mouse<br><br>
+      <strong style="font-size:16px">Undoing mistakes:</strong><br>
+      &#8226; <strong>Ctrl + Z</strong> &#8212; Undo your last action<br>
+      &#8226; <strong>Ctrl + Y</strong> &#8212; Redo something you undid<br><br>
+      <strong style="font-size:16px">Panels and forms:</strong><br>
+      &#8226; <strong>Escape (Esc) key</strong> &#8212; Close any open panel or form
+    </div>
+
+    <div class="h-note">
+      &#128161; <strong>Remember:</strong> You can always use your mouse for everything. Keyboard shortcuts are completely optional.
+    </div>
+  </div>
+
+  <!-- ===== TAB 9: IMPORT & EXPORT IN DETAIL ===== -->
+  <div class="help-section">
+    <div class="h-section-title">&#128228; Import and Export &#8212; Step by Step</div>
+
+    <div class="h-section-title" style="font-size:17px;margin-top:0;border-bottom:none;padding-bottom:0">How to export (save a backup)</div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#2ecc71">1</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Click "&#128190; Save HTML" in the toolbar</div>
+        <div class="h-step-desc">You will find this button near the top of the screen.</div>
+      </div>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#3498db">2</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Choose where to save the file</div>
+        <div class="h-step-desc">Your browser will ask you where to save the file. Choose a folder you will remember, such as <strong>Documents</strong>. Give the file a clear name, like <em>my-life-2024.html</em>.</div>
+      </div>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#b07942">3</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Keep the file somewhere safe</div>
+        <div class="h-step-desc">Put a copy on a USB stick too if you can. The file contains your entire timeline &#8212; treat it like a precious document.</div>
+      </div>
+    </div>
+
+    <div style="border-top:2px solid #e8dcc8;margin:22px 0;padding-top:22px">
+      <div class="h-section-title" style="font-size:17px;margin-top:0;border-bottom:none;padding-bottom:0">How to import (bring back a saved backup)</div>
+    </div>
+
+    <div class="h-note" style="border-left:4px solid #e74c3c;background:#fef5f5;color:#7a1a1a;margin-bottom:16px">
+      &#9888;&#65039; <strong>Read this first:</strong> Importing a backup <strong>replaces everything</strong> that is currently in the timeline. If you have new work that is not in the backup, it will be lost. Always export your current work before importing.
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#3498db">1</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Click "&#8593; Load" in the toolbar</div>
+        <div class="h-step-desc">You will find this button near the top of the screen, next to the Save HTML button.</div>
+      </div>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#2ecc71">2</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Find your backup file</div>
+        <div class="h-step-desc">A window will open. Navigate to wherever you saved the backup file (for example, your Documents folder or USB stick). Click on the file to select it.</div>
+      </div>
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#b07942">3</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Your timeline will be restored</div>
+        <div class="h-step-desc">Everything in the backup file &#8212; all your events, people, and notes &#8212; will appear on the timeline.</div>
       </div>
     </div>
   </div>
 
-  <div class="h-step">
-    <div class="h-num" style="background:#2ecc71">3</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Click an event to open it</div>
-      <div class="h-step-desc">
-        Once your event appears on the timeline as a coloured dot, <strong>click the dot</strong> to open it and see its full details. From there you can also <strong>edit</strong> or <strong>delete</strong> it using the buttons at the bottom of the panel.
+  <!-- ===== TAB 10: LARGE TIMELINES ===== -->
+  <div class="help-section">
+    <div class="h-section-title">&#128202; Tips for Large Timelines</div>
+
+    <div class="h-tip">
+      As your timeline grows, it can get harder to find things. Here are some simple ways to stay organised.
+    </div>
+
+    <div class="h-step">
+      <div class="h-num" style="background:#3498db">1</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Use the search box to find events</div>
+        <div class="h-step-desc">
+          The filter bar below the toolbar has a search box. Type a word from the event title, and only matching events will appear on the timeline. This is the quickest way to find something when you have many events.
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="h-step">
-    <div class="h-num" style="background:#9b59b6">4</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Entering the date</div>
-      <div class="h-step-desc">
-        Use this format: <strong>day / month / year</strong>. If you do not know part of the date, use <strong>XX</strong> for that part.<br><br>
-        &#8226; <em>12/09/1965</em> means September 12, 1965<br>
-        &#8226; <em>XX/09/1965</em> means September 1965 (day not known)<br>
-        &#8226; <em>XX/XX/1965</em> means sometime in 1965<br><br>
-        Not knowing the exact date is perfectly fine. Approximate dates are just as welcome as precise ones.
+    <div class="h-step">
+      <div class="h-num" style="background:#2ecc71">2</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Filter by category</div>
+        <div class="h-step-desc">
+          Click a category button in the filter bar to show only events of that type. For example, click "Milestone" to see only the biggest moments. Click it again to show everything.
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="h-note">
-    &#128161; <strong>Tip:</strong> You can also <strong>double-click directly on the timeline</strong> in any row to add an event at approximately that year. This is a quick way to place many events without using the toolbar each time.
-  </div>
-
-  <div class="h-tip">
-    <strong>What makes a good event description?</strong> Write what it felt like, not just what happened. Instead of "Got married in 1984", try: "We got married on a rainy Saturday in May 1984. We laughed more than we expected to." Even one or two honest sentences will make this memory come alive years from now.
-  </div>
-</div>
-
-<!-- ===== TAB 2: MOVE AROUND ===== -->
-<div class="help-section">
-  <div class="h-section-title">&#128433; How to Move Around the Timeline</div>
-
-  <div class="h-tip">
-    The timeline is like a long scroll of paper. You can slide it left and right, zoom in to see individual years, or zoom out to see decades all at once. Here is how to do each of these things.
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#3498db">1</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Move left and right — drag the empty space</div>
-      <div class="h-step-desc">
-        Click and hold on any <strong>empty area</strong> of the timeline (not on an event dot), then drag your mouse left or right. The timeline will slide with you.<br><br>
-        You can also use the <strong>left and right arrow keys</strong> on your keyboard to nudge it gently.
+    <div class="h-step">
+      <div class="h-num" style="background:#e74c3c">3</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Zoom out to see all events at once</div>
+        <div class="h-step-desc">
+          Hold <strong>Ctrl</strong> and scroll your mouse wheel downward to zoom out. At a zoomed-out view, all your events appear as small dots. This is a lovely way to see the full shape of a life.
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="h-step">
-    <div class="h-num" style="background:#2ecc71">2</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Zoom in and out — scroll your mouse wheel</div>
-      <div class="h-step-desc">
-        Hold the <strong>Ctrl key</strong> on your keyboard and <strong>scroll your mouse wheel</strong> to zoom in or out.<br><br>
-        &#8226; <strong>Scroll up</strong> (or press the <strong>+</strong> key) — zooms in, showing fewer years in more detail<br>
-        &#8226; <strong>Scroll down</strong> (or press the <strong>&minus;</strong> key) — zooms out, showing more years at once<br><br>
-        You can also use the <strong>+ and &minus; buttons</strong> in the bottom-right corner of the screen.
+    <div class="h-step">
+      <div class="h-num" style="background:#9b59b6">4</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Use categories to colour-code your life</div>
+        <div class="h-step-desc">
+          When you have many events, categories help you tell them apart at a glance. "Career" events in blue, "Family" in orange, "Travel" in green. Use the <strong>"&#127991; Categories"</strong> button in the toolbar to customise the colours.
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="h-step">
-    <div class="h-num" style="background:#e74c3c">3</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Jump to today — the Today button</div>
-      <div class="h-step-desc">
-        Click the <strong>"&#128345; Today"</strong> button in the toolbar to immediately jump to the current date on the timeline. The zoom level stays the same — only the position changes.<br><br>
-        This is useful if you have scrolled far away and want to quickly return to the present day.
+    <div class="h-step">
+      <div class="h-num" style="background:#b07942">5</div>
+      <div class="h-step-body">
+        <div class="h-step-title">Use multiple Life Tracks</div>
+        <div class="h-step-desc">
+          If you have many events from different parts of life, try splitting them into separate Life Tracks &#8212; one for "Career", one for "Family", one for "Health". You can then show or hide each track whenever you like.
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="h-step">
-    <div class="h-num" style="background:#f39c12">4</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Reset the view — start fresh</div>
-      <div class="h-step-desc">
-        If the timeline looks strange, or you have zoomed too far in or out, click the <strong>"&#8962; Reset View"</strong> button in the toolbar. This resets both the zoom level and the position back to the default, so you can see everything normally again.
-      </div>
+    <div class="h-tip">
+      &#128161; <strong>Remember:</strong> No matter how many events you add, you can always find any event by searching for it or by filtering by category. The timeline is designed to handle a full lifetime of memories.
     </div>
   </div>
 
-  <div class="h-note">
-    <strong>Quick summary of controls:</strong><br>
-    &#8226; <strong>Drag empty space</strong> — slide the timeline left or right<br>
-    &#8226; <strong>Ctrl + scroll wheel</strong> — zoom in or out<br>
-    &#8226; <strong>+ / &minus; buttons</strong> (bottom-right corner) — zoom in or out<br>
-    &#8226; <strong>Today button</strong> — jump to the current date<br>
-    &#8226; <strong>Reset View button</strong> — return to the normal default view<br>
-    &#8226; <strong>Esc key</strong> — close any open panel or form
-  </div>
-</div>
+  <!-- ===== TAB 11: CONTACT SUPPORT ===== -->
+  <div class="help-section">
+    <div class="h-section-title">&#9993; Contact Support</div>
 
-<!-- ===== TAB 3: PEOPLE & RELATIONSHIPS ===== -->
-<div class="help-section">
-  <div class="h-section-title">&#128100; Adding People and Relationships</div>
+    <div class="h-tip">
+      <strong>&#128075; Need help?</strong> We are happy to hear from you &#8212; whether you have a question, found a problem, or just want to say hello.
+    </div>
 
-  <div class="h-tip">
-    No life is lived alone. This app lets you create a profile for every person who mattered — and then link them to the events they were part of. Once linked, you can see the shape of every relationship across time.
-  </div>
+    <div class="h-block" style="text-align:center;padding:28px 20px;">
+      <p style="font-size:16px;color:#555;line-height:1.9;margin-bottom:22px;">
+        Send us an email and we will get back to you as soon as we can.<br>
+        <strong style="color:#2d1f12;">We read every message.</strong>
+      </p>
+      <a href="mailto:support@freetimeline.pt" style="display:inline-flex;align-items:center;gap:10px;padding:14px 32px;border-radius:10px;background:#b07942;color:#fff;text-decoration:none;font-size:16px;font-weight:700;box-shadow:0 2px 12px rgba(176,121,66,0.35);">
+        &#9993;&nbsp; support@freetimeline.pt
+      </a>
+    </div>
 
-  <div class="h-step">
-    <div class="h-num" style="background:#3498db">1</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Add a person</div>
-      <div class="h-step-desc">
-        Click the <strong>"People"</strong> tab at the top of the screen, then click <strong>"+ New Person"</strong>.<br><br>
-        You can record their name, nickname, a photo, their relationship to you (family, friend, colleague), and a short description of who they were. None of these are required — just a name is enough to start.
-      </div>
+    <div class="h-note" style="margin-top:16px;">
+      &#128274; <strong>Privacy reminder:</strong> Your timeline never leaves your computer &#8212; we do not have access to it. If you share any information for troubleshooting, please remove anything personal first.
     </div>
   </div>
 
-  <div class="h-step">
-    <div class="h-num" style="background:#2ecc71">2</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Link a person to an event</div>
-      <div class="h-step-desc">
-        Open any event by clicking its dot on the timeline. Scroll down inside the event panel until you see the <strong>People</strong> section. Click <strong>"Link People"</strong> and choose the person from the list.<br><br>
-        Now whenever you view that person's profile, you will see every event they appeared in — in order. This is how you trace someone's journey through the story.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#e74c3c">3</div>
-    <div class="h-step-body">
-      <div class="h-step-title">See the Relationship Web</div>
-      <div class="h-step-desc">
-        Click the <strong>"Relationships"</strong> tab at the top to open the Relationship Web. This shows all the people in your story as glowing circles, connected by lines.<br><br>
-        &#8226; A line between two people means they appeared together in at least one event<br>
-        &#8226; A thicker line means they shared more events together<br>
-        &#8226; Click any circle to open that person's full profile<br>
-        &#8226; Drag the dark background to move around; scroll to zoom in or out
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#9b59b6">4</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Highlight a person on the timeline</div>
-      <div class="h-step-desc">
-        Open a person's profile and click the <strong>"&#128204; Pin Filter"</strong> button. The timeline will immediately highlight only the events that person appears in — everything else dims slightly.<br><br>
-        This is a lovely way to see one person's journey through the whole story. Click "Unpin Filter" to return to the normal view.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-note">
-    &#128161; <strong>Tip:</strong> When writing about a person, try to capture not just who they were, but what they meant to you. A few honest sentences about how they shaped your life will be far more valuable years from now than a simple list of facts.
-  </div>
-</div>
-
-<!-- ===== TAB 4: SAVE & BACKUP ===== -->
-<div class="help-section">
-  <div class="h-section-title">&#128190; How to Save, Export, and Make a Backup</div>
-
-  <div class="h-tip">
-    <strong>Important:</strong> Your timeline is stored privately inside your web browser on your computer — not on the internet. This means you are responsible for keeping backups. It only takes a moment and will protect years of precious work.
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#2ecc71">1</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Auto-save happens automatically</div>
-      <div class="h-step-desc">
-        The app saves your work to your browser's memory every <strong>60 seconds</strong> automatically. A small message appears at the bottom of the screen each time it saves. As long as you use the same browser on the same computer, your timeline will still be there when you come back.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#b07942">2</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Export — create a backup file on your computer</div>
-      <div class="h-step-desc">
-        Click the <strong>"&#128190; Save HTML"</strong> button in the top toolbar. This downloads a single file to your computer (ending in .html) that contains <strong>everything</strong> — all your events, people, notes, and photos.<br><br>
-        You can open this file in any web browser, on any computer, even without an internet connection. It is a complete, self-contained copy of your entire timeline.<br><br>
-        <strong>Give it a meaningful name</strong>, like <em>my-life-story-June-2024.html</em>, and save it somewhere safe — your Documents folder, a USB stick, or cloud storage.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#3498db">3</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Import — restore from a backup</div>
-      <div class="h-step-desc">
-        If you want to restore a previously saved file — for example, to open your timeline on a different computer — click the <strong>"&#8593; Load"</strong> button in the toolbar and select your saved .html file.<br><br>
-        <strong>&#9888;&#65039; Please note:</strong> Loading a file will <strong>replace</strong> everything currently in the app. Always save your current work first before loading a different file.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-tip">
-    &#128161; <strong>Make it a habit:</strong> At the end of every session, click <strong>Save HTML</strong> and save the file to your computer. Consider keeping a copy in two places — for example, your computer and a USB stick. Your story is worth protecting.
-  </div>
-
-  <div class="h-note">
-    &#128683; <strong>Watch out:</strong> If you "clear your browser history" or "clear browsing data", this will erase the auto-saved copy inside your browser. The Save HTML file on your computer will survive this — which is exactly why making that backup matters so much.
-  </div>
-</div>
-
-<!-- ===== TAB 5: SAFETY TIPS ===== -->
-<div class="help-section">
-  <div class="h-section-title">&#128274; Safety Tips — Keeping Your Story Secure</div>
-
-  <div class="h-tip">
-    This app is completely private — your life story never leaves your computer. No company or website can see it. But there are a few simple habits that will keep your work safe for many years to come.
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#2ecc71">1</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Save a backup file after every session</div>
-      <div class="h-step-desc">
-        Each time you finish adding events or making changes, click <strong>"&#128190; Save HTML"</strong> before you close the app. This takes about two seconds and creates a complete copy of your timeline on your computer.<br><br>
-        If your browser is ever cleared, or your computer needs to be reset, this file is your safety net.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#3498db">2</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Keep your backup in a safe place</div>
-      <div class="h-step-desc">
-        Save your backup file to more than one location if you can:<br><br>
-        &#8226; <strong>Your computer</strong> — in a folder you will not accidentally delete<br>
-        &#8226; <strong>A USB memory stick</strong> — kept somewhere safe at home<br>
-        &#8226; <strong>Cloud storage</strong> (such as Google Drive or iCloud) — if you use these<br><br>
-        You do not need all of these — even just one backup in a safe folder is much better than none.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#e74c3c">3</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Keep your backup file private</div>
-      <div class="h-step-desc">
-        Your backup file contains everything you have written — including any private notes. Treat it like a personal diary. Do not email it to others or leave it on a shared computer, unless you are comfortable with others reading it.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#f39c12">4</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Using on a shared or public computer</div>
-      <div class="h-step-desc">
-        If you are using this app on a computer that other people also use (such as a library computer or a family computer), always:<br><br>
-        &#8226; <strong>Export your file to a USB stick</strong> before you close the browser<br>
-        &#8226; <strong>Clear your browser history</strong> when you are done, so your data is removed from that computer<br>
-        &#8226; Do not rely on auto-save when using a shared computer — always export manually
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#9b59b6">5</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Undo mistakes easily</div>
-      <div class="h-step-desc">
-        Made a mistake? Click the <strong>"&#8617; Undo"</strong> button in the toolbar to reverse your last action. You can undo up to 60 steps back. This is your safety net for accidental deletions or changes.<br><br>
-        You can also press <strong>Ctrl + Z</strong> on your keyboard to undo, or <strong>Ctrl + Y</strong> to redo something you undid.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-note">
-    &#128161; <strong>Remember:</strong> This app runs entirely in your browser. It does not connect to the internet to store your data. No company can access your life story. It is completely yours — always.
-  </div>
-</div>
-
-<!-- ===== TAB 6: LIFE TRACKS ===== -->
-<div class="help-section">
-  <div class="h-section-title">&#9997; Life Tracks — Organising Your Story into Threads</div>
-  <p class="h-step-desc" style="margin-bottom:18px;line-height:1.9">
-    A <strong>life track</strong> is one continuous thread running through time. A life rarely happens in one dimension — there is work life and home life, inner life and outer life, your story and the stories of the people close to you. Life tracks let you hold all of these at once, each in its own coloured row.
-  </p>
-
-  <div class="h-block" style="line-height:1.9;margin-bottom:16px">
-    <strong>Two ways people use life tracks:</strong><br><br>
-    &#8226; <strong>One person, multiple areas:</strong> "Career &amp; Work" / "Family Life" / "Health" / "Personal Growth" — all running in parallel, showing how different areas of one life intersect.<br><br>
-    &#8226; <strong>Multiple people, side by side:</strong> "My Biography" / "My Mother's Story" / "My Partner's Path" — letting you see how two lives unfolded alongside each other.
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#3498db">1</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Creating a life track</div>
-      <div class="h-step-desc">
-        Click <strong>&#65291; Life Track</strong> in the toolbar. Give it a name, choose a colour, and write a short description of what this thread covers.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#2ecc71">2</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Showing and hiding tracks</div>
-      <div class="h-step-desc">
-        Use the <strong>coloured chips</strong> at the top of the filter bar to instantly show or hide any life track. Click a chip once to hide that thread; click again to bring it back.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#e74c3c">3</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Editing and deleting</div>
-      <div class="h-step-desc">
-        Click the <strong>edit</strong> button on any life track row to rename it, change its colour, or add notes.<br><br>
-        To delete: open Edit and scroll to the red <strong>&#128465; Delete Life Track</strong> button. All events inside it will be permanently removed — export your data first if you are unsure.
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ===== TAB 7: CATEGORIES ===== -->
-<div class="help-section">
-  <div class="h-section-title">&#127991; Life Categories — The Shape of a Life</div>
-  <p class="h-step-desc" style="margin-bottom:18px;line-height:1.9">
-    Categories give your timeline colour and meaning. Filter by "Loss" and you can see every ending. Filter by "Achievement" and you see what was built. They make the shape of a life visible at a glance.
-  </p>
-
-  <div class="h-block" style="line-height:1.9">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div>&#11088; <strong>Milestone</strong> — Birth, graduation, marriage, a major turning point</div>
-      <div>&#127891; <strong>Education</strong> — School, university, a course that changed something</div>
-      <div>&#128188; <strong>Career</strong> — First job, a promotion, a resignation, a new direction</div>
-      <div>&#10084;&#65039; <strong>Relationship</strong> — Meeting someone, a friendship formed, a partnership begun</div>
-      <div>&#127968; <strong>Home &amp; Place</strong> — Moving house, a journey, a place that shaped who you became</div>
-      <div>&#128157; <strong>Loss &amp; Grief</strong> — Bereavement, endings, and departures</div>
-      <div>&#127381; <strong>Achievement</strong> — Something you worked for and earned</div>
-      <div>&#128140; <strong>Health</strong> — An illness, recovery, a diagnosis, a transformation</div>
-    </div>
-  </div>
-
-  <div class="h-tip">You can create your own custom categories too — click <strong>&#127991; Categories</strong> in the toolbar to add, rename, or recolour them to suit your story.</div>
-</div>
-
-<!-- ===== TAB 8: JOURNALING TIPS ===== -->
-<div class="help-section">
-  <div class="h-section-title">&#128214; Writing Tips — Going Deeper Than Dates</div>
-  <p class="h-step-desc" style="margin-bottom:18px;line-height:1.9">
-    A timeline full of dates and titles is a record. A timeline full of honest reflection is a story. These prompts are here to help you move from one to the other — at whatever pace feels right.
-  </p>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#b07942">&#128204;</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Start with the events that are already clear</div>
-      <div class="h-step-desc">
-        You do not need to reconstruct your entire life from scratch. Start with what you already carry clearly — the events that come to mind without effort. These are usually the ones that mattered most.<br><br>
-        <em>"What are the five moments that made me who I am today?"</em><br>
-        <em>"What is the earliest memory I still feel clearly?"</em><br>
-        <em>"What event, if it had gone differently, would have changed everything?"</em>
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#2980b9">&#128204;</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Write about turning points honestly</div>
-      <div class="h-step-desc">
-        A turning point is any moment where the direction of a life shifted. These deserve more than a title and a date.<br><br>
-        <em>"What did I decide in that moment?"</em><br>
-        <em>"What did I leave behind when this chapter ended?"</em><br>
-        <em>"Who was I before this happened — and who did I become after?"</em>
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#c0392b">&#128204;</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Do not avoid the hard events</div>
-      <div class="h-step-desc">
-        A loss, a failure, a difficult time — these belong in the story just as much as the happy moments. The Notes field is private. You never have to share what you write there.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#16a085">&#128204;</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Come back and add layers over time</div>
-      <div class="h-step-desc">
-        This kind of work is rarely finished in one sitting. You might write a first draft of an event today and return a month later with a detail you had forgotten. That is exactly how it should work. Some people keep the app open during family gatherings, asking relatives to fill in dates and stories.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-tip">
-    &#128190; <strong>Before you close the app today:</strong> Click <strong>Save HTML</strong> and put the file somewhere safe. Whatever you wrote today matters. Do not let it live only in a browser.
-  </div>
-</div>
-
-<!-- ===== TAB 9: COMING SOON ===== -->
-<div class="help-section">
-  <div class="h-section-title">&#128161; What's Coming Next</div>
-  <p class="h-step-desc" style="margin-bottom:18px;line-height:1.9">
-    These features are planned and held back from this version to keep the app focused and stable. Your story is already yours, fully portable and complete, right now.
-  </p>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#9b59b6">1</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Life Phase Containers</div>
-      <div class="h-step-desc">
-        Named era brackets — <em>Childhood</em>, <em>Education</em>, <em>Early Career</em>, <em>Retirement</em> — visible as soft bands behind the events. A way to see the chapters of a life at a glance.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#3498db">2</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Printable / PDF Export</div>
-      <div class="h-step-desc">
-        A formatted export of the timeline — suitable for printing as a family history document or a gift for someone you have been documenting.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#27ae60">3</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Family Tree Overlay</div>
-      <div class="h-step-desc">
-        A visual parent/child map showing biological and adoptive family structures across generations. Designed for genealogy work or multi-generational biographies.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-note">
-    &#128274; <strong>None of these are available yet</strong> — and that is intentional. The app you have right now is complete, stable, and fully portable. These enhancements will arrive one at a time, each tested carefully.
-  </div>
-</div>`;
-    this.foot().innerHTML = '<button class="btn accent" style="font-size:15px;padding:9px 30px;" onclick="M.close()">&#10003; Ready &mdash; let\'s begin</button>';
-  },
+  </div>`
+      this.foot().innerHTML = '<button class="btn accent" style="font-size:15px;padding:9px 30px;" onclick="M.close()">&#10003; Ready &mdash; let\'s begin</button>';
+    },
 
   /* ---- Character List ---- */
   _charList(top) {
@@ -5040,23 +5148,50 @@ const UI = {
    ===================================================== */
 const SKEY = 'inf_biography_v1';
 const Store = {
-  autosave() { try { localStorage.setItem(SKEY, JSON.stringify(S)); } catch (_) {} },
+  autosave() {
+    try {
+      if (_blankTemplateMode && isBlankTemplateState(S)) {
+        localStorage.removeItem(SKEY);
+        return;
+      }
+      localStorage.setItem(SKEY, JSON.stringify(S));
+    } catch (_) {}
+  },
+  normalize() {
+    S.lifeTracks = Array.isArray(S.lifeTracks) ? S.lifeTracks : [];
+    S.events = Array.isArray(S.events) ? S.events : [];
+    S.connections = Array.isArray(S.connections) ? S.connections : [];
+    S.people = Array.isArray(S.people) ? S.people : [];
+    S.categories = S.categories && typeof S.categories === 'object' ? S.categories : {};
+    S.affiliations = Array.isArray(S.affiliations) ? S.affiliations : [];
+    syncCategoriesFromState();
+  },
   load() {
     try {
       const raw = localStorage.getItem(SKEY);
       if (raw) {
         const d = JSON.parse(raw);
+        if (isBlankTemplateState(d)) {
+          localStorage.removeItem(SKEY);
+          return false;
+        }
         S.lifeTracks    = d.lifeTracks || d.universes || [];
         S.events       = d.events      || [];
         S.connections  = d.connections || [];
         S.people       = d.characters  || d.people || [];
         S.categories   = d.categories  || {};
         S.affiliations = d.affiliations || [];
-        syncCategoriesFromState();
+        Store.normalize();
         return true;
       }
     } catch (_) {}
     return false;
+  },
+  clearSavedBlank() {
+    try {
+      const raw = localStorage.getItem(SKEY);
+      if (raw && isBlankTemplateState(JSON.parse(raw))) localStorage.removeItem(SKEY);
+    } catch (_) {}
   },
 
   /* ---- Save as portable self-contained HTML ---- */
@@ -5125,6 +5260,31 @@ const Store = {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     notify('Data exported as JSON \u2713', 'success');
+  },
+
+  blankTimeline() {
+    if (!confirm('Are you sure you want a blank template?')) return;
+    if (confirm('Do you want to save your work before making a blank template?')) Store.saveJSON();
+    _blankTemplateMode = true;
+    S.lifeTracks = [{ id: uid(), name: 'Untitled', color: PALETTE[0], visible: true, description: '', notes: '', birthDate: null }];
+    S.events = [];
+    S.connections = [];
+    S.people = [];
+    S.affiliations = [];
+    if (!S.categories || Object.keys(S.categories).length === 0) syncCategoriesToState();
+    V.panX = 0; V.panY = 0; V.scale = 1;
+    const zoom = document.getElementById('zoom-pct'); if (zoom) zoom.textContent = '100%';
+    Store.autosave();
+    MS = [];
+    M.close();
+    clampPanY();
+    render();
+    updateUniToggleBar();
+    updateCatFilterBar();
+    updateStatusFilterBar();
+    updateTagFilterBar();
+    updateStatsPanel();
+    notify('Blank timeline ready.', 'warning');
   },
 
   importClick() { document.getElementById('file-in').click(); },
@@ -5248,6 +5408,7 @@ const Store = {
    SAMPLE DATA (loaded on first run)
    ===================================================== */
 function loadSample() {
+  if (Store.load()) return;
     S.lifeTracks = [
       { id:'u1', name:'My Life — Alex Rivera', color:'#9b59b6', visible:true, description:'A personal overview — the moments, moves, and milestones that shaped who I became.' },
       { id:'u2', name:'Career Journey',        color:'#3498db', visible:true, description:'Education, first jobs, professional growth, and the turning points that defined my working life.' },
@@ -5696,7 +5857,17 @@ function renderStatsFullView() {
    INITIALISATION
    ===================================================== */
 window.addEventListener('DOMContentLoaded', () => {
-  loadSample();
+  Store.clearSavedBlank();
+  const loadedSavedWork = Store.load();
+  if (!loadedSavedWork && isBlankTemplateState(S)) {
+    S.lifeTracks = [];
+    S.events = [];
+    S.connections = [];
+    S.people = [];
+    S.affiliations = [];
+    loadSample();
+  }
+  Store.normalize();
   Store.autosave();
   if (!S.categories || Object.keys(S.categories).length === 0) {
     syncCategoriesToState();
@@ -6729,5 +6900,168 @@ window.addEventListener('resize', repositionOpenDrops);
   setTimeout(_upd, 600);
 })();
 </script>
-</body>
-</html>
+
+  <!-- ========= RANGE CONFIGURATOR PANEL ========= -->
+  <div id="range-cfg-overlay" onclick="if(event.target===this)closeRangeConfig()">
+    <div id="range-cfg-panel">
+      <div class="rcfg-title">⚙ Configure Timeline Range</div>
+      <div class="rcfg-sub">Choose how far back and forward your timeline spans.</div>
+
+      <div class="rcfg-warn">
+        ⚠ Very large time ranges (millions or billions of years) will show less detail. Events still exist — zoom in to find them. Large ranges are useful for deep history or prehistoric timelines.
+      </div>
+
+      <div class="rcfg-row">
+        <div class="rcfg-lbl">🕰 How far back should the timeline go?</div>
+        <select id="rcfg-start" class="rcfg-sel" onchange="rcfgSel(this,'rcfg-custom-start')">
+          <option value="-200000">Default (200,000 years ago)</option>
+          <option value="-100">1900 – Present day</option>
+          <option value="0">Year 0 (Common Era)</option>
+          <option value="-10000">10,000 years ago (prehistoric)</option>
+          <option value="-100000">100,000 years ago</option>
+          <option value="-1000000">1 million years ago</option>
+          <option value="-100000000">100 million years ago</option>
+          <option value="-5000000000">5 billion years ago (Earth's beginning)</option>
+          <option value="custom">Custom year…</option>
+        </select>
+        <input id="rcfg-custom-start" class="rcfg-cust" type="number" placeholder="e.g. -50000000" />
+        <div class="rcfg-hint">Negative = BCE. E.g. −10000 = 10,000 BCE.</div>
+      </div>
+
+      <div class="rcfg-row">
+        <div class="rcfg-lbl">🔮 How far forward should the timeline go?</div>
+        <select id="rcfg-end" class="rcfg-sel" onchange="rcfgSel(this,'rcfg-custom-end')">
+          <option value="20000">Default (20,000 AD)</option>
+          <option value="2030">Present day (~2030)</option>
+          <option value="2130">100 years from now</option>
+          <option value="3030">~1,000 years from now</option>
+          <option value="1002030">~1 million years from now</option>
+          <option value="custom">Custom year…</option>
+        </select>
+        <input id="rcfg-custom-end" class="rcfg-cust" type="number" placeholder="e.g. 100000" />
+      </div>
+
+      <div class="rcfg-foot">
+        <button class="btn-sm" style="background:#f5f0eb;color:#8a7060;border:1px solid #e0d8d0;border-radius:7px;padding:8px 16px;cursor:pointer;font-size:13px" onclick="closeRangeConfig()">Cancel</button>
+        <button class="btn-sm" style="background:#b07942;color:#fff;border:none;border-radius:7px;padding:8px 18px;cursor:pointer;font-size:13px;font-weight:700" onclick="applyRangeConfig()">✓ Apply &amp; Redraw</button>
+      </div>
+    </div>
+  </div>
+  <script>
+  /* =====================================================
+     RANGE CONFIGURATOR
+     ===================================================== */
+  (function() {
+    'use strict';
+    const RANGE_KEY = 'ft_range_' + (typeof SKEY !== 'undefined' ? SKEY : 'timeline');
+
+    // Load persisted range on startup
+    try {
+      const saved = localStorage.getItem(RANGE_KEY);
+      if (saved) {
+        const cfg = JSON.parse(saved);
+        if (typeof cfg.min === 'number' && typeof cfg.max === 'number' && cfg.min < cfg.max) {
+          YEAR_MIN = cfg.min;
+          YEAR_MAX = cfg.max;
+        }
+      }
+    } catch (e) {}
+
+    window._RANGE_KEY = RANGE_KEY;
+  })();
+
+  function openRangeConfig() {
+    const ov = document.getElementById('range-cfg-overlay');
+    if (!ov) return;
+    _rcfgSync('rcfg-start', YEAR_MIN, 'rcfg-custom-start');
+    _rcfgSync('rcfg-end',   YEAR_MAX, 'rcfg-custom-end');
+    ov.classList.add('open');
+  }
+
+  function _rcfgSync(selId, val, custId) {
+    const sel = document.getElementById(selId);
+    const cust = document.getElementById(custId);
+    if (!sel) return;
+    let found = false;
+    for (const opt of sel.options) {
+      if (opt.value !== 'custom' && parseFloat(opt.value) === val) {
+        sel.value = opt.value; found = true; break;
+      }
+    }
+    if (!found) {
+      sel.value = 'custom';
+      if (cust) { cust.value = val; cust.classList.add('show'); }
+    } else {
+      if (cust) cust.classList.remove('show');
+    }
+  }
+
+  function goBackToMenu() {
+    if (S.events.length === 0) { location.href = 'index.html'; return; }
+    const choice = confirm('Save your timeline as a JSON backup before leaving?\n\nClick OK to save a backup and then go to the menu.\nClick Cancel to go to the menu without saving.');
+    if (choice) { Store.saveJSON(); }
+    setTimeout(function() { location.href = 'index.html'; }, choice ? 800 : 0);
+  }
+
+  function closeRangeConfig() {
+    const ov = document.getElementById('range-cfg-overlay');
+    if (ov) ov.classList.remove('open');
+  }
+
+  function rcfgSel(selEl, custId) {
+    const cust = document.getElementById(custId);
+    if (cust) cust.classList.toggle('show', selEl.value === 'custom');
+  }
+
+  function applyRangeConfig() {
+    const startSel = document.getElementById('rcfg-start');
+    const endSel   = document.getElementById('rcfg-end');
+    let newMin, newMax;
+
+    if (!startSel || !endSel) return;
+
+    if (startSel.value === 'custom') {
+      const v = parseFloat(document.getElementById('rcfg-custom-start').value);
+      if (isNaN(v)) { if(typeof notify==='function') notify('Please enter a valid start year.','error'); return; }
+      newMin = v;
+    } else { newMin = parseFloat(startSel.value); }
+
+    if (endSel.value === 'custom') {
+      const v = parseFloat(document.getElementById('rcfg-custom-end').value);
+      if (isNaN(v)) { if(typeof notify==='function') notify('Please enter a valid end year.','error'); return; }
+      newMax = v;
+    } else { newMax = parseFloat(endSel.value); }
+
+    if (newMin >= newMax) { if(typeof notify==='function') notify('Start year must be before end year.','error'); return; }
+    const span = newMax - newMin;
+    if (span > 2e13) { if(typeof notify==='function') notify('Range too large — max ~20 trillion years.','error'); return; }
+
+    YEAR_MIN = newMin;
+    YEAR_MAX = newMax;
+
+    // Persist
+    try { localStorage.setItem(window._RANGE_KEY, JSON.stringify({ min: YEAR_MIN, max: YEAR_MAX })); } catch (e) {}
+
+    closeRangeConfig();
+
+    // Fit the new range on screen
+    const c = (typeof CV === 'function') ? CV() : document.getElementById('tl-canvas');
+    if (c) {
+      const totalWorld = (YEAR_MAX - YEAR_MIN) * BPPY;
+      const visW = c.width - LEFT_W;
+      V.scale = Math.max(visW / totalWorld, 1e-10);
+      V.panX = 0;
+      if (typeof clampPanX === 'function') clampPanX();
+      if (typeof render === 'function') render();
+    }
+
+    // Notify
+    if (typeof notify === 'function') {
+      if (span >= 1e9)      notify('Showing ' + (span/1e9).toFixed(1) + ' billion years. Zoom in to see events.', 'info');
+      else if (span >= 1e6) notify('Showing ' + Math.round(span/1e6).toLocaleString() + ' million years. Zoom in to see events.', 'info');
+      else if (span > 100000) notify('Showing ' + Math.round(span).toLocaleString() + ' years.', 'info');
+    }
+  }
+  </script>
+  </body>
+  </html>

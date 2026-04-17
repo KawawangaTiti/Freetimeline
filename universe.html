@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
-     crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>∞ Infinite Timeline</title>
@@ -952,6 +950,37 @@ input[type="color"] {
   .kbd-section-label:first-of-type { margin-top: 0; }
   .kbd-btn { font-family: -apple-system, "Segoe UI", sans-serif !important; font-size: 10px !important; }
   #kbd-panel { overflow-y: auto; max-height: calc(100vh - 120px); }
+  
+  /* === RANGE CONFIGURATOR === */
+  #range-cfg-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(6,8,18,0.75); z-index: 200;
+    align-items: flex-start; justify-content: center;
+    padding: 32px 16px; overflow-y: auto;
+  }
+  #range-cfg-overlay.open { display: flex; }
+  #range-cfg-panel {
+    background: #1c1e34; border-radius: 14px; width: 520px; max-width: 100%;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(100,120,200,0.18);
+    border: 1px solid rgba(100,120,200,0.22); padding: 26px 28px;
+    animation: modalPop 0.18s ease; flex-shrink: 0;
+  }
+  .rcfg-title { font-size: 16px; font-weight: 800; color: #e0e8ff; margin-bottom: 5px; }
+  .rcfg-sub { font-size: 12px; color: #7080a0; margin-bottom: 18px; }
+  .rcfg-row { margin-bottom: 15px; }
+  .rcfg-lbl { font-size: 11px; font-weight: 700; color: #8090b0; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
+  .rcfg-sel { width: 100%; padding: 9px 12px; border: 1px solid rgba(100,120,200,0.3); border-radius: 8px;
+    font-size: 13px; font-family: inherit; background: rgba(10,12,24,0.7); color: #e0e4ef; cursor: pointer; }
+  .rcfg-sel:focus { outline: none; border-color: #4a8fde; }
+  .rcfg-cust { display: none; margin-top: 7px; width: 100%; padding: 8px 12px; border: 1px solid rgba(100,120,200,0.3);
+    border-radius: 7px; font-size: 13px; font-family: inherit; background: rgba(10,12,24,0.6); color: #e0e4ef; box-sizing: border-box; }
+  .rcfg-cust.show { display: block; }
+  .rcfg-cust:focus { outline: none; border-color: #4a8fde; }
+  .rcfg-hint { font-size: 11px; color: #6070a0; margin-top: 4px; line-height: 1.5; }
+  .rcfg-warn { background: rgba(200,160,0,0.1); border: 1px solid rgba(200,160,0,0.28);
+    border-radius: 8px; padding: 11px 14px; font-size: 12px; color: #c8b060; line-height: 1.65; margin-bottom: 18px; }
+  .rcfg-foot { display: flex; gap: 10px; justify-content: flex-end; padding-top: 14px;
+    border-top: 1px solid rgba(100,120,200,0.12); margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -963,7 +992,7 @@ input[type="color"] {
 
   <!-- ==================== TOOLBAR ==================== -->
   <div id="toolbar">
-    <a href="index.html" class="btn menu-btn" title="Go back to the main menu" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;">← Menu</a>
+    <button class="btn menu-btn" title="Go back to the main menu" onclick="goBackToMenu()" style="display:inline-flex;align-items:center;gap:5px;">← Menu</button>
     <div class="sep"></div>
     <span class="logo">∞ Timeline</span>
     <div class="sep"></div>
@@ -973,6 +1002,7 @@ input[type="color"] {
     <button class="btn accent tb-secondary" onclick="Store.saveHTML()" title="Save your timeline as a portable HTML file you can open anywhere" style="background:#27ae60;border-color:#1e8449;color:#fff;font-weight:700">💾 Save HTML</button>
     <button class="btn tb-secondary" onclick="Store.saveJSON()" title="Export all data as a JSON backup file">&#8595; Export JSON</button>
     <button class="btn tb-secondary" onclick="Store.importClick()" title="Load a previously saved HTML or JSON file">↑ Load</button>
+    <button class="btn danger tb-secondary" onclick="Store.blankTimeline()" title="Clear all Universes, events, characters, and connections after optional JSON export">Blank Timeline</button>
     <input type="file" id="file-in" accept=".html,.json" onchange="Store.importFile(event)" style="display:none">
     <div class="sep"></div>
     <div class="view-tabs">
@@ -1003,7 +1033,8 @@ input[type="color"] {
       <span id="track-h-val" style="font-size:10px;color:#8090c0;width:26px">100</span>
     </label>
     <div class="sep tb-secondary"></div>
-    <button class="btn tb-secondary" style="background:rgba(240,160,48,0.2);border-color:rgba(240,160,48,0.4);color:#f0c060;font-weight:700;font-size:13px;padding:6px 16px;" onclick="UI.help()" title="Help">❓ HELP</button>
+    <button class="btn tb-secondary" style="background:rgba(80,140,220,0.2);border-color:rgba(80,140,220,0.4);color:#80b8f0;font-weight:700;font-size:12px;padding:6px 14px;" onclick="openRangeConfig()" title="Configure Timeline Range">📅 Range</button>
+      <button class="btn tb-secondary" style="background:rgba(240,160,48,0.2);border-color:rgba(240,160,48,0.4);color:#f0c060;font-weight:700;font-size:13px;padding:6px 16px;" onclick="UI.help()" title="Help">❓ HELP</button>
   </div>
 
   <!-- ==================== FILTER & SEARCH BAR ==================== -->
@@ -1193,8 +1224,8 @@ let   TRACK_H = 100;   // height per universe track (px) — user-configurable
 const EV_R    = 13;    // event circle radius (px)
 const OY      = 2000;  // origin year (world x = 0)
 const BPPY    = 110;   // base pixels per year at scale=1
-const YEAR_MIN = -150000; // 150,000 BC
-const YEAR_MAX = 20000;  // 20,000 AC
+let YEAR_MIN = -150000; // 150,000 BC — configurable
+let YEAR_MAX = 20000;  // 20,000 AD — configurable
 const MAX_SC  = 350;
 function getMinScale() {
   const c = CV();
@@ -1491,7 +1522,19 @@ function drawRuler(c, g) {
 
   const pxPerYr = BPPY * V.scale;
   let maj, isMon = false, isDay = false, isHour = false;
-  if      (pxPerYr < 0.008)  maj = 50000;
+  if      (pxPerYr < 3e-10)  maj = 2000000000;
+    else if (pxPerYr < 1e-9)   maj = 1000000000;
+    else if (pxPerYr < 3e-9)   maj = 500000000;
+    else if (pxPerYr < 1e-8)   maj = 200000000;
+    else if (pxPerYr < 3e-8)   maj = 100000000;
+    else if (pxPerYr < 1e-7)   maj = 50000000;
+    else if (pxPerYr < 3e-7)   maj = 20000000;
+    else if (pxPerYr < 1e-6)   maj = 10000000;
+    else if (pxPerYr < 3e-6)   maj = 5000000;
+    else if (pxPerYr < 1e-5)   maj = 1000000;
+    else if (pxPerYr < 3e-5)   maj = 500000;
+    else if (pxPerYr < 1e-4)   maj = 100000;
+    else if (pxPerYr < 0.008)  maj = 50000;
   else if (pxPerYr < 0.025)  maj = 20000;
   else if (pxPerYr < 0.06)   maj = 10000;
   else if (pxPerYr < 0.18)   maj = 5000;
@@ -1507,9 +1550,16 @@ function drawRuler(c, g) {
   else if (pxPerYr < 3500)   { maj = 1/12; isMon = true; }
   else if (pxPerYr < 30000)  { maj = 1/52; isDay = true; }
   else                        { maj = 1/365; isDay = true; }
-  const minor = maj / 5;
-
   const lyear = sy2yr(LEFT_W), ryear = sy2yr(W);
+  // Safety: cap major ticks to 200 on huge ranges
+    { const visTicks = Math.abs(ryear - lyear) / maj;
+      if (isFinite(visTicks) && visTicks > 200) {
+        const rawM = Math.abs(ryear - lyear) / 200;
+        const p = Math.pow(10, Math.floor(Math.log10(rawM)));
+        maj = Math.ceil(rawM / p) * p;
+      }
+    }
+    const minor = maj / 5;
 
   const maxTicks = 600;
   let tickCount = Math.abs(ryear - lyear) / minor;
@@ -1602,10 +1652,24 @@ function decYearToDate(dec) {
 }
 
 function formatCalendarYear(yr) {
-  const abs = Math.abs(Math.round(yr));
-  const n = String(abs).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-  return n + (yr < 0 ? ' BC' : ' AC');
-}
+    const abs = Math.abs(yr);
+    const neg = yr < 0;
+    const suf = neg ? ' BC' : ' AD';
+    if (abs >= 1e9) {
+      const v = abs / 1e9;
+      const str = Math.abs(v - Math.round(v)) < 0.05 ? String(Math.round(v)) : v.toFixed(1);
+      return str + ' Bn' + suf;
+    }
+    if (abs >= 1e6) {
+      const v = abs / 1e6;
+      const str = Math.abs(v - Math.round(v)) < 0.05 ? String(Math.round(v)) : v.toFixed(1);
+      return str + ' M' + suf;
+    }
+    if (abs >= 1000) {
+      return String(Math.round(abs)).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + suf;
+    }
+    return String(Math.round(abs)) + suf;
+  }
 
 function drawRangeEndpointLabel(g, year, fallbackX, align) {
   const sx = ws(yw(year));
@@ -3483,539 +3547,115 @@ const M = {
   /* ---- Help (tabbed v7 — comprehensive, senior-friendly) ---- */
   _help() {
     this.crumb().textContent = '';
-    this.ttl().textContent   = '\uD83D\uDCD6 Help Guide \u2014 Your Timeline App';
+    this.ttl().textContent   = '\uD83D\uDCD6 Universe Help \u2014 Build Your World';
     this.body().innerHTML = `
-<div class="help-tabs">
-  <button class="help-tab active" onclick="helpTab(0)">&#127775; Start Here</button>
-  <button class="help-tab" onclick="helpTab(1)">&#128197; Add First Event</button>
-  <button class="help-tab" onclick="helpTab(2)">&#128433; Move the Timeline</button>
-  <button class="help-tab" onclick="helpTab(3)">&#128100; Characters &amp; Places</button>
-  <button class="help-tab" onclick="helpTab(4)">&#128279; Connections</button>
-  <button class="help-tab" onclick="helpTab(5)">&#128190; Save &amp; Backup</button>
-  <button class="help-tab" onclick="helpTab(6)">&#128274; Safety Tips</button>
-  <button class="help-tab" onclick="helpTab(7)">&#127757; Universes</button>
-  <button class="help-tab" onclick="helpTab(8)">&#127991; Categories</button>
-  <button class="help-tab" onclick="helpTab(9)">&#128161; Tips</button>
-</div>
-
-<!-- ===== TAB 0: START HERE ===== -->
-<div class="help-section active">
-  <div class="h-section-title">&#127775; Welcome to Your Timeline App</div>
-
-  <div class="h-tip">
-    <strong>&#128075; Hello!</strong> This app is your personal place to record the events of a story — real or imagined. It works like a timeline: events are laid out in order along a long scrollable strip, arranged by date. Everything stays private on your own computer. Nothing goes to the internet.
+<div style="max-width:620px;font-size:15px;line-height:1.75">
+  <div class="help-tabs">
+    <button class="help-tab active" style="min-height:38px" onclick="helpTab(0)">Start Here</button>
+    <button class="help-tab" style="min-height:38px" onclick="helpTab(1)">Add Your First Event</button>
+    <button class="help-tab" style="min-height:38px" onclick="helpTab(2)">Moving the Timeline</button>
+    <button class="help-tab" style="min-height:38px" onclick="helpTab(3)">Universes and Categories</button>
+    <button class="help-tab" style="min-height:38px" onclick="helpTab(4)">Save and Backup</button>
+    <button class="help-tab" style="min-height:38px" onclick="helpTab(5)">Safety Tips</button>
+    <button class="help-tab" style="min-height:38px" onclick="helpTab(6)">Connections and Story Arcs</button>
+    <button class="help-tab" style="min-height:38px" onclick="helpTab(7)">Keyboard Shortcuts</button>
+    <button class="help-tab" style="min-height:38px" onclick="helpTab(8)">Import and Export in Detail</button>
   </div>
 
-  <div class="h-section-title" style="margin-top:20px">What this app gives you</div>
-  <div class="h-block">
-    <p style="margin-bottom:14px">Think of it as a <strong>timeline of a story</strong> — like a very long piece of paper laid flat, with years (or dates) along the top. You place events on that paper, and the app arranges them in order.</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:4px">
-      <div>
-        <div style="font-size:26px;margin-bottom:6px">&#128197;</div>
-        <strong style="font-size:17px">Story Events</strong><br>
-        <span style="color:#444;line-height:1.7">Record important moments. Each event gets its own dot on the timeline. Click any dot to read its details.</span>
-      </div>
-      <div>
-        <div style="font-size:26px;margin-bottom:6px">&#127757;</div>
-        <strong style="font-size:17px">Universes</strong><br>
-        <span style="color:#444;line-height:1.7">Separate rows for different storylines or people — each gets its own coloured track. Switch between them instantly.</span>
-      </div>
-      <div>
-        <div style="font-size:26px;margin-bottom:6px">&#128100;</div>
-        <strong style="font-size:17px">Characters &amp; Places</strong><br>
-        <span style="color:#444;line-height:1.7">Create profiles for people and places, then link them to events. See who was involved in what, and trace their paths through the story.</span>
-      </div>
-      <div>
-        <div style="font-size:26px;margin-bottom:6px">&#128190;</div>
-        <strong style="font-size:17px">Easy Backup</strong><br>
-        <span style="color:#444;line-height:1.7">Save your entire timeline as a single file on your computer. Open it any time — no internet needed.</span>
-      </div>
-    </div>
+  <div class="help-section active">
+    <div class="h-section-title">Start Here</div>
+    <div class="h-tip"><strong>Universe is a timeline for your imagination.</strong> Use it to map the history of a fictional world, a fantasy story, a game universe, a comic book timeline, or any creative project where events happen in sequence.</div>
+    <div class="h-action-box">Great for: novels, series, game worlds, superhero universes, historical fiction, roleplay settings.</div>
+    <div class="h-note">Nothing can be accidentally lost without you confirming it. If a choice would erase part of your world, you will be asked first.</div>
+    <div class="h-step"><div class="h-num" style="background:#4a8fde">1</div><div class="h-step-body"><div class="h-step-title">Begin with one moment</div><div class="h-step-desc">To begin, click <strong>Add Event</strong> and place the first moment in your world's history. It can be a birth, a war, a prophecy, a discovery, a landing, a coronation, or the quiet day when everything began.</div></div></div>
   </div>
 
-  <div class="h-section-title" style="margin-top:20px">Where to begin</div>
-  <div class="h-action-box">
-    <strong style="font-size:17px">Step 1:</strong> Click <strong>"+ Universe"</strong> in the toolbar to create your first story row (give it any name).<br><br>
-    <strong style="font-size:17px">Step 2:</strong> Click <strong>"+ Event"</strong> to place your first story moment on the timeline.<br><br>
-    <strong style="font-size:17px">Step 3:</strong> Click <strong>Save HTML</strong> at the end of each session to keep a backup on your computer.
+  <div class="help-section">
+    <div class="h-section-title">Add Your First Event</div>
+    <div class="h-tip">An event is one moment in your universe. It can be huge or tiny. If it changes the story, it belongs on the timeline.</div>
+    <div class="h-step"><div class="h-num" style="background:#4a8fde">1</div><div class="h-step-body"><div class="h-step-title">Click Add Event</div><div class="h-step-desc">A form opens. This is where you describe this moment in history.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#2ecc71">2</div><div class="h-step-body"><div class="h-step-title">Write the Event Title</div><div class="h-step-desc"><strong>Event Title</strong> is the name of this moment. Try names like <em>The First Dragon Wakes</em>, <em>Founding of the Moon Colony</em>, or <em>The Treaty Breaks</em>.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#9b59b6">3</div><div class="h-step-body"><div class="h-step-title">Choose the Date or Timeline Point</div><div class="h-step-desc"><strong>Date or Timeline Point</strong> means when it happened in your world. It can be any date or fictional year. Use what fits your story: Year 1, 430 BC, 12/04/2088, or xx/xx/1450 if only the year is known.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#f39c12">4</div><div class="h-step-body"><div class="h-step-title">Add the Description</div><div class="h-step-desc"><strong>Description</strong> is the full story of this event. What happened? Who was there? What changed after this moment?</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#e74c3c">5</div><div class="h-step-body"><div class="h-step-title">Pick the Universe</div><div class="h-step-desc"><strong>Universe</strong> is which world or story this belongs to. If you have several worlds, choose the right one.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#00ccaa">6</div><div class="h-step-body"><div class="h-step-title">Pick a Category</div><div class="h-step-desc"><strong>Category</strong> is what kind of event this is. It might be a battle, discovery, character birth, prophecy, invention, betrayal, migration, or world-changing moment.</div></div></div>
+    <div class="h-action-box">Click <strong>Save</strong>. Your event will appear on the timeline.</div>
+    <div class="h-note">You can edit the event later. Your first version does not need to be perfect.</div>
   </div>
 
-  <div class="h-note">
-    &#128161; <strong>No experience needed.</strong> If you can click a button and type some words, you can use this app. Start by adding one Universe and one Event — you will immediately see the timeline come to life.
+  <div class="help-section">
+    <div class="h-section-title">Moving the Timeline</div>
+    <div class="h-tip">The timeline area is your long road through history. Move through it like turning pages in a very large chronicle.</div>
+    <div class="h-step"><div class="h-num" style="background:#4a8fde">1</div><div class="h-step-body"><div class="h-step-title">Move through time</div><div class="h-step-desc">Scroll left to go further into the past. Scroll right to move forward in time.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#2ecc71">2</div><div class="h-step-body"><div class="h-step-title">Zoom into an era</div><div class="h-step-desc">Zoom in to examine a single era in detail. Zoom out to see centuries at a glance.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#9b59b6">3</div><div class="h-step-body"><div class="h-step-title">Return to the present</div><div class="h-step-desc">If you are using real-world dates, click <strong>Today</strong> to return to the present.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#f39c12">4</div><div class="h-step-body"><div class="h-step-title">Restore the normal view</div><div class="h-step-desc">If the timeline looks wrong, click <strong>Reset View</strong> to restore the normal view. Nothing will be deleted.</div></div></div>
+    <div class="h-note">Getting lost in time is normal. Reset View brings the timeline area back into shape.</div>
   </div>
 
-  <div class="h-tip">
-    &#128190; <strong>Your work saves automatically every minute.</strong> But for extra safety, click <strong>Save HTML</strong> in the toolbar when you finish each session — this saves everything to a file on your computer.
-  </div>
-</div>
-
-<!-- ===== TAB 1: ADD FIRST EVENT ===== -->
-<div class="help-section">
-  <div class="h-section-title">&#128197; How to Add Your First Story Event</div>
-
-  <div class="h-tip">
-    An event is any moment worth recording in your story — a birth, a battle, a discovery, a meeting, a turning point. Big or small, if it matters to the story, it belongs here.
+  <div class="help-section">
+    <div class="h-section-title">Universes and Categories</div>
+    <div class="h-tip"><strong>A Universe is a container for a whole world or story.</strong> You might have <em>My Fantasy Novel</em>, <em>The Space Campaign</em>, and <em>Earth History</em> as separate universes on the same timeline.</div>
+    <div class="h-step"><div class="h-num" style="background:#4a8fde">1</div><div class="h-step-body"><div class="h-step-title">Create a Universe</div><div class="h-step-desc">Click <strong>Add Universe</strong>. Give the world a name. Choose a color. Add a short note if you want. It will become its own row in the timeline area.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#2ecc71">2</div><div class="h-step-body"><div class="h-step-title">Use Categories</div><div class="h-step-desc"><strong>Categories are types of events</strong> — battles, discoveries, character arrivals, world-changing moments, political shifts. You create your own categories.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#9b59b6">3</div><div class="h-step-body"><div class="h-step-title">Assign events</div><div class="h-step-desc">When you add or edit an event, choose its <strong>Universe</strong> and <strong>Category</strong>. This tells the timeline where the moment belongs and what kind of story beat it is.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#f39c12">4</div><div class="h-step-body"><div class="h-step-title">Filter your world</div><div class="h-step-desc">Use the universe chips or category filters at the top to focus on one world, one thread, or one kind of moment. This helps when your story becomes large.</div></div></div>
+    <div class="h-action-box">Try this: create one universe for the main story and one for ancient history. Then filter between them.</div>
   </div>
 
-  <div class="h-step">
-    <div class="h-num" style="background:#b07942">1</div>
-    <div class="h-step-body">
-      <div class="h-step-title">First, create a Universe</div>
-      <div class="h-step-desc">
-        Before you can add an event, you need at least one <strong>Universe</strong> — a named row on your timeline (e.g. "Main Story", "Character A's Journey").<br><br>
-        Click the <strong>"+ Universe"</strong> button in the toolbar. Give it a name, choose a colour, and click Save.
-      </div>
-    </div>
+  <div class="help-section">
+    <div class="h-section-title">Save and Backup</div>
+    <div class="h-tip">Your world saves automatically in this browser. You do not need to press a special Save button.</div>
+    <div class="h-step"><div class="h-num" style="background:#4a8fde">1</div><div class="h-step-body"><div class="h-step-title">Export your world</div><div class="h-step-desc"><strong>Export</strong> saves your entire world to a file on your computer. Keep this file safe — it is your world's permanent record.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#2ecc71">2</div><div class="h-step-body"><div class="h-step-title">Import a saved world</div><div class="h-step-desc"><strong>Import</strong> brings a saved world back from a backup file.</div></div></div>
+    <div class="h-note"><strong>Important warning:</strong> If you clear your browser history, your world in the browser will be erased. Always keep an exported backup.</div>
+    <div class="h-action-box">Export your world whenever you finish a major chapter of building.</div>
   </div>
 
-  <div class="h-step">
-    <div class="h-num" style="background:#3498db">2</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Add your first event</div>
-      <div class="h-step-desc">
-        Click the <strong>"+ Event"</strong> button in the toolbar. A form will open asking for:<br><br>
-        &#8226; <strong>Title</strong> — a short name for this moment (e.g. "Battle of the Bridge")<br>
-        &#8226; <strong>Date</strong> — the year, month, and day. If you only know the year, that is fine.<br>
-        &#8226; <strong>Description</strong> — the story behind the event (optional, but worth writing)<br><br>
-        Only the <strong>title and date</strong> are required. Everything else can be added later.
-      </div>
-    </div>
+  <div class="help-section">
+    <div class="h-section-title">Safety Tips</div>
+    <div class="h-tip">Your universe may grow for months or years. Protect it like a manuscript.</div>
+    <div class="h-step"><div class="h-num" style="background:#4a8fde">1</div><div class="h-step-body"><div class="h-step-title">Before clearing browser history</div><div class="h-step-desc">Export before clearing browser history. This protects your world before anything is erased.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#2ecc71">2</div><div class="h-step-body"><div class="h-step-title">Before big experiments</div><div class="h-step-desc">Export before major changes or experiments. Keep a safe version before you rewrite an age, split a kingdom, or rebuild a whole war.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#9b59b6">3</div><div class="h-step-body"><div class="h-step-title">Name your backups clearly</div><div class="h-step-desc">Keep your backup files in a safe, labelled folder. Use names like <em>SpaceCampaign-after-chapter-12</em> or <em>FantasyWorld-before-map-rewrite</em>.</div></div></div>
+    <div class="h-note">A saved world is only as safe as its last backup.</div>
   </div>
 
-  <div class="h-step">
-    <div class="h-num" style="background:#2ecc71">3</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Click an event to open it</div>
-      <div class="h-step-desc">
-        Once your event appears on the timeline as a coloured dot, <strong>click the dot</strong> to open its detail panel. You will see the full title, date, description, and any linked characters or places.<br><br>
-        From the detail panel you can also <strong>edit</strong> or <strong>delete</strong> the event using the buttons at the bottom.
-      </div>
-    </div>
+  <div class="help-section">
+    <div class="h-section-title">Connections and Story Arcs</div>
+    <div class="h-tip">You can draw connections between events to show how one moment led to another — cause and effect, character journeys, storylines.</div>
+    <div class="h-step"><div class="h-num" style="background:#4a8fde">1</div><div class="h-step-body"><div class="h-step-title">Connect two moments</div><div class="h-step-desc">Open an event. Choose the connection option. Pick the second event. Add a short label if you want, such as <em>causes</em>, <em>reveals</em>, <em>betrays</em>, or <em>leads to</em>.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#2ecc71">2</div><div class="h-step-body"><div class="h-step-title">Use the Story Line or Story Arc view</div><div class="h-step-desc">Use the Story Line or Story Arc view to follow a chain of connected moments. It helps you see the shape of a quest, a war, a romance, a mystery, or a fall from power.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#9b59b6">3</div><div class="h-step-body"><div class="h-step-title">Map complex plots</div><div class="h-step-desc">Give each arc a clear name. Connect only the moments that truly matter. Use categories to separate battles, discoveries, politics, and character turns. If the timeline area feels crowded, filter one universe or category at a time.</div></div></div>
+    <div class="h-action-box">Think of connections as the invisible thread under your story. They show why history moved the way it did.</div>
   </div>
 
-  <div class="h-step">
-    <div class="h-num" style="background:#9b59b6">4</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Entering the date</div>
-      <div class="h-step-desc">
-        Use this format: <strong>day / month / year</strong>. If you do not know part of the date, use <strong>XX</strong> for that part.<br><br>
-        &#8226; <em>15/06/1940</em> means 15 June 1940<br>
-        &#8226; <em>XX/06/1940</em> means June 1940 (day not known)<br>
-        &#8226; <em>XX/XX/1940</em> means sometime in 1940<br><br>
-        Approximate dates are perfectly fine — the app will place them in the right area of the timeline.
-      </div>
-    </div>
+  <div class="help-section">
+    <div class="h-section-title">Keyboard Shortcuts</div>
+    <div class="h-tip">These shortcuts help you move quickly while shaping your world.</div>
+    <div class="h-step"><div class="h-num" style="background:#4a8fde">+</div><div class="h-step-body"><div class="h-step-title">Zoom in</div><div class="h-step-desc">Press <strong>+</strong> or <strong>=</strong> to move closer to one era.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#4a8fde">-</div><div class="h-step-body"><div class="h-step-title">Zoom out</div><div class="h-step-desc">Press <strong>-</strong> to see more years at once.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#4a8fde">0</div><div class="h-step-body"><div class="h-step-title">Reset view</div><div class="h-step-desc">Press <strong>0</strong> to restore the normal view.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#2ecc71">←</div><div class="h-step-body"><div class="h-step-title">Move left</div><div class="h-step-desc">Press the <strong>Left Arrow</strong> to move toward the past.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#2ecc71">→</div><div class="h-step-body"><div class="h-step-title">Move right</div><div class="h-step-desc">Press the <strong>Right Arrow</strong> to move forward in time.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#2ecc71">↑↓</div><div class="h-step-body"><div class="h-step-title">Move between rows</div><div class="h-step-desc">Press the <strong>Up Arrow</strong> or <strong>Down Arrow</strong> to move through the timeline rows.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#9b59b6">Esc</div><div class="h-step-body"><div class="h-step-title">Close a panel</div><div class="h-step-desc">Press <strong>Esc</strong> to close an open panel or image.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#f39c12">Ctrl</div><div class="h-step-body"><div class="h-step-title">Undo and redo</div><div class="h-step-desc">Press <strong>Ctrl + Z</strong> to undo. Press <strong>Ctrl + Y</strong> or <strong>Ctrl + Shift + Z</strong> to redo.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#e74c3c">S</div><div class="h-step-body"><div class="h-step-title">Open stats</div><div class="h-step-desc">Press <strong>S</strong> to show or hide the stats panel.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#00ccaa">?</div><div class="h-step-body"><div class="h-step-title">Open keys</div><div class="h-step-desc">Press <strong>?</strong> or <strong>/</strong> to show or hide the keyboard help.</div></div></div>
+    <div class="h-note">You can also use your mouse or touch screen for everything.</div>
   </div>
 
-  <div class="h-note">
-    &#128161; <strong>Quick tip:</strong> You can also <strong>double-click directly on the timeline</strong> in any Universe row to add an event at approximately that date. This is a fast way to place many events without going to the toolbar each time.
-  </div>
-
-  <div class="h-tip">
-    <strong>What makes a good event description?</strong> Write what happened <em>and</em> why it mattered. Even two or three sentences will make the entry much more useful when you return to it later.
+  <div class="help-section">
+    <div class="h-section-title">Import and Export in Detail</div>
+    <div class="h-tip">Export is how you make a lasting copy of your world. Import is how you bring that copy back.</div>
+    <div class="h-step"><div class="h-num" style="background:#4a8fde">1</div><div class="h-step-body"><div class="h-step-title">How to export</div><div class="h-step-desc">Click <strong>Export JSON</strong>. Choose where the file should go. Give it a clear name. Put it in a folder you trust. If you also use <strong>Save HTML</strong>, that file can be opened by itself in another browser.</div></div></div>
+    <div class="h-step"><div class="h-num" style="background:#2ecc71">2</div><div class="h-step-body"><div class="h-step-title">How to import</div><div class="h-step-desc">Click <strong>Load</strong>. Choose your saved file. Read the warning. Confirm only when you are ready. The saved world will appear on screen.</div></div></div>
+    <div class="h-note"><strong>Warning:</strong> Import replaces the world that is currently open. Export your current world first if you want to keep it.</div>
+    <div class="h-action-box">When in doubt, export first. A backup gives you freedom to experiment.</div>
   </div>
 </div>
-
-<!-- ===== TAB 2: MOVE AROUND ===== -->
-<div class="help-section">
-  <div class="h-section-title">&#128433; How to Move Around the Timeline</div>
-
-  <div class="h-tip">
-    The timeline is like a long scroll. You can slide it left and right to travel through time, zoom in to see individual days, or zoom out to see decades at once. Here is how to do each of these things.
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#3498db">1</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Move left and right — drag the empty space</div>
-      <div class="h-step-desc">
-        Click and hold on any <strong>empty area</strong> of the timeline (not on an event dot), then drag your mouse left or right. The timeline will slide along with you.<br><br>
-        You can also use the <strong>left and right arrow keys</strong> on your keyboard to nudge it gently.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#2ecc71">2</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Zoom in and out — scroll your mouse wheel</div>
-      <div class="h-step-desc">
-        Place your mouse over the main timeline and <strong>scroll your mouse wheel</strong> to zoom in or out.<br><br>
-        &#8226; <strong>Scroll up</strong> (or press the <strong>+</strong> key) — zooms in, showing fewer years in more detail<br>
-        &#8226; <strong>Scroll down</strong> (or press the <strong>&minus;</strong> key) — zooms out, showing more years at once<br><br>
-        You can also use the <strong>+ and &minus; buttons</strong> in the bottom-right corner of the screen.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#e74c3c">3</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Jump to today — the Today button</div>
-      <div class="h-step-desc">
-        Click the <strong>"&#128345; Today"</strong> button in the toolbar to immediately jump to the current date on the timeline. The zoom level stays the same — only the position changes.<br><br>
-        This is useful if you have scrolled far away and want to quickly return to the present day.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#f39c12">4</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Reset the view — go back to normal</div>
-      <div class="h-step-desc">
-        If the timeline looks wrong — perhaps you have zoomed too far in or out — click the <strong>"&#8962; Reset View"</strong> button in the toolbar. This zooms out to show the complete calendar range, from <strong>150.000 BC</strong> to <strong>20.000 AC</strong>.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-note">
-    <strong>Quick summary of controls:</strong><br>
-    &#8226; <strong>Drag empty space</strong> — slide the timeline left or right<br>
-    &#8226; <strong>Scroll wheel</strong> — zoom in or out between 150.000 BC and 20.000 AC<br>
-    &#8226; <strong>Alt + scroll wheel</strong> — move left or right through the years<br>
-    &#8226; <strong>+ / &minus; buttons</strong> (bottom-right corner) — zoom in or out<br>
-    &#8226; <strong>+ / &minus; keys</strong> on keyboard — zoom in or out<br>
-    &#8226; <strong>Today button</strong> — jump to the current date<br>
-    &#8226; <strong>Reset View button</strong> — show the complete timeline range<br>
-    &#8226; <strong>Esc key</strong> — close any open panel or form
-  </div>
-</div>
-
-<!-- ===== TAB 3: CHARACTERS, PLACES & CONNECTIONS ===== -->
-<div class="help-section">
-  <div class="h-section-title">&#128100; Characters, Places, and Connections</div>
-
-  <div class="h-tip">
-    Every story has people and places that matter. This app lets you create a profile for each one, link them to events, and see a visual map of how they are all connected.
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#3498db">1</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Add a character or person</div>
-      <div class="h-step-desc">
-        Click the <strong>"Characters"</strong> tab at the top of the screen, then click <strong>"+ New Character"</strong>.<br><br>
-        You can record their name, a short biography, their role in the story, and a photo. Only the name is required — everything else is optional.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#2ecc71">2</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Link a character to an event</div>
-      <div class="h-step-desc">
-        Open any event by clicking its dot on the timeline. Inside the event panel, look for the <strong>Characters</strong> section and click <strong>"Link Characters"</strong>. Choose anyone from the list.<br><br>
-        Once linked, you can open a character's profile and see every event they appeared in — listed in order. This lets you trace one person's journey through the entire story.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#e74c3c">3</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Add a place</div>
-      <div class="h-step-desc">
-        Click the <strong>"Map"</strong> tab at the top, then click <strong>"+ New Place"</strong>. Give the place a name and a short description. You can also place it on a map if you like.<br><br>
-        Then link places to events the same way you link characters — open an event and look for the Places section.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#9b59b6">4</div>
-    <div class="h-step-body">
-      <div class="h-step-title">See the Connection Map</div>
-      <div class="h-step-desc">
-        Click the <strong>"&#128506;&#65039; Map"</strong> tab to open the Connection Map. This shows all the characters in your story as glowing circles, connected by lines.<br><br>
-        &#8226; A line between two characters means they appeared together in at least one event<br>
-        &#8226; A thicker line means they shared more events<br>
-        &#8226; Click any circle to open that character's profile<br>
-        &#8226; Drag the dark background to move around; scroll to zoom
-      </div>
-    </div>
-  </div>
-
-  <div class="h-note">
-    &#128161; <strong>Tip:</strong> Characters and places do not need to be added before you add events. You can add events first, then come back and link characters to them later. There is no required order.
-  </div>
-</div>
-
-<!-- ===== TAB 4: CONNECTIONS ===== -->
-<div class="help-section">
-  <div class="h-section-title">&#128279; Connections — Linking Events Together</div>
-  <div class="h-tip">Connections are visible lines between event dots. Use them to show cause and effect, a promise and its fulfilment, a repeated theme, a clue that pays off later, or any relationship between two moments in the timeline.</div>
-  <div class="h-step"><div class="h-num" style="background:#3498db">1</div><div class="h-step-body"><div class="h-step-title">Create a connection</div><div class="h-step-desc">Click an event dot, then click <strong>Connections</strong>. Choose the second event from the list, optionally add a label such as <em>Causes</em>, <em>Leads to</em>, or <em>Echoes</em>, then click <strong>Add Connection</strong>.</div></div></div>
-  <div class="h-step"><div class="h-num" style="background:#2ecc71">2</div><div class="h-step-body"><div class="h-step-title">Control how the line looks</div><div class="h-step-desc">In the same <strong>Connections</strong> panel, every existing connection has its own visual controls. You can set a fixed line colour, make the line thicker or thinner, increase or reduce its visibility, and switch between dashed and solid style. You can also save those settings as presets, then export or import presets to reuse them in another timeline file.</div></div></div>
-  <div class="h-step"><div class="h-num" style="background:#9b59b6">3</div><div class="h-step-body"><div class="h-step-title">Use connections as story structure</div><div class="h-step-desc">A thin pale line can mark a subtle relationship. A thick bright line can mark an important chain of events. Give major sequences a consistent colour so you can read the timeline at a glance.</div></div></div>
-  <div class="h-note"><strong>Tip:</strong> If the timeline starts to look too busy, reduce a connection's visibility instead of deleting it. You keep the relationship, but the line becomes less visually dominant.</div>
-</div>
-
-<!-- ===== TAB 5: SAVE & BACKUP ===== -->
-<div class="help-section">
-  <div class="h-section-title">&#128190; How to Save, Export, and Make a Backup</div>
-
-  <div class="h-tip">
-    <strong>Important:</strong> Your timeline is stored privately inside your web browser on your computer — not on the internet. This means you are responsible for keeping backups. It takes just a moment and will protect all your work.
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#2ecc71">1</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Auto-save happens automatically</div>
-      <div class="h-step-desc">
-        The app saves your work to your browser's memory every <strong>60 seconds</strong> automatically. A small confirmation message appears at the bottom of the screen each time. As long as you use the same browser on the same computer, your timeline will still be there when you come back.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#b07942">2</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Export — create a backup file on your computer</div>
-      <div class="h-step-desc">
-        Click the <strong>"&#128190; Save HTML"</strong> button in the toolbar. This downloads a single file to your computer (ending in .html) that contains <strong>everything</strong> — all your events, characters, places, and notes.<br><br>
-        You can open this file in any web browser, on any computer, even without an internet connection. It is a complete, self-contained copy of your entire timeline.<br><br>
-        <strong>Give it a meaningful name</strong> like <em>my-story-June-2024.html</em> and save it somewhere safe — your Documents folder, a USB stick, or cloud storage.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#3498db">3</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Import — restore from a backup</div>
-      <div class="h-step-desc">
-        If you want to restore a previously saved file — for example, on a new computer — click the <strong>"&#8593; Load"</strong> button in the toolbar and select your saved .html file.<br><br>
-        <strong>&#9888;&#65039; Please note:</strong> Loading a file will <strong>replace</strong> everything currently in the app. Always save your current work first before loading a different file.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-tip">
-    &#128161; <strong>Make it a habit:</strong> At the end of every session, click <strong>Save HTML</strong> and save the file somewhere safe on your computer. Your timeline is worth protecting.
-  </div>
-
-  <div class="h-note">
-    &#128683; <strong>Watch out:</strong> If you "clear your browser history" or "clear browsing data", this will erase the auto-saved copy inside your browser. The Save HTML file on your computer will survive — which is exactly why making that backup matters.
-  </div>
-</div>
-
-<!-- ===== TAB 6: SAFETY TIPS ===== -->
-<div class="help-section">
-  <div class="h-section-title">&#128274; Safety Tips — Keeping Your Timeline Secure</div>
-
-  <div class="h-tip">
-    This app is completely private — your timeline never leaves your computer. No company or website can see it. But a few simple habits will keep your work safe for years to come.
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#2ecc71">1</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Save a backup file after every session</div>
-      <div class="h-step-desc">
-        Each time you finish making changes, click <strong>"&#128190; Save HTML"</strong> before you close the app. This takes about two seconds and creates a complete copy of your timeline on your computer.<br><br>
-        If your browser is ever cleared, or your computer needs to be reset, this file is your safety net.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#3498db">2</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Keep your backup in more than one place</div>
-      <div class="h-step-desc">
-        Save your backup file to more than one location if you can:<br><br>
-        &#8226; <strong>Your computer</strong> — in a folder you will not accidentally delete<br>
-        &#8226; <strong>A USB memory stick</strong> — kept somewhere safe<br>
-        &#8226; <strong>Cloud storage</strong> (such as Google Drive, iCloud, or Dropbox) — if you use these<br><br>
-        Even just one backup in a safe folder is much better than none at all.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#e74c3c">3</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Keep your backup file private</div>
-      <div class="h-step-desc">
-        Your backup file contains everything you have written. Treat it like a private notebook. Do not email it to others or leave it on a shared computer unless you are comfortable with others reading it.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#f39c12">4</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Using on a shared or public computer</div>
-      <div class="h-step-desc">
-        If you are using this app on a computer that other people also use:<br><br>
-        &#8226; <strong>Export your file to a USB stick</strong> before you close the browser<br>
-        &#8226; <strong>Clear your browser history</strong> when you are done, so your data is removed from that computer<br>
-        &#8226; Do not rely on auto-save on shared computers — always export manually
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#9b59b6">5</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Undo mistakes</div>
-      <div class="h-step-desc">
-        Made a mistake? Click the <strong>"&#8617; Undo"</strong> button in the toolbar to reverse your last action. You can undo multiple steps. This is your safety net for accidental deletions or changes.<br><br>
-        You can also press <strong>Ctrl + Z</strong> on your keyboard.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-note">
-    &#128161; <strong>Remember:</strong> This app runs entirely in your browser. It does not connect to the internet to store your data. No one else can access your timeline. It is completely yours.
-  </div>
-</div>
-
-<!-- ===== TAB 7: UNIVERSES ===== -->
-<div class="help-section">
-  <div class="h-section-title">&#127757; Universes — Your Story Rows</div>
-  <p class="h-step-desc" style="margin-bottom:18px;line-height:1.9">
-    A <strong>Universe</strong> is one labelled row on your timeline. Think of each Universe as a separate story thread — "Main Timeline", "Character A's Journey", "Alternate History", or anything else you want to track separately.
-  </p>
-
-  <div class="h-block" style="line-height:1.9;margin-bottom:16px">
-    <strong>Ways people use Universes:</strong><br><br>
-    &#8226; One <strong>main storyline</strong> with alternate Universe rows showing "what if" branches<br>
-    &#8226; Different <strong>characters' personal timelines</strong> running side by side<br>
-    &#8226; A <strong>historical period</strong> broken into separate threads by geography or group
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#3498db">1</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Creating a Universe</div>
-      <div class="h-step-desc">
-        Click <strong>&#65291; Universe</strong> in the toolbar. Give it a name, choose a colour, and optionally write a short description of what this row covers.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#2ecc71">2</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Showing and hiding rows</div>
-      <div class="h-step-desc">
-        Each Universe row has a <strong>hide</strong> button in its left panel. Click it to temporarily hide that row from view. Click again to bring it back. This is useful for focusing on one thread at a time.<br><br>
-        To reorder Universes, click and hold the left Universe label area, then drag the row up or down. On mobile, touch and hold the Universe label area and move your finger up or down.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#e74c3c">3</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Editing and deleting</div>
-      <div class="h-step-desc">
-        Click the <strong>edit</strong> button on any Universe row to rename it, change its colour, or add notes.<br><br>
-        To delete: open Edit and click the red <strong>&#128465; Delete Universe</strong> button. All events inside it will be permanently removed — export your data first if you are unsure.
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ===== TAB 8: CATEGORIES ===== -->
-<div class="help-section">
-  <div class="h-section-title">&#127991; Categories — Colour-Coding Your Events</div>
-  <p class="h-step-desc" style="margin-bottom:18px;line-height:1.9">
-    Categories are colour-coded labels you can attach to events. They make patterns visible — you can filter by category to see only battles, only political events, only personal milestones, and so on.
-  </p>
-
-  <div class="h-block" style="line-height:1.9;margin-bottom:16px">
-    <strong>Examples of useful categories:</strong><br><br>
-    &#8226; <strong>&#128308; Conflict</strong> — battles, wars, confrontations<br>
-    &#8226; <strong>&#128994; Politics</strong> — elections, treaties, speeches<br>
-    &#8226; <strong>&#128309; Personal</strong> — births, deaths, relationships<br>
-    &#8226; <strong>&#128992; Discovery</strong> — inventions, breakthroughs, revelations<br>
-    &#8226; <strong>&#9679; Turning Point</strong> — moments that changed everything<br><br>
-    You can create, rename, and recolour categories to suit your story.
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#3498db">1</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Assign a category to an event</div>
-      <div class="h-step-desc">
-        When adding or editing an event, look for the <strong>Category</strong> dropdown and choose the right label. The event dot on the timeline will then appear in that category's colour.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#2ecc71">2</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Manage your categories</div>
-      <div class="h-step-desc">
-        Click <strong>&#127991; Categories</strong> in the toolbar to open the Category Editor. From here you can add new categories, rename existing ones, or change their colours.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-tip">
-    Filter by category using the filter bar at the top of the screen. This immediately dims all events that do not match, making patterns easy to spot.
-  </div>
-</div>
-
-<!-- ===== TAB 8: TIPS & TRICKS ===== -->
-<div class="help-section">
-  <div class="h-section-title">&#128161; Tips and Useful Details</div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#3498db">&#9733;</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Sub-events — breaking a big event into parts</div>
-      <div class="h-step-desc">
-        Long events (a battle, a conference, a journey) can have <strong>sub-events</strong> inside them — smaller moments that happened within the main event. Open any event and look for the <strong>"+ Sub-event"</strong> button. Sub-events appear as small markers inside the parent event on the timeline.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#2ecc71">&#9733;</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Connecting events to each other</div>
-      <div class="h-step-desc">
-        You can draw a visible link between two related events — for example, a cause and its effect, or a promise and its fulfilment. Open the first event and click <strong>"&#128279; Add Connection"</strong>, then select the second event. A line will appear between them on the timeline.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#e74c3c">&#9733;</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Recurring events</div>
-      <div class="h-step-desc">
-        For events that repeat on a schedule — an annual ceremony, a weekly meeting — you can set a <strong>recurrence pattern</strong> when creating the event. The app will automatically repeat it across the timeline at the intervals you choose.
-      </div>
-    </div>
-  </div>
-
-  <div class="h-step">
-    <div class="h-num" style="background:#9b59b6">&#9733;</div>
-    <div class="h-step-body">
-      <div class="h-step-title">Keyboard shortcuts</div>
-      <div class="h-step-desc">
-        &#8226; <strong>+</strong> key — zoom in<br>
-        &#8226; <strong>&minus;</strong> key — zoom out<br>
-        &#8226; <strong>0</strong> key — reset the view<br>
-        &#8226; <strong>Ctrl + Z</strong> — undo<br>
-        &#8226; <strong>Ctrl + Y</strong> — redo<br>
-        &#8226; <strong>Esc</strong> — close any open panel or form
-      </div>
-    </div>
-  </div>
-
-  <div class="h-tip">
-    &#128190; <strong>Before you close the app today:</strong> Click <strong>Save HTML</strong> and put the file somewhere safe. One saved file is worth far more than relying only on auto-save.
-  </div>
-</div>`;
+`;
     this.foot().innerHTML = '<button class="btn accent" style="font-size:15px;padding:9px 30px;" onclick="M.close()">&#10003; Got it &mdash; let\'s go!</button>';
   },
 
@@ -5216,6 +4856,15 @@ const UI = {
 const SKEY = 'inf_universe_v4';
 const Store = {
   autosave() { try { localStorage.setItem(SKEY, JSON.stringify(S)); } catch (_) {} },
+  normalize() {
+    S.universes = Array.isArray(S.universes) ? S.universes : [];
+    S.events = Array.isArray(S.events) ? S.events : [];
+    S.connections = Array.isArray(S.connections) ? S.connections : [];
+    S.characters = Array.isArray(S.characters) ? S.characters : [];
+    S.categories = S.categories && typeof S.categories === 'object' ? S.categories : {};
+    S.affiliations = Array.isArray(S.affiliations) ? S.affiliations : [];
+    syncCategoriesFromState();
+  },
   load() {
     try {
       const raw = localStorage.getItem(SKEY);
@@ -5227,7 +4876,7 @@ const Store = {
         S.characters   = d.characters  || [];
         S.categories   = d.categories  || {};
         S.affiliations = d.affiliations || [];
-        syncCategoriesFromState();
+        Store.normalize();
         return true;
       }
     } catch (_) {}
@@ -5300,6 +4949,33 @@ const Store = {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     notify('Data exported as JSON \u2713', 'success');
+  },
+
+  blankTimeline() {
+    if (!confirm('Are you sure you want a blank template?')) return;
+    if (confirm('Do you want to save your work before making a blank template?')) Store.saveJSON();
+    S.universes = [{ id: uid(), name: 'Untitled', color: PALETTE[0], visible: true, description: '', notes: '' }];
+    S.events = [];
+    S.connections = [];
+    S.characters = [];
+    S.affiliations = [];
+    if (!S.categories || Object.keys(S.categories).length === 0) syncCategoriesToState();
+    V.panX = 0; V.panY = 0; V.scale = getMinScale();
+    const zoom = document.getElementById('zoom-pct'); if (zoom) zoom.textContent = formatZoomPercent();
+    Store.autosave();
+    MS = [];
+    M.close();
+    clampPanY();
+    render();
+    updateUniverseScrollbar();
+    updateUniToggleBar();
+    updateCatFilterBar();
+    updateStatusFilterBar();
+    updateTagFilterBar();
+    updateToneFilterBar();
+    updateCharFilterSelect();
+    updateStatsPanel();
+    notify('Blank timeline ready.', 'warning');
   },
 
   importClick() { document.getElementById('file-in').click(); },
@@ -5419,6 +5095,7 @@ const Store = {
    SAMPLE DATA (loaded on first run)
    ===================================================== */
 function loadSample() {
+  if (Store.load()) return;
   S.universes = [
     { id:'u1', name:'Marvel 616',  color:'#e74c3c', visible:true },
     { id:'u2', name:'MCU (Films)', color:'#3498db', visible:true },
@@ -5911,7 +5588,8 @@ function renderStatsFullView() {
    INITIALISATION
    ===================================================== */
 window.addEventListener('DOMContentLoaded', () => {
-  loadSample();
+  if (!Store.load()) loadSample();
+  Store.normalize();
   Store.autosave();
   if (!S.categories || Object.keys(S.categories).length === 0) {
     syncCategoriesToState();
@@ -6062,7 +5740,7 @@ function updateEventSearch(val) {
 
 /* ---- Category filter ---- */
 function setCatFilter(cat) {
-  _catFilter = cat || null;
+  _catFilter = (_catFilter === cat) ? null : cat;
   updateCatFilterBar();
   render();
 }
@@ -6075,7 +5753,7 @@ function clearCatFilter() {
 
 /* ---- Status filter ---- */
 function setStatusFilter(status) {
-  _statusFilter = status || null;
+  _statusFilter = (_statusFilter === status) ? null : status;
   updateStatusFilterBar();
   render();
 }
@@ -6884,4 +6562,169 @@ function buildUniStats(uId) {
 
 </script>
 
-</body></html>
+
+  <!-- ========= RANGE CONFIGURATOR PANEL ========= -->
+  <div id="range-cfg-overlay" onclick="if(event.target===this)closeRangeConfig()">
+    <div id="range-cfg-panel">
+      <div class="rcfg-title">⚙ Configure Timeline Range</div>
+      <div class="rcfg-sub">Choose how far back and forward your timeline spans.</div>
+
+      <div class="rcfg-warn">
+        ⚠ Very large time ranges (millions or billions of years) will show less detail. Events still exist — zoom in to find them. Very large ranges are normal for Universe timelines.
+      </div>
+
+      <div class="rcfg-row">
+        <div class="rcfg-lbl">🕰 Fictional Timeline Start — how far back?</div>
+        <select id="rcfg-start" class="rcfg-sel" onchange="rcfgSel(this,'rcfg-custom-start')">
+          <option value="-150000">Default (150,000 years ago)</option>
+          <option value="0">Year 0 (story beginning)</option>
+          <option value="-1000">1,000 years ago</option>
+          <option value="-10000">10,000 years ago</option>
+          <option value="-100000">100,000 years ago</option>
+          <option value="-1000000">1 million years ago</option>
+          <option value="-100000000">100 million years ago</option>
+          <option value="-1000000000">1 billion years ago</option>
+          <option value="-5000000000">5 billion years ago (Universe origin)</option>
+          <option value="custom">Custom year…</option>
+        </select>
+        <input id="rcfg-custom-start" class="rcfg-cust" type="number" placeholder="e.g. -5000000000" />
+        <div class="rcfg-hint">Negative numbers = before Year Zero (fictional past). E.g. −5000 means 5,000 years before your story's Year Zero.</div>
+      </div>
+
+      <div class="rcfg-row">
+        <div class="rcfg-lbl">🔮 How far forward?</div>
+        <select id="rcfg-end" class="rcfg-sel" onchange="rcfgSel(this,'rcfg-custom-end')">
+          <option value="20000">Default (Year 20,000)</option>
+          <option value="2030">Present day (~2030)</option>
+          <option value="2130">100 years from now</option>
+          <option value="3000">~1,000 years from now</option>
+          <option value="1002030">~1 million years from now</option>
+          <option value="custom">Custom year…</option>
+        </select>
+        <input id="rcfg-custom-end" class="rcfg-cust" type="number" placeholder="e.g. 1000000" />
+      </div>
+
+      <div class="rcfg-foot">
+        <button class="btn-sm" style="background:rgba(255,255,255,0.07);color:#8090b0;border:1px solid rgba(100,120,200,0.2);border-radius:7px;padding:8px 16px;cursor:pointer;font-size:13px" onclick="closeRangeConfig()">Cancel</button>
+        <button class="btn-sm" style="background:#3a6fd8;color:#fff;border:none;border-radius:7px;padding:8px 18px;cursor:pointer;font-size:13px;font-weight:700" onclick="applyRangeConfig()">✓ Apply &amp; Redraw</button>
+      </div>
+    </div>
+  </div>
+  <script>
+  /* =====================================================
+     RANGE CONFIGURATOR
+     ===================================================== */
+  (function() {
+    'use strict';
+    const RANGE_KEY = 'ft_range_' + (typeof SKEY !== 'undefined' ? SKEY : 'timeline');
+
+    // Load persisted range on startup
+    try {
+      const saved = localStorage.getItem(RANGE_KEY);
+      if (saved) {
+        const cfg = JSON.parse(saved);
+        if (typeof cfg.min === 'number' && typeof cfg.max === 'number' && cfg.min < cfg.max) {
+          YEAR_MIN = cfg.min;
+          YEAR_MAX = cfg.max;
+        }
+      }
+    } catch (e) {}
+
+    window._RANGE_KEY = RANGE_KEY;
+  })();
+
+  function openRangeConfig() {
+    const ov = document.getElementById('range-cfg-overlay');
+    if (!ov) return;
+    _rcfgSync('rcfg-start', YEAR_MIN, 'rcfg-custom-start');
+    _rcfgSync('rcfg-end',   YEAR_MAX, 'rcfg-custom-end');
+    ov.classList.add('open');
+  }
+
+  function _rcfgSync(selId, val, custId) {
+    const sel = document.getElementById(selId);
+    const cust = document.getElementById(custId);
+    if (!sel) return;
+    let found = false;
+    for (const opt of sel.options) {
+      if (opt.value !== 'custom' && parseFloat(opt.value) === val) {
+        sel.value = opt.value; found = true; break;
+      }
+    }
+    if (!found) {
+      sel.value = 'custom';
+      if (cust) { cust.value = val; cust.classList.add('show'); }
+    } else {
+      if (cust) cust.classList.remove('show');
+    }
+  }
+
+  function goBackToMenu() {
+    if (S.events.length === 0) { location.href = 'index.html'; return; }
+    const choice = confirm('Save your timeline as a JSON backup before leaving?\n\nClick OK to save a backup and then go to the menu.\nClick Cancel to go to the menu without saving.');
+    if (choice) { Store.saveJSON(); }
+    setTimeout(function() { location.href = 'index.html'; }, choice ? 800 : 0);
+  }
+
+  function closeRangeConfig() {
+    const ov = document.getElementById('range-cfg-overlay');
+    if (ov) ov.classList.remove('open');
+  }
+
+  function rcfgSel(selEl, custId) {
+    const cust = document.getElementById(custId);
+    if (cust) cust.classList.toggle('show', selEl.value === 'custom');
+  }
+
+  function applyRangeConfig() {
+    const startSel = document.getElementById('rcfg-start');
+    const endSel   = document.getElementById('rcfg-end');
+    let newMin, newMax;
+
+    if (!startSel || !endSel) return;
+
+    if (startSel.value === 'custom') {
+      const v = parseFloat(document.getElementById('rcfg-custom-start').value);
+      if (isNaN(v)) { if(typeof notify==='function') notify('Please enter a valid start year.','error'); return; }
+      newMin = v;
+    } else { newMin = parseFloat(startSel.value); }
+
+    if (endSel.value === 'custom') {
+      const v = parseFloat(document.getElementById('rcfg-custom-end').value);
+      if (isNaN(v)) { if(typeof notify==='function') notify('Please enter a valid end year.','error'); return; }
+      newMax = v;
+    } else { newMax = parseFloat(endSel.value); }
+
+    if (newMin >= newMax) { if(typeof notify==='function') notify('Start year must be before end year.','error'); return; }
+    const span = newMax - newMin;
+    if (span > 2e13) { if(typeof notify==='function') notify('Range too large — max ~20 trillion years.','error'); return; }
+
+    YEAR_MIN = newMin;
+    YEAR_MAX = newMax;
+
+    // Persist
+    try { localStorage.setItem(window._RANGE_KEY, JSON.stringify({ min: YEAR_MIN, max: YEAR_MAX })); } catch (e) {}
+
+    closeRangeConfig();
+
+    // Fit the new range on screen
+    const c = (typeof CV === 'function') ? CV() : document.getElementById('tl-canvas');
+    if (c) {
+      const totalWorld = (YEAR_MAX - YEAR_MIN) * BPPY;
+      const visW = c.width - LEFT_W;
+      V.scale = Math.max(visW / totalWorld, 1e-10);
+      V.panX = 0;
+      if (typeof clampPanX === 'function') clampPanX();
+      if (typeof render === 'function') render();
+    }
+
+    // Notify
+    if (typeof notify === 'function') {
+      if (span >= 1e9)      notify('Showing ' + (span/1e9).toFixed(1) + ' billion years. Zoom in to see events.', 'info');
+      else if (span >= 1e6) notify('Showing ' + Math.round(span/1e6).toLocaleString() + ' million years. Zoom in to see events.', 'info');
+      else if (span > 100000) notify('Showing ' + Math.round(span).toLocaleString() + ' years.', 'info');
+    }
+  }
+  </script>
+  </body>
+  </html>
