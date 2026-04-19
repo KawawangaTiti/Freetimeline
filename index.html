@@ -1,69 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
-     crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>&#8734; FreeTimeline &mdash; Map Your Time</title>
+<title>Free Timeline — Map Your Time</title>
 <style>
 /* ============================================================
-   RESET & BASE
+   RESET & TOKENS
    ============================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:        #07080f;
-  --bg2:       #0d0f1c;
-  --bg3:       #11142a;
-  --surface:   #13162a;
-  --border:    rgba(255,255,255,0.07);
-  --text:      #e4e8f5;
-  --muted:     #7a84a0;
-  --dim:       #4a5068;
+  --bg:          #050611;
+  --bg2:         #080a18;
+  --surface:     #0d0f20;
+  --surface2:    #111328;
+  --border:      rgba(255,255,255,0.06);
+  --border-mid:  rgba(255,255,255,0.1);
+  --text:        #e4e8f5;
+  --text-bright: #ffffff;
+  --muted:       #7a84a0;
+  --dim:         #434760;
 
-  --uni:       #4a8fde;
-  --uni-glow:  rgba(74,143,222,0.18);
-  --uni-border:rgba(74,143,222,0.28);
+  --uni:         #4a8fde;
+  --uni-glow:    rgba(74,143,222,0.22);
+  --uni-border:  rgba(74,143,222,0.32);
+  --uni-soft:    rgba(74,143,222,0.12);
 
-  --bio:       #c08040;
-  --bio-glow:  rgba(192,128,64,0.18);
-  --bio-border:rgba(192,128,64,0.28);
+  --bio:         #c08040;
+  --bio-glow:    rgba(192,128,64,0.22);
+  --bio-border:  rgba(192,128,64,0.32);
+  --bio-soft:    rgba(192,128,64,0.12);
 
-  --ledger:    #00ccaa;
-  --ledger-glow: rgba(0,204,170,0.18);
-  --ledger-border: rgba(0,204,170,0.28);
+  --ledger:      #00b899;
+  --ledger-glow: rgba(0,184,153,0.18);
+  --ledger-border: rgba(0,184,153,0.28);
+  --ledger-soft: rgba(0,184,153,0.10);
+
+  --gold:        #d4af37;
+  --gold-glow:   rgba(212,175,55,0.3);
 }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; font-size: 16px; }
 
 body {
   font-family: -apple-system, 'Segoe UI', system-ui, Arial, sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  font-size: 16px;
   line-height: 1.6;
   overflow-x: hidden;
 }
 
 /* ============================================================
-   BACKGROUND STARS / GLOW EFFECTS
+   CANVAS & PARTICLES
    ============================================================ */
-body::before {
-  content: '';
+#star-canvas {
   position: fixed;
   inset: 0;
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(74,100,220,0.12), transparent),
-    radial-gradient(ellipse 60% 40% at 80% 70%, rgba(0,180,150,0.06), transparent),
-    radial-gradient(ellipse 50% 60% at 20% 80%, rgba(180,100,40,0.05), transparent);
-  pointer-events: none;
   z-index: 0;
+  pointer-events: none;
+  opacity: 0.85;
 }
 
 /* ============================================================
-   LAYOUT WRAPPER
+   AMBIENT GLOW LAYERS
+   ============================================================ */
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.ambient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 90% 55% at 50% -5%, rgba(60,90,220,0.14), transparent 65%),
+    radial-gradient(ellipse 60% 45% at 85% 65%, rgba(0,180,150,0.07), transparent 60%),
+    radial-gradient(ellipse 55% 55% at 15% 80%, rgba(170,90,30,0.06), transparent 60%);
+}
+.ambient::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 40% at 50% 110%, rgba(40,70,200,0.09), transparent 60%);
+  animation: ambientPulse 8s ease-in-out infinite alternate;
+}
+@keyframes ambientPulse {
+  from { opacity: 0.5; }
+  to   { opacity: 1; }
+}
+
+/* ============================================================
+   PAGE WRAPPER
    ============================================================ */
 .page-wrap {
   position: relative;
@@ -74,429 +105,1034 @@ body::before {
 }
 
 /* ============================================================
-   TOP NAV BAR
+   TOPBAR
    ============================================================ */
 .topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
-  height: 56px;
+  padding: 0 40px;
+  height: 60px;
   border-bottom: 1px solid var(--border);
-  background: rgba(7,8,15,0.85);
-  backdrop-filter: blur(12px);
+  background: rgba(5,6,17,0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   position: sticky;
   top: 0;
-  z-index: 50;
-  flex-shrink: 0;
+  z-index: 100;
 }
-
 .topbar-brand {
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 800;
-  letter-spacing: -0.3px;
+  letter-spacing: 0.5px;
   color: #fff;
   text-decoration: none;
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 6px;
 }
-.topbar-brand .inf { color: #6080ff; font-size: 1.25em; }
-.topbar-brand .highlight { color: #7090ff; }
-
+.brand-infinity {
+  font-size: 1.4em;
+  background: linear-gradient(135deg, #5a80ff, #40c8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+.brand-name {
+  background: linear-gradient(135deg, #c8d4ff, #90d8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 .topbar-links {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 28px;
 }
 .topbar-links a {
   color: var(--muted);
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 500;
-  transition: color 0.15s;
+  letter-spacing: 0.2px;
+  transition: color 0.2s;
 }
-.topbar-links a:hover { color: var(--text); }
+.topbar-links a:hover { color: var(--text-bright); }
 
 /* ============================================================
-   HERO SECTION
+   HERO SECTION — CINEMATIC
    ============================================================ */
 .hero {
-  padding: 88px 32px 72px;
-  text-align: center;
-  max-width: 760px;
-  margin: 0 auto;
-}
-
-.hero-logo {
-  font-size: clamp(2.6rem, 7vw, 4.2rem);
-  font-weight: 900;
-  letter-spacing: -1.5px;
-  line-height: 1.05;
-  color: #fff;
-  margin-bottom: 22px;
-}
-.hero-logo .inf {
-  background: linear-gradient(135deg, #6080ff, #40c0ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.hero-logo .brand-free { color: #c8d0f8; }
-.hero-logo .brand-tl {
-  background: linear-gradient(135deg, #90b0ff, #60d0ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.hero-tagline {
-  font-size: clamp(1.05rem, 2.5vw, 1.3rem);
-  color: var(--muted);
-  max-width: 520px;
-  margin: 0 auto 14px;
-  line-height: 1.55;
-}
-
-.hero-sub {
-  font-size: 0.9rem;
-  color: var(--dim);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-  margin-top: 10px;
-  flex-wrap: wrap;
-}
-.hero-sub-dot {
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  background: var(--dim);
-  display: inline-block;
-}
-
-/* ============================================================
-   TOOL GRID
-   ============================================================ */
-.tools-section {
-  padding: 0 24px 80px;
-  max-width: 1100px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-.tools-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--dim);
-  text-align: center;
-  margin-bottom: 36px;
-}
-
-.tools-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
-}
-
-/* ============================================================
-   TOOL CARD
-   ============================================================ */
-.tool-card {
   position: relative;
+  min-height: 92vh;
   display: flex;
   flex-direction: column;
-  background: var(--surface);
-  border-radius: 18px;
-  border: 1.5px solid var(--border);
-  padding: 34px 30px 28px;
-  text-decoration: none;
-  color: inherit;
-  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 32px 60px;
   overflow: hidden;
 }
 
-.tool-card::before {
+/* Horizon glow */
+.hero::before {
   content: '';
   position: absolute;
-  inset: 0;
-  border-radius: 18px;
-  opacity: 0;
-  transition: opacity 0.22s ease;
+  left: 50%;
+  top: 35%;
+  transform: translate(-50%, -50%);
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(ellipse, rgba(50,80,230,0.1) 0%, rgba(20,40,180,0.04) 50%, transparent 75%);
+  border-radius: 50%;
+  animation: heroPulse 6s ease-in-out infinite alternate;
   pointer-events: none;
 }
-
-.tool-card:hover {
-  transform: translateY(-5px);
+@keyframes heroPulse {
+  from { transform: translate(-50%, -50%) scale(0.95); opacity: 0.6; }
+  to   { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
 }
 
-/* Universe card */
-.card-universe { border-color: rgba(40,60,120,0.5); }
-.card-universe::before { background: radial-gradient(ellipse 80% 60% at 50% 0%, var(--uni-glow), transparent); }
-.card-universe:hover { border-color: var(--uni-border); box-shadow: 0 16px 48px rgba(74,143,222,0.15), 0 0 0 1px var(--uni-border); }
-.card-universe:hover::before { opacity: 1; }
-
-/* Biography card */
-.card-biography { border-color: rgba(100,60,20,0.5); }
-.card-biography::before { background: radial-gradient(ellipse 80% 60% at 50% 0%, var(--bio-glow), transparent); }
-.card-biography:hover { border-color: var(--bio-border); box-shadow: 0 16px 48px rgba(192,128,64,0.15), 0 0 0 1px var(--bio-border); }
-.card-biography:hover::before { opacity: 1; }
-
-/* Ledger card */
-.card-ledger { border-color: rgba(0,80,64,0.5); }
-.card-ledger::before { background: radial-gradient(ellipse 80% 60% at 50% 0%, var(--ledger-glow), transparent); }
-.card-ledger:hover { border-color: var(--ledger-border); box-shadow: 0 16px 48px rgba(0,204,170,0.12), 0 0 0 1px var(--ledger-border); }
-.card-ledger:hover::before { opacity: 1; }
-
-/* Card coming soon overlay */
-.card-coming-soon {
-  pointer-events: none;
-  cursor: default;
-  opacity: 0.85;
-}
-.coming-soon-ribbon {
+/* Infinity ring */
+.hero-ring {
   position: absolute;
-  top: 18px;
-  right: -28px;
-  background: linear-gradient(90deg, #00ccaa, #00aaaa);
-  color: #fff;
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  padding: 5px 40px;
-  transform: rotate(38deg);
-  box-shadow: 0 2px 8px rgba(0,204,170,0.4);
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -50%);
+  width: 520px;
+  height: 260px;
+  border-radius: 50%;
+  border: 1px solid rgba(80,120,255,0.12);
+  box-shadow:
+    inset 0 0 80px rgba(60,100,255,0.05),
+    0 0 120px rgba(60,100,255,0.06);
+  animation: ringRotate 30s linear infinite;
   pointer-events: none;
 }
+.hero-ring::after {
+  content: '';
+  position: absolute;
+  inset: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(80,120,255,0.07);
+}
+@keyframes ringRotate {
+  from { transform: translate(-50%, -50%) rotateX(72deg) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotateX(72deg) rotate(360deg); }
+}
 
-/* Card icon */
-.card-icon-wrap {
-  width: 54px;
-  height: 54px;
-  border-radius: 14px;
+/* Brand label above */
+.hero-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-shadow: 0 0 20px var(--gold-glow);
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 0.2s forwards;
+}
+
+/* Main heading */
+.hero-title {
+  font-size: clamp(3rem, 9vw, 6.5rem);
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 0.95;
+  color: #fff;
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: fadeUp 0.9s ease 0.4s forwards;
+}
+.hero-title .word-free {
+  display: block;
+  background: linear-gradient(135deg, #ffffff 0%, #c8d4ff 50%, #90b8ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-title .word-timeline {
+  display: block;
+  background: linear-gradient(135deg, #6090ff 0%, #40c8ff 60%, #60e8d0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+  filter: drop-shadow(0 0 40px rgba(80,160,255,0.3));
+}
+
+/* Premium tagline */
+.hero-tagline {
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-shadow: 0 0 30px rgba(212,175,55,0.4);
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: fadeUp 0.9s ease 0.6s forwards;
+}
+
+/* Description */
+.hero-desc {
+  font-size: clamp(1rem, 2.2vw, 1.22rem);
+  color: var(--muted);
+  max-width: 560px;
+  line-height: 1.65;
+  margin: 0 auto 40px;
+  opacity: 0;
+  animation: fadeUp 0.9s ease 0.7s forwards;
+}
+.hero-desc strong { color: var(--text); font-weight: 600; }
+
+/* Pill badges */
+.hero-pills {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.9rem;
-  margin-bottom: 22px;
-  position: relative;
-  z-index: 1;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 52px;
+  opacity: 0;
+  animation: fadeUp 0.9s ease 0.9s forwards;
 }
-.card-universe .card-icon-wrap { background: rgba(74,143,222,0.12); border: 1px solid rgba(74,143,222,0.2); }
-.card-biography .card-icon-wrap { background: rgba(192,128,64,0.12); border: 1px solid rgba(192,128,64,0.2); }
-.card-ledger .card-icon-wrap   { background: rgba(0,204,170,0.10); border: 1px solid rgba(0,204,170,0.2); }
-
-/* Card title */
-.card-title {
-  font-size: 1.3rem;
-  font-weight: 800;
-  color: #fff;
-  margin-bottom: 10px;
-  letter-spacing: -0.3px;
-  position: relative;
-  z-index: 1;
-}
-
-/* Card description */
-.card-desc {
-  font-size: 0.92rem;
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 100px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  font-size: 0.8rem;
+  font-weight: 600;
   color: var(--muted);
-  line-height: 1.65;
-  margin-bottom: 20px;
-  flex: 1;
-  position: relative;
-  z-index: 1;
+  letter-spacing: 0.3px;
+  backdrop-filter: blur(8px);
+}
+.hero-pill .pill-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #4adf88;
+  box-shadow: 0 0 8px rgba(74,223,136,0.6);
 }
 
-/* Feature list */
-.card-features {
-  list-style: none;
-  margin-bottom: 24px;
+/* Scroll indicator */
+.hero-scroll {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  position: relative;
-  z-index: 1;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  animation: fadeIn 1s ease 1.2s forwards;
 }
-.card-features li {
-  font-size: 0.84rem;
+.scroll-line {
+  width: 1px;
+  height: 48px;
+  background: linear-gradient(to bottom, rgba(100,140,255,0.6), transparent);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+@keyframes scrollPulse {
+  0%,100% { opacity: 0.4; transform: scaleY(0.8); }
+  50%      { opacity: 1; transform: scaleY(1); }
+}
+.scroll-label {
+  font-size: 0.68rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ============================================================
+   SCROLL REVEAL — BASE STATE
+   Elements start invisible and animate in as they enter viewport
+   ============================================================ */
+.sr {
+  opacity: 0;
+  transition-property: opacity, transform, filter;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  transition-duration: 0.9s;
+  will-change: opacity, transform;
+}
+.sr.visible {
+  opacity: 1;
+  transform: none !important;
+  filter: none !important;
+}
+
+/* Entry from bottom (classic) */
+.sr-up    { transform: translateY(56px); }
+
+/* Entry from left */
+.sr-left  { transform: translateX(-70px); }
+
+/* Entry from right */
+.sr-right { transform: translateX(70px); }
+
+/* Zoom-in pop */
+.sr-pop   { transform: scale(0.82); filter: blur(4px); }
+
+/* Spin-in (rotate + scale) */
+.sr-spin  { transform: rotate(-8deg) scale(0.88); filter: blur(2px); }
+
+/* Flip in from perspective */
+.sr-flip  { transform: perspective(600px) rotateX(25deg) translateY(40px); filter: blur(2px); }
+
+/* Skew slide from left */
+.sr-skew  { transform: skewX(8deg) translateX(-60px); filter: blur(3px); }
+
+/* Fall from above */
+.sr-fall  { transform: translateY(-50px) scale(0.95); filter: blur(2px); }
+
+/* Stagger helpers */
+.sr-d1 { transition-delay: 0.05s; }
+.sr-d2 { transition-delay: 0.13s; }
+.sr-d3 { transition-delay: 0.22s; }
+.sr-d4 { transition-delay: 0.33s; }
+.sr-d5 { transition-delay: 0.44s; }
+.sr-d6 { transition-delay: 0.56s; }
+
+/* Floating orbit animation for trust icons */
+@keyframes orbit {
+  0%   { transform: translateY(0px) rotate(0deg); }
+  25%  { transform: translateY(-8px) rotate(2deg); }
+  50%  { transform: translateY(0px) rotate(0deg); }
+  75%  { transform: translateY(8px) rotate(-2deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.floating {
+  animation: orbit 5s ease-in-out infinite;
+}
+.floating-2 {
+  animation: orbit 6.5s ease-in-out infinite reverse;
+  animation-delay: 1s;
+}
+.floating-3 {
+  animation: orbit 7.2s ease-in-out infinite;
+  animation-delay: 2.2s;
+}
+
+/* Glint sweep on stat boxes */
+@keyframes glint {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.ex-stat.visible::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.06) 50%, transparent 60%);
+  background-size: 200% 100%;
+  border-radius: 14px;
+  animation: glint 2.8s ease 0.4s forwards;
+}
+.ex-stat { position: relative; }
+
+/* ============================================================
+   SECTION SHARED
+   ============================================================ */
+.section {
+  padding: 96px 32px;
+  max-width: 1120px;
+  margin: 0 auto;
+  width: 100%;
+}
+.section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 14px;
+}
+.section-heading {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 800;
+  color: var(--text-bright);
+  letter-spacing: -0.8px;
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+.section-sub {
+  font-size: 1.05rem;
   color: var(--muted);
+  line-height: 1.7;
+  max-width: 560px;
+}
+
+/* ============================================================
+   WHAT IS THIS — EXPLAINER
+   ============================================================ */
+.explainer {
+  padding: 80px 32px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: rgba(10,12,26,0.6);
+}
+.explainer-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+.explainer-left .section-label { margin-bottom: 16px; }
+.explainer-left .section-heading { margin-bottom: 20px; }
+.explainer-left .section-sub { margin-bottom: 28px; }
+.explainer-points {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.explainer-points li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.93rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+.ep-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
-  gap: 8px;
-}
-.card-features li::before {
-  content: '';
-  width: 5px; height: 5px;
-  border-radius: 50%;
+  justify-content: center;
+  font-size: 0.9rem;
   flex-shrink: 0;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  margin-top: 1px;
 }
-.card-universe .card-features li::before { background: var(--uni); }
-.card-biography .card-features li::before { background: var(--bio); }
-.card-ledger .card-features li::before   { background: var(--ledger); }
+.explainer-right {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.ex-stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 20px;
+  text-align: center;
+}
+.ex-stat-num {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--text-bright);
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.ex-stat-label {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 500;
+}
 
-/* Card footer row */
-.card-footer {
+/* ============================================================
+   PORTALS SECTION
+   ============================================================ */
+.portals-section {
+  padding: 96px 32px;
+  max-width: 1120px;
+  margin: 0 auto;
+  width: 100%;
+}
+.portals-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+.portals-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ============================================================
+   PORTAL CARD — BASE
+   ============================================================ */
+.portal-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  padding: 40px 36px 34px;
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  transition:
+    transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    border-color 0.3s,
+    box-shadow 0.3s;
+  background: var(--surface);
+  cursor: pointer;
+  min-height: 420px;
+}
+.portal-card:focus-visible {
+  outline: 2px solid #5a90ff;
+  outline-offset: 3px;
+}
+
+/* Glow that follows cursor */
+.portal-card .card-glow {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+/* Ambient top glow always present */
+.portal-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 180px;
+  border-radius: 20px 20px 0 0;
+  opacity: 0.5;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Stars bg */
+.portal-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+  transition: opacity 0.3s;
+}
+
+/* UNIVERSE card */
+.portal-universe {
+  border-color: rgba(50,80,180,0.3);
+  background: linear-gradient(160deg, #0a0e22 0%, #0d1128 60%, #080b1a 100%);
+}
+.portal-universe::before {
+  background: radial-gradient(ellipse at 50% 0%, rgba(74,143,222,0.25) 0%, transparent 70%);
+}
+.portal-universe::after {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.025) 1px, transparent 1px),
+    radial-gradient(circle at 60% 40%, rgba(255,255,255,0.02) 1px, transparent 1px),
+    radial-gradient(circle at 80% 15%, rgba(255,255,255,0.03) 1px, transparent 1px),
+    radial-gradient(circle at 35% 70%, rgba(255,255,255,0.015) 1px, transparent 1px),
+    radial-gradient(circle at 90% 60%, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 40px 40px, 60px 60px, 45px 45px, 55px 55px, 50px 50px;
+}
+.portal-universe .card-glow {
+  background: radial-gradient(circle, rgba(74,143,222,0.18) 0%, transparent 70%);
+}
+.portal-universe:hover {
+  transform: translateY(-6px);
+  border-color: var(--uni-border);
+  box-shadow:
+    0 20px 60px rgba(74,143,222,0.18),
+    0 0 0 1px var(--uni-border),
+    inset 0 1px 0 rgba(255,255,255,0.07);
+}
+.portal-universe:hover .card-glow { opacity: 1; }
+.portal-universe:hover::before { opacity: 1; }
+
+/* BIOGRAPHY card */
+.portal-biography {
+  border-color: rgba(140,80,30,0.3);
+  background: linear-gradient(160deg, #160e06 0%, #1a1108 60%, #110c05 100%);
+}
+.portal-biography::before {
+  background: radial-gradient(ellipse at 50% 0%, rgba(192,128,64,0.2) 0%, transparent 70%);
+}
+.portal-biography::after {
+  background: radial-gradient(ellipse 100% 40% at 50% 100%, rgba(192,128,64,0.04) 0%, transparent 70%);
+}
+.portal-biography .card-glow {
+  background: radial-gradient(circle, rgba(192,128,64,0.18) 0%, transparent 70%);
+}
+.portal-biography:hover {
+  transform: translateY(-6px);
+  border-color: var(--bio-border);
+  box-shadow:
+    0 20px 60px rgba(192,128,64,0.18),
+    0 0 0 1px var(--bio-border),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.portal-biography:hover .card-glow { opacity: 1; }
+.portal-biography:hover::before { opacity: 1; }
+
+/* Card content z-index */
+.portal-card > * { position: relative; z-index: 1; }
+.portal-card .card-glow { z-index: 0; }
+
+/* Icon */
+.portal-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin-bottom: 24px;
+  border: 1px solid;
+  backdrop-filter: blur(8px);
+}
+.portal-universe .portal-icon {
+  background: rgba(74,143,222,0.14);
+  border-color: rgba(74,143,222,0.25);
+}
+.portal-biography .portal-icon {
+  background: rgba(192,128,64,0.14);
+  border-color: rgba(192,128,64,0.25);
+}
+
+/* Card world label */
+.portal-world {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.portal-universe .portal-world { color: var(--uni); }
+.portal-biography .portal-world { color: var(--bio); }
+
+/* Card title */
+.portal-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-bright);
+  letter-spacing: -0.4px;
+  line-height: 1.1;
+  margin-bottom: 14px;
+}
+
+/* Card desc */
+.portal-desc {
+  font-size: 0.93rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 24px;
+  flex: 1;
+}
+
+/* Feature chips */
+.portal-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 28px;
+}
+.portal-chip {
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  border: 1px solid;
+}
+.portal-universe .portal-chip {
+  background: var(--uni-soft);
+  border-color: rgba(74,143,222,0.25);
+  color: #7ab0f0;
+}
+.portal-biography .portal-chip {
+  background: var(--bio-soft);
+  border-color: rgba(192,128,64,0.25);
+  color: #c89060;
+}
+
+/* Card footer */
+.portal-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  position: relative;
-  z-index: 1;
-  margin-top: auto;
-  padding-top: 4px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
 }
 
-/* CTA button */
-.card-cta {
+/* ============================================================
+   PORTAL CTA BUTTONS — ALL SAME SIZE
+   ============================================================ */
+.portal-cta {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 20px;
+  gap: 8px;
+  padding: 10px 22px;
   border-radius: 10px;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-weight: 700;
-  border: none;
-  cursor: pointer;
-  transition: filter 0.15s, transform 0.12s;
-  text-decoration: none;
   letter-spacing: 0.2px;
-  white-space: nowrap;
+  transition: filter 0.15s, transform 0.12s;
+  min-width: 160px;
+  justify-content: center;
+  text-align: center;
 }
-.card-cta:hover { filter: brightness(1.1); transform: scale(1.03); }
-.card-universe .card-cta { background: linear-gradient(135deg, #3a72c0, #5a9fe8); color: #fff; }
-.card-biography .card-cta { background: linear-gradient(135deg, #a06830, #c88848); color: #fff; }
-.card-ledger .card-cta   { background: linear-gradient(135deg, #009988, #00ccaa); color: #003a32; }
-.card-coming-soon .card-cta {
-  background: rgba(255,255,255,0.08);
-  color: var(--muted);
-  cursor: not-allowed;
-  filter: none;
-  transform: none;
-  border: 1px solid rgba(255,255,255,0.1);
+.portal-universe .portal-cta {
+  background: linear-gradient(135deg, #2a5aaa, #4a8fde);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(74,143,222,0.25);
 }
+.portal-biography .portal-cta {
+  background: linear-gradient(135deg, #8a5820, #c88848);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(192,128,64,0.25);
+}
+.portal-card:hover .portal-cta {
+  filter: brightness(1.1);
+}
+.cta-arrow {
+  display: inline-block;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.portal-card:hover .cta-arrow { transform: translateX(4px); }
 
-/* Event count badge */
 .event-badge {
-  display: inline-flex;
+  display: none;
   align-items: center;
   gap: 5px;
   padding: 5px 11px;
   border-radius: 20px;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 700;
-  white-space: nowrap;
 }
-.card-universe .event-badge  { background: rgba(74,143,222,0.12); color: var(--uni); border: 1px solid rgba(74,143,222,0.25); }
-.card-biography .event-badge { background: rgba(192,128,64,0.12); color: var(--bio); border: 1px solid rgba(192,128,64,0.25); }
-.card-ledger .event-badge    { background: rgba(0,204,170,0.10); color: var(--ledger); border: 1px solid rgba(0,204,170,0.25); }
-.event-badge.hidden { display: none; }
+.event-badge.visible { display: inline-flex; }
+.portal-universe .event-badge {
+  background: var(--uni-soft);
+  color: var(--uni);
+  border: 1px solid rgba(74,143,222,0.25);
+}
+.portal-biography .event-badge {
+  background: var(--bio-soft);
+  color: var(--bio);
+  border: 1px solid rgba(192,128,64,0.25);
+}
 
-/* Divider between card header and footer */
-.card-divider {
-  height: 1px;
-  background: var(--border);
-  margin: 20px 0;
-  position: relative;
-  z-index: 1;
+/* ============================================================
+   LEDGER CARD — COMING SOON
+   ============================================================ */
+.portal-ledger {
+  border-color: rgba(0,140,110,0.2);
+  background: linear-gradient(160deg, #060f0d 0%, #081210 60%, #050d0b 100%);
+  opacity: 0.78;
+  cursor: default;
+  pointer-events: none;
+  min-height: 0;
+  padding: 32px 28px 28px;
+}
+.portal-ledger[tabindex="0"] { pointer-events: auto; cursor: default; }
+.portal-ledger::before {
+  background: radial-gradient(ellipse at 50% 0%, rgba(0,184,153,0.12) 0%, transparent 70%);
+  opacity: 0.6;
+}
+.portal-ledger .portal-icon {
+  background: rgba(0,184,153,0.10);
+  border-color: rgba(0,184,153,0.2);
+}
+.portal-ledger .portal-world { color: var(--ledger); }
+.portal-ledger .portal-chip {
+  background: var(--ledger-soft);
+  border-color: rgba(0,184,153,0.22);
+  color: #40c8b0;
+}
+.ledger-ribbon {
+  position: absolute;
+  top: 22px;
+  right: -30px;
+  background: linear-gradient(90deg, #00a080, #008870);
+  color: rgba(255,255,255,0.9);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 5px 44px;
+  transform: rotate(38deg);
+  box-shadow: 0 2px 8px rgba(0,140,110,0.3);
+}
+.portal-ledger .portal-cta {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--muted);
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 160px;
+  justify-content: center;
+}
+
+/* ============================================================
+   PRIVACY / TRUST SECTION
+   ============================================================ */
+.privacy-section {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: rgba(8,10,20,0.7);
+}
+.privacy-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 80px 32px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 40px;
+}
+.trust-item {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.trust-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+}
+.trust-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  letter-spacing: -0.2px;
+}
+.trust-desc {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+/* ============================================================
+   WHAT CAN YOU MAP SECTION
+   ============================================================ */
+.map-section {
+  padding: 96px 32px;
+  text-align: center;
+}
+.map-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.map-section .section-heading { margin-bottom: 12px; }
+.map-section .section-sub { margin: 0 auto 52px; text-align: center; }
+.map-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+.map-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 100px;
+  background: var(--surface);
+  border: 1px solid var(--border-mid);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.1px;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+.map-tag:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.18);
+  transform: translateY(-2px);
+}
+.map-tag-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   BACKUP REMINDER SECTION
+   ============================================================ */
+.backup-section {
+  padding: 0 32px 96px;
+}
+.backup-inner {
+  max-width: 760px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, rgba(212,175,55,0.06) 0%, rgba(212,175,55,0.02) 100%);
+  border: 1px solid rgba(212,175,55,0.2);
+  border-radius: 20px;
+  padding: 40px 44px;
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+.backup-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(212,175,55,0.1);
+  border: 1px solid rgba(212,175,55,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+.backup-body {}
+.backup-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 8px;
+  letter-spacing: -0.2px;
+}
+.backup-desc {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.backup-desc strong {
+  color: rgba(212,175,55,0.9);
+  font-weight: 600;
 }
 
 /* ============================================================
    CONTACT SECTION
    ============================================================ */
 .contact-section {
-  text-align: center;
-  padding: 48px 24px 56px;
   border-top: 1px solid var(--border);
-  max-width: 560px;
-  margin: 0 auto;
+  text-align: center;
+  padding: 64px 32px;
+  background: rgba(8,10,20,0.5);
 }
-.contact-section h3 {
-  font-size: 1.05rem;
+.contact-inner { max-width: 520px; margin: 0 auto; }
+.contact-inner h3 {
+  font-size: 1.2rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-bright);
   margin-bottom: 10px;
 }
-.contact-section p {
+.contact-inner p {
   font-size: 0.92rem;
   color: var(--muted);
-  margin-bottom: 18px;
-  line-height: 1.6;
+  margin-bottom: 24px;
+  line-height: 1.65;
 }
 .contact-email-link {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 11px 26px;
-  border-radius: 10px;
+  padding: 12px 28px;
+  border-radius: 12px;
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.12);
   color: var(--text);
   text-decoration: none;
   font-size: 0.92rem;
   font-weight: 600;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.2s, border-color 0.2s;
 }
 .contact-email-link:hover {
   background: rgba(255,255,255,0.1);
   border-color: rgba(255,255,255,0.22);
 }
-.contact-email-link .email-icon { font-size: 1.05rem; }
 
 /* ============================================================
    FOOTER
    ============================================================ */
 footer {
-  padding: 28px 32px;
+  padding: 32px 40px;
   border-top: 1px solid var(--border);
-  background: rgba(7,8,15,0.7);
+  background: rgba(5,6,17,0.9);
   margin-top: auto;
-  flex-shrink: 0;
 }
 .footer-inner {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 14px;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--dim);
+}
+.footer-brand .brand-infinity {
+  font-size: 1.2em;
 }
 .footer-links {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
-  justify-content: center;
 }
 .footer-links a {
   color: var(--dim);
   font-size: 0.82rem;
   text-decoration: none;
-  transition: color 0.15s;
-  padding: 2px 4px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
 }
-.footer-links a:hover { color: var(--muted); }
+.footer-links a:hover {
+  color: var(--muted);
+  background: rgba(255,255,255,0.04);
+}
 .footer-links .fdot {
   color: var(--dim);
-  font-size: 0.7rem;
-  line-height: 1;
+  font-size: 0.65rem;
 }
 .footer-note {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--dim);
   text-align: center;
-}
-.footer-brand {
-  font-size: 0.82rem;
-  color: var(--dim);
-  font-weight: 600;
+  width: 100%;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
 }
 
 /* ============================================================
-   COOKIE CONSENT BAR
+   CONSENT BAR
    ============================================================ */
 #consent-bar {
   position: fixed;
@@ -504,16 +1140,17 @@ footer {
   left: 0;
   right: 0;
   z-index: 999;
-  background: #12152a;
-  border-top: 1px solid rgba(255,255,255,0.1);
-  box-shadow: 0 -4px 24px rgba(0,0,0,0.5);
-  padding: 14px 24px;
+  background: rgba(10,12,26,0.96);
+  border-top: 1px solid rgba(255,255,255,0.09);
+  box-shadow: 0 -4px 30px rgba(0,0,0,0.5);
+  padding: 16px 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 20px;
   flex-wrap: wrap;
   transition: transform 0.3s ease, opacity 0.3s ease;
+  backdrop-filter: blur(12px);
 }
 #consent-bar.hidden {
   transform: translateY(100%);
@@ -521,9 +1158,9 @@ footer {
   pointer-events: none;
 }
 .consent-text {
-  font-size: 0.87rem;
+  font-size: 0.85rem;
   color: var(--muted);
-  line-height: 1.5;
+  line-height: 1.55;
   max-width: 580px;
 }
 .consent-text a {
@@ -531,16 +1168,11 @@ footer {
   text-decoration: underline;
   text-underline-offset: 2px;
 }
-.consent-actions {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  flex-shrink: 0;
-}
+.consent-actions { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
 #consent-ok {
   padding: 9px 22px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #4a72e0, #6090ff);
+  background: linear-gradient(135deg, #3a60d0, #5a80ff);
   color: #fff;
   font-size: 0.87rem;
   font-weight: 700;
@@ -548,155 +1180,386 @@ footer {
   cursor: pointer;
   transition: filter 0.15s;
   white-space: nowrap;
+  box-shadow: 0 2px 12px rgba(80,120,255,0.3);
 }
 #consent-ok:hover { filter: brightness(1.1); }
+#consent-ok:focus-visible { outline: 2px solid #7090ff; outline-offset: 2px; }
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .hero-ring, .scroll-line { display: none; }
+  .hero-eyebrow, .hero-title, .hero-tagline, .hero-desc,
+  .hero-pills, .hero-scroll { opacity: 1; transform: none; }
+  .sr { opacity: 1; transform: none; filter: none; }
+  .floating, .floating-2, .floating-3 { animation: none; }
+}
 
 /* ============================================================
    RESPONSIVE
    ============================================================ */
-@media (max-width: 900px) {
-  .tools-grid { grid-template-columns: 1fr 1fr; }
+@media (max-width: 1100px) {
+  .portals-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+  }
+  .portal-ledger {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    gap: 0 28px;
+    min-height: 0;
+    padding: 28px 28px;
+  }
+  .portal-ledger .portal-icon { margin-bottom: 0; grid-row: 1 / 3; }
+  .portal-ledger .portal-world { margin-bottom: 6px; }
+  .portal-ledger .portal-desc { display: none; }
+  .portal-ledger .portal-chips { margin-bottom: 0; }
+  .portal-ledger .portal-footer { display: none; }
+  .ledger-body { grid-column: 2; }
+  .explainer-inner { grid-template-columns: 1fr; gap: 40px; }
+  .explainer-right { grid-template-columns: repeat(4, 1fr); }
 }
 
-@media (max-width: 600px) {
-  .topbar { padding: 0 16px; }
+@media (max-width: 860px) {
+  .topbar { padding: 0 20px; }
   .topbar-links { display: none; }
-  .hero { padding: 56px 20px 48px; }
-  .tools-section { padding: 0 16px 64px; }
-  .tools-grid { grid-template-columns: 1fr; gap: 16px; }
-  .tool-card { padding: 28px 22px 24px; }
-  .card-footer { flex-direction: column; align-items: flex-start; }
-  footer { padding: 22px 20px; }
-  .footer-links { gap: 6px; }
-  #consent-bar { padding: 14px 16px; gap: 14px; }
+  .hero { min-height: 85vh; padding: 60px 20px 48px; }
+  .portals-section { padding: 60px 20px; }
+  .portals-grid { grid-template-columns: 1fr; }
+  .portal-ledger { grid-column: auto; display: flex; flex-direction: column; }
+  .portal-ledger .portal-desc { display: block; }
+  .portal-ledger .portal-footer { display: flex; }
+  .privacy-inner { grid-template-columns: 1fr; gap: 32px; padding: 60px 20px; }
+  .map-section { padding: 60px 20px; }
+  .backup-section { padding: 0 20px 60px; }
+  .backup-inner { padding: 28px 24px; flex-direction: column; }
+  .section { padding: 60px 20px; }
+  .contact-section { padding: 48px 20px; }
+  footer { padding: 28px 20px; }
+  .footer-inner { flex-direction: column; align-items: flex-start; gap: 12px; }
+  #consent-bar { padding: 14px 18px; gap: 14px; }
+  .explainer-inner { padding: 0; }
+  .explainer { padding: 60px 20px; }
+  .explainer-right { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 520px) {
+  .portals-grid { gap: 16px; }
+  .portal-card { padding: 30px 24px 26px; min-height: 0; }
+  .hero-ring { display: none; }
 }
 </style>
 </head>
 <body>
+
+<!-- Particle canvas -->
+<canvas id="star-canvas" aria-hidden="true"></canvas>
+<div class="ambient" aria-hidden="true"></div>
+
 <div class="page-wrap">
 
   <!-- TOP NAV -->
   <nav class="topbar">
-    <a href="index.html" class="topbar-brand">
-      <span class="inf">&#8734;</span>&nbsp;<span class="brand-free">Free</span><span class="brand-tl">Timeline</span>
+    <a href="index.html" class="topbar-brand" aria-label="Free Timeline Home">
+      <span class="brand-infinity" aria-hidden="true">&#8734;</span>
+      <span class="brand-name">FreeTimeline</span>
     </a>
+    <div class="topbar-links">
+      <a href="pricing.html">Pricing</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms &amp; Conditions</a>
+      <a href="mailto:support@freetimeline.pt">Contact</a>
+    </div>
   </nav>
 
-  <!-- HERO -->
-  <header class="hero">
-    <div class="hero-logo">
-      <span class="inf">&#8734;</span>&nbsp;<span class="brand-free">Free</span><span class="brand-tl">Timeline</span>
+  <!-- ============================================================
+       HERO
+       ============================================================ -->
+  <header class="hero" aria-label="Free Timeline introduction">
+    <div class="hero-ring" aria-hidden="true"></div>
+
+    <p class="hero-eyebrow">The Timeline Tool That Respects You</p>
+
+    <h1 class="hero-title">
+      <span class="word-free">Free</span>
+      <span class="word-timeline">Timeline</span>
+    </h1>
+
+    <p class="hero-tagline">A REAL FREE TIMELINE</p>
+
+    <p class="hero-desc">
+      Map <strong>fictional universes</strong>, <strong>biographies</strong>, <strong>memories</strong>, <strong>stories</strong>, and personal timelines — all private, all yours, stored only in your browser.
+    </p>
+
+    <div class="hero-pills" role="list">
+      <span class="hero-pill" role="listitem">
+        <span class="pill-dot" aria-hidden="true"></span>
+        No account required
+      </span>
+      <span class="hero-pill" role="listitem">
+        <span class="pill-dot" aria-hidden="true"></span>
+        Works offline
+      </span>
+      <span class="hero-pill" role="listitem">
+        <span class="pill-dot" aria-hidden="true"></span>
+        Data never leaves your device
+      </span>
     </div>
-    <p class="hero-tagline">Your life, your stories, your universe &mdash; mapped in time.</p>
-    <div class="hero-sub">
-      <span>No account required</span>
-      <span class="hero-sub-dot"></span>
-      <span>Works offline</span>
-      <span class="hero-sub-dot"></span>
-      <span>Your data stays private</span>
+
+    <div class="hero-scroll" aria-hidden="true">
+      <div class="scroll-line"></div>
+      <span class="scroll-label">Scroll</span>
     </div>
   </header>
 
-  <!-- TOOLS -->
-  <main class="tools-section" id="tools">
-    <p class="tools-label">Choose your timeline</p>
-    <div class="tools-grid">
-
-      <!-- UNIVERSE CARD -->
-      <a href="universe.html" class="tool-card card-universe">
-        <div class="card-icon-wrap">&#127756;</div>
-        <div class="card-title">Universe Timeline</div>
-        <div class="card-desc">
-          Map the full history of fictional worlds &mdash; DC, Marvel, your own stories.
-          Track characters, events, and arcs across multiple universes with complete creative freedom.
-        </div>
-        <ul class="card-features">
-          <li>Build timelines for any fictional world or story</li>
-          <li>Track characters, factions, and story arcs</li>
-          <li>Connect events across multiple universes</li>
-          <li>Export and import your world's full history</li>
+  <!-- ============================================================
+       EXPLAINER
+       ============================================================ -->
+  <section class="explainer" aria-label="What is Free Timeline">
+    <div class="explainer-inner">
+      <div class="explainer-left">
+        <p class="section-label sr sr-left">What is this</p>
+        <h2 class="section-heading sr sr-left sr-d1">A timeline tool built for real storytelling</h2>
+        <p class="section-sub sr sr-left sr-d2">
+          Free Timeline gives you a canvas to map time — fictional or real. Two distinct tools, each built for a different kind of story.
+        </p>
+        <ul class="explainer-points">
+          <li class="sr sr-left sr-d3">
+            <span class="ep-icon" aria-hidden="true">&#127756;</span>
+            <span><strong style="color:var(--text)">Universe:</strong> For fiction, fantasy, comics, and world-building. Map characters, factions, arcs, and events across any invented universe.</span>
+          </li>
+          <li class="sr sr-left sr-d4">
+            <span class="ep-icon" aria-hidden="true">&#128214;</span>
+            <span><strong style="color:var(--text)">Biography:</strong> For your real life. Record milestones, relationships, memories, and personal chapters in a private, local timeline.</span>
+          </li>
+          <li class="sr sr-left sr-d5">
+            <span class="ep-icon" aria-hidden="true">&#128274;</span>
+            <span>Everything you create is saved <strong style="color:var(--text)">locally in your browser</strong>. We never see your data. No servers receive it.</span>
+          </li>
         </ul>
-        <div class="card-divider"></div>
-        <div class="card-footer">
-          <span class="card-cta">Open Tool &nbsp;&#8594;</span>
-          <span class="event-badge hidden" id="badge-universe">&#9679; 0 events</span>
+      </div>
+      <div class="explainer-right" aria-hidden="true">
+        <div class="ex-stat sr sr-pop sr-d1">
+          <div class="ex-stat-num">100%</div>
+          <div class="ex-stat-label">Local storage</div>
+        </div>
+        <div class="ex-stat sr sr-pop sr-d2">
+          <div class="ex-stat-num">0</div>
+          <div class="ex-stat-label">Data sent to servers</div>
+        </div>
+        <div class="ex-stat sr sr-pop sr-d3">
+          <div class="ex-stat-num">Free</div>
+          <div class="ex-stat-label">No subscription</div>
+        </div>
+        <div class="ex-stat sr sr-pop sr-d4">
+          <div class="ex-stat-num">&#8734;</div>
+          <div class="ex-stat-label">Events you can create</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       PORTAL CARDS
+       ============================================================ -->
+  <section class="portals-section" aria-label="Choose your timeline">
+    <div class="portals-header">
+      <p class="section-label sr sr-fall" style="text-align:center; margin-bottom:12px;">Choose your timeline</p>
+      <h2 class="section-heading sr sr-fall sr-d1" style="text-align:center; margin-bottom:10px;">Two worlds. Two stories.</h2>
+      <p class="section-sub sr sr-up sr-d2" style="text-align:center; margin:0 auto;">Each portal is a different kind of timeline — pick the one that fits your story.</p>
+    </div>
+
+    <div class="portals-grid">
+
+      <!-- UNIVERSE PORTAL -->
+      <a href="universe.html" class="portal-card portal-universe sr sr-left sr-d2" tabindex="0" aria-label="Open Free Timeline Universe — map fictional worlds">
+        <div class="card-glow" aria-hidden="true"></div>
+        <div class="portal-icon" aria-hidden="true">&#127756;</div>
+        <p class="portal-world">Free Timeline Universe</p>
+        <h3 class="portal-title">Infinite Universe<br>Timeline</h3>
+        <p class="portal-desc">
+          Map the full history of any fictional world — DC, Marvel, your own original stories. Track characters, events, and arcs across multiple universes. Every star in your cosmos has a story.
+        </p>
+        <div class="portal-chips" aria-label="Features">
+          <span class="portal-chip">Fictional worlds</span>
+          <span class="portal-chip">Characters &amp; factions</span>
+          <span class="portal-chip">Multi-universe arcs</span>
+          <span class="portal-chip">Export &amp; import</span>
+        </div>
+        <div class="portal-footer">
+          <span class="portal-cta">
+            Enter Universe &nbsp;<span class="cta-arrow" aria-hidden="true">&#8594;</span>
+          </span>
+          <span class="event-badge" id="badge-universe" role="status" aria-live="polite"></span>
         </div>
       </a>
 
-      <!-- BIOGRAPHY CARD -->
-      <a href="biography.html" class="tool-card card-biography">
-        <div class="card-icon-wrap">&#128214;</div>
-        <div class="card-title">Biography Timeline</div>
-        <div class="card-desc">
-          Your life story, beautifully visualised. Record milestones, relationships,
-          and personal chapters &mdash; all private, all saved locally on your device.
+      <!-- BIOGRAPHY PORTAL -->
+      <a href="biography.html" class="portal-card portal-biography sr sr-right sr-d2" tabindex="0" aria-label="Open Free Timeline Biography — map your life story">
+        <div class="card-glow" aria-hidden="true"></div>
+        <div class="portal-icon" aria-hidden="true">&#128214;</div>
+        <p class="portal-world">Free Timeline Biography</p>
+        <h3 class="portal-title">Biography<br>Timeline</h3>
+        <p class="portal-desc">
+          Your life, beautifully visualised. Record milestones, relationships, and personal chapters — all private, all saved locally on your device. Your memories, your museum.
+        </p>
+        <div class="portal-chips" aria-label="Features">
+          <span class="portal-chip">Memories &amp; milestones</span>
+          <span class="portal-chip">People &amp; relationships</span>
+          <span class="portal-chip">Photos &amp; notes</span>
+          <span class="portal-chip">100% private</span>
         </div>
-        <ul class="card-features">
-          <li>Record memories, milestones, and life events</li>
-          <li>Add people and relationships to your story</li>
-          <li>Attach notes, photos, and links to events</li>
-          <li>Your data is private and never leaves your browser</li>
-        </ul>
-        <div class="card-divider"></div>
-        <div class="card-footer">
-          <span class="card-cta">Open Tool &nbsp;&#8594;</span>
-          <span class="event-badge hidden" id="badge-biography">&#9679; 0 events</span>
+        <div class="portal-footer">
+          <span class="portal-cta">
+            Enter Biography &nbsp;<span class="cta-arrow" aria-hidden="true">&#8594;</span>
+          </span>
+          <span class="event-badge" id="badge-biography" role="status" aria-live="polite"></span>
         </div>
       </a>
 
-      <!-- CHRONO LEDGER CARD -->
-      <div class="tool-card card-ledger card-coming-soon" aria-disabled="true">
-        <div class="coming-soon-ribbon">Coming Soon</div>
-        <div class="card-icon-wrap">&#127970;</div>
-        <div class="card-title">Chrono Ledger</div>
-        <div class="card-desc">
-          Your business command centre. Track contracts, milestones, revenue events,
-          hires, and company history &mdash; all in one professional timeline.
+      <!-- CHRONO LEDGER — COMING SOON -->
+      <div class="portal-card portal-ledger sr sr-flip sr-d4" aria-disabled="true" tabindex="0" role="article" aria-label="Chrono Ledger — coming soon">
+        <div class="ledger-ribbon" aria-label="Coming soon">Coming Soon</div>
+        <div class="portal-icon" aria-hidden="true">&#127970;</div>
+        <p class="portal-world">Chrono Ledger</p>
+        <h3 class="portal-title">Business<br>Command Centre</h3>
+        <p class="portal-desc">
+          Track contracts, milestones, revenue events, hires, and company history — all in one professional business timeline. Coming in a future release.
+        </p>
+        <div class="portal-chips">
+          <span class="portal-chip">Contracts &amp; deadlines</span>
+          <span class="portal-chip">Financial events</span>
+          <span class="portal-chip">CSV &amp; PDF export</span>
         </div>
-        <ul class="card-features">
-          <li>Track contracts, deadlines, and milestones</li>
-          <li>Organise events by department or project track</li>
-          <li>Financial values attached to timeline events</li>
-          <li>Export reports as CSV, PDF, or JSON backup</li>
-        </ul>
-        <div class="card-divider"></div>
-        <div class="card-footer">
-          <span class="card-cta">Coming Soon</span>
+        <div class="portal-footer">
+          <span class="portal-cta" aria-label="Not yet available">Coming Soon</span>
         </div>
       </div>
 
     </div>
-  </main>
-
-  <!-- CONTACT SECTION -->
-  <section class="contact-section">
-    <h3>Questions or Feedback?</h3>
-    <p>We'd love to hear from you &mdash; whether you've found a bug, have a suggestion, or just want to say hello.</p>
-    <a href="mailto:support@freetimeline.pt" class="contact-email-link">
-      <span class="email-icon">&#9993;</span>
-      support@freetimeline.pt
-    </a>
   </section>
 
-  <!-- FOOTER -->
+  <!-- ============================================================
+       PRIVACY / TRUST
+       ============================================================ -->
+  <section class="privacy-section" aria-label="Privacy and trust">
+    <div class="privacy-inner">
+      <div class="trust-item sr sr-up sr-d1">
+        <div class="trust-icon floating" aria-hidden="true">&#128274;</div>
+        <div class="trust-title">Stored in your browser only</div>
+        <div class="trust-desc">
+          Every event, note, and attachment you create lives in your browser's localStorage. No account means no server ever receives your data.
+        </div>
+      </div>
+      <div class="trust-item sr sr-up sr-d3">
+        <div class="trust-icon floating-2" aria-hidden="true">&#128260;</div>
+        <div class="trust-title">Works completely offline</div>
+        <div class="trust-desc">
+          Free Timeline runs entirely in your browser. Once loaded, it works with no internet connection. Your data is never at risk of a server going down.
+        </div>
+      </div>
+      <div class="trust-item sr sr-up sr-d5">
+        <div class="trust-icon floating-3" aria-hidden="true">&#128190;</div>
+        <div class="trust-title">Export and back up anytime</div>
+        <div class="trust-desc">
+          Because your data is local, you own it completely. Use the export tools in each timeline to download a backup and keep your history safe.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       WHAT CAN YOU MAP
+       ============================================================ -->
+  <section class="map-section" aria-label="What you can map with Free Timeline">
+    <div class="map-inner">
+      <p class="section-label sr sr-spin">What can you map?</p>
+      <h2 class="section-heading sr sr-spin sr-d1">Any story. Any timeline.</h2>
+      <p class="section-sub sr sr-up sr-d2">
+        If it unfolds over time, Free Timeline can hold it. Here are a few things people build with it.
+      </p>
+      <div class="map-tags" role="list">
+        <span class="map-tag sr sr-pop sr-d1" role="listitem"><span class="map-tag-dot" style="background:#4a8fde;" aria-hidden="true"></span>Marvel &amp; DC storylines</span>
+        <span class="map-tag sr sr-pop sr-d2" role="listitem"><span class="map-tag-dot" style="background:#8060ff;" aria-hidden="true"></span>Original fantasy worlds</span>
+        <span class="map-tag sr sr-pop sr-d1" role="listitem"><span class="map-tag-dot" style="background:#c08040;" aria-hidden="true"></span>Your own life story</span>
+        <span class="map-tag sr sr-pop sr-d3" role="listitem"><span class="map-tag-dot" style="background:#e05060;" aria-hidden="true"></span>Family history &amp; ancestry</span>
+        <span class="map-tag sr sr-pop sr-d2" role="listitem"><span class="map-tag-dot" style="background:#40a080;" aria-hidden="true"></span>Novel and screenplay plots</span>
+        <span class="map-tag sr sr-pop sr-d4" role="listitem"><span class="map-tag-dot" style="background:#d4af37;" aria-hidden="true"></span>Tabletop RPG campaigns</span>
+        <span class="map-tag sr sr-pop sr-d1" role="listitem"><span class="map-tag-dot" style="background:#60b8ff;" aria-hidden="true"></span>Historical research</span>
+        <span class="map-tag sr sr-pop sr-d3" role="listitem"><span class="map-tag-dot" style="background:#f09040;" aria-hidden="true"></span>Video game lore</span>
+        <span class="map-tag sr sr-pop sr-d2" role="listitem"><span class="map-tag-dot" style="background:#a060c0;" aria-hidden="true"></span>Memory journals</span>
+        <span class="map-tag sr sr-pop sr-d4" role="listitem"><span class="map-tag-dot" style="background:#40c8b0;" aria-hidden="true"></span>Shared universe fan projects</span>
+        <span class="map-tag sr sr-pop sr-d3" role="listitem"><span class="map-tag-dot" style="background:#e0607a;" aria-hidden="true"></span>Personal milestones</span>
+        <span class="map-tag sr sr-pop sr-d5" role="listitem"><span class="map-tag-dot" style="background:#8090d0;" aria-hidden="true"></span>Anime &amp; manga arcs</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       BACKUP REMINDER
+       ============================================================ -->
+  <div class="backup-section" aria-label="Backup reminder">
+    <div class="backup-inner sr sr-skew" role="note">
+      <div class="backup-icon-wrap" aria-hidden="true">&#128190;</div>
+      <div class="backup-body">
+        <div class="backup-title">Back up your timelines regularly</div>
+        <div class="backup-desc">
+          Your data is stored in your browser's local storage — it is not backed up to any cloud. If you clear your browser data or switch devices, <strong>your timelines will be lost</strong> unless you export them. Use the export button inside each tool to download a JSON backup. Keep it somewhere safe.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       CONTACT
+       ============================================================ -->
+  <section class="contact-section" aria-label="Contact">
+    <div class="contact-inner sr sr-pop">
+      <h3>Questions or Feedback?</h3>
+      <p>Found a bug, have a suggestion, or just want to say hello — we'd love to hear from you.</p>
+      <a href="mailto:support@freetimeline.pt" class="contact-email-link">
+        <span aria-hidden="true">&#9993;</span>
+        support@freetimeline.pt
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
   <footer>
     <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="brand-infinity" aria-hidden="true">&#8734;</span>
+        <span>FreeTimeline</span>
+      </div>
       <div class="footer-links">
         <a href="terms.html">Terms of Service</a>
-        <span class="fdot">&#8226;</span>
+        <span class="fdot" aria-hidden="true">&#8226;</span>
         <a href="privacy.html">Privacy Policy</a>
-        <span class="fdot">&#8226;</span>
+        <span class="fdot" aria-hidden="true">&#8226;</span>
         <a href="pricing.html">Pricing</a>
+        <span class="fdot" aria-hidden="true">&#8226;</span>
+        <a href="universe.html">Universe</a>
+        <span class="fdot" aria-hidden="true">&#8226;</span>
+        <a href="biography.html">Biography</a>
       </div>
-      <div class="footer-note">All data is saved locally in your browser &mdash; nothing is uploaded anywhere.</div>
-      <div class="footer-brand">&#8734; FreeTimeline</div>
+      <p class="footer-note">All data is saved locally in your browser — nothing is ever uploaded anywhere.</p>
     </div>
   </footer>
 
 </div><!-- /page-wrap -->
 
 <!-- COOKIE CONSENT BAR -->
-<div id="consent-bar">
+<div id="consent-bar" role="dialog" aria-label="Cookie notice" aria-live="polite">
   <p class="consent-text">
     FreeTimeline uses browser storage to save your timeline data on this device.
     If you create an account, a session cookie keeps you signed in.
@@ -710,21 +1573,113 @@ footer {
 
 <script>
 /* ============================================================
+   STAR / PARTICLE CANVAS
+   ============================================================ */
+(function() {
+  var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (mq && mq.matches) return;
+
+  var canvas = document.getElementById('star-canvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+
+  var W, H, stars = [], drifters = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Static stars
+  for (var i = 0; i < 260; i++) {
+    stars.push({
+      x: Math.random(),
+      y: Math.random(),
+      r: Math.random() * 1.2 + 0.2,
+      o: Math.random() * 0.6 + 0.15,
+      speed: Math.random() * 0.0006 + 0.0002,
+      phase: Math.random() * Math.PI * 2
+    });
+  }
+
+  // Drifting dust particles
+  for (var j = 0; j < 55; j++) {
+    drifters.push({
+      x: Math.random() * (W || 1200),
+      y: Math.random() * (H || 800),
+      r: Math.random() * 1.5 + 0.5,
+      dx: (Math.random() - 0.5) * 0.18,
+      dy: -Math.random() * 0.1 - 0.04,
+      o: Math.random() * 0.3 + 0.05
+    });
+  }
+
+  var t = 0;
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    t += 0.012;
+
+    // Stars
+    for (var i = 0; i < stars.length; i++) {
+      var s = stars[i];
+      var o = s.o * (0.5 + 0.5 * Math.sin(t * s.speed * 60 + s.phase));
+      ctx.beginPath();
+      ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(200,220,255,' + o + ')';
+      ctx.fill();
+    }
+
+    // Drifters
+    for (var j = 0; j < drifters.length; j++) {
+      var d = drifters[j];
+      d.x += d.dx;
+      d.y += d.dy;
+      if (d.y < -4) { d.y = H + 4; d.x = Math.random() * W; }
+      if (d.x < -4) { d.x = W + 4; }
+      if (d.x > W + 4) { d.x = -4; }
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(160,200,255,' + d.o + ')';
+      ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ============================================================
+   CURSOR-FOLLOWING GLOW ON PORTAL CARDS
+   ============================================================ */
+(function() {
+  var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var cards = document.querySelectorAll('.portal-card:not(.portal-ledger)');
+  cards.forEach(function(card) {
+    var glow = card.querySelector('.card-glow');
+    if (!glow) return;
+    card.addEventListener('mousemove', function(e) {
+      if (mq && mq.matches) return;
+      var rect = card.getBoundingClientRect();
+      glow.style.left = (e.clientX - rect.left) + 'px';
+      glow.style.top  = (e.clientY - rect.top)  + 'px';
+    });
+  });
+})();
+
+/* ============================================================
    COOKIE / CONSENT NOTICE
    ============================================================ */
 (function() {
   var bar = document.getElementById('consent-bar');
   var btn = document.getElementById('consent-ok');
   if (!bar || !btn) return;
-
-  // Check if already acknowledged
   try {
     if (localStorage.getItem('ft_consent_acknowledged') === 'true') {
       bar.classList.add('hidden');
     }
-  } catch(e) {
-    bar.classList.add('hidden');
-  }
+  } catch(e) { bar.classList.add('hidden'); }
 
   btn.addEventListener('click', function() {
     bar.classList.add('hidden');
@@ -733,22 +1688,16 @@ footer {
 })();
 
 /* ============================================================
-   EVENT COUNT BADGES — read from localStorage
+   EVENT COUNT BADGES
    ============================================================ */
 (function() {
-  // localStorage keys used by each tool (confirmed from source)
-  // biography.html uses: 'inf_biography_v1'  — state object: { events: [...], ... }
-  // universe.html  uses: 'inf_universe_v4'   — state object: { events: [...], ... }
-
   function countEventsFromKey(key) {
     try {
       var raw = localStorage.getItem(key);
       if (!raw) return null;
       var parsed = JSON.parse(raw);
       if (!parsed) return null;
-      // Primary format: { events: [...] }
       if (Array.isArray(parsed.events)) return parsed.events.length;
-      // Fallback: array directly
       if (Array.isArray(parsed)) return parsed.length;
       return null;
     } catch(e) { return null; }
@@ -760,11 +1709,41 @@ footer {
     if (count === null || count === 0) return;
     var word = count === 1 ? 'event' : 'events';
     el.textContent = '\u25cf ' + count + ' ' + word + ' saved';
-    el.classList.remove('hidden');
+    el.classList.add('visible');
   }
 
   showBadge('badge-universe',  countEventsFromKey('inf_universe_v4'));
   showBadge('badge-biography', countEventsFromKey('inf_biography_v1'));
+})();
+
+/* ============================================================
+   SCROLL REVEAL — INTERSECTION OBSERVER
+   Creative multi-direction entry animations as you scroll
+   ============================================================ */
+(function() {
+  var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (mq && mq.matches) {
+    document.querySelectorAll('.sr').forEach(function(el) {
+      el.classList.add('visible');
+    });
+    return;
+  }
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.12,
+    rootMargin: '0px 0px -40px 0px'
+  });
+
+  document.querySelectorAll('.sr').forEach(function(el) {
+    observer.observe(el);
+  });
 })();
 </script>
 </body>

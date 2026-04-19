@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
-     crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>&#8734; LifeStory</title>
+<title>Free Timeline Biography</title>
 <style>
 /* =====================================================
    RESET & BASE
@@ -1174,6 +1172,7 @@ input[type="color"] {
   border: 1.5px solid #e0d0b8;
   border-radius: 18px;
   box-shadow: 0 8px 40px rgba(61,43,31,0.10);
+  position: relative;
 }
 .empty-state-icon {
   font-size: 52px;
@@ -1245,6 +1244,220 @@ input[type="color"] {
     border-radius: 8px; padding: 11px 14px; font-size: 12px; color: #7a6820; line-height: 1.65; margin-bottom: 18px; }
   .rcfg-foot { display: flex; gap: 10px; justify-content: flex-end; padding-top: 14px;
     border-top: 1px solid #f0e8de; margin-top: 8px; }
+
+/* =====================================================
+   PREMIUM MUSEUM-STYLE OVERRIDES — Free Timeline Biography
+   ===================================================== */
+
+/* --- Serif typography layer --- */
+#toolbar .logo {
+  font-family: 'Georgia', 'Cambria', 'Times New Roman', serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+  color: #f5e6c8 !important;
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+.modal-hd .m-title,
+.modal-hd .m-crumb,
+.h-step-title,
+.h-section-title,
+.sfv-title,
+.pv-header h2,
+.empty-state-title {
+  font-family: 'Georgia', 'Cambria', 'Times New Roman', serif !important;
+}
+
+/* --- Toolbar section labels --- */
+.tb-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(200, 175, 140, 0.38);
+  white-space: nowrap;
+  user-select: none;
+  flex-shrink: 0;
+  padding: 0 2px;
+}
+
+/* --- Enhanced toolbar background --- */
+#toolbar {
+  background: linear-gradient(180deg, #221208 0%, #1a0d05 100%) !important;
+  border-bottom: 1px solid rgba(176, 121, 66, 0.18) !important;
+  box-shadow: 0 1px 0 rgba(255,220,150,0.06), 0 6px 28px rgba(0,0,0,0.55) !important;
+}
+
+/* --- Warm gold focus rings globally --- */
+input:focus, select:focus, textarea:focus, button:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 2.5px rgba(176, 121, 66, 0.45) !important;
+}
+
+/* --- Enhanced .btn hover with lift --- */
+#toolbar .btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.35) !important;
+}
+#toolbar .btn:active { transform: translateY(0); }
+
+/* --- Accent buttons: richer gold --- */
+#toolbar .btn.accent {
+  background: linear-gradient(135deg, #c4956a 0%, #a67b52 100%) !important;
+  border-color: rgba(196, 149, 106, 0.6) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px rgba(176,121,66,0.3) !important;
+}
+#toolbar .btn.accent:hover {
+  background: linear-gradient(135deg, #d0a57c 0%, #b88a60 100%) !important;
+}
+
+/* --- View tabs: premium pill design --- */
+.view-tab.active {
+  background: linear-gradient(135deg, rgba(176,121,66,0.28) 0%, rgba(176,121,66,0.15) 100%) !important;
+  border-color: rgba(176, 121, 66, 0.5) !important;
+  color: #f0ce8a !important;
+  font-weight: 700 !important;
+  text-shadow: 0 0 12px rgba(240,206,138,0.25);
+}
+
+/* --- Enhanced filter panel header --- */
+#uni-toggle-bar {
+  background: linear-gradient(180deg, #1e1006 0%, #180e04 100%) !important;
+}
+#fp-controls-bar {
+  background: rgba(30, 16, 6, 0.9) !important;
+}
+
+/* --- Stats panel: warm parchment backdrop --- */
+#stats-panel {
+  background: rgba(50, 35, 20, 0.93) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(200, 165, 110, 0.2) !important;
+}
+
+/* --- Empty state: elevated card with paper feel --- */
+.empty-state-inner {
+  background: rgba(252, 248, 241, 0.97) !important;
+  border: 1.5px solid #d8c8a8 !important;
+  box-shadow: 0 12px 60px rgba(61,43,31,0.14), 0 2px 8px rgba(61,43,31,0.08) !important;
+}
+.empty-state-inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* --- Modal: refined header with serif title --- */
+.modal-hd {
+  background: linear-gradient(180deg, #faf6ef 0%, #f5ede0 100%);
+  border-bottom: 1.5px solid #e0d0b8;
+}
+.m-title {
+  font-size: 16px !important;
+  font-family: 'Georgia', serif !important;
+  color: #2d1f10 !important;
+  font-weight: 700 !important;
+}
+.modal {
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  box-shadow: 0 24px 80px rgba(30,18,6,0.35), 0 0 0 1px rgba(200,175,140,0.15) !important;
+}
+
+/* --- People view: warm card hover --- */
+.pv-card:hover {
+  box-shadow: 0 8px 28px rgba(61,43,31,0.16), 0 2px 8px rgba(176,121,66,0.12) !important;
+}
+
+/* --- Stats full view: serif title --- */
+.sfv-title {
+  font-size: 20px !important;
+  color: #2d1f10 !important;
+  padding-bottom: 12px;
+  border-bottom: 1.5px solid #e0d0b8;
+  margin-bottom: 24px !important;
+}
+
+/* --- Keyboard panel: warm shadow --- */
+#kbd-panel {
+  box-shadow: 0 16px 60px rgba(30,18,6,0.6), 0 0 0 1px rgba(176,121,66,0.2) !important;
+}
+
+/* --- Canvas background: very subtle warm tint --- */
+#canvas-wrap {
+  background: #f9f5ee;
+}
+
+/* --- Toolbar pop-in animation --- */
+@keyframes tbSlideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#toolbar {
+  animation: tbSlideIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* --- Filter panel slide down animation --- */
+@keyframes fpSlideIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#filter-panel {
+  animation: fpSlideIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+/* --- Notif toast: warmer border --- */
+#notif.success { border-left: 4px solid #7ab86a !important; }
+#notif.error   { border-left: 4px solid #c0453a !important; }
+#notif.warning { border-left: 4px solid #d4a030 !important; }
+#notif.info    { border-left: 4px solid #6a8aad !important; }
+
+/* --- Zoom controls: warmer style --- */
+#zoom-ctrl {
+  background: rgba(50, 35, 20, 0.88) !important;
+  border: 1px solid rgba(176, 121, 66, 0.22) !important;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3) !important;
+}
+.zbtn {
+  color: #e0c898 !important;
+}
+.zbtn:hover { background: rgba(176, 121, 66, 0.2) !important; }
+#zoom-pct {
+  color: rgba(220, 195, 150, 0.7) !important;
+  border-color: rgba(176, 121, 66, 0.15) !important;
+}
+
+/* --- Keyboard hint bar: refined --- */
+#kbd-hint {
+  background: rgba(35, 22, 10, 0.82) !important;
+  border-top: 1px solid rgba(176, 121, 66, 0.12) !important;
+  color: rgba(190, 160, 120, 0.6) !important;
+  font-size: 10.5px !important;
+}
+
+/* --- Mobile banner: warmer tone --- */
+#mobile-banner {
+  background: linear-gradient(90deg, #8a5a28, #b07942) !important;
+}
+
+/* --- Range configurator panel: parchment feel --- */
+#range-cfg-panel {
+  background: #fcf8f3 !important;
+  border-radius: 16px !important;
+}
+.rcfg-title {
+  font-family: 'Georgia', serif !important;
+  color: #2d1f10 !important;
+}
+
   </style>
 </head>
 <body>
@@ -1258,46 +1471,52 @@ input[type="color"] {
   <div id="toolbar">
     <button class="btn back-btn" title="Return to the FreeTimeline menu" onclick="goBackToMenu()" style="display:inline-flex;align-items:center;gap:5px;">&#8592; Menu</button>
     <div class="sep"></div>
-    <span class="logo">&#8734; LifeStory</span>
+    <span class="logo">Free Timeline Biography</span>
     <div class="sep"></div>
-    <button class="btn accent" onclick="UI.addEvent()">&#65291; Event</button>
-    <button class="btn tb-secondary" onclick="UI.addUniverse()">&#65291; Life Track</button>
+    <span class="tb-label tb-secondary">Add</span>
+    <button class="btn accent" onclick="UI.addEvent()" title="Record a new life event on the timeline">&#65291; Event</button>
+    <button class="btn tb-secondary" onclick="UI.addUniverse()" title="Add a new life track (person, theme, or period)">&#65291; Life Track</button>
     <div class="sep tb-secondary"></div>
-    <button class="btn accent tb-secondary" onclick="Store.saveHTML()" title="Save your timeline as a portable HTML file you can open anywhere" style="background:#6a8e5a;border-color:#5a7a4a;color:#fff;font-weight:700">&#128190; Save HTML</button>
-    <button class="btn tb-secondary" onclick="Store.saveJSON()" title="Export all data as a JSON backup file">&#8595; Export JSON</button>
+    <span class="tb-label tb-secondary">Save</span>
+    <button class="btn accent tb-secondary" onclick="Store.saveHTML()" title="Save your timeline as a portable HTML file you can open anywhere" style="background:linear-gradient(135deg,#6a9e5a,#5a8448);border-color:#5a7a4a;color:#fff;font-weight:700">&#128190; Save HTML</button>
+    <button class="btn tb-secondary" onclick="Store.saveJSON()" title="Export all data as a JSON backup file">&#8595; JSON</button>
     <button class="btn tb-secondary" onclick="Store.importClick()" title="Load a previously saved HTML or JSON file">&#8593; Load</button>
-    <button class="btn danger tb-secondary" onclick="Store.blankTimeline()" title="Clear all Life Tracks, events, people, and connections after optional JSON export">Blank Timeline</button>
+    <button class="btn danger tb-secondary" onclick="Store.blankTimeline()" title="Clear all Life Tracks, events, people, and connections after optional JSON export">⬜ Blank</button>
     <input type="file" id="file-in" accept=".html,.json" onchange="Store.importFile(event)" style="display:none">
     <div class="sep"></div>
+    <span class="tb-label">View</span>
     <div class="view-tabs">
-      <button class="view-tab active" id="tab-timeline" onclick="switchView('timeline')">Timeline</button>
-      <button class="view-tab tb-secondary" id="tab-people" onclick="switchView('people')">People</button>
-      <button class="view-tab tb-secondary" id="tab-map" onclick="switchView('map')">Relationships</button>
-      <button class="view-tab tb-secondary" id="tab-stats" onclick="switchView('stats')">Stats</button>
+      <button class="view-tab active" id="tab-timeline" onclick="switchView('timeline')" title="Canvas timeline view">Timeline</button>
+      <button class="view-tab tb-secondary" id="tab-people" onclick="switchView('people')" title="People & key persons directory">People</button>
+      <button class="view-tab tb-secondary" id="tab-map" onclick="switchView('map')" title="Relationship connection map">Relationships</button>
+      <button class="view-tab tb-secondary" id="tab-stats" onclick="switchView('stats')" title="Biography analytics & statistics">Stats</button>
     </div>
     <div class="sep tb-secondary"></div>
-    <button class="btn tb-secondary" onclick="UI.catEditor()" title="Edit Event Categories" style="background:rgba(176,121,66,0.18);border-color:rgba(176,121,66,0.4);color:#b07942">&#127991; Categories</button>
-    <button class="btn tb-secondary" onclick="UI.affiliationEditor()" title="Edit Organizations &amp; Groups" style="background:rgba(106,142,90,0.18);border-color:rgba(106,142,90,0.4);color:#5a7a4a">&#127970; Organizations</button>
+    <span class="tb-label tb-secondary">Organise</span>
+    <button class="btn tb-secondary" onclick="UI.catEditor()" title="Edit Event Categories" style="background:rgba(176,121,66,0.18);border-color:rgba(176,121,66,0.4);color:#c4956a">&#127991; Categories</button>
+    <button class="btn tb-secondary" onclick="UI.affiliationEditor()" title="Edit Organizations &amp; Groups" style="background:rgba(106,142,90,0.18);border-color:rgba(106,142,90,0.4);color:#7ab86a">&#127970; Groups</button>
     <div class="sep tb-secondary"></div>
+    <span class="tb-label tb-secondary">Nav</span>
     <button class="btn tb-secondary" onclick="goToToday()" title="Pan to today's date (preserves zoom)">&#128345; Today</button>
-    <button class="btn tb-secondary" onclick="resetView()" title="Reset pan and zoom">&#8962; Reset View</button>
+    <button class="btn tb-secondary" onclick="resetView()" title="Reset pan and zoom">&#8962; Reset</button>
     <div class="sep tb-secondary"></div>
-      <button class="btn tb-secondary" id="undo-btn" onclick="History.undo()" title="Undo last action (Ctrl+Z)" style="opacity:0.4" disabled>&#8617; Undo</button>
-      <button class="btn tb-secondary" id="redo-btn" onclick="History.redo()" title="Redo (Ctrl+Y)" style="opacity:0.4" disabled>&#8618; Redo</button>
+    <span class="tb-label tb-secondary">History</span>
+      <button class="btn tb-secondary" id="undo-btn" onclick="History.undo()" title="Undo last action (Ctrl+Z)" style="opacity:0.4" disabled>&#8617;</button>
+      <button class="btn tb-secondary" id="redo-btn" onclick="History.redo()" title="Redo (Ctrl+Y)" style="opacity:0.4" disabled>&#8618;</button>
     <div class="sep tb-secondary"></div>
-    <button class="btn tb-secondary" onclick="UI.toggleStats()" title="Timeline Stats" id="stats-btn">&#128202; Stats</button>
-    <button class="btn tb-secondary" onclick="UI.toggleKbd()" title="Keyboard Shortcuts">&#9875; Keys</button>
+    <button class="btn tb-secondary" onclick="UI.toggleStats()" title="Toggle timeline statistics panel" id="stats-btn">&#128202; Stats</button>
+    <button class="btn tb-secondary" onclick="UI.toggleKbd()" title="Keyboard shortcuts reference">&#9875; Keys</button>
     <div class="sep tb-secondary"></div>
-    <label class="tb-secondary" style="font-size:11px;color:#b07942;white-space:nowrap;display:flex;align-items:center;gap:6px;" title="Adjust track row height">
-      &#8597; Row
+    <label class="tb-secondary" style="font-size:10px;color:rgba(196,149,106,0.75);white-space:nowrap;display:flex;align-items:center;gap:5px;letter-spacing:0.03em;" title="Adjust track row height">
+      &#8597;
       <input type="range" id="track-h-slider" min="60" max="200" step="10" value="100"
-        style="width:72px;cursor:pointer;accent-color:#b07942;"
+        style="width:64px;cursor:pointer;accent-color:#b07942;"
         oninput="TRACK_H=+this.value;document.getElementById('track-h-val').textContent=this.value;clampPanY();render()">
-      <span id="track-h-val" style="font-size:10px;color:#b07942;width:26px">100</span>
+      <span id="track-h-val" style="font-size:10px;color:rgba(196,149,106,0.75);width:24px">100</span>
     </label>
     <div class="sep tb-secondary"></div>
-    <button class="btn tb-secondary" style="background:#e8d5c0;border-color:#c0a080;color:#7a5830;font-weight:700;font-size:12px;padding:6px 14px;" onclick="openRangeConfig()" title="Configure Timeline Range">📅 Range</button>
-      <button class="btn tb-secondary" style="background:#c4956a;border-color:#a67b5b;color:#fff;font-weight:700;font-size:13px;padding:6px 16px;" onclick="UI.help()" title="Help">❓ HELP</button>
+    <button class="btn tb-secondary" style="background:rgba(200,180,148,0.12);border-color:rgba(200,180,148,0.25);color:#c8b488;font-weight:700;font-size:11.5px;" onclick="openRangeConfig()" title="Configure Timeline Range">📅 Range</button>
+    <button class="btn tb-secondary" style="background:linear-gradient(135deg,rgba(196,149,106,0.25),rgba(176,121,66,0.18));border-color:rgba(196,149,106,0.4);color:#f0ce8a;font-weight:700;" onclick="UI.help()" title="Help &amp; Guide">❓ Help</button>
   </div>
 
   <!-- ==================== FILTER & SEARCH BAR ==================== -->
@@ -1469,8 +1688,8 @@ input[type="color"] {
     <div id="empty-state">
       <div class="empty-state-inner">
         <div class="empty-state-icon">📖</div>
-        <div class="empty-state-title">Your life timeline is empty</div>
-        <div class="empty-state-msg">Click <strong>+ Event</strong> to record your first memory, milestone, or life event. Every great story begins with a single moment.</div>
+        <div class="empty-state-title">Your biography timeline is empty</div>
+        <div class="empty-state-msg">Click <strong>+ Event</strong> to record your first memory, milestone, or life chapter. Every great story begins with a single moment.</div>
         <button class="empty-state-btn" onclick="UI.addEvent()">&#65291; Add Your First Event</button>
       </div>
     </div>
@@ -1494,7 +1713,7 @@ input[type="color"] {
   <!-- People Full View -->
   <div id="people-view">
     <div class="pv-header">
-      <h2>People &amp; Key Persons</h2>
+      <h2>People &amp; Key Figures</h2>
       <div class="pv-controls">
         <input class="pv-search" id="pv-search" placeholder="Search people..." oninput="renderPeopleView()">
         <button class="btn accent" onclick="UI.addPerson ? UI.addPerson() : (MS=[{t:'addChar'}], M.push(MS[0]), M.render())">+ New Person</button>
@@ -5213,7 +5432,7 @@ const Store = {
         const a    = document.createElement('a');
         const date = new Date().toISOString().slice(0, 10);
         a.href = url;
-        a.download = 'lifestory_' + date + '.html';
+        a.download = 'free-timeline_' + date + '.html';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -5240,7 +5459,7 @@ const Store = {
     const a    = document.createElement('a');
     const date = new Date().toISOString().slice(0, 10);
     a.href = url;
-    a.download = 'lifestory_' + date + '.html';
+    a.download = 'free-timeline_' + date + '.html';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -5256,7 +5475,7 @@ const Store = {
     const a    = document.createElement('a');
     const date = new Date().toISOString().slice(0, 10);
     a.href = url;
-    a.download = 'lifestory_' + date + '.json';
+    a.download = 'free-timeline_' + date + '.json';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -5813,7 +6032,7 @@ function renderStatsFullView() {
   }
 
   el.innerHTML =
-    '<div class="sfv-title">LifeStory Dashboard</div>' +
+    '<div class="sfv-title">Free Timeline Biography — Dashboard</div>' +
     '<div class="sfv-grid">' +
       '<div class="sfv-card"><h3>Life Richness Score</h3>' +
         '<div class="sfv-gauge-wrap">' + gaugeHTML +

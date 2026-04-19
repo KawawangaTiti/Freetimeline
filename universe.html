@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
-     crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>∞ Infinite Timeline</title>
+<title>Free Timeline Universe</title>
 <style>
 /* =====================================================
    RESET & BASE
@@ -983,6 +981,298 @@ input[type="color"] {
     border-radius: 8px; padding: 11px 14px; font-size: 12px; color: #c8b060; line-height: 1.65; margin-bottom: 18px; }
   .rcfg-foot { display: flex; gap: 10px; justify-content: flex-end; padding-top: 14px;
     border-top: 1px solid rgba(100,120,200,0.12); margin-top: 8px; }
+
+/* =====================================================
+   COSMIC OBSERVATORY THEME — Free Timeline Universe
+   ===================================================== */
+
+/* Cosmic body */
+body { background: #07081a; }
+
+/* ---- Toolbar redesign ---- */
+#toolbar {
+  background: linear-gradient(180deg, #07081e 0%, #0c0e2a 100%);
+  border-bottom: 1px solid rgba(0,210,255,0.18);
+  box-shadow: 0 2px 28px rgba(0,0,0,0.7),
+              0 1px 0 rgba(0,210,255,0.07) inset;
+  gap: 5px;
+  padding: 5px 12px;
+}
+
+/* Grouped button clusters */
+.tb-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 7px;
+  border-radius: 9px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+}
+.tb-group-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: rgba(0,210,255,0.35);
+  text-transform: uppercase;
+  margin-right: 4px;
+  white-space: nowrap;
+}
+
+/* Cosmic logo */
+#toolbar .logo {
+  font-size: 15px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #00d4ff 10%, #a855f7 90%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 1.5px;
+  text-shadow: none;
+  filter: drop-shadow(0 0 6px rgba(0,210,255,0.3));
+  margin: 0 4px;
+}
+
+/* All toolbar buttons — cosmic glass base */
+.btn {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.11);
+  color: #bec8e8;
+  transition: background 0.16s, border-color 0.16s, box-shadow 0.16s, transform 0.1s, color 0.16s;
+}
+.btn:hover {
+  background: rgba(0,210,255,0.1);
+  border-color: rgba(0,210,255,0.32);
+  color: #d8f0ff;
+  box-shadow: 0 0 14px rgba(0,210,255,0.14), 0 2px 8px rgba(0,0,0,0.3);
+  transform: translateY(-1px);
+}
+.btn:active { transform: translateY(0); }
+
+/* Cyan accent (primary action) */
+.btn.accent {
+  background: linear-gradient(135deg, #00b8e0 0%, #0070c8 100%);
+  border-color: rgba(0,190,230,0.55);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 2px 14px rgba(0,180,230,0.32);
+}
+.btn.accent:hover {
+  background: linear-gradient(135deg, #00ccf5 0%, #007fd8 100%);
+  box-shadow: 0 4px 20px rgba(0,200,255,0.45);
+}
+
+/* Violet menu/back button */
+.btn.menu-btn {
+  background: rgba(168,85,247,0.14);
+  border-color: rgba(168,85,247,0.32);
+  color: #cfa8ff;
+  font-weight: 700;
+}
+.btn.menu-btn:hover {
+  background: rgba(168,85,247,0.26);
+  border-color: rgba(168,85,247,0.55);
+  box-shadow: 0 0 14px rgba(168,85,247,0.2);
+  color: #dfc0ff;
+}
+
+/* Danger button */
+.btn.danger {
+  background: linear-gradient(135deg, #b83030 0%, #8a1e1e 100%);
+  border-color: rgba(220,60,60,0.5);
+  box-shadow: 0 2px 8px rgba(180,50,50,0.28);
+}
+.btn.danger:hover {
+  background: linear-gradient(135deg, #cc3838 0%, #9e2424 100%);
+  box-shadow: 0 4px 14px rgba(200,60,60,0.38);
+}
+
+/* Light button */
+.btn.light {
+  background: rgba(180,200,240,0.1);
+  border-color: rgba(120,150,210,0.22);
+  color: #b0bedd;
+}
+.btn.light:hover {
+  background: rgba(180,200,240,0.18);
+  border-color: rgba(120,150,210,0.4);
+}
+
+/* View tabs — cosmic style */
+.view-tab {
+  color: rgba(180,200,240,0.45);
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+.view-tab:hover { color: #90c8f0; background: rgba(0,210,255,0.07); }
+.view-tab.active {
+  background: rgba(0,210,255,0.14);
+  border-color: rgba(0,210,255,0.48);
+  color: #00d4ff;
+  font-weight: 700;
+}
+
+/* Separator */
+.sep {
+  background: rgba(0,210,255,0.12);
+}
+
+/* ---- Filter panel — cosmic glass ---- */
+#filter-panel {
+  background: rgba(7,8,26,0.94);
+  border-bottom: 1px solid rgba(0,210,255,0.1);
+  backdrop-filter: blur(8px);
+}
+#uni-toggle-bar {
+  background: rgba(9,11,28,0.88);
+  border-bottom: 1px solid rgba(0,210,255,0.08);
+}
+
+/* ---- Canvas area ---- */
+#canvas-wrap {
+  background: radial-gradient(ellipse at 50% 40%, #0e1038 0%, #080920 45%, #04050f 100%);
+}
+
+/* ---- Zoom controls ---- */
+.zbtn {
+  background: rgba(12,14,32,0.88);
+  border-color: rgba(0,210,255,0.22);
+  color: #80b8e0;
+}
+.zbtn:hover {
+  background: rgba(0,210,255,0.12);
+  border-color: rgba(0,210,255,0.45);
+  color: #b0e4ff;
+}
+#zoom-pct {
+  background: rgba(12,14,32,0.88);
+  border-color: rgba(0,210,255,0.18);
+  color: #7090b8;
+}
+
+/* ---- Modal — cosmic glass ---- */
+.modal {
+  background: #10122a;
+  border-color: rgba(0,210,255,0.16);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.65),
+              0 0 0 1px rgba(0,210,255,0.1),
+              0 0 60px rgba(168,85,247,0.06);
+}
+.modal-hd { background: rgba(12,14,32,0.7); border-bottom-color: rgba(0,210,255,0.12); }
+.m-title  { color: #d0e8ff; }
+.m-crumb  { color: rgba(0,210,255,0.5); }
+.modal-ft { background: rgba(10,12,28,0.5); border-top-color: rgba(0,210,255,0.1); }
+.modal-bd { color: #b8c8e8; }
+
+/* ---- Form inputs — cosmic ---- */
+.fg input, .fg textarea, .fg select {
+  background: rgba(8,10,22,0.7);
+  border-color: rgba(0,180,220,0.2);
+  color: #d0daf0;
+}
+.fg input:focus, .fg textarea:focus, .fg select:focus {
+  border-color: #00b8e0;
+  background: rgba(8,10,22,0.85);
+  box-shadow: 0 0 0 2.5px rgba(0,184,224,0.2);
+}
+.fg label { color: rgba(0,210,255,0.6); }
+.fg .hint { color: rgba(0,180,220,0.45); }
+
+/* ---- Sub-event items ---- */
+.se-item { background: rgba(12,14,32,0.4); border-color: rgba(0,180,220,0.12); }
+.se-item:hover { border-color: rgba(0,210,255,0.45); background: rgba(0,210,255,0.06); }
+.se-item-body h4 { color: #d0dcf0; }
+.se-item-body p  { color: rgba(0,180,220,0.5); }
+.se-arrow { color: rgba(0,180,220,0.4); }
+
+/* ---- Connections ---- */
+.conn-item { background: rgba(12,14,32,0.4); border-color: rgba(0,180,220,0.12); }
+
+/* ---- Section headers ---- */
+.sec-hd h3 { color: rgba(0,210,255,0.8); }
+
+/* ---- Universe stat cards ---- */
+.uni-stat-card { background: rgba(12,14,32,0.6); border-color: rgba(0,180,220,0.14); }
+.uni-stat-val  { color: #d0e4ff; }
+.uni-stat-label { color: rgba(0,180,220,0.5); }
+
+/* ---- Stats panel overlay ---- */
+#stats-panel {
+  background: rgba(8,10,26,0.94);
+  border-color: rgba(0,210,255,0.14);
+  backdrop-filter: blur(12px);
+}
+
+/* ---- Char cards ---- */
+.char-card  { background: rgba(12,14,32,0.4); border-color: rgba(0,180,220,0.12); }
+.char-card:hover { border-color: rgba(0,210,255,0.45); background: rgba(0,210,255,0.06); }
+.cv-card    { background: rgba(12,14,32,0.6); border-color: rgba(0,180,220,0.13); }
+.cv-card:hover { border-color: rgba(0,210,255,0.45); }
+.cv-name    { color: #d0e4ff; }
+
+/* ---- Stats full view cards ---- */
+.sfv-card {
+  background: rgba(12,14,32,0.6);
+  border-color: rgba(0,180,220,0.13);
+}
+.sfv-card h3 { color: rgba(0,210,255,0.75); }
+.sfv-metric-box { background: rgba(8,10,22,0.55); border-color: rgba(0,180,220,0.13); }
+.sfv-metric-box .m-val { color: #00ccf0; }
+
+/* ---- Connection map ---- */
+.cm-controls-bar { background: #0a0c20; border-bottom-color: #1a1e40; }
+.conn-map-wrap   { background: #07091a; }
+.cm-legend-panel { background: rgba(8,10,24,0.97); border-color: #1a2860; }
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar-thumb { background: rgba(0,180,220,0.28); }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,210,255,0.45); }
+
+/* ---- Notification toast ---- */
+#notif {
+  background: rgba(10,12,28,0.96);
+  border-color: rgba(0,210,255,0.22);
+  color: #c0d8f0;
+}
+
+/* ---- Keyboard shortcuts panel ---- */
+#kbd-panel {
+  background: rgba(8,10,24,0.98);
+  border-color: rgba(0,210,255,0.2);
+}
+
+/* ---- Tags ---- */
+.ev-tag { background: rgba(0,180,224,0.13); border-color: rgba(0,180,224,0.28); color: #60c0f0; }
+
+/* ---- Universe toggle chips focus ring ---- */
+.uni-toggle-chip:focus-visible { outline: 2px solid #00d4ff; outline-offset: 2px; }
+
+/* Subtle pulsing save-status indicator */
+.tb-save-status {
+  font-size: 10px;
+  color: rgba(0,210,255,0.5);
+  letter-spacing: 0.6px;
+  white-space: nowrap;
+  padding: 2px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,210,255,0.15);
+  background: rgba(0,210,255,0.05);
+  animation: savePulse 4s ease-in-out infinite;
+}
+@keyframes savePulse {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 0.85; }
+}
+
+/* ---- Focus states for accessibility ---- */
+.btn:focus-visible {
+  outline: 2px solid rgba(0,210,255,0.6);
+  outline-offset: 2px;
+}
+.view-tab:focus-visible {
+  outline: 2px solid rgba(0,210,255,0.5);
+  outline-offset: 1px;
+}
   </style>
 </head>
 <body>
@@ -994,49 +1284,90 @@ input[type="color"] {
 
   <!-- ==================== TOOLBAR ==================== -->
   <div id="toolbar">
-    <button class="btn menu-btn" title="Go back to the main menu" onclick="goBackToMenu()" style="display:inline-flex;align-items:center;gap:5px;">← Menu</button>
-    <div class="sep"></div>
-    <span class="logo">∞ Timeline</span>
-    <div class="sep"></div>
-    <button class="btn accent" onclick="UI.addEvent()">＋ Event</button>
-    <button class="btn tb-secondary" onclick="UI.addUniverse()">＋ Universe</button>
-    <div class="sep tb-secondary"></div>
-    <button class="btn accent tb-secondary" onclick="Store.saveHTML()" title="Save your timeline as a portable HTML file you can open anywhere" style="background:#27ae60;border-color:#1e8449;color:#fff;font-weight:700">💾 Save HTML</button>
-    <button class="btn tb-secondary" onclick="Store.saveJSON()" title="Export all data as a JSON backup file">&#8595; Export JSON</button>
-    <button class="btn tb-secondary" onclick="Store.importClick()" title="Load a previously saved HTML or JSON file">↑ Load</button>
-    <button class="btn danger tb-secondary" onclick="Store.blankTimeline()" title="Clear all Universes, events, characters, and connections after optional JSON export">Blank Timeline</button>
-    <input type="file" id="file-in" accept=".html,.json" onchange="Store.importFile(event)" style="display:none">
-    <div class="sep"></div>
-    <div class="view-tabs">
-      <button class="view-tab active" id="tab-timeline" onclick="switchView('timeline')">Timeline</button>
-      <button class="view-tab tb-secondary" id="tab-characters" onclick="switchView('characters')">Characters</button>
-      <button class="view-tab tb-secondary" id="tab-connections" onclick="switchView('connections')">Connections</button>
-      <button class="view-tab tb-secondary" id="tab-stats" onclick="switchView('stats')">Stats</button>
+
+    <!-- ── Group 1: Navigation ── -->
+    <div class="tb-group">
+      <button class="btn menu-btn" title="Go back to the main menu" onclick="goBackToMenu()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;">← Menu</button>
+      <span class="logo">∞ Universe</span>
     </div>
+
+    <div class="sep"></div>
+
+    <!-- ── Group 2: Create ── -->
+    <div class="tb-group">
+      <span class="tb-group-label">Create</span>
+      <button class="btn accent" onclick="UI.addEvent()" title="Add a new event to a universe (also double-click any track)">＋ Event</button>
+      <button class="btn tb-secondary" onclick="UI.addUniverse()" title="Add a new universe timeline track">＋ Universe</button>
+    </div>
+
     <div class="sep tb-secondary"></div>
-    <button class="btn tb-secondary" onclick="UI.catEditor()" title="Edit Event Categories" style="background:rgba(240,160,48,0.18);border-color:rgba(240,160,48,0.4);color:#f0a830">🏷 Categories</button>
-    <button class="btn tb-secondary" onclick="UI.affiliationEditor()" title="Edit Affiliations" style="background:rgba(100,180,100,0.18);border-color:rgba(100,180,100,0.4);color:#3a8a3a">👥 Affiliations</button>
+
+    <!-- ── Group 3: View tabs ── -->
+    <div class="view-tabs tb-secondary">
+      <button class="view-tab active" id="tab-timeline"    onclick="switchView('timeline')">Timeline</button>
+      <button class="view-tab"        id="tab-characters"  onclick="switchView('characters')">Characters</button>
+      <button class="view-tab"        id="tab-connections" onclick="switchView('connections')">Connections</button>
+      <button class="view-tab"        id="tab-stats"       onclick="switchView('stats')">Stats</button>
+    </div>
+
     <div class="sep tb-secondary"></div>
-    <button class="btn tb-secondary" onclick="goToToday()" title="Pan to today's date (preserves zoom)">&#128345; Today</button>
-    <button class="btn tb-secondary" onclick="resetView()" title="Reset pan and zoom">⌂ Reset View</button>
+
+    <!-- ── Group 4: Organise ── -->
+    <div class="tb-group tb-secondary">
+      <span class="tb-group-label">Org</span>
+      <button class="btn" onclick="UI.catEditor()"         title="Manage event categories — rename, recolour, add, remove">🏷 Categories</button>
+      <button class="btn" onclick="UI.affiliationEditor()" title="Manage character affiliations">👥 Affiliations</button>
+    </div>
+
     <div class="sep tb-secondary"></div>
-      <button class="btn tb-secondary" id="undo-btn" onclick="History.undo()" title="Undo last action (Ctrl+Z)" style="opacity:0.4" disabled>&#8617; Undo</button>
-      <button class="btn tb-secondary" id="redo-btn" onclick="History.redo()" title="Redo (Ctrl+Y)" style="opacity:0.4" disabled>&#8618; Redo</button>
+
+    <!-- ── Group 5: Navigate / History ── -->
+    <div class="tb-group tb-secondary">
+      <span class="tb-group-label">View</span>
+      <button class="btn" onclick="goToToday()"      title="Pan to today's date (preserves zoom)">⏱ Today</button>
+      <button class="btn" onclick="resetView()"      title="Reset pan and zoom to fit the full timeline">⌂ Reset</button>
+      <button class="btn" id="undo-btn" onclick="History.undo()" title="Undo last action  (Ctrl+Z)" style="opacity:0.4" disabled>↩ Undo</button>
+      <button class="btn" id="redo-btn" onclick="History.redo()" title="Redo  (Ctrl+Y / Ctrl+Shift+Z)" style="opacity:0.4" disabled>↪ Redo</button>
+    </div>
+
     <div class="sep tb-secondary"></div>
-    <button class="btn tb-secondary" onclick="UI.toggleStats()" title="Timeline Stats" id="stats-btn">📊 Stats</button>
-    <button class="btn tb-secondary" id="story-line-btn" onclick="toggleStoryLine()" title="Show a connected path through all events in chronological order">🔗 Story Line</button>
-    <button class="btn tb-secondary" onclick="UI.toggleKbd()" title="Keyboard Shortcuts">⚓ Keys</button>
+
+    <!-- ── Group 6: Save / Import ── -->
+    <div class="tb-group tb-secondary">
+      <span class="tb-group-label">Data</span>
+      <button class="btn accent" onclick="Store.saveHTML()"  title="Save your entire timeline as a portable self-contained HTML file you can open anywhere offline">💾 Save HTML</button>
+      <button class="btn"        onclick="Store.saveJSON()"  title="Export all data as a plain JSON backup file">↓ JSON</button>
+      <button class="btn"        onclick="Store.importClick()" title="Load a previously saved HTML or JSON timeline file">↑ Load</button>
+      <button class="btn danger" onclick="Store.blankTimeline()" title="Clear all universes, events, characters, and connections (with optional JSON backup)">Blank</button>
+    </div>
+    <input type="file" id="file-in" accept=".html,.json" onchange="Store.importFile(event)" style="display:none">
+
     <div class="sep tb-secondary"></div>
-    <label class="tb-secondary" style="font-size:11px;color:#a0b0d0;white-space:nowrap;display:flex;align-items:center;gap:6px;" title="Adjust track row height">
+
+    <!-- ── Group 7: Insights / Tools ── -->
+    <div class="tb-group tb-secondary">
+      <span class="tb-group-label">Tools</span>
+      <button class="btn" onclick="UI.toggleStats()"    title="Toggle stats overlay panel  (S)"    id="stats-btn">📊 Stats</button>
+      <button class="btn" id="story-line-btn" onclick="toggleStoryLine()" title="Draw a connected story path through all chronological events">🔗 Story</button>
+      <button class="btn" onclick="UI.toggleKbd()"      title="Keyboard shortcuts reference  (?)">⚓ Keys</button>
+      <button class="btn" onclick="openRangeConfig()"   title="Configure the visible year range of the timeline">📅 Range</button>
+      <button class="btn" onclick="UI.help()"           title="Open the full help guide">❓ Help</button>
+    </div>
+
+    <div class="sep tb-secondary"></div>
+
+    <!-- ── Row height slider ── -->
+    <label class="tb-secondary" style="font-size:11px;color:rgba(0,210,255,0.55);white-space:nowrap;display:flex;align-items:center;gap:6px;" title="Adjust universe track row height">
       ↕ Row
       <input type="range" id="track-h-slider" min="60" max="200" step="10" value="100"
-        style="width:72px;cursor:pointer;accent-color:#6080c0;"
+        style="width:68px;cursor:pointer;accent-color:#00d4ff;"
         oninput="TRACK_H=+this.value;document.getElementById('track-h-val').textContent=this.value;clampPanY();render()">
-      <span id="track-h-val" style="font-size:10px;color:#8090c0;width:26px">100</span>
+      <span id="track-h-val" style="font-size:10px;color:rgba(0,180,220,0.6);width:26px">100</span>
     </label>
-    <div class="sep tb-secondary"></div>
-    <button class="btn tb-secondary" style="background:rgba(80,140,220,0.2);border-color:rgba(80,140,220,0.4);color:#80b8f0;font-weight:700;font-size:12px;padding:6px 14px;" onclick="openRangeConfig()" title="Configure Timeline Range">📅 Range</button>
-      <button class="btn tb-secondary" style="background:rgba(240,160,48,0.2);border-color:rgba(240,160,48,0.4);color:#f0c060;font-weight:700;font-size:13px;padding:6px 16px;" onclick="UI.help()" title="Help">❓ HELP</button>
+
+    <!-- Saved locally status -->
+    <span class="tb-save-status tb-secondary" title="Your data is saved automatically in this browser">💾 Saved locally</span>
+
   </div>
 
   <!-- ==================== FILTER & SEARCH BAR ==================== -->
@@ -1049,34 +1380,34 @@ input[type="color"] {
     <div id="filter-panel-rows">
     <!-- Row 1: Universe toggles -->
     <div id="uni-toggle-bar">
-      <span class="fp-label">🌍 UNIVERSES:</span>
+      <span class="fp-label" style="color:rgba(0,210,255,0.55)">🌍 UNIVERSES:</span>
       <span id="uni-toggle-chips"><span class="uni-toggle-chip" style="background:#e74c3c;border-color:#e74c3c;" onclick="toggleUniverse('u1')" title="Click to show/hide this universe">✅ Liga BRT</span><span class="uni-toggle-chip" style="background:#3498db;border-color:#3498db;" onclick="toggleUniverse('u2')" title="Click to show/hide this universe">✅ Liga Knokout</span><span class="uni-toggle-chip" style="background:#2ecc71;border-color:#2ecc71;" onclick="toggleUniverse('u3')" title="Click to show/hide this universe">✅ 40 Graus</span><span class="uni-toggle-chip" style="background:#f39c12;border-color:#f39c12;" onclick="toggleUniverse('_070uu9zmnpwidg8')" title="Click to show/hide this universe">✅ Other</span></span>
       <span id="uni-toggle-hint" style="color:#a0b0d0;font-size:11px;font-style:italic"></span>
     </div>
     <!-- Compact filter row: Search + Dropdowns -->
-    <div id="compact-filter-bar" style="display:flex;align-items:center;gap:8px;padding:6px 14px;background:rgba(14,16,32,0.8);border-bottom:1px solid rgba(100,120,200,0.15);flex-wrap:wrap;min-height:38px;font-size:12px;">
-      <span class="cf-label" style="color:#6070a0;font-weight:700;letter-spacing:.4px">🔍</span>
-      <input type="text" id="ev-search-input" placeholder="Search events…" oninput="updateEventSearch(this.value)" style="padding:5px 12px;border-radius:16px;border:1.5px solid rgba(100,120,200,0.25);font-size:12px;font-family:inherit;background:rgba(10,12,24,0.6);color:#e0e4ef;outline:none;width:170px;transition:border-color .15s;">
-      <span style="width:1px;height:20px;background:rgba(100,120,200,0.2);display:inline-block;margin:0 2px;vertical-align:middle;flex-shrink:0"></span>
-      <select id="cat-filter-select" onchange="setCatFilter(this.value||null)" style="padding:5px 8px;border-radius:16px;border:1.5px solid rgba(200,180,120,0.3);font-size:11px;font-family:inherit;background:rgba(10,12,24,0.6);color:#c0c8e0;cursor:pointer;min-width:110px;">
+    <div id="compact-filter-bar" style="display:flex;align-items:center;gap:8px;padding:6px 14px;background:rgba(7,8,22,0.92);border-bottom:1px solid rgba(0,210,255,0.1);flex-wrap:wrap;min-height:38px;font-size:12px;backdrop-filter:blur(6px);">
+      <span class="cf-label" style="color:rgba(0,210,255,0.55);font-weight:700;letter-spacing:.4px">🔍</span>
+      <input type="text" id="ev-search-input" placeholder="Search events…" oninput="updateEventSearch(this.value)" style="padding:5px 12px;border-radius:16px;border:1.5px solid rgba(0,180,220,0.25);font-size:12px;font-family:inherit;background:rgba(6,8,20,0.7);color:#d0e0f0;outline:none;width:170px;transition:border-color .15s;">
+      <span style="width:1px;height:20px;background:rgba(0,180,220,0.18);display:inline-block;margin:0 2px;vertical-align:middle;flex-shrink:0"></span>
+      <select id="cat-filter-select" onchange="setCatFilter(this.value||null)" style="padding:5px 8px;border-radius:16px;border:1.5px solid rgba(0,180,220,0.22);font-size:11px;font-family:inherit;background:rgba(6,8,20,0.7);color:#b0c8e0;cursor:pointer;min-width:110px;">
         <option value="">🏭 Category</option>
       </select>
-      <select id="status-filter-select" onchange="setStatusFilter(this.value||null)" style="padding:5px 8px;border-radius:16px;border:1.5px solid rgba(100,120,200,0.3);font-size:11px;font-family:inherit;background:rgba(10,12,24,0.6);color:#c0c8e0;cursor:pointer;min-width:110px;">
+      <select id="status-filter-select" onchange="setStatusFilter(this.value||null)" style="padding:5px 8px;border-radius:16px;border:1.5px solid rgba(0,180,220,0.22);font-size:11px;font-family:inherit;background:rgba(6,8,20,0.7);color:#b0c8e0;cursor:pointer;min-width:110px;">
         <option value="">● Status</option>
       </select>
-      <select id="tag-filter-select" onchange="setTagFilter(this.value||null)" style="padding:5px 8px;border-radius:16px;border:1.5px solid rgba(120,150,220,0.3);font-size:11px;font-family:inherit;background:rgba(10,12,24,0.6);color:#c0c8e0;cursor:pointer;min-width:100px;">
+      <select id="tag-filter-select" onchange="setTagFilter(this.value||null)" style="padding:5px 8px;border-radius:16px;border:1.5px solid rgba(0,180,220,0.22);font-size:11px;font-family:inherit;background:rgba(6,8,20,0.7);color:#b0c8e0;cursor:pointer;min-width:100px;">
         <option value="">🏷 Tags</option>
       </select>
-      <select id="tone-filter-select" onchange="setToneFilter(this.value||null)" style="padding:5px 8px;border-radius:16px;border:1.5px solid rgba(160,140,200,0.3);font-size:11px;font-family:inherit;background:rgba(10,12,24,0.6);color:#c0c8e0;cursor:pointer;min-width:100px;">
+      <select id="tone-filter-select" onchange="setToneFilter(this.value||null)" style="padding:5px 8px;border-radius:16px;border:1.5px solid rgba(0,180,220,0.22);font-size:11px;font-family:inherit;background:rgba(6,8,20,0.7);color:#b0c8e0;cursor:pointer;min-width:100px;">
         <option value="">🎭 Tone</option>
       </select>
-      <select id="char-filter-select" onchange="addCharFilterFromSelect(this.value);this.value=''" style="padding:5px 8px;border-radius:16px;border:1.5px solid rgba(140,160,200,0.3);font-size:11px;font-family:inherit;background:rgba(10,12,24,0.6);color:#c0c8e0;cursor:pointer;min-width:120px;">
+      <select id="char-filter-select" onchange="addCharFilterFromSelect(this.value);this.value=''" style="padding:5px 8px;border-radius:16px;border:1.5px solid rgba(0,180,220,0.22);font-size:11px;font-family:inherit;background:rgba(6,8,20,0.7);color:#b0c8e0;cursor:pointer;min-width:120px;">
         <option value="">👤 Character</option>
       </select>
       <span id="cf-chips" style="display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap"></span>
       <button class="cf-mode-btn" id="cf-mode-btn" onclick="toggleFilterMode()" style="display:none">OR</button>
-      <button class="cf-clear" id="cf-clear-btn" onclick="clearCharFilters()" style="display:none">✕</button>
-      <button class="cf-clear" id="all-clear-btn" onclick="clearAllFilters()" style="display:none;margin-left:2px;background:#f0e0e0;color:#a04040;border-color:#e0b0b0">✕ Clear All</button>
+      <button class="cf-clear" id="cf-clear-btn" onclick="clearCharFilters()" style="display:none;background:rgba(180,60,60,0.18);color:#e09090;border-color:rgba(180,60,60,0.35)">✕</button>
+      <button class="cf-clear" id="all-clear-btn" onclick="clearAllFilters()" style="display:none;margin-left:2px;background:rgba(180,60,60,0.18);color:#e09090;border-color:rgba(180,60,60,0.35)">✕ Clear All</button>
       <span class="cf-summary" id="cf-summary" style="font-size:10px;color:#8090b0"></span>
     </div>
     </div><!-- /#filter-panel-rows -->
