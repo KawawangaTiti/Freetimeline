@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <meta name="google-adsense-account" content="ca-pub-4135034633295293">
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
-     crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Free Timeline — Map Your Time</title>
@@ -1258,6 +1255,383 @@ footer {
   .portals-grid { gap: 16px; }
   .portal-card { padding: 30px 24px 26px; min-height: 0; }
   .hero-ring { display: none; }
+}
+
+/* ============================================================
+   MOBILE FOUNDATION SAFEGUARDS
+   ============================================================ */
+@media (max-width: 767px) {
+  html {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-padding-top: calc(60px + env(safe-area-inset-top, 0px));
+  }
+
+  body {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100svh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
+  }
+
+  .page-wrap {
+    min-height: 100svh;
+    min-height: 100dvh;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  .topbar {
+    padding-left: max(20px, env(safe-area-inset-left, 0px));
+    padding-right: max(20px, env(safe-area-inset-right, 0px));
+    padding-top: env(safe-area-inset-top, 0px);
+    min-height: calc(60px + env(safe-area-inset-top, 0px));
+  }
+
+  .hero,
+  .portals-section,
+  .privacy-inner,
+  .map-section,
+  .backup-section,
+  .section,
+  .explainer,
+  .contact-section,
+  footer {
+    padding-left: max(20px, env(safe-area-inset-left, 0px));
+    padding-right: max(20px, env(safe-area-inset-right, 0px));
+  }
+
+  footer,
+  #consent-bar {
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  }
+
+  img,
+  svg,
+  canvas,
+  video,
+  iframe {
+    max-width: 100%;
+  }
+
+  button,
+  input,
+  select,
+  textarea,
+  .portal-link,
+  #consent-ok {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .topbar-links a:hover,
+  .portal-card:hover,
+  .portal-link:hover,
+  #consent-ok:hover {
+    transform: none;
+    filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   LANDING PAGE MOBILE POLISH
+   ============================================================ */
+@media (max-width: 767px) {
+  #star-canvas {
+    opacity: 0.35;
+  }
+
+  .ambient::before {
+    background:
+      radial-gradient(ellipse 120% 45% at 50% -10%, rgba(60,90,220,0.12), transparent 62%),
+      radial-gradient(ellipse 80% 45% at 50% 88%, rgba(0,180,150,0.055), transparent 68%);
+  }
+
+  .ambient::after,
+  .hero-ring,
+  .hero-scroll,
+  .floating,
+  .floating-2,
+  .floating-3 {
+    display: none;
+  }
+
+  .topbar {
+    justify-content: center;
+    flex-direction: column;
+    gap: 2px;
+    height: auto;
+    padding-bottom: 10px;
+  }
+
+  .topbar-brand {
+    font-size: 0.95rem;
+  }
+
+  .topbar::after {
+    content: 'Private timelines saved in your browser';
+    color: var(--dim);
+    font-size: 0.68rem;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+  }
+
+  .hero {
+    min-height: auto;
+    padding-top: clamp(34px, 10vw, 54px);
+    padding-bottom: clamp(34px, 10vw, 54px);
+    justify-content: flex-start;
+  }
+
+  .hero::before {
+    top: 26%;
+    width: 360px;
+    height: 360px;
+    opacity: 0.75;
+    animation: none;
+  }
+
+  .hero-eyebrow {
+    font-size: clamp(0.62rem, 2.7vw, 0.72rem);
+    letter-spacing: clamp(2px, 0.8vw, 3px);
+    margin-bottom: clamp(14px, 4vw, 18px);
+    line-height: 1.35;
+  }
+
+  .hero-title {
+    font-size: clamp(2.65rem, 15.5vw, 4.35rem);
+    line-height: 0.98;
+    letter-spacing: -1.2px;
+    margin-bottom: clamp(18px, 5vw, 24px);
+    max-width: 100%;
+  }
+
+  .hero-title .word-timeline {
+    filter: drop-shadow(0 0 22px rgba(80,160,255,0.24));
+  }
+
+  .hero-tagline {
+    font-size: clamp(0.74rem, 3.2vw, 0.92rem);
+    letter-spacing: clamp(1.6px, 0.9vw, 2.6px);
+    line-height: 1.4;
+    margin-bottom: clamp(16px, 5vw, 22px);
+  }
+
+  .hero-desc {
+    font-size: clamp(0.95rem, 4.1vw, 1.08rem);
+    line-height: 1.58;
+    max-width: 34rem;
+    margin-bottom: clamp(24px, 7vw, 32px);
+  }
+
+  .hero-pills {
+    gap: 8px;
+    margin-bottom: 0;
+    width: 100%;
+  }
+
+  .hero-pill {
+    padding: 7px 12px;
+    font-size: clamp(0.72rem, 3.2vw, 0.8rem);
+    line-height: 1.25;
+    white-space: normal;
+    justify-content: center;
+    max-width: 100%;
+  }
+
+  .explainer,
+  .portals-section,
+  .privacy-inner,
+  .map-section,
+  .section,
+  .contact-section {
+    padding-top: 48px;
+    padding-bottom: 48px;
+  }
+
+  .portals-header {
+    margin-bottom: 28px;
+  }
+
+  .portals-grid {
+    gap: 18px;
+    width: 100%;
+    max-width: 430px;
+    margin: 0 auto;
+  }
+
+  .portal-card,
+  .portal-ledger {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding: 26px 20px 22px;
+    border-radius: 18px;
+  }
+
+  .portal-card::before {
+    height: 120px;
+  }
+
+  .portal-card::after,
+  .portal-card .card-glow {
+    opacity: 0.22;
+  }
+
+  .portal-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    font-size: 1.65rem;
+    margin-bottom: 18px;
+  }
+
+  .portal-world {
+    font-size: 0.62rem;
+    letter-spacing: 2px;
+    line-height: 1.35;
+    margin-bottom: 8px;
+  }
+
+  .portal-title {
+    font-size: clamp(1.35rem, 7vw, 1.65rem);
+    line-height: 1.12;
+    margin-bottom: 12px;
+  }
+
+  .portal-desc {
+    font-size: 0.92rem;
+    line-height: 1.62;
+    margin-bottom: 18px;
+    flex: none;
+  }
+
+  .portal-chips {
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+
+  .portal-chip {
+    font-size: 0.72rem;
+    line-height: 1.25;
+    padding: 5px 10px;
+  }
+
+  .portal-footer {
+    align-items: stretch;
+    flex-direction: column;
+    padding-top: 16px;
+  }
+
+  .portal-cta {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 11px 16px;
+  }
+
+  .event-badge.visible {
+    align-self: flex-start;
+  }
+
+  .backup-inner,
+  .footer-inner,
+  .consent-actions {
+    width: 100%;
+  }
+
+  #consent-bar {
+    position: sticky;
+    bottom: 0;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 10px;
+    max-height: 42svh;
+    overflow-y: auto;
+    box-shadow: 0 -2px 18px rgba(0,0,0,0.42);
+  }
+
+  .consent-text {
+    max-width: none;
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+
+  .consent-actions {
+    justify-content: stretch;
+  }
+
+  #consent-ok {
+    width: 100%;
+  }
+
+  .section-heading,
+  .section-sub,
+  .portal-title,
+  .portal-desc,
+  .hero-desc {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 360px) {
+  .hero {
+    padding-top: 28px;
+    padding-bottom: 34px;
+  }
+
+  .hero-title {
+    font-size: clamp(2.45rem, 15vw, 3.15rem);
+  }
+
+  .hero-pills {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .hero-pill {
+    width: 100%;
+  }
+
+  .portal-card,
+  .portal-ledger {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .explainer-right {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .portal-universe:hover,
+  .portal-biography:hover,
+  .portal-card:hover .portal-cta,
+  .portal-card:hover .cta-arrow {
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .portal-universe:hover .card-glow,
+  .portal-biography:hover .card-glow {
+    opacity: 0.22;
+  }
 }
 </style>
 </head>

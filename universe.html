@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <meta name="google-adsense-account" content="ca-pub-4135034633295293">
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
-     crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Free Timeline Universe</title>
@@ -432,22 +429,9 @@ input[type="color"] {
   #mobile-banner { display: block; }
   .tb-secondary { display: none !important; }
   #kbd-hint { display: none; }
-  #filter-panel-toggle {
-    display: flex !important;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 10px;
-    cursor: pointer;
-    background: #e8eeff;
-    border-bottom: 1px solid #d0daf5;
-    font-size: 11px;
-    color: #3a4a90;
-    font-weight: 700;
-    flex-shrink: 0;
-    user-select: none;
-  }
+  #filter-panel-toggle { display: none !important; }
   #filter-panel-rows { display: none; }
-  #filter-panel-rows.open { display: block; }
+  #filter-panel-rows.open { display: flex; flex-direction: column; }
 }
 #filter-panel-toggle { display: none; }
 
@@ -1276,16 +1260,1470 @@ body { background: #07081a; }
   outline: 2px solid rgba(0,210,255,0.5);
   outline-offset: 1px;
 }
+
+/* =====================================================
+   MOBILE FOUNDATION SAFEGUARDS
+   ===================================================== */
+@media (max-width: 767px) {
+  html {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    overflow: hidden;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    width: 100%;
+    max-width: 100%;
+    height: 100svh;
+    height: 100dvh;
+    min-height: 100svh;
+    min-height: 100dvh;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  #app {
+    width: 100%;
+    max-width: 100%;
+    height: 100svh;
+    height: 100dvh;
+    min-height: 100svh;
+    min-height: 100dvh;
+    overflow: hidden;
+  }
+
+  #toolbar {
+    padding-left: max(14px, env(safe-area-inset-left, 0px));
+    padding-right: max(14px, env(safe-area-inset-right, 0px));
+    padding-top: max(7px, env(safe-area-inset-top, 0px));
+  }
+
+  #canvas-wrap,
+  #chars-view,
+  #map-view,
+  #stats-full-view {
+    max-width: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow-x: hidden;
+  }
+
+  /* canvas-wrap must shrink freely in the flex column */
+  #canvas-wrap {
+    flex: 1 1 0%;
+    min-height: 0 !important;
+    overflow: hidden;
+  }
+
+  /* Prevent browser pan/zoom from racing against our touch handlers */
+  #tl-canvas {
+    touch-action: none;
+  }
+
+  /* full-page view panels fill remaining space */
+  #chars-view,
+  #map-view,
+  #stats-full-view {
+    flex: 1 1 0%;
+    min-height: 0 !important;
+  }
+
+  /* mob-bar must never shrink */
+  #mob-bar {
+    flex-shrink: 0;
+  }
+
+  #zoom-ctrl {
+    right: max(16px, env(safe-area-inset-right, 0px));
+    bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + 58px);
+  }
+
+  #modal-bg,
+  #range-cfg-overlay {
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-top: max(16px, env(safe-area-inset-top, 0px));
+    padding-bottom: max(16px, env(safe-area-inset-bottom, 0px));
+  }
+
+  .modal {
+    max-height: calc(100dvh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  }
+
+  img,
+  svg,
+  canvas,
+  video,
+  iframe {
+    max-width: 100%;
+  }
+
+  button,
+  input,
+  select,
+  textarea,
+  .btn,
+  .zbtn,
+  .view-tab,
+  .help-tab,
+  .cf-chip,
+  .cat-filter-chip,
+  .tag-filter-chip,
+  .uni-toggle-chip,
+  .empty-state-btn,
+  .mz-btn {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+}
+
+/* =====================================================
+   MOBILE HEADER & DRAWER  (≤ 767px only)
+   ===================================================== */
+
+/* --- Mobile compact header --- */
+#mob-header {
+  display: none;
+}
+@media (max-width: 767px) {
+  /* Hide desktop toolbar & mobile info banner */
+  #toolbar       { display: none !important; }
+  #mobile-banner { display: none !important; }
+
+  /* Show mobile header */
+  #mob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 0 10px;
+    padding-top: max(8px, env(safe-area-inset-top, 0px));
+    height: calc(50px + max(0px, env(safe-area-inset-top, 0px)));
+    background: linear-gradient(180deg, #07081e 0%, #0c0e2a 100%);
+    border-bottom: 1px solid rgba(0,210,255,0.18);
+    box-shadow: 0 2px 18px rgba(0,0,0,0.7);
+    flex-shrink: 0;
+    z-index: 20;
+  }
+
+  #mob-header .mob-logo {
+    font-size: 14px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #00d4ff 10%, #a855f7 90%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-right: 2px;
+  }
+
+  #mob-header .mob-actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex: 1;
+    justify-content: flex-end;
+  }
+
+  /* Mobile header buttons */
+  .mob-btn {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.06);
+    color: #c0cde8;
+    font-size: 9px;
+    font-family: inherit;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    min-height: 44px;
+    min-width: 48px;
+    touch-action: manipulation;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .mob-btn .mob-icon {
+    font-size: 17px;
+    line-height: 1;
+  }
+  .mob-btn:active {
+    background: rgba(0,210,255,0.15);
+    border-color: rgba(0,210,255,0.4);
+  }
+  .mob-btn.mob-accent {
+    background: linear-gradient(135deg, #00b8e0 0%, #0070c8 100%);
+    border-color: rgba(0,190,230,0.55);
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(0,180,230,0.28);
+  }
+  .mob-btn.mob-accent:active {
+    background: linear-gradient(135deg, #00ccf5 0%, #007fd8 100%);
+  }
+  .mob-btn.mob-menu {
+    background: rgba(168,85,247,0.14);
+    border-color: rgba(168,85,247,0.32);
+    color: #cfa8ff;
+  }
+  .mob-btn.mob-menu:active {
+    background: rgba(168,85,247,0.28);
+  }
+  .mob-btn.mob-more {
+    background: rgba(0,210,255,0.07);
+    border-color: rgba(0,210,255,0.2);
+    color: #80b8e0;
+  }
+  .mob-btn.mob-more:active {
+    background: rgba(0,210,255,0.15);
+  }
+  .mob-btn.mob-filters-active {
+    background: rgba(0,210,255,0.18);
+    border-color: rgba(0,210,255,0.5);
+    color: #00d4ff;
+  }
+}
+
+/* --- Mobile bottom action bar --- */
+#mob-bar {
+  display: none;
+}
+@media (max-width: 767px) {
+  #mob-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 4px;
+    padding-bottom: max(6px, env(safe-area-inset-bottom, 0px));
+    height: calc(52px + max(0px, env(safe-area-inset-bottom, 0px)));
+    background: linear-gradient(180deg, #0c0e2a 0%, #07081e 100%);
+    border-top: 1px solid rgba(0,210,255,0.18);
+    box-shadow: 0 -2px 18px rgba(0,0,0,0.6);
+    flex-shrink: 0;
+    z-index: 20;
+    gap: 2px;
+  }
+
+  .mob-bar-btn {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    flex: 1;
+    max-width: 70px;
+    padding: 6px 4px;
+    border-radius: 9px;
+    border: none;
+    background: transparent;
+    color: rgba(160,185,220,0.65);
+    font-size: 8.5px;
+    font-family: inherit;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    min-height: 44px;
+    touch-action: manipulation;
+    transition: background 0.14s, color 0.14s;
+  }
+  .mob-bar-btn .bar-icon {
+    font-size: 18px;
+    line-height: 1;
+  }
+  .mob-bar-btn:active,
+  .mob-bar-btn.bar-active {
+    background: rgba(0,210,255,0.1);
+    color: #00d4ff;
+    border-radius: 9px;
+  }
+  .mob-bar-btn.bar-view-active {
+    color: #00d4ff;
+  }
+}
+
+/* --- Mobile drawer overlay --- */
+#mob-drawer-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(4,6,18,0.65);
+  z-index: 110;
+  backdrop-filter: blur(3px);
+  touch-action: manipulation;
+}
+#mob-drawer-overlay.open { display: block; }
+
+/* --- Mobile drawer panel --- */
+#mob-drawer {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  background: linear-gradient(180deg, #0e1032 0%, #080a22 100%);
+  border-top: 1.5px solid rgba(0,210,255,0.25);
+  border-radius: 18px 18px 0 0;
+  z-index: 120;
+  padding: 0 0 max(16px, env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.7);
+  max-height: 82dvh;
+  overflow-y: auto;
+  transform: translateY(105%);
+  transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  visibility: hidden;
+}
+#mob-drawer.open {
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.mob-drawer-handle {
+  width: 36px; height: 4px;
+  background: rgba(0,210,255,0.25);
+  border-radius: 2px;
+  margin: 10px auto 4px;
+}
+
+.mob-drawer-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: rgba(0,210,255,0.55);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 4px 0 12px;
+  border-bottom: 1px solid rgba(0,210,255,0.1);
+  margin: 0 16px 12px;
+}
+
+.mob-drawer-section {
+  padding: 4px 12px 6px;
+}
+.mob-drawer-section-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(0,210,255,0.35);
+  padding: 4px 4px 6px;
+}
+.mob-drawer-row {
+  display: flex;
+  gap: 7px;
+  margin-bottom: 7px;
+  flex-wrap: wrap;
+}
+
+.mob-drw-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.11);
+  background: rgba(255,255,255,0.05);
+  color: #b8c8e8;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+  min-height: 44px;
+  flex: 1;
+  min-width: 120px;
+  transition: background 0.14s, border-color 0.14s;
+  white-space: nowrap;
+}
+.mob-drw-btn:active {
+  background: rgba(0,210,255,0.14);
+  border-color: rgba(0,210,255,0.35);
+}
+.mob-drw-btn.drw-accent {
+  background: linear-gradient(135deg, #00b8e0 0%, #0070c8 100%);
+  border-color: rgba(0,190,230,0.55);
+  color: #fff;
+}
+.mob-drw-btn.drw-danger {
+  background: linear-gradient(135deg, #b83030 0%, #8a1e1e 100%);
+  border-color: rgba(220,60,60,0.45);
+  color: #ffd0d0;
+}
+.mob-drw-btn.drw-save {
+  background: linear-gradient(135deg, #00b8e0 0%, #0070c8 100%);
+  border-color: rgba(0,190,230,0.5);
+  color: #fff;
+}
+.mob-drw-btn.drw-undo,
+.mob-drw-btn.drw-redo {
+  background: rgba(180,160,255,0.08);
+  border-color: rgba(168,85,247,0.22);
+  color: #c0a8f0;
+}
+
+/* Mobile drawer storage / backup notice */
+.mob-drawer-storage-notice {
+  margin: 4px 12px 8px;
+  padding: 9px 12px;
+  background: rgba(74,143,222,0.1);
+  border: 1px solid rgba(74,143,222,0.28);
+  border-radius: 9px;
+  font-size: 11px;
+  color: rgba(190,215,255,0.88);
+  line-height: 1.5;
+}
+.mob-drawer-storage-notice strong {
+  color: #90c8ff;
+  font-weight: 800;
+}
+
+/* Mobile-only confirm dialog for destructive Blank action */
+#mob-blank-confirm {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 260;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(4,6,18,0.78);
+  backdrop-filter: blur(4px);
+}
+#mob-blank-confirm.open { display: flex; }
+.mob-confirm-box {
+  background: linear-gradient(180deg, #1a1040 0%, #0e0820 100%);
+  border: 1.5px solid rgba(220,60,80,0.45);
+  border-radius: 16px;
+  padding: 22px;
+  max-width: 340px;
+  width: 100%;
+  box-shadow: 0 20px 70px rgba(0,0,0,0.75);
+}
+.mob-confirm-icon {
+  font-size: 32px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.mob-confirm-title {
+  font-size: 16px;
+  font-weight: 900;
+  color: #ffb8b8;
+  text-align: center;
+  margin-bottom: 6px;
+}
+.mob-confirm-desc {
+  font-size: 12px;
+  color: rgba(200,210,240,0.8);
+  text-align: center;
+  line-height: 1.55;
+  margin-bottom: 18px;
+}
+.mob-confirm-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.mob-confirm-btn {
+  min-height: 46px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+  color: #fff;
+}
+.mob-confirm-btn.save-first {
+  background: linear-gradient(135deg, #1a8050, #0f5535);
+  border-color: rgba(40,200,120,0.4);
+}
+.mob-confirm-btn.clear-only {
+  background: linear-gradient(135deg, #b83030, #7a1a1a);
+  border-color: rgba(220,60,60,0.45);
+}
+.mob-confirm-btn.cancel {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.14);
+  color: #b8c8e8;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .btn:hover,
+  .btn.accent:hover,
+  .btn.light:hover,
+  .btn.danger:hover,
+  .btn.menu-btn:hover,
+  .zbtn:hover,
+  .char-card:hover,
+  .char-tl-item:hover .char-tl-body,
+  .char-counterpart:hover,
+  .char-in-event:hover,
+  .tag-filter-chip:hover,
+  .cat-filter-chip:hover,
+  .uni-toggle-chip:hover,
+  .cf-chip:hover,
+  .shared-ev-item:hover,
+  .help-tab:hover,
+  .view-tab:hover,
+  .cv-card:hover,
+  .se-item:hover,
+  .sfv-chart-col:hover {
+    transform: none !important;
+    filter: none !important;
+    box-shadow: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* === Mobile-only new elements (hidden on desktop) === */
+#mob-filter-panel-head { display: none; }
+#mob-active-strip { display: none; }
+
+/* =====================================================
+   MOBILE FILTER IMPROVEMENTS  (≤ 767px only)
+   ===================================================== */
+@media (max-width: 767px) {
+
+  /* --- Filter panel becomes a bottom-sheet overlay on mobile --- */
+  #filter-panel {
+    position: fixed !important;
+    left: 0; right: 0; bottom: 0;
+    z-index: 130 !important;
+    background: linear-gradient(180deg, #0e1032 0%, #08091e 100%) !important;
+    border-top: 1.5px solid rgba(0,210,255,0.28) !important;
+    border-bottom: none !important;
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -8px 40px rgba(0,0,0,0.7);
+    transform: translateY(100%);
+    transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+    max-height: 85dvh;
+    overflow: hidden;
+    display: flex !important;
+    flex-direction: column;
+    pointer-events: none;
+  }
+  #filter-panel.mob-fp-open {
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  #filter-panel-rows {
+    display: flex !important;
+    flex-direction: column;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex: 1 1 0%;
+    min-height: 0;
+    max-height: none !important;
+  }
+
+  /* --- Collapsible filter panel --- */
+  #filter-panel-rows.open {
+    max-height: none;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Overlay behind filter sheet */
+  #mob-fp-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(4,6,18,0.6);
+    z-index: 125;
+    backdrop-filter: blur(3px);
+    touch-action: manipulation;
+  }
+  #mob-fp-overlay.open { display: block; }
+
+  /* --- Header row inside open panel (Done button) --- */
+  #mob-filter-panel-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 14px 8px;
+    background: rgba(0,210,255,0.07);
+    border-bottom: 1px solid rgba(0,210,255,0.14);
+    flex-shrink: 0;
+  }
+  #mob-filter-panel-head .mob-fp-title {
+    font-size: 11px;
+    font-weight: 800;
+    color: rgba(0,210,255,0.7);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+  #mob-filter-panel-head .mob-fp-done {
+    padding: 5px 14px;
+    border-radius: 14px;
+    background: rgba(0,210,255,0.14);
+    border: 1px solid rgba(0,210,255,0.35);
+    color: #00d4ff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    min-height: 36px;
+    font-family: inherit;
+    touch-action: manipulation;
+  }
+  #mob-filter-panel-head .mob-fp-done:active {
+    background: rgba(0,210,255,0.25);
+  }
+
+  /* --- Universe toggle chips: wrap cleanly, bigger tap targets --- */
+  #uni-toggle-bar {
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    gap: 8px;
+  }
+  .uni-toggle-chip {
+    padding: 7px 14px 7px 10px;
+    font-size: 12px;
+    min-height: 40px;
+    border-radius: 20px;
+  }
+
+  /* --- Compact filter bar: full-width stacking --- */
+  #compact-filter-bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 10px 12px !important;
+    gap: 8px !important;
+  }
+  #ev-search-input {
+    width: 100% !important;
+    min-height: 44px;
+    font-size: 14px !important;
+    border-radius: 10px !important;
+    padding: 10px 14px !important;
+    box-sizing: border-box;
+  }
+  #compact-filter-bar select {
+    width: 100% !important;
+    min-height: 44px !important;
+    font-size: 13px !important;
+    border-radius: 10px !important;
+    padding: 10px 12px !important;
+    box-sizing: border-box;
+  }
+  #compact-filter-bar .cf-label {
+    display: none;
+  }
+  #compact-filter-bar > span[style*="width:1px"] {
+    display: none !important;
+  }
+  #cf-chips {
+    flex-wrap: wrap !important;
+  }
+  .cf-chip {
+    min-height: 36px;
+    font-size: 12px;
+    padding: 6px 14px 6px 10px;
+    border-radius: 18px;
+  }
+  #all-clear-btn,
+  #cf-clear-btn,
+  .cf-mode-btn {
+    min-height: 40px;
+    font-size: 12px;
+    width: 100%;
+    border-radius: 10px;
+  }
+  #cf-summary {
+    font-size: 11px;
+    padding: 2px 0;
+  }
+
+  /* --- Active filter strip (always visible when filters are on) --- */
+  #mob-active-strip {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background: rgba(0,210,255,0.07);
+    border-bottom: 1px solid rgba(0,210,255,0.14);
+    flex-wrap: wrap;
+    min-height: 36px;
+    flex-shrink: 0;
+  }
+  #mob-active-strip.has-filters {
+    display: flex;
+  }
+  #mob-active-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    flex: 1;
+    min-width: 0;
+  }
+  .mob-active-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 14px;
+    background: rgba(0,210,255,0.13);
+    border: 1px solid rgba(0,210,255,0.3);
+    color: #70d8f8;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  #mob-clear-all-btn {
+    padding: 4px 12px;
+    border-radius: 14px;
+    background: rgba(220,60,60,0.15);
+    border: 1px solid rgba(220,60,60,0.35);
+    color: #f08080;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    min-height: 30px;
+    font-family: inherit;
+    touch-action: manipulation;
+    flex-shrink: 0;
+  }
+  #mob-clear-all-btn:active {
+    background: rgba(220,60,60,0.3);
+  }
+
+  /* Badge on the mobile Filters button */
+  #mob-filters-btn .mob-filter-badge {
+    display: inline-block;
+    background: #00d4ff;
+    color: #000c18;
+    border-radius: 8px;
+    font-size: 9px;
+    font-weight: 900;
+    padding: 0 5px;
+    min-width: 16px;
+    text-align: center;
+    line-height: 16px;
+    height: 16px;
+    margin-top: 1px;
+  }
+}
+
+/* =====================================================
+   MOBILE MODAL & FORM IMPROVEMENTS  (≤ 767px only)
+   ===================================================== */
+
+@keyframes modalSheetUp {
+  from { transform: translateY(44px); opacity: 0.75; }
+  to   { transform: translateY(0);   opacity: 1; }
+}
+
+@media (max-width: 767px) {
+
+  /* --- Modal backdrop: pin sheet to bottom edge --- */
+  #modal-bg {
+    padding: 0 !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+  }
+
+  /* --- Modal becomes a full-width bottom sheet --- */
+  .modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 94dvh !important;
+    border-radius: 18px 18px 0 0 !important;
+    animation: modalSheetUp 0.26s cubic-bezier(0.32, 0.72, 0, 1) !important;
+  }
+
+  /* --- Visual drag handle — sits above modal content as pseudo on the sheet --- */
+  .modal::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(0, 210, 255, 0.25);
+    margin: 10px auto 0;
+    flex-shrink: 0;
+  }
+
+  /* --- Sticky header: never scrolls away --- */
+  .modal-hd {
+    flex-shrink: 0 !important;
+    padding: 10px 14px 12px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .m-title { font-size: 15px !important; }
+  .m-crumb { font-size: 10px !important; }
+
+  /* Header action buttons — large tap targets */
+  .modal-hd-btns .btn,
+  .modal-hd-btns button {
+    min-height: 40px !important;
+    min-width: 40px !important;
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+  }
+
+  /* --- Scrollable body — keyboard-safe --- */
+  .modal-bd {
+    flex: 1 1 0% !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: contain !important;
+    padding: 16px !important;
+    min-height: 0 !important;
+  }
+
+  /* --- Form fields: 16px prevents iOS keyboard auto-zoom --- */
+  .fg input,
+  .fg textarea,
+  .fg select {
+    font-size: 16px !important;
+    min-height: 48px !important;
+    padding: 11px 13px !important;
+    border-radius: 8px !important;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .fg textarea {
+    min-height: 90px !important;
+    resize: vertical;
+  }
+  .fg label { font-size: 13px !important; margin-bottom: 7px !important; }
+  .fg       { margin-bottom: 18px !important; }
+
+  /* --- Sticky footer: full-width stacked buttons --- */
+  .modal-ft {
+    flex-shrink: 0 !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    padding: 12px 14px max(16px, env(safe-area-inset-bottom, 12px)) !important;
+  }
+  .modal-ft .btn {
+    width: 100% !important;
+    min-height: 48px !important;
+    justify-content: center !important;
+    font-size: 14px !important;
+    text-align: center !important;
+  }
+  /* Primary first, secondary next */
+  .modal-ft .btn.accent  { order: 1 !important; }
+  .modal-ft .btn.light   { order: 2 !important; }
+  .modal-ft .btn:not(.accent):not(.light):not(.danger) { order: 3 !important; }
+  /* Danger last, visually separated */
+  .modal-ft .btn.danger {
+    order: 99 !important;
+    margin-top: 6px !important;
+    padding-top: 14px !important;
+    border-top: 1px solid rgba(180, 60, 60, 0.22) !important;
+  }
+
+  /* --- Images and media fit the screen --- */
+  .modal-bd img,
+  .modal-bd video,
+  .media-img-item img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  .media-yt-wrap,
+  .media-yt-wrap iframe { width: 100% !important; }
+
+  /* --- Help tabs wrap on small screens --- */
+  .help-tabs {
+    flex-wrap: wrap !important;
+    gap: 2px 0 !important;
+    margin-bottom: 14px !important;
+  }
+  .help-tab {
+    flex: 1 1 auto !important;
+    min-height: 40px !important;
+    font-size: 12px !important;
+    padding: 7px 8px !important;
+    text-align: center !important;
+  }
+
+  /* --- Keyboard shortcuts panel: scrollable --- */
+  #kbd-panel {
+    max-height: min(72dvh, 500px) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* --- Range configurator: bottom sheet --- */
+  #range-cfg-overlay {
+    padding: 0 !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+  }
+  #range-cfg-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 18px 18px 0 0 !important;
+    padding: 20px 16px max(20px, env(safe-area-inset-bottom, 16px)) !important;
+    max-height: 92dvh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    animation: modalSheetUp 0.26s cubic-bezier(0.32, 0.72, 0, 1) !important;
+  }
+  .rcfg-sel,
+  .rcfg-cust {
+    font-size: 16px !important;
+    min-height: 48px !important;
+    padding: 12px 13px !important;
+  }
+  .rcfg-title { font-size: 15px !important; }
+
+  /* --- Colour swatches: generous tap targets --- */
+  .swatches { gap: 10px !important; flex-wrap: wrap !important; }
+  .swatch   { width: 30px !important; height: 30px !important; }
+
+  /* --- Media add/edit rows: wrap on narrow screens --- */
+  .media-row { flex-wrap: wrap !important; gap: 6px !important; }
+  .media-add-area { padding: 10px !important; }
+
+  /* --- Inline .btn inside modal body (not in footer) --- */
+  .modal-bd .btn.sm { min-height: 36px !important; font-size: 12px !important; }
+
+  /* --- Media URL / label inline inputs (.mi) — finger-friendly & no zoom --- */
+  .mi {
+    font-size: 16px !important;
+    min-height: 44px !important;
+    padding: 9px 11px !important;
+  }
+
+  /* --- Character profile header: stack photo + meta vertically --- */
+  .char-profile-hd {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+  .char-photo-wrap { margin-bottom: 8px !important; }
+  .char-profile-meta { width: 100% !important; }
+
+  /* --- Extra bottom padding in modal body so last field is above footer --- */
+  .modal-bd { padding-bottom: 24px !important; }
+
+  /* --- Ensure close/action button in header is always visible --- */
+  .modal-hd-btns {
+    flex-shrink: 0 !important;
+    gap: 4px !important;
+  }
+
+  /* --- One-column layout guarantee for any two-column flex rows in forms --- */
+  .modal-bd .fg-row,
+  .modal-bd [class*="col-"],
+  .modal-bd .form-cols,
+  .modal-bd .form-row,
+  .modal-bd .date-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+}
+
+/* =====================================================
+   SECONDARY VIEWS — MOBILE IMPROVEMENTS  (≤ 767px)
+   ===================================================== */
+
+@media (max-width: 767px) {
+
+  /* ══════════════════════════════════════
+     0. CHARACTERS VIEW  (#chars-view)
+     ══════════════════════════════════════ */
+
+  #chars-view {
+    padding: 14px 12px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Header: title above controls, stretched full-width */
+  .cv-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    margin-bottom: 14px !important;
+    max-width: 100% !important;
+  }
+
+  .cv-header h2 {
+    font-size: 16px !important;
+  }
+
+  /* Controls row: search + new-character button wrap cleanly */
+  .cv-controls {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    align-items: stretch !important;
+  }
+
+  /* Search: full-width, 16px prevents iOS auto-zoom */
+  .cv-search {
+    width: 100% !important;
+    font-size: 16px !important;
+    min-height: 44px !important;
+    padding: 10px 14px !important;
+    border-radius: 8px !important;
+    flex: 1 1 auto !important;
+  }
+
+  /* "+ New Character" button: full-width below search */
+  .cv-controls .btn {
+    min-height: 44px !important;
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Grid: single column on narrow phones */
+  .cv-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    max-width: 100% !important;
+  }
+
+  /* Cards: reduce padding, swap hover-lift for tap highlight */
+  .cv-card {
+    padding: 13px !important;
+  }
+  .cv-card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    border-color: rgba(100,120,200,0.15) !important;
+  }
+  .cv-card:active {
+    background: rgba(0,210,255,0.07) !important;
+    border-color: rgba(0,210,255,0.4) !important;
+  }
+
+  /* Avatar: slightly tighter so name has more room */
+  .cv-avatar {
+    width: 42px !important;
+    height: 42px !important;
+    font-size: 19px !important;
+  }
+
+  .cv-name { font-size: 13px !important; }
+  .cv-sub  { font-size: 11px !important; }
+  .cv-stat { font-size: 11px !important; }
+
+
+  /* ══════════════════════════════════════
+     0b. CHARACTER SIDEBAR CARDS  (.char-card)
+         (used in the filter / people panel)
+     ══════════════════════════════════════ */
+
+  .char-card {
+    padding: 12px !important;
+    min-height: 54px !important;
+    gap: 10px !important;
+  }
+  .char-card:hover {
+    transform: none !important;
+    border-color: rgba(100,120,200,0.15) !important;
+    background: rgba(20,22,40,0.3) !important;
+  }
+  .char-card:active {
+    background: rgba(0,210,255,0.06) !important;
+    border-color: rgba(0,210,255,0.35) !important;
+  }
+
+  /* Character search in sidebar panels: full-width, no zoom */
+  .char-search {
+    font-size: 16px !important;
+    min-height: 44px !important;
+    padding: 10px 12px !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+  }
+
+
+  /* ══════════════════════════════════════
+     0c. CHARACTER PROFILE DETAIL
+         (inside modals & side panels)
+     ══════════════════════════════════════ */
+
+  /* Photo + meta: stack vertically on narrow screens */
+  .char-profile-hd {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 12px !important;
+  }
+
+  .char-photo-wrap { margin-bottom: 0 !important; }
+
+  /* Photo: slightly smaller to leave room for meta */
+  .char-profile-photo,
+  .char-photo-placeholder {
+    width: 80px !important;
+    height: 80px !important;
+    font-size: 32px !important;
+  }
+
+  .char-profile-meta {
+    width: 100% !important;
+    text-align: left !important;
+  }
+
+  .char-profile-name { font-size: 16px !important; }
+
+  /* Connection items in profile: tall tap targets, full-width */
+  .conn-item {
+    padding: 11px 12px !important;
+    min-height: 44px !important;
+    font-size: 13px !important;
+    border-radius: 8px !important;
+  }
+
+  /* Counterpart / related-character rows */
+  .char-counterpart {
+    padding: 10px 12px !important;
+    min-height: 44px !important;
+    gap: 10px !important;
+  }
+  .char-counterpart:hover {
+    border-color: rgba(100,120,200,0.15) !important;
+    background: rgba(20,22,40,0.3) !important;
+  }
+  .char-counterpart:active {
+    border-color: rgba(0,210,255,0.4) !important;
+    background: rgba(0,210,255,0.07) !important;
+  }
+
+  /* Appears-in-event chips: bump up for thumb tap */
+  .char-in-event {
+    padding: 6px 12px !important;
+    min-height: 36px !important;
+    font-size: 12px !important;
+    border-radius: 16px !important;
+  }
+  .char-in-event:hover {
+    background: rgba(20,22,40,0.5) !important;
+    border-color: rgba(100,120,200,0.15) !important;
+  }
+  .char-in-event:active {
+    background: rgba(0,210,255,0.12) !important;
+    border-color: rgba(0,210,255,0.4) !important;
+  }
+
+  /* Character timeline items in profile: readable height */
+  .char-tl-item {
+    margin-bottom: 8px !important;
+    cursor: pointer !important;
+  }
+  .char-tl-body {
+    padding: 8px 12px !important;
+    min-height: 40px !important;
+  }
+  .char-tl-title { font-size: 13px !important; }
+  .char-tl-date  { font-size: 11px !important; }
+
+  /* Powers / abilities block */
+  .powers-block { padding: 10px 12px !important; }
+  .powers-text  { font-size: 13px !important; line-height: 1.7 !important; }
+
+
+  /* ══════════════════════════════════════
+     1. RELATIONSHIP / CONNECTION MAP VIEW
+     ══════════════════════════════════════ */
+
+  /* Controls bar: stack vertically so controls don't overflow */
+  .cm-controls-bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    padding: 10px 12px !important;
+  }
+
+  /* Search input: full-width, no iOS zoom */
+  .map-search {
+    width: 100% !important;
+    font-size: 16px !important;
+    min-height: 44px !important;
+    padding: 10px 14px !important;
+    border-radius: 10px !important;
+  }
+
+  /* Universe filter chips row: wrap naturally */
+  .cm-uni-filter {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+
+  /* Hover/drag hint is irrelevant without a mouse */
+  .cm-hint {
+    display: none !important;
+  }
+
+  /* Zoom/reset buttons: 44px touch targets */
+  .mz-btn {
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 20px !important;
+    border-radius: 10px !important;
+  }
+
+  /* Legend panel: pull from absolute corner to bottom sheet */
+  .cm-legend-panel {
+    position: fixed !important;
+    top: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    min-width: unset !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: 45dvh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    border-radius: 16px 16px 0 0 !important;
+    padding: 14px 16px max(16px, env(safe-area-inset-bottom, 12px)) !important;
+    z-index: 50 !important;
+  }
+
+  /* Map canvas: fill remaining height */
+  .conn-map-wrap {
+    min-height: 0 !important;
+    flex: 1 1 0% !important;
+    touch-action: none;
+  }
+
+  /* Connections legend line below map: wrap compactly */
+  .conn-map-legend {
+    gap: 8px 14px !important;
+    font-size: 11px !important;
+  }
+
+  /* Conn controls (inline, non-full-page map): wrap */
+  .conn-map-controls {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
+  }
+
+
+  /* ══════════════════════════════════════
+     2. STATS FULL VIEW
+     ══════════════════════════════════════ */
+
+  #stats-full-view {
+    padding: 14px 12px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .sfv-title {
+    font-size: 16px !important;
+    margin-bottom: 14px !important;
+    max-width: 100% !important;
+  }
+
+  /* Force 1-column grid (already at 900px but re-assert for mobile + fix max-width) */
+  .sfv-grid {
+    grid-template-columns: 1fr !important;
+    max-width: 100% !important;
+    gap: 12px !important;
+  }
+
+  .sfv-card { padding: 14px !important; }
+  .sfv-card.full { grid-column: auto !important; }
+
+  .sfv-big { font-size: 28px !important; }
+
+  /* Mini grids: 2-col ok, reduce padding and text */
+  .sfv-mini-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+  .sfv-mini-box { padding: 10px !important; }
+  .sfv-mini-val { font-size: 18px !important; }
+  .sfv-mini-lbl { font-size: 9px !important; }
+
+  .sfv-metric-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+  .sfv-metric-box { padding: 10px !important; }
+  .sfv-metric-box .m-val { font-size: 16px !important; }
+
+  /* Bar chart labels: nudge up from 8px */
+  .sfv-chart-labels span { font-size: 9px !important; }
+
+  /* Bar label text: legible on narrow screens */
+  .sfv-bar-label,
+  .sfv-sub-bar-label { font-size: 12px !important; }
+
+  /* Recent-events table: horizontally scrollable */
+  .sfv-recent-table-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .sfv-recent-table th,
+  .sfv-recent-table td {
+    white-space: nowrap !important;
+    font-size: 11px !important;
+    padding: 6px 4px !important;
+  }
+
+  /* List items: easy tap height */
+  .sfv-list-item {
+    padding: 10px 0 !important;
+    font-size: 12px !important;
+  }
+
+
+  /* ══════════════════════════════════════
+     3. KEYBOARD SHORTCUTS PANEL
+     ══════════════════════════════════════ */
+
+  #kbd-panel {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: auto !important;
+    transform: none !important;
+    min-width: unset !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    border-radius: 18px 18px 0 0 !important;
+    padding: 14px 16px max(20px, env(safe-area-inset-bottom, 16px)) !important;
+    max-height: min(70dvh, 500px) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    animation: modalSheetUp 0.24s cubic-bezier(0.32, 0.72, 0, 1) !important;
+  }
+
+  #kbd-panel h3::after {
+    content: " — requires a connected keyboard";
+    font-size: 10px;
+    font-weight: 400;
+    color: rgba(160,180,230,0.55);
+    display: block;
+    margin-top: 3px;
+    letter-spacing: 0;
+  }
+
+  .kbd-grid {
+    grid-template-columns: 1fr !important;
+    gap: 6px 0 !important;
+  }
+
+  #kbd-panel-close {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    font-size: 24px !important;
+    top: 8px !important;
+    right: 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .kbd-row {
+    min-height: 36px !important;
+    padding: 4px 0 !important;
+    border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+  }
+  .kbd-desc { font-size: 12px !important; }
+
+
+  /* ══════════════════════════════════════
+     4. CHARACTER / ENTITY DETAIL EXTRAS
+     ══════════════════════════════════════ */
+
+  /* Shared-event items: easier to tap */
+  .shared-ev-item {
+    padding: 10px 12px !important;
+    min-height: 44px !important;
+  }
+
+  /* Universe info stat cards in modals */
+  .uni-stat-card {
+    min-width: 70px !important;
+    padding: 10px !important;
+  }
+  .uni-stat-val   { font-size: 20px !important; }
+  .uni-stat-label { font-size: 10px !important; }
+
+  /* Remove hover-only indicator on touch devices */
+  .char-tl-item:hover .char-tl-body {
+    background: transparent !important;
+  }
+  .char-tl-item:active .char-tl-body {
+    background: rgba(74,143,222,0.08) !important;
+  }
+
+  /* Stat summary row in inline panels */
+  .sp-row {
+    flex-wrap: wrap !important;
+    gap: 10px 16px !important;
+  }
+  .sp-val  { font-size: 17px !important; }
+  .sp-item { min-width: 56px !important; }
+
+}
+
+/* 2-column character grid for 400-767px phones */
+@media (min-width: 400px) and (max-width: 767px) {
+  .cv-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
   </style>
 </head>
 <body>
 
 <div id="app">
 
-  <!-- ==================== MOBILE BANNER ==================== -->
+  <!-- ==================== MOBILE BANNER (desktop fallback, hidden on mobile by CSS) ==================== -->
   <div id="mobile-banner">&#128241; Touch to pan &nbsp;&middot;&nbsp; Pinch to zoom &nbsp;&middot;&nbsp; Limited editing on mobile</div>
 
-  <!-- ==================== TOOLBAR ==================== -->
+  <!-- ==================== MOBILE COMPACT HEADER (≤767px) ==================== -->
+  <div id="mob-header">
+    <span class="mob-logo">∞ Universe</span>
+    <div class="mob-actions">
+      <button class="mob-btn mob-menu" onclick="goBackToMenu()" title="Back to menu">
+        <span class="mob-icon">←</span>
+        Menu
+      </button>
+      <button class="mob-btn mob-accent" onclick="UI.addEvent()" title="Add new event">
+        <span class="mob-icon">＋</span>
+        Event
+      </button>
+      <button class="mob-btn" id="mob-filters-btn" onclick="mobToggleFilters()" title="Search &amp; Filters">
+        <span class="mob-icon">🔍</span>
+        Filters<span id="mob-filter-badge" class="mob-filter-badge" style="display:none"></span>
+      </button>
+      <button class="mob-btn mob-more" onclick="mobOpenDrawer()" title="More actions">
+        <span class="mob-icon">⋯</span>
+        More
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== MOBILE ACTIVE FILTER STRIP (mobile only) ==================== -->
+  <div id="mob-active-strip" aria-live="polite">
+    <div id="mob-active-chips"></div>
+    <button id="mob-clear-all-btn" type="button" onclick="clearAllFilters()" aria-label="Clear all filters">&#10005; Clear all</button>
+  </div>
+
+  <!-- ==================== MOBILE FILTER OVERLAY BACKDROP ==================== -->
+  <div id="mob-fp-overlay" onclick="mobToggleFilters()"></div>
+
+  <!-- ==================== TOOLBAR (desktop, hidden on mobile) ==================== -->
   <div id="toolbar">
 
     <!-- ── Group 1: Navigation ── -->
@@ -1381,6 +2819,14 @@ body { background: #07081a; }
       <span class="fpt-arrow" style="margin-left:auto">&#9660;</span>
     </div>
     <div id="filter-panel-rows">
+    <!-- Mobile panel header (shown only on mobile via CSS) -->
+    <div id="mob-filter-panel-head">
+      <div class="mob-drawer-handle" style="margin:0 auto 8px;"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+        <span class="mob-fp-title">&#128269; Search &amp; Filters</span>
+        <button type="button" class="mob-fp-done" onclick="mobToggleFilters()" aria-label="Close filters">&#10005; Done</button>
+      </div>
+    </div>
     <!-- Row 1: Universe toggles -->
     <div id="uni-toggle-bar">
       <span class="fp-label" style="color:rgba(0,210,255,0.55)">🌍 UNIVERSES:</span>
@@ -1418,7 +2864,7 @@ body { background: #07081a; }
 
   <!-- ==================== CANVAS ==================== -->
   <div id="canvas-wrap">
-    <canvas id="tl-canvas" width="1440" height="531" style="cursor: grab;"></canvas>
+    <canvas id="tl-canvas" style="cursor: grab; display: block;"></canvas>
 
     <div id="zoom-ctrl">
       <button class="zbtn" onclick="doZoom(1.25, null)" title="Zoom In  (+)">+</button>
@@ -2792,13 +4238,42 @@ function initCanvas() {
   const wrap = document.getElementById('canvas-wrap');
 
   function resize() {
-    c.width  = wrap.clientWidth;
-    c.height = wrap.clientHeight;
+    var w = wrap.clientWidth;
+    var h = wrap.clientHeight;
+    if (w === 0 && h === 0) return;
+    c.width  = w;
+    c.height = h;
     clampPanY();
     render();
-    updateUniverseScrollbar();
+    if (typeof updateUniverseScrollbar === 'function') updateUniverseScrollbar();
   }
+
+  /* Expose globally so mobile controls can trigger canvas resize */
+  window._tlResize = resize;
+
+  /* Primary: ResizeObserver fires on any size change (address bar, rotation, filters) */
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(function() { resize(); }).observe(wrap);
+  }
+
+  /* Secondary: standard resize event */
   window.addEventListener('resize', resize);
+
+  /* Tertiary: visualViewport fires when mobile browser chrome shows/hides */
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', resize);
+    /* Some browsers fire 'scroll' instead of 'resize' when address bar shows/hides */
+    window.visualViewport.addEventListener('scroll', resize);
+  }
+
+  /* Orientation change — fire immediately and after layout settles */
+  window.addEventListener('orientationchange', function() {
+    resize();
+    setTimeout(resize, 120);
+    setTimeout(resize, 400);
+    setTimeout(resize, 700);
+  });
+
   resize();
 
   // ---- Mouse drag (pan) ----
@@ -2881,54 +4356,127 @@ function initCanvas() {
     }
   }, { passive: false });
 
-  // ---- Touch: pan + pinch-to-zoom ----
-  let _touchDist = null;
-  let _touchPan = null;
+  // ---- Touch: tap / smooth pan / smooth pinch-zoom / long-press add ----
+  // Desktop mouse behavior is completely unchanged — all touch code is isolated here.
+  (function() {
+    const TAP_SLOP  = 12;   // px: max movement still counted as a tap
+    const TAP_TIME  = 300;  // ms: max duration for a tap gesture
+    const LPRESS_MS = 620;  // ms: hold time to trigger long-press → add event
 
-  c.addEventListener('touchstart', e => {
-    e.preventDefault();
-    if (e.touches.length === 1) {
-      const r = c.getBoundingClientRect();
-      const mx = e.touches[0].clientX - r.left, my = e.touches[0].clientY - r.top;
-      const uRow = getUniverseRowAt(mx, my);
-      if (uRow && !isUniverseActionTarget(mx, my)) { startUniverseDrag(uRow.id, e.touches[0].clientY); _touchPan = null; _touchDist = null; return; }
-    }
-    if (e.touches.length === 2) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      _touchDist = Math.sqrt(dx * dx + dy * dy);
-      _touchPan = null;
-    } else if (e.touches.length === 1) {
-      _touchPan = { x: e.touches[0].clientX, y: e.touches[0].clientY, px: V.panX, py: V.panY };
-      _touchDist = null;
-    }
-  }, { passive: false });
+    let t1 = null;           // 1-finger state: {sx,sy,px,py,cx,cy,t,moved}
+    let t2 = null;           // 2-finger state: {dist, midX}
+    let longTimer = null;
+    let longFired = false;
 
-  c.addEventListener('touchmove', e => {
-    e.preventDefault();
-    if (uniDrag.on && e.touches.length === 1) { updateUniverseDrag(e.touches[0].clientY); return; }
-    if (e.touches.length === 2 && _touchDist !== null) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist > _touchDist + 12) { doZoom(1.08, null); _touchDist = dist; }
-      else if (dist < _touchDist - 12) { doZoom(0.93, null); _touchDist = dist; }
-    } else if (e.touches.length === 1 && _touchPan) {
-      V.panX = _touchPan.px + (e.touches[0].clientX - _touchPan.x);
-      V.panY = _touchPan.py + (e.touches[0].clientY - _touchPan.y);
-      clampPanX();
-      clampPanY();
-      render();
+    function cancelLong() {
+      if (longTimer) { clearTimeout(longTimer); longTimer = null; }
     }
-  }, { passive: false });
+    function pinchDist(ts) {
+      return Math.hypot(ts[0].clientX - ts[1].clientX, ts[0].clientY - ts[1].clientY);
+    }
+    function pinchMidX(ts) {
+      return (ts[0].clientX + ts[1].clientX) / 2 - c.getBoundingClientRect().left;
+    }
 
-  c.addEventListener('touchend', e => {
-    if (e.touches.length === 0) {
+    c.addEventListener('touchstart', e => {
+      e.preventDefault();
+      cancelLong();
+      longFired = false;
+
+      if (e.touches.length === 1) {
+        const r  = c.getBoundingClientRect();
+        const tx = e.touches[0].clientX, ty = e.touches[0].clientY;
+        const mx = tx - r.left,          my = ty - r.top;
+        t2 = null;
+
+        /* Universe row reorder — left panel drag (preserve existing behavior) */
+        const uRow = getUniverseRowAt(mx, my);
+        if (uRow && !isUniverseActionTarget(mx, my)) {
+          startUniverseDrag(uRow.id, ty);
+          t1 = null; return;
+        }
+
+        t1 = { sx: tx, sy: ty, px: V.panX, py: V.panY,
+               cx: mx, cy: my, t: Date.now(), moved: false };
+
+        /* Long-press: hold still for LPRESS_MS to open add-event dialog */
+        longTimer = setTimeout(() => {
+          if (!t1 || t1.moved) return;
+          longFired = true; cancelLong();
+          if (t1.cx >= LEFT_W) {
+            let bestId = null, bestDist = Infinity, vi = 0;
+            S.universes.forEach(u => {
+              if (u.visible === false) return;
+              const d = Math.abs(t1.cy - trackY(vi));
+              if (d < TRACK_H / 2 && d < bestDist) { bestDist = d; bestId = u.id; }
+              vi++;
+            });
+            UI.addEvent(bestId, String(Math.round(sy2yr(t1.cx))));
+          }
+        }, LPRESS_MS);
+
+      } else if (e.touches.length >= 2) {
+        cancelLong();
+        t1 = null;
+        t2 = { dist: pinchDist(e.touches), midX: pinchMidX(e.touches) };
+      }
+    }, { passive: false });
+
+    c.addEventListener('touchmove', e => {
+      e.preventDefault();
+      cancelLong();
+
+      /* Universe row drag takes priority */
+      if (uniDrag.on && e.touches.length === 1) { updateUniverseDrag(e.touches[0].clientY); return; }
+
+      if (e.touches.length >= 2) {
+        /* Transition from 1-finger to 2-finger mid-gesture */
+        if (!t2) { t2 = { dist: pinchDist(e.touches), midX: pinchMidX(e.touches) }; t1 = null; return; }
+        const newDist = pinchDist(e.touches);
+        const newMid  = pinchMidX(e.touches);
+        /* Continuous smooth zoom — ratio per frame, focused on pinch midpoint */
+        if (t2.dist > 1) doZoom(newDist / t2.dist, newMid);
+        t2.dist = newDist; t2.midX = newMid;
+        return;
+      }
+
+      if (e.touches.length === 1 && t1) {
+        const tx = e.touches[0].clientX, ty = e.touches[0].clientY;
+        const dx = tx - t1.sx, dy = ty - t1.sy;
+        if (!t1.moved && (Math.abs(dx) > TAP_SLOP || Math.abs(dy) > TAP_SLOP)) t1.moved = true;
+        V.panX = t1.px + dx;
+        V.panY = t1.py + dy;
+        clampPanX(); clampPanY();
+        render();
+      }
+    }, { passive: false });
+
+    c.addEventListener('touchend', e => {
+      cancelLong();
+      if (e.touches.length === 0) {
+        /* Universe row drag finish */
+        if (uniDrag.on) { finishUniverseDrag(); t1 = null; t2 = null; longFired = false; return; }
+        /* Tap detection: short, barely-moved touch → treat as click */
+        if (t1 && !t1.moved && !longFired && (Date.now() - t1.t) < TAP_TIME) {
+          handleClick(t1.cx, t1.cy);
+        }
+        t1 = null; t2 = null; longFired = false;
+      } else if (e.touches.length === 1) {
+        /* One finger lifted while pinching → switch back to pan */
+        t2 = null;
+        const r = c.getBoundingClientRect();
+        const tx = e.touches[0].clientX, ty = e.touches[0].clientY;
+        t1 = { sx: tx, sy: ty, px: V.panX, py: V.panY,
+               cx: tx - r.left, cy: ty - r.top, t: Date.now(), moved: false };
+      }
+    }, { passive: false });
+
+    c.addEventListener('touchcancel', e => {
+      cancelLong();
       if (uniDrag.on) finishUniverseDrag();
-      _touchDist = null;
-      _touchPan = null;
-    }
-  });
+      t1 = null; t2 = null; longFired = false;
+    }, { passive: false });
+  })();
 
   // ---- Double-click: add event at that position ----
   c.addEventListener('dblclick', e => {
@@ -6005,7 +7553,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
   document.addEventListener('keydown', e => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
-    if (e.key === 'Escape')             { M.close(); closeLightbox(); if (_kbdVisible) UI.toggleKbd(); }
+    if (e.key === 'Escape') {
+      M.close(); closeLightbox(); if (_kbdVisible) UI.toggleKbd();
+      if (typeof mobCloseDrawer === 'function') mobCloseDrawer();
+      if (typeof mobCloseFilters === 'function') mobCloseFilters();
+    }
     if (e.key === '+' || e.key === '=')  doZoom(1.2, null);
     if (e.key === '-')                   doZoom(0.833, null);
     if (e.key === '0')                   resetView();
@@ -6071,6 +7623,7 @@ let _kbdVisible = false;
 function updateEventSearch(val) {
   _searchText = (val || '').trim().toLowerCase();
   updateFilterBar();
+  if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
   render();
 }
 
@@ -6078,12 +7631,14 @@ function updateEventSearch(val) {
 function setCatFilter(cat) {
   _catFilter = (_catFilter === cat) ? null : cat;
   updateCatFilterBar();
+  if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
   render();
 }
 
 function clearCatFilter() {
   _catFilter = null;
   updateCatFilterBar();
+  if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
   render();
 }
 
@@ -6091,12 +7646,14 @@ function clearCatFilter() {
 function setStatusFilter(status) {
   _statusFilter = (_statusFilter === status) ? null : status;
   updateStatusFilterBar();
+  if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
   render();
 }
 
 function clearStatusFilter() {
   _statusFilter = null;
   updateStatusFilterBar();
+  if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
   render();
 }
 
@@ -6116,12 +7673,14 @@ function updateStatusFilterBar() {
 function setTagFilter(tag) {
   _tagFilter = tag || null;
   updateTagFilterBar();
+  if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
   render();
 }
 
 function clearTagFilter() {
   _tagFilter = null;
   updateTagFilterBar();
+  if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
   render();
 }
 
@@ -6150,12 +7709,14 @@ function updateTagFilterBar() {
 function setToneFilter(tone) {
   _toneFilter = tone || null;
   updateToneFilterBar();
+  if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
   render();
 }
 
 function clearToneFilter() {
   _toneFilter = null;
   updateToneFilterBar();
+  if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
   render();
 }
 
@@ -6235,6 +7796,7 @@ function clearAllFilters() {
   updateToneFilterBar();
   updateFilterBar();
   updateCharFilterSelect();
+  if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
   render();
 }
 
@@ -6332,6 +7894,7 @@ function updateFilterBar() {
     if (clearBtn) clearBtn.style.display = 'none';
     if (summary)  summary.textContent    = '';
     updateAllClearBtn();
+    if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
     return;
   }
 
@@ -6361,6 +7924,7 @@ function updateFilterBar() {
   }).length;
   if (summary) summary.textContent = matchCount + ' event' + (matchCount !== 1 ? 's' : '') + ' highlighted';
   updateAllClearBtn();
+  if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
 }
 
 /* =====================================================
@@ -7061,6 +8625,310 @@ function buildUniStats(uId) {
       else if (span > 100000) notify('Showing ' + Math.round(span).toLocaleString() + ' years.', 'info');
     }
   }
+  /* ---- inject mob-bar & drawer into DOM on load ---- */
+  (function() {
+    /* === Mobile bottom action bar === */
+    var bar = document.createElement('div');
+    bar.id = 'mob-bar';
+    bar.innerHTML =
+      '<button class="mob-bar-btn bar-view-active" id="mob-tab-timeline" onclick="mobSwitchView(\'timeline\')">' +
+        '<span class="bar-icon">⏱</span>Timeline</button>' +
+      '<button class="mob-bar-btn" id="mob-tab-characters" onclick="mobSwitchView(\'characters\')">' +
+        '<span class="bar-icon">👤</span>Characters</button>' +
+      '<button class="mob-bar-btn" id="mob-tab-connections" onclick="mobSwitchView(\'connections\')">' +
+        '<span class="bar-icon">🔗</span>Connect</button>' +
+      '<button class="mob-bar-btn" id="mob-tab-stats" onclick="mobSwitchView(\'stats\')">' +
+        '<span class="bar-icon">📊</span>Stats</button>' +
+      '<button class="mob-bar-btn" onclick="mobOpenDrawer()">' +
+        '<span class="bar-icon">⋯</span>More</button>';
+    document.getElementById('app').appendChild(bar);
+
+    /* === Drawer overlay === */
+    var ov = document.createElement('div');
+    ov.id = 'mob-drawer-overlay';
+    ov.setAttribute('onclick', 'mobCloseDrawer()');
+    document.body.appendChild(ov);
+
+    /* === Drawer panel === */
+    var drw = document.createElement('div');
+    drw.id = 'mob-drawer';
+    drw.innerHTML =
+      '<div class="mob-drawer-handle"></div>' +
+      '<div class="mob-drawer-title">All Commands</div>' +
+
+      '<div class="mob-drawer-section">' +
+        '<div class="mob-drawer-section-label">Create</div>' +
+        '<div class="mob-drawer-row">' +
+          '<button class="mob-drw-btn drw-accent" onclick="mobDrawerAction(UI.addUniverse)">＋ Universe</button>' +
+          '<button class="mob-drw-btn drw-accent" onclick="mobDrawerAction(UI.addEvent)">＋ Event</button>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="mob-drawer-section">' +
+        '<div class="mob-drawer-section-label">Views</div>' +
+        '<div class="mob-drawer-row">' +
+          '<button class="mob-drw-btn" onclick="mobDrawerView(\'timeline\')">⏱ Timeline</button>' +
+          '<button class="mob-drw-btn" onclick="mobDrawerView(\'characters\')">👤 Characters</button>' +
+        '</div>' +
+        '<div class="mob-drawer-row">' +
+          '<button class="mob-drw-btn" onclick="mobDrawerView(\'connections\')">🔗 Connections</button>' +
+          '<button class="mob-drw-btn" onclick="mobDrawerView(\'stats\')">📊 Stats</button>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="mob-drawer-section">' +
+        '<div class="mob-drawer-section-label">Organise</div>' +
+        '<div class="mob-drawer-row">' +
+          '<button class="mob-drw-btn" onclick="mobDrawerAction(UI.catEditor)">🏷 Categories</button>' +
+          '<button class="mob-drw-btn" onclick="mobDrawerAction(UI.affiliationEditor)">👥 Affiliations</button>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="mob-drawer-section">' +
+        '<div class="mob-drawer-section-label">Navigate</div>' +
+        '<div class="mob-drawer-row">' +
+          '<button class="mob-drw-btn" onclick="mobDrawerAction(goToToday)">⏱ Today</button>' +
+          '<button class="mob-drw-btn" onclick="mobDrawerAction(resetView)">⌂ Reset</button>' +
+        '</div>' +
+        '<div class="mob-drawer-row">' +
+          '<button class="mob-drw-btn drw-undo" id="mob-undo-btn" onclick="mobDrawerAction(History.undo)">↩ Undo</button>' +
+          '<button class="mob-drw-btn drw-redo" id="mob-redo-btn" onclick="mobDrawerAction(History.redo)">↪ Redo</button>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="mob-drawer-storage-notice" role="note">' +
+        '<strong>💾 Your data lives in this browser only.</strong><br>' +
+        'Export a backup regularly — clearing browser data or switching browsers will erase your timeline.' +
+      '</div>' +
+
+      '<div class="mob-drawer-section">' +
+        '<div class="mob-drawer-section-label">Data &amp; Backup</div>' +
+        '<div class="mob-drawer-row">' +
+          '<button class="mob-drw-btn drw-save" onclick="mobDrawerAction(Store.saveHTML)" title="Save as a portable HTML file you can reopen anywhere">💾 Save HTML</button>' +
+          '<button class="mob-drw-btn" onclick="mobDrawerAction(Store.saveJSON)" title="Export a plain JSON backup of all your data">↓ Export JSON</button>' +
+        '</div>' +
+        '<div class="mob-drawer-row">' +
+          '<label class="mob-drw-btn" for="mob-file-in-label" style="cursor:pointer" title="Load a previously saved HTML or JSON file — tap to open your files">↑ Load / Import</label>' +
+          '<input type="file" id="mob-file-in-label" accept=".html,.json" style="display:none" onchange="mobImportFile(event)">' +
+          '<button class="mob-drw-btn drw-danger" onclick="mobDrawerBlankConfirm()" title="Delete all data and start fresh — you will be given a chance to save a backup first">🗑 Clear / Blank</button>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="mob-drawer-section">' +
+        '<div class="mob-drawer-section-label">Tools</div>' +
+        '<div class="mob-drawer-row">' +
+          '<button class="mob-drw-btn" onclick="mobDrawerAction(toggleStoryLine)">🔗 Story</button>' +
+          '<button class="mob-drw-btn" onclick="mobDrawerAction(openRangeConfig)">📅 Range</button>' +
+        '</div>' +
+        '<div class="mob-drawer-row">' +
+          '<button class="mob-drw-btn" onclick="mobDrawerAction(UI.help)">❓ Help</button>' +
+          '<button class="mob-drw-btn" onclick="mobDrawerAction(UI.toggleKbd)">⚓ Shortcuts</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(drw);
+
+    /* === Mobile blank-confirm dialog === */
+    var confirmDlg = document.createElement('div');
+    confirmDlg.id = 'mob-blank-confirm';
+    confirmDlg.setAttribute('role', 'dialog');
+    confirmDlg.setAttribute('aria-modal', 'true');
+    confirmDlg.setAttribute('aria-label', 'Clear timeline — are you sure?');
+    confirmDlg.innerHTML =
+      '<div class="mob-confirm-box">' +
+        '<div class="mob-confirm-icon">\u26a0\ufe0f</div>' +
+        '<div class="mob-confirm-title">Clear all timeline data?</div>' +
+        '<div class="mob-confirm-desc">' +
+          'This will permanently delete all universes, events, characters, and connections.<br><br>' +
+          '<strong>Export a backup first</strong> \u2014 your data is only stored in this browser.' +
+        '</div>' +
+        '<div class="mob-confirm-actions">' +
+          '<button class="mob-confirm-btn save-first" type="button" onclick="mobBlankSaveFirst()">\uD83D\uDCBE Save JSON backup, then clear</button>' +
+          '<button class="mob-confirm-btn clear-only" type="button" onclick="mobBlankClearOnly()">\uD83D\uDDD1 Clear without saving</button>' +
+          '<button class="mob-confirm-btn cancel" type="button" onclick="mobBlankCancel()">Cancel \u2014 keep my data</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(confirmDlg);
+  })();
+
+  /* === Mobile control functions === */
+  function mobOpenDrawer() {
+    var drw = document.getElementById('mob-drawer');
+    var ov  = document.getElementById('mob-drawer-overlay');
+    if (!drw || !ov) return;
+    ov.classList.add('open');
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() { drw.classList.add('open'); });
+    });
+  }
+  function mobCloseDrawer() {
+    var drw = document.getElementById('mob-drawer');
+    var ov  = document.getElementById('mob-drawer-overlay');
+    if (!drw || !ov) return;
+    drw.classList.remove('open');
+    ov.classList.remove('open');
+  }
+  function mobDrawerAction(fn) {
+    mobCloseDrawer();
+    setTimeout(function() { if (typeof fn === 'function') fn(); }, 80);
+  }
+  function mobDrawerView(view) {
+    mobCloseDrawer();
+    setTimeout(function() { mobSwitchView(view); }, 80);
+  }
+  function mobSwitchView(view) {
+    if (typeof switchView === 'function') switchView(view);
+    var tabs = ['timeline', 'characters', 'connections', 'stats'];
+    tabs.forEach(function(v) {
+      var el = document.getElementById('mob-tab-' + v);
+      if (el) {
+        el.classList.toggle('bar-view-active', v === view);
+        el.style.color = v === view ? '#00d4ff' : '';
+      }
+    });
+  }
+  function mobToggleFilters() {
+    var fp  = document.getElementById('filter-panel');
+    var fpr = document.getElementById('filter-panel-rows');
+    var ov  = document.getElementById('mob-fp-overlay');
+    var btn = document.getElementById('mob-filters-btn');
+    if (!fp) return;
+    var isOpen = fp.classList.toggle('mob-fp-open');
+    if (fpr) fpr.classList.toggle('open', isOpen);
+    if (ov)  ov.classList.toggle('open', isOpen);
+    if (btn) btn.classList.toggle('mob-filters-active', isOpen);
+    if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
+  }
+  function mobCloseFilters() {
+    var fp  = document.getElementById('filter-panel');
+    var fpr = document.getElementById('filter-panel-rows');
+    var ov  = document.getElementById('mob-fp-overlay');
+    var btn = document.getElementById('mob-filters-btn');
+    if (fp)  fp.classList.remove('mob-fp-open');
+    if (fpr) fpr.classList.remove('open');
+    if (ov)  ov.classList.remove('open');
+    if (btn) btn.classList.remove('mob-filters-active');
+    if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
+  }
+
+  /* =====================================================
+     MOBILE ACTIVE FILTER STRIP
+     ===================================================== */
+  function updateMobileActiveStrip() {
+    var strip = document.getElementById('mob-active-strip');
+    var chipsEl = document.getElementById('mob-active-chips');
+    var badge = document.getElementById('mob-filter-badge');
+    if (!strip || !chipsEl) return;
+
+    var chips = [];
+
+    if (_searchText) {
+      chips.push('\uD83D\uDD0D \u201C' + _searchText + '\u201D');
+    }
+    if (_catFilter) {
+      chips.push('\uD83C\uDFED ' + _catFilter);
+    }
+    if (_statusFilter) {
+      chips.push('\u25CF ' + _statusFilter);
+    }
+    if (_tagFilter) {
+      chips.push('\uD83C\uDFF7 ' + _tagFilter);
+    }
+    if (_toneFilter) {
+      chips.push('\uD83C\uDFAD ' + _toneFilter);
+    }
+    if (_charFilterIds.length > 0) {
+      _charFilterIds.forEach(function(cid) {
+        var ch = S.characters.find(function(c) { return c.id === cid; });
+        if (ch) chips.push('\uD83D\uDC64 ' + ch.name);
+      });
+    }
+
+    var count = chips.length;
+    if (count === 0) {
+      strip.classList.remove('has-filters');
+      chipsEl.innerHTML = '';
+      if (badge) { badge.style.display = 'none'; badge.textContent = ''; }
+    } else {
+      strip.classList.add('has-filters');
+      chipsEl.innerHTML = chips.map(function(c) {
+        return '<span class="mob-active-chip">' + c.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>';
+      }).join('');
+      if (badge) { badge.style.display = ''; badge.textContent = count; }
+    }
+
+    /* Reflow canvas height after strip visibility changes */
+    setTimeout(function() { if (typeof window._tlResize === 'function') window._tlResize(); }, 40);
+    setTimeout(function() { if (typeof window._tlResize === 'function') window._tlResize(); }, 180);
+  }
+
+  /* =====================================================
+     UNIVERSE MOBILE DATA ACTIONS — safe import & confirm
+     ===================================================== */
+
+  /* Import via the mobile file-input label (bypasses Store.importClick for label-based triggering) */
+  function mobImportFile(e) {
+    Store.importFile(e);
+    e.target.value = '';
+  }
+
+  /* Open the mobile-safe blank confirmation dialog */
+  function mobDrawerBlankConfirm() {
+    mobCloseDrawer();
+    setTimeout(function() {
+      var dlg = document.getElementById('mob-blank-confirm');
+      if (dlg) dlg.classList.add('open');
+    }, 100);
+  }
+
+  /* Save JSON backup first, then blank */
+  function mobBlankSaveFirst() {
+    mobBlankCancel();
+    Store.saveJSON();
+    setTimeout(function() { _doUniBlank(); }, 350);
+  }
+
+  /* Blank without saving */
+  function mobBlankClearOnly() {
+    mobBlankCancel();
+    _doUniBlank();
+  }
+
+  /* Cancel — keep data */
+  function mobBlankCancel() {
+    var dlg = document.getElementById('mob-blank-confirm');
+    if (dlg) dlg.classList.remove('open');
+  }
+
+  /* Perform the blank (mirrors Store.blankTimeline minus browser confirm calls) */
+  function _doUniBlank() {
+    S.universes = [{ id: uid(), name: 'Untitled', color: PALETTE[0], visible: true, description: '', notes: '' }];
+    S.events = [];
+    S.connections = [];
+    S.characters = [];
+    S.affiliations = [];
+    if (!S.categories || Object.keys(S.categories).length === 0) syncCategoriesToState();
+    V.panX = 0; V.panY = 0; V.scale = getMinScale();
+    var zoom = document.getElementById('zoom-pct'); if (zoom) zoom.textContent = formatZoomPercent();
+    Store.autosave();
+    MS = [];
+    M.close();
+    clampPanY();
+    render();
+    updateUniverseScrollbar();
+    updateUniToggleBar();
+    updateCatFilterBar();
+    updateStatusFilterBar();
+    updateTagFilterBar();
+    updateToneFilterBar();
+    updateCharFilterSelect();
+    updateStatsPanel();
+    notify('Blank timeline ready.', 'warning');
+  }
+
+  /* Dismiss confirm dialog on Escape */
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { mobBlankCancel(); }
+  });
   </script>
   </body>
   </html>
