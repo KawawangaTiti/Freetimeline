@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="google-adsense-account" content="ca-pub-4135034633295293">
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
-     crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Free Timeline Universe</title>
@@ -602,65 +599,117 @@ input[type="color"] {
 .cf-clear:hover { background: #fff0f3; }
 .cf-summary { color: #a0a8c0; margin-left: 2px; }
 
-/* === CONNECTION MAP === */
+/* === CONNECTION MAP — cosmic constellation (redesign v7) === */
 .conn-map-wrap {
   width: 100%; flex: 1; position: relative; overflow: hidden;
-  background: #0d0f1a; user-select: none; min-height: 0;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 42%, rgba(120,155,210,0.10) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 45% at 22% 85%, rgba(110,210,200,0.06) 0%, transparent 65%),
+    linear-gradient(180deg, #2c3053 0%, #23264a 55%, #1a1d38 100%);
+  user-select: none; min-height: 0;
 }
-.conn-map-svg { width: 100%; height: 100%; }
+/* starfield overlay — twinkling dots, never too bright */
+.conn-map-wrap::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    radial-gradient(1.1px 1.1px at 12% 18%, rgba(255,255,255,.55), transparent 60%),
+    radial-gradient(1px 1px at 28% 71%, rgba(210,225,255,.42), transparent 60%),
+    radial-gradient(1.2px 1.2px at 47% 33%, rgba(255,255,255,.5), transparent 60%),
+    radial-gradient(1px 1px at 63% 82%, rgba(200,220,255,.38), transparent 60%),
+    radial-gradient(1.3px 1.3px at 79% 22%, rgba(255,245,220,.55), transparent 60%),
+    radial-gradient(1px 1px at 91% 58%, rgba(210,225,255,.4), transparent 60%),
+    radial-gradient(.9px .9px at 38% 88%, rgba(255,255,255,.35), transparent 60%),
+    radial-gradient(1.2px 1.2px at 8%  54%, rgba(210,225,255,.4), transparent 60%),
+    radial-gradient(1px 1px at 55% 12%, rgba(255,255,255,.35), transparent 60%),
+    radial-gradient(1.1px 1.1px at 72% 66%, rgba(255,245,220,.5), transparent 60%);
+  background-size: 520px 520px;
+  opacity: .85;
+  animation: cm-twinkle 7s ease-in-out infinite alternate;
+}
+@keyframes cm-twinkle { from { opacity: .55; } to { opacity: .95; } }
+.conn-map-svg { width: 100%; height: 100%; position: relative; z-index: 1; }
 .conn-map-controls {
   display: flex; gap: 7px; align-items: center; flex-wrap: wrap;
   margin-bottom: 11px;
 }
 .conn-map-legend {
   display: flex; gap: 14px; flex-wrap: wrap; margin-top: 9px;
-  font-size: 11px; color: #6070a0; align-items: center;
+  font-size: 11px; color: #a7b3d6; align-items: center;
 }
 .cml-item { display: flex; align-items: center; gap: 5px; }
 .cml-line { width: 22px; height: 2px; display: inline-block; }
 /* === CONNECTIONS TAB CONTROLS BAR === */
 .cm-controls-bar {
   display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-  padding: 7px 14px;
-  background: #13152a;
-  border-bottom: 1px solid #2a2e50;
+  padding: 9px 14px;
+  background: linear-gradient(180deg, #22254a 0%, #1d2040 100%);
+  border-bottom: 1px solid #373b66;
   flex-shrink: 0;
   z-index: 5;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset;
 }
 .cm-controls-bar .cm-hint {
-  font-size: 10px; color: #5060a0; font-style: italic; margin-left: auto;
-  white-space: nowrap;
+  font-size: 10.5px; color: #8a94bd; font-style: italic; margin-left: auto;
+  white-space: nowrap; letter-spacing: .15px;
 }
 .cm-uni-filter { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
-.cm-sep { width: 1px; height: 20px; background: #2a2e50; flex-shrink: 0; }
+.cm-sep { width: 1px; height: 20px; background: #373b66; flex-shrink: 0; }
 /* === FLOATING LEGEND PANEL === */
 .cm-legend-panel {
   position: absolute; bottom: 16px; right: 16px;
-  background: rgba(13,15,26,0.95); color: #c0d0f0;
-  border: 1px solid #3040a0; border-radius: 10px;
-  padding: 12px 16px; font-size: 11px; z-index: 20;
+  background: rgba(30,33,62,0.94);
+  color: #cdd5ef;
+  border: 1px solid rgba(140,160,220,0.28);
+  border-radius: 12px;
+  padding: 13px 17px; font-size: 11.5px; z-index: 20;
   min-width: 240px; max-width: 300px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 32px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03) inset;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   display: none;
-  line-height: 1.7;
+  line-height: 1.75;
 }
-.cm-legend-panel.visible { display: block; }
+.cm-legend-panel.visible { display: block; animation: legendIn .25s ease; }
+@keyframes legendIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .cm-legend-panel h4 {
-  font-size: 11px; font-weight: 800; color: #8090d0;
-  text-transform: uppercase; letter-spacing: 0.7px;
-  margin: 0 0 10px; padding-bottom: 6px;
-  border-bottom: 1px solid #2a3060;
+  font-size: 11px; font-weight: 800; color: #a8b5e0;
+  text-transform: uppercase; letter-spacing: 1.1px;
+  margin: 0 0 10px; padding-bottom: 7px;
+  border-bottom: 1px solid rgba(140,160,220,0.2);
 }
-.cm-legend-panel .cml-item { display: flex; align-items: center; gap: 7px; margin-bottom: 6px; }
+.cm-legend-panel .cml-item { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
 .cm-legend-panel .cml-line { width: 24px; height: 2.5px; display: inline-block; border-radius: 2px; }
-.cm-legend-panel .cml-dash { width: 24px; display: inline-block; border-top: 2px dashed #7080f0; }
+.cm-legend-panel .cml-dash { width: 24px; display: inline-block; border-top: 2px dashed #a495e6; }
 .map-tip {
-  position: absolute; background: rgba(15,17,38,.95); color: #e0e8ff;
-  border: 1px solid #3040a0; border-radius: 8px;
-  padding: 8px 12px; font-size: 12px; pointer-events: none;
-  max-width: 240px; z-index: 10; display: none;
-  box-shadow: 0 4px 18px rgba(0,0,0,.5); line-height: 1.5;
+  position: absolute; background: rgba(28,31,58,.96); color: #e6ecfb;
+  border: 1px solid rgba(140,160,220,0.35); border-radius: 10px;
+  padding: 10px 13px; font-size: 12.5px; pointer-events: none;
+  max-width: 260px; z-index: 10; display: none;
+  box-shadow: 0 10px 26px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,0.04) inset;
+  line-height: 1.55; letter-spacing: .1px;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
 }
+.map-tip strong { color: #fff8e4; font-weight: 700; letter-spacing: .2px; }
+
+/* Empty state for connection map */
+.cm-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 100%; padding: 48px 28px; text-align: center;
+  color: #b8c2e2; font-family: inherit;
+}
+.cm-empty-star {
+  font-size: 42px; margin-bottom: 14px; opacity: .85;
+  filter: drop-shadow(0 0 12px rgba(180,200,250,0.45));
+  animation: emptyPulse 3.2s ease-in-out infinite;
+}
+@keyframes emptyPulse { 0%,100% { transform: scale(1); opacity: .85; } 50% { transform: scale(1.08); opacity: 1; } }
+.cm-empty h3 { font-size: 18px; font-weight: 700; color: #e8edfb; margin: 0 0 8px; letter-spacing: .2px; }
+.cm-empty p  { font-size: 13.5px; line-height: 1.75; max-width: 440px; margin: 0 0 14px; color: #b0bad6; }
+.cm-empty-steps {
+  background: rgba(30,33,62,0.5); border: 1px solid rgba(140,160,220,0.2);
+  border-radius: 10px; padding: 14px 18px; font-size: 12.5px;
+  text-align: left; max-width: 440px; line-height: 1.9;
+}
+.cm-empty-steps b { color: #ffe08a; font-weight: 700; }
 
 /* === SHARED SCENES === */
 .shared-ev-item {
@@ -702,19 +751,23 @@ input[type="color"] {
 .h-section-title { font-size:18px; font-weight:900; color:#e0e8ff; margin-bottom:14px; padding-bottom:8px;
   border-bottom:2px solid rgba(100,120,200,0.15); }
 
-/* ===== MAP CONTROLS v6 ===== */
-.mz-btn { width:36px; height:36px; border:1.5px solid rgba(100,120,200,0.3); background:rgba(20,22,40,0.8); border-radius:7px;
-  cursor:pointer; font-size:19px; display:flex; align-items:center; justify-content:center;
-  color:#8090d0; transition:background .12s; font-family:inherit; line-height:1; }
-.mz-btn:hover { background:rgba(40,44,80,0.9); }
-.mz-btn:active { background:rgba(60,66,120,0.9); }
-.map-search { padding:5px 12px; border:1.5px solid rgba(100,120,200,0.25); border-radius:14px; font-size:12px;
-  font-family:inherit; background:rgba(10,12,24,0.6); color:#e0e4ef; outline:none; width:150px; transition:border-color .15s; }
-.map-search:focus { border-color:#4a8fde; box-shadow:0 0 0 2px rgba(74,143,222,.2); }
-#cm-pct { font-size:11px; color:#8090c0; background:rgba(20,22,40,0.8); border:1px solid rgba(100,120,200,0.2);
-  border-radius:5px; padding:2px 8px; min-width:44px; text-align:center; }
+/* ===== MAP CONTROLS v7 — constellation controls ===== */
+.mz-btn { width:36px; height:36px; border:1px solid rgba(140,160,220,0.28); background:rgba(36,40,72,0.85); border-radius:8px;
+  cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center;
+  color:#c5d0ef; transition:all .15s ease; font-family:inherit; line-height:1; }
+.mz-btn:hover { background:rgba(64,74,130,0.92); border-color:rgba(180,200,250,0.45); color:#fff; transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,.3); }
+.mz-btn:active { background:rgba(80,90,150,0.95); transform: translateY(0); }
+.map-search { padding:6px 13px; border:1px solid rgba(140,160,220,0.28); border-radius:16px; font-size:12px;
+  font-family:inherit; background:rgba(20,23,44,0.7); color:#e6ecfb; outline:none; width:150px; transition:all .18s; }
+.map-search::placeholder { color:#8590b8; }
+.map-search:focus { border-color:rgba(180,200,250,0.55); box-shadow:0 0 0 3px rgba(140,160,220,.15); background:rgba(30,34,60,0.85); }
+#cm-pct { font-size:11px; color:#b8c2e2; background:rgba(28,32,60,0.75); border:1px solid rgba(140,160,220,0.22);
+  border-radius:6px; padding:3px 9px; min-width:44px; text-align:center; font-weight:600; letter-spacing:.3px; }
 #cm-wrap { cursor:grab; }
 #cm-wrap.cm-dragging { cursor:grabbing; }
+/* Map node hover glow (CSS-driven) */
+.cm-node { transition: filter .18s ease; }
+.cm-edge { transition: opacity .18s ease, stroke-width .18s ease; }
 
 /* ===== UNIVERSE INFO PANEL v6 ===== */
 .uni-stat-row { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
@@ -3236,6 +3289,173 @@ input[type="color"]:focus-visible {
 .conn-item:hover {
   border-color: rgba(0,210,255,0.38);
   background: rgba(0,40,90,0.2);
+}
+
+/* =====================================================
+   CODEX DOSSIER — Universe characters full-view (v2)
+   Overrides legacy .cv-card with a richer dossier card.
+   ===================================================== */
+.cv-grid { gap: 18px !important; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important; }
+
+.cv-card {
+  position: relative;
+  background: linear-gradient(180deg, rgba(18,22,44,0.85) 0%, rgba(12,14,32,0.92) 100%) !important;
+  border: 1px solid rgba(100,130,220,0.18) !important;
+  border-radius: 12px !important;
+  padding: 16px 16px 14px 20px !important;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color .2s ease, transform .2s ease, box-shadow .25s ease, background .2s ease;
+}
+.cv-card::before {
+  content: '';
+  position: absolute; inset: 0 auto 0 0; width: 4px;
+  background: var(--cv-accent, #4a8fde);
+  opacity: 0.85;
+  transition: width .2s ease, opacity .2s ease;
+}
+.cv-card::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at top right, rgba(120,170,255,0.06), transparent 60%);
+  pointer-events: none;
+}
+.cv-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(120,170,255,0.55) !important;
+  box-shadow: 0 10px 30px -8px rgba(0,0,0,0.55), 0 0 0 1px rgba(120,170,255,0.15) inset;
+}
+.cv-card:hover::before { width: 6px; opacity: 1; }
+.cv-card:focus-visible {
+  outline: none;
+  border-color: var(--cv-accent, #4a8fde) !important;
+  box-shadow: 0 0 0 2px rgba(18,22,44,1), 0 0 0 4px var(--cv-accent, #4a8fde);
+}
+.cv-card.is-selected {
+  border-color: var(--cv-accent, #4a8fde) !important;
+  background: linear-gradient(180deg, rgba(30,40,80,0.85) 0%, rgba(18,22,44,0.92) 100%) !important;
+}
+
+.cv-card-top { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 10px; position: relative; z-index: 1; }
+.cv-avatar {
+  width: 60px !important; height: 60px !important;
+  border-radius: 12px !important;
+  border: 2px solid rgba(120,150,220,0.25) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  font-size: 18px !important;
+  letter-spacing: 0.5px;
+}
+.cv-avatar img { border-radius: 10px !important; }
+.cv-card .cv-heading { flex: 1; min-width: 0; }
+.cv-card .cv-name {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.15px;
+  color: #eef2ff !important;
+  line-height: 1.25;
+  margin-bottom: 2px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.cv-card .cv-alias {
+  font-size: 11px;
+  color: #8a97c0;
+  font-style: italic;
+  margin-bottom: 4px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.cv-card .cv-sub { font-size: 11px !important; color: #9aa6c8 !important; margin-top: 0 !important; }
+.cv-chip-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; position: relative; z-index: 1; }
+.cv-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 9px; border-radius: 999px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.3px;
+  color: #fff;
+  background: rgba(120,150,220,0.2);
+  border: 1px solid rgba(120,150,220,0.25);
+}
+.cv-chip.status { color: #fff; border-color: transparent; }
+.cv-chip.align  { color: #fff; border-color: transparent; }
+.cv-chip.species { background: rgba(255,255,255,0.05); color: #c8d0e8; border-color: rgba(200,210,240,0.15); }
+.cv-tags { margin-top: 4px !important; position: relative; z-index: 1; }
+.cv-tag {
+  padding: 2px 9px !important;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+}
+.cv-affil {
+  font-size: 11px; color: #a8b2d0;
+  margin-top: 8px; position: relative; z-index: 1;
+  display: flex; align-items: center; gap: 6px;
+}
+.cv-affil .cv-affil-label { color: #6f7ca0; text-transform: uppercase; font-size: 9px; letter-spacing: 0.8px; font-weight: 700; }
+.cv-notes {
+  font-size: 11.5px; line-height: 1.5;
+  color: #a4adc9;
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.02);
+  border-left: 2px solid rgba(120,150,220,0.3);
+  border-radius: 0 6px 6px 0;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+  position: relative; z-index: 1;
+  font-style: italic;
+}
+.cv-events {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(120,150,220,0.15);
+  position: relative; z-index: 1;
+}
+.cv-events-ticks { display: flex; gap: 3px; flex: 1; overflow: hidden; }
+.cv-events-tick {
+  width: 4px; height: 14px; border-radius: 1.5px;
+  background: var(--cv-accent, #4a8fde);
+  opacity: 0.75;
+}
+.cv-events-tick.empty { background: rgba(120,150,220,0.15); opacity: 1; }
+.cv-events-count {
+  font-size: 11px; font-weight: 700;
+  color: var(--cv-accent, #7ab2ff);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.cv-events-count .zero { color: #6f7ca0; font-weight: 600; }
+
+/* Dossier empty state */
+.cv-empty {
+  grid-column: 1/-1;
+  padding: 48px 24px;
+  text-align: center;
+  color: #8a97c0;
+  border: 1px dashed rgba(120,150,220,0.22);
+  border-radius: 14px;
+  background: radial-gradient(circle at center, rgba(120,150,220,0.04), transparent 70%);
+}
+.cv-empty .cv-empty-glyph {
+  font-size: 32px; margin-bottom: 10px; opacity: 0.5; letter-spacing: 4px;
+}
+.cv-empty .cv-empty-title { font-size: 15px; font-weight: 700; color: #d6deff; margin-bottom: 6px; letter-spacing: 0.3px; }
+.cv-empty .cv-empty-msg { font-size: 12px; line-height: 1.6; max-width: 360px; margin: 0 auto 16px; }
+.cv-empty .cv-empty-cta { font-size: 11px; color: #7ab2ff; }
+
+/* Improved modal profile header (Universe) */
+.char-profile-hd {
+  padding: 14px 14px 12px !important;
+  background: linear-gradient(135deg, rgba(30,40,80,0.45) 0%, rgba(18,22,44,0.3) 100%);
+  border: 1px solid rgba(120,150,220,0.18);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.char-profile-hd::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: var(--cv-accent, #4a8fde);
+}
+.char-profile-photo, .char-photo-placeholder {
+  box-shadow: 0 6px 20px -6px rgba(0,0,0,0.6);
 }
 
   </style>
@@ -6067,119 +6287,16 @@ const M = {
       '<button class="btn accent" onclick="affiliationEditorSave()">Save Changes</button>';
   },
 
-  /* ---- Help (tabbed v7 — comprehensive, senior-friendly) ---- */
+  /* ---- Help (Observatory Manual v8 — premium, searchable, accessible) ---- */
   _help() {
     this.crumb().textContent = '';
-    this.ttl().textContent   = '✦ Free Timeline Universe — Codex Help Guide';
-    this.body().innerHTML = `
-<div style="max-width:620px;font-size:15px;line-height:1.75">
-  <div class="help-tabs">
-    <button class="help-tab active" style="min-height:38px" onclick="helpTab(0)">Start Here</button>
-    <button class="help-tab" style="min-height:38px" onclick="helpTab(1)">Add Your First Event</button>
-    <button class="help-tab" style="min-height:38px" onclick="helpTab(2)">Moving the Timeline</button>
-    <button class="help-tab" style="min-height:38px" onclick="helpTab(3)">Universes and Categories</button>
-    <button class="help-tab" style="min-height:38px" onclick="helpTab(4)">Save and Backup</button>
-    <button class="help-tab" style="min-height:38px" onclick="helpTab(5)">Safety Tips</button>
-    <button class="help-tab" style="min-height:38px" onclick="helpTab(6)">Connections and Story Arcs</button>
-    <button class="help-tab" style="min-height:38px" onclick="helpTab(7)">Keyboard Shortcuts</button>
-    <button class="help-tab" style="min-height:38px" onclick="helpTab(8)">Import and Export in Detail</button>
-  </div>
-
-  <div class="help-section active">
-    <div class="h-section-title">Start Here</div>
-    <div class="h-tip"><strong>Free Timeline Universe is a chronicle for your imagination.</strong> Use it to map the history of a fictional world, a fantasy story, a game universe, a comic book timeline, or any creative project where events happen in sequence — all saved locally in your browser, no account needed.</div>
-    <div class="h-action-box">Great for: novels, series, game worlds, superhero universes, historical fiction, roleplay campaigns, alternate history, and any world you are building.</div>
-    <div class="h-note">Nothing can be accidentally lost without you confirming it. If a choice would erase part of your world, you will be asked first.</div>
-    <div class="h-step"><div class="h-num" style="background:#4a8fde">1</div><div class="h-step-body"><div class="h-step-title">Begin with one moment</div><div class="h-step-desc">To begin, click <strong>Add Event</strong> and place the first moment in your world's history. It can be a birth, a war, a prophecy, a discovery, a landing, a coronation, or the quiet day when everything began.</div></div></div>
-  </div>
-
-  <div class="help-section">
-    <div class="h-section-title">Add Your First Event</div>
-    <div class="h-tip">An event is one moment in your universe. It can be huge or tiny. If it changes the story, it belongs on the timeline.</div>
-    <div class="h-step"><div class="h-num" style="background:#4a8fde">1</div><div class="h-step-body"><div class="h-step-title">Click Add Event</div><div class="h-step-desc">A form opens. This is where you describe this moment in history.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#2ecc71">2</div><div class="h-step-body"><div class="h-step-title">Write the Event Title</div><div class="h-step-desc"><strong>Event Title</strong> is the name of this moment. Try names like <em>The First Dragon Wakes</em>, <em>Founding of the Moon Colony</em>, or <em>The Treaty Breaks</em>.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#9b59b6">3</div><div class="h-step-body"><div class="h-step-title">Choose the Date or Timeline Point</div><div class="h-step-desc"><strong>Date or Timeline Point</strong> means when it happened in your world. It can be any date or fictional year. Use what fits your story: Year 1, 430 BC, 12/04/2088, or xx/xx/1450 if only the year is known.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#f39c12">4</div><div class="h-step-body"><div class="h-step-title">Add the Description</div><div class="h-step-desc"><strong>Description</strong> is the full story of this event. What happened? Who was there? What changed after this moment?</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#e74c3c">5</div><div class="h-step-body"><div class="h-step-title">Pick the Universe</div><div class="h-step-desc"><strong>Universe</strong> is which world or story this belongs to. If you have several worlds, choose the right one.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#00ccaa">6</div><div class="h-step-body"><div class="h-step-title">Pick a Category</div><div class="h-step-desc"><strong>Category</strong> is what kind of event this is. It might be a battle, discovery, character birth, prophecy, invention, betrayal, migration, or world-changing moment.</div></div></div>
-    <div class="h-action-box">Click <strong>Save</strong>. Your event will appear on the timeline.</div>
-    <div class="h-note">You can edit the event later. Your first version does not need to be perfect.</div>
-  </div>
-
-  <div class="help-section">
-    <div class="h-section-title">Moving the Timeline</div>
-    <div class="h-tip">The timeline area is your long road through history. Move through it like turning pages in a very large chronicle.</div>
-    <div class="h-step"><div class="h-num" style="background:#4a8fde">1</div><div class="h-step-body"><div class="h-step-title">Move through time</div><div class="h-step-desc">Scroll left to go further into the past. Scroll right to move forward in time.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#2ecc71">2</div><div class="h-step-body"><div class="h-step-title">Zoom into an era</div><div class="h-step-desc">Zoom in to examine a single era in detail. Zoom out to see centuries at a glance.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#9b59b6">3</div><div class="h-step-body"><div class="h-step-title">Return to the present</div><div class="h-step-desc">If you are using real-world dates, click <strong>Today</strong> to return to the present.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#f39c12">4</div><div class="h-step-body"><div class="h-step-title">Restore the normal view</div><div class="h-step-desc">If the timeline looks wrong, click <strong>Reset View</strong> to restore the normal view. Nothing will be deleted.</div></div></div>
-    <div class="h-note">Getting lost in time is normal. Reset View brings the timeline area back into shape.</div>
-  </div>
-
-  <div class="help-section">
-    <div class="h-section-title">Universes and Categories</div>
-    <div class="h-tip"><strong>A Universe is a container for a whole world or story.</strong> You might have <em>My Fantasy Novel</em>, <em>The Space Campaign</em>, and <em>Earth History</em> as separate universes on the same timeline.</div>
-    <div class="h-step"><div class="h-num" style="background:#4a8fde">1</div><div class="h-step-body"><div class="h-step-title">Create a Universe</div><div class="h-step-desc">Click <strong>Add Universe</strong>. Give the world a name. Choose a color. Add a short note if you want. It will become its own row in the timeline area.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#2ecc71">2</div><div class="h-step-body"><div class="h-step-title">Use Categories</div><div class="h-step-desc"><strong>Categories are types of events</strong> — battles, discoveries, character arrivals, world-changing moments, political shifts. You create your own categories.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#9b59b6">3</div><div class="h-step-body"><div class="h-step-title">Assign events</div><div class="h-step-desc">When you add or edit an event, choose its <strong>Universe</strong> and <strong>Category</strong>. This tells the timeline where the moment belongs and what kind of story beat it is.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#f39c12">4</div><div class="h-step-body"><div class="h-step-title">Filter your world</div><div class="h-step-desc">Use the universe chips or category filters at the top to focus on one world, one thread, or one kind of moment. This helps when your story becomes large.</div></div></div>
-    <div class="h-action-box">Try this: create one universe for the main story and one for ancient history. Then filter between them.</div>
-  </div>
-
-  <div class="help-section">
-    <div class="h-section-title">Save and Backup</div>
-    <div class="h-tip">Your world saves automatically in this browser. You do not need to press a special Save button.</div>
-    <div class="h-step"><div class="h-num" style="background:#4a8fde">1</div><div class="h-step-body"><div class="h-step-title">Export your world</div><div class="h-step-desc"><strong>Export</strong> saves your entire world to a file on your computer. Keep this file safe — it is your world's permanent record.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#2ecc71">2</div><div class="h-step-body"><div class="h-step-title">Import a saved world</div><div class="h-step-desc"><strong>Import</strong> brings a saved world back from a backup file.</div></div></div>
-    <div class="h-note"><strong>Important warning:</strong> If you clear your browser history, your world in the browser will be erased. Always keep an exported backup.</div>
-    <div class="h-action-box">Export your world whenever you finish a major chapter of building.</div>
-  </div>
-
-  <div class="help-section">
-    <div class="h-section-title">Safety Tips</div>
-    <div class="h-tip">Your universe may grow for months or years. Protect it like a manuscript.</div>
-    <div class="h-step"><div class="h-num" style="background:#4a8fde">1</div><div class="h-step-body"><div class="h-step-title">Before clearing browser history</div><div class="h-step-desc">Export before clearing browser history. This protects your world before anything is erased.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#2ecc71">2</div><div class="h-step-body"><div class="h-step-title">Before big experiments</div><div class="h-step-desc">Export before major changes or experiments. Keep a safe version before you rewrite an age, split a kingdom, or rebuild a whole war.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#9b59b6">3</div><div class="h-step-body"><div class="h-step-title">Name your backups clearly</div><div class="h-step-desc">Keep your backup files in a safe, labelled folder. Use names like <em>SpaceCampaign-after-chapter-12</em> or <em>FantasyWorld-before-map-rewrite</em>.</div></div></div>
-    <div class="h-note">A saved world is only as safe as its last backup.</div>
-  </div>
-
-  <div class="help-section">
-    <div class="h-section-title">Connections and Story Arcs</div>
-    <div class="h-tip">You can draw connections between events to show how one moment led to another — cause and effect, character journeys, storylines.</div>
-    <div class="h-step"><div class="h-num" style="background:#4a8fde">1</div><div class="h-step-body"><div class="h-step-title">Connect two moments</div><div class="h-step-desc">Open an event. Choose the connection option. Pick the second event. Add a short label if you want, such as <em>causes</em>, <em>reveals</em>, <em>betrays</em>, or <em>leads to</em>.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#2ecc71">2</div><div class="h-step-body"><div class="h-step-title">Use the Story Line or Story Arc view</div><div class="h-step-desc">Use the Story Line or Story Arc view to follow a chain of connected moments. It helps you see the shape of a quest, a war, a romance, a mystery, or a fall from power.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#9b59b6">3</div><div class="h-step-body"><div class="h-step-title">Map complex plots</div><div class="h-step-desc">Give each arc a clear name. Connect only the moments that truly matter. Use categories to separate battles, discoveries, politics, and character turns. If the timeline area feels crowded, filter one universe or category at a time.</div></div></div>
-    <div class="h-action-box">Think of connections as the invisible thread under your story. They show why history moved the way it did.</div>
-  </div>
-
-  <div class="help-section">
-    <div class="h-section-title">Keyboard Shortcuts</div>
-    <div class="h-tip">These shortcuts help you move quickly while shaping your world.</div>
-    <div class="h-step"><div class="h-num" style="background:#4a8fde">+</div><div class="h-step-body"><div class="h-step-title">Zoom in</div><div class="h-step-desc">Press <strong>+</strong> or <strong>=</strong> to move closer to one era.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#4a8fde">-</div><div class="h-step-body"><div class="h-step-title">Zoom out</div><div class="h-step-desc">Press <strong>-</strong> to see more years at once.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#4a8fde">0</div><div class="h-step-body"><div class="h-step-title">Reset view</div><div class="h-step-desc">Press <strong>0</strong> to restore the normal view.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#2ecc71">←</div><div class="h-step-body"><div class="h-step-title">Move left</div><div class="h-step-desc">Press the <strong>Left Arrow</strong> to move toward the past.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#2ecc71">→</div><div class="h-step-body"><div class="h-step-title">Move right</div><div class="h-step-desc">Press the <strong>Right Arrow</strong> to move forward in time.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#2ecc71">↑↓</div><div class="h-step-body"><div class="h-step-title">Move between rows</div><div class="h-step-desc">Press the <strong>Up Arrow</strong> or <strong>Down Arrow</strong> to move through the timeline rows.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#9b59b6">Esc</div><div class="h-step-body"><div class="h-step-title">Close a panel</div><div class="h-step-desc">Press <strong>Esc</strong> to close an open panel or image.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#f39c12">Ctrl</div><div class="h-step-body"><div class="h-step-title">Undo and redo</div><div class="h-step-desc">Press <strong>Ctrl + Z</strong> to undo. Press <strong>Ctrl + Y</strong> or <strong>Ctrl + Shift + Z</strong> to redo.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#e74c3c">S</div><div class="h-step-body"><div class="h-step-title">Open stats</div><div class="h-step-desc">Press <strong>S</strong> to show or hide the stats panel.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#00ccaa">?</div><div class="h-step-body"><div class="h-step-title">Open keys</div><div class="h-step-desc">Press <strong>?</strong> or <strong>/</strong> to show or hide the keyboard help.</div></div></div>
-    <div class="h-note">You can also use your mouse or touch screen for everything.</div>
-  </div>
-
-  <div class="help-section">
-    <div class="h-section-title">Import and Export in Detail</div>
-    <div class="h-tip">Export is how you make a lasting copy of your world. Import is how you bring that copy back.</div>
-    <div class="h-step"><div class="h-num" style="background:#4a8fde">1</div><div class="h-step-body"><div class="h-step-title">How to export</div><div class="h-step-desc">Click <strong>Export JSON</strong>. Choose where the file should go. Give it a clear name. Put it in a folder you trust. If you also use <strong>Save HTML</strong>, that file can be opened by itself in another browser.</div></div></div>
-    <div class="h-step"><div class="h-num" style="background:#2ecc71">2</div><div class="h-step-body"><div class="h-step-title">How to import</div><div class="h-step-desc">Click <strong>Load</strong>. Choose your saved file. Read the warning. Confirm only when you are ready. The saved world will appear on screen.</div></div></div>
-    <div class="h-note"><strong>Warning:</strong> Import replaces the world that is currently open. Export your current world first if you want to keep it.</div>
-    <div class="h-action-box">When in doubt, export first. A backup gives you freedom to experiment.</div>
-  </div>
-</div>
-`;
-    this.foot().innerHTML = '<button class="btn accent" style="font-size:15px;padding:9px 30px;" onclick="M.close()">&#10003; Got it &mdash; let\'s go!</button>';
+    this.ttl().textContent   = '✦ Observatory Manual — Free Timeline Universe';
+    this.body().innerHTML = obsHelpMarkup();
+    // Focus management + search wiring (next frame so DOM is present)
+    requestAnimationFrame(() => { try { obsHelpInit(); } catch(_){} });
+    this.foot().innerHTML =
+      '<button class="btn light" onclick="M.close()">Close</button>' +
+      '<button class="btn accent" style="font-size:15px;padding:9px 30px;" onclick="M.close()">&#10003; Got it &mdash; let\'s go!</button>';
   },
 
   /* ---- Character List ---- */
@@ -6276,9 +6393,10 @@ const M = {
 
     const alignmentColors = { 'Hero': '#2ecc71', 'Villain': '#e74c3c', 'Neutral': '#95a5a6' };
     const alignCol = alignmentColors[ch.alignment] || '#95a5a6';
+    const _hdAccent = ch.color || (uniIds.length ? ((getU(uniIds[0])||{}).color || '#4a8fde') : '#4a8fde');
 
     this.body().innerHTML =
-      '<div class="char-profile-hd">' +
+      '<div class="char-profile-hd" style="--cv-accent:' + _hdAccent + '">' +
         '<div class="char-photo-wrap">' + photoHTML + '</div>' +
         '<div class="char-profile-meta">' +
           '<div class="char-profile-name">' + esc(ch.name) + '</div>' +
@@ -7890,41 +8008,94 @@ function renderCharsView() {
     return ch.name.toLowerCase().includes(q) ||
       (ch.aliases || '').toLowerCase().includes(q) ||
       (ch.species || '').toLowerCase().includes(q) ||
-      (ch.affiliation || '').toLowerCase().includes(q);
+      (ch.affiliation || '').toLowerCase().includes(q) ||
+      (ch.notes || '').toLowerCase().includes(q);
   });
 
   if (chars.length === 0) {
-    grid.innerHTML = '<div style="color:#999;font-size:13px;padding:20px;text-align:center;grid-column:1/-1">' +
-      (S.characters.length === 0 ? 'No characters yet. Click "+ New Character" to add one.' : 'No matches found.') + '</div>';
+    var isFirst = S.characters.length === 0;
+    grid.innerHTML =
+      '<div class="cv-empty">' +
+        '<div class="cv-empty-glyph">\u2756 \u2756 \u2756</div>' +
+        '<div class="cv-empty-title">' + (isFirst ? 'The Codex is empty' : 'No dossier matches your search') + '</div>' +
+        '<div class="cv-empty-msg">' +
+          (isFirst
+            ? 'Every universe begins with its first name. Create a dossier to record a character\u2019s identity, affiliations, and the events that shape them.'
+            : 'Try a different name, alias, species, affiliation, or note keyword.') +
+        '</div>' +
+        (isFirst ? '<div class="cv-empty-cta">Use the <strong>+ New Character</strong> button to begin.</div>' : '') +
+      '</div>';
     return;
   }
 
   grid.innerHTML = chars.map(function(ch) {
     var evCnt = S.events.filter(function(e) { return (e.characterIds||[]).includes(ch.id); }).length;
     var uniIds = getCharUniverseIds(ch);
-    var tagsHTML = uniIds.map(function(uid) {
+    var tagsHTML = uniIds.slice(0, 4).map(function(uid) {
       var u = getU(uid);
       return u ? '<span class="cv-tag" style="background:' + u.color + '">' + esc(u.name) + '</span>' : '';
     }).join('');
+    if (uniIds.length > 4) {
+      tagsHTML += '<span class="cv-tag" style="background:#555">+' + (uniIds.length - 4) + '</span>';
+    }
 
     var avatarInner = ch.photo
       ? '<img src="' + ch.photo + '" alt="' + esc(ch.name) + '">'
-      : ch.name.split(' ').map(function(w){return w[0]}).join('').slice(0,2).toUpperCase();
+      : ch.name.split(' ').map(function(w){return w[0]||''}).join('').slice(0,2).toUpperCase();
 
-    var statusColors = { 'Active': '#2ecc71', 'Deceased': '#e74c3c', 'Missing': '#f39c12', 'Unknown': '#95a5a6', 'Retired': '#3498db' };
-    var sCol = statusColors[ch.status] || '';
-    var statusHTML = ch.status ? '<span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:9px;color:#fff;font-weight:700;background:' + sCol + ';margin-right:4px">' + esc(ch.status) + '</span>' : '';
+    var statusColors = { 'Alive': '#2ecc71', 'Deceased': '#e74c3c', 'Missing': '#f39c12', 'Unknown': '#95a5a6', 'Retired': '#3498db', 'Active': '#2ecc71', 'Other': '#f39c12' };
+    var sCol = statusColors[ch.status] || '#95a5a6';
+    var alignColors = { 'Hero': '#2ecc71', 'Villain': '#e74c3c', 'Neutral': '#95a5a6' };
+    var aCol = alignColors[ch.alignment] || '#95a5a6';
 
-    return '<div class="cv-card" onclick="MS=[{t:\'charDetail\',charId:\'' + ch.id + '\'}];M.push(MS[0]);M.render()">' +
+    var chipsHTML = '';
+    if (ch.status)    chipsHTML += '<span class="cv-chip status" style="background:' + sCol + '">' + esc(ch.status) + '</span>';
+    if (ch.alignment) chipsHTML += '<span class="cv-chip align" style="background:' + aCol + '">' + esc(ch.alignment) + '</span>';
+    if (ch.species)   chipsHTML += '<span class="cv-chip species">' + esc(ch.species) + '</span>';
+
+    var accent = ch.color || (uniIds.length ? ((getU(uniIds[0])||{}).color || '#4a8fde') : '#4a8fde');
+
+    var ticksMax = 8;
+    var ticksFilled = Math.min(evCnt, ticksMax);
+    var ticksHTML = '';
+    for (var i = 0; i < ticksMax; i++) {
+      ticksHTML += '<span class="cv-events-tick' + (i >= ticksFilled ? ' empty' : '') + '"></span>';
+    }
+    var eventsLabel = evCnt === 0
+      ? '<span class="zero">No linked events</span>'
+      : evCnt + ' event' + (evCnt !== 1 ? 's' : '');
+
+    var affilHTML = ch.affiliation
+      ? '<div class="cv-affil"><span class="cv-affil-label">Affiliation</span><span>' + esc(ch.affiliation) + '</span></div>'
+      : '';
+
+    var notesHTML = ch.notes
+      ? '<div class="cv-notes">' + esc(ch.notes) + '</div>'
+      : '';
+
+    var avatarStyle = ch.photo ? '' : 'background:' + accent + ';color:#fff;font-weight:800';
+
+    return '<div class="cv-card" tabindex="0" role="button" aria-label="Open dossier for ' + esc(ch.name) + '" ' +
+        'data-cid="' + ch.id + '" ' +
+        'style="--cv-accent:' + accent + '" ' +
+        'onclick="MS=[{t:\'charDetail\',charId:\'' + ch.id + '\'}];M.push(MS[0]);M.render()" ' +
+        'onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();MS=[{t:\'charDetail\',charId:\'' + ch.id + '\'}];M.push(MS[0]);M.render();}">' +
       '<div class="cv-card-top">' +
-        '<div class="cv-avatar" style="' + (ch.photo ? '' : 'background:' + (ch.color || charHashColor(ch.id)) + ';color:#fff;font-weight:700;font-size:16px') + '">' + avatarInner + '</div>' +
-        '<div><div class="cv-name">' + esc(ch.name) + '</div>' +
-          (ch.species ? '<div class="cv-sub">' + esc(ch.species) + '</div>' : '') +
+        '<div class="cv-avatar" style="' + avatarStyle + '">' + avatarInner + '</div>' +
+        '<div class="cv-heading">' +
+          '<div class="cv-name">' + esc(ch.name) + '</div>' +
+          (ch.aliases ? '<div class="cv-alias">aka ' + esc(ch.aliases) + '</div>' : '') +
+          (ch.occupation ? '<div class="cv-sub">' + esc(ch.occupation) + '</div>' : '') +
         '</div>' +
       '</div>' +
-      statusHTML +
+      (chipsHTML ? '<div class="cv-chip-row">' + chipsHTML + '</div>' : '') +
       (tagsHTML ? '<div class="cv-tags">' + tagsHTML + '</div>' : '') +
-      '<div class="cv-stat">' + evCnt + ' event' + (evCnt !== 1 ? 's' : '') + ' linked</div>' +
+      affilHTML +
+      notesHTML +
+      '<div class="cv-events">' +
+        '<div class="cv-events-ticks" aria-hidden="true">' + ticksHTML + '</div>' +
+        '<div class="cv-events-count">' + eventsLabel + '</div>' +
+      '</div>' +
     '</div>';
   }).join('');
 }
@@ -8612,7 +8783,18 @@ const ConnectionMap = {
     this._container = container;
     this._mx = 0; this._my = 0; this._mscale = 1;
     if (S.characters.length === 0) {
-      container.innerHTML = '<div style="padding:50px;text-align:center;color:#a0a8c0;font-size:14px">No characters yet \u2014 add some via the \uD83D\uDC64 Characters panel first.</div>';
+      container.innerHTML =
+        '<div class="conn-map-wrap" id="cm-wrap"><div class="cm-empty">'
+        + '<div class="cm-empty-star">\u2728</div>'
+        + '<h3>Your constellation is waiting</h3>'
+        + '<p>Connections appear when two characters share events, or when you mark them as counterparts across universes. Add a few characters first, then link them to scenes \u2014 the map will light up on its own.</p>'
+        + '<div class="cm-empty-steps">'
+          + '<b>1.</b> Open the \u2318 Codex tab and add characters.<br>'
+          + '<b>2.</b> Open any event and attach two or more characters to it.<br>'
+          + '<b>3.</b> (Optional) In a character profile, list counterparts to link alt-universe versions.<br>'
+          + '<b>4.</b> Return here \u2014 edges will glow between shared characters.'
+        + '</div>'
+        + '</div></div>';
       return;
     }
 
@@ -8658,19 +8840,40 @@ const ConnectionMap = {
     /* --- Build SVG --- */
     let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" id="cm-svg" class="conn-map-svg">';
     s += '<defs>';
-    s += '<filter id="glow2"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
-    s += '<filter id="glow3"><feGaussianBlur stdDeviation="9" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+    s += '<filter id="glow2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+    s += '<filter id="glow3" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+    /* Edge soft glow */
+    s += '<filter id="edgeGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+    /* Radial gradient for the constellation center */
+    s += '<radialGradient id="cmBg" cx="50%" cy="48%" r="70%">'
+      + '<stop offset="0%" stop-color="#3d4372" stop-opacity="0.55"/>'
+      + '<stop offset="55%" stop-color="#272a4e" stop-opacity="0.75"/>'
+      + '<stop offset="100%" stop-color="#1a1d38" stop-opacity="0.95"/>'
+      + '</radialGradient>';
+    /* Selected-node pulsing ring animation */
+    s += '<style>'
+      + '.cm-sel-ring{animation:cmSelPulse 2s ease-in-out infinite}'
+      + '@keyframes cmSelPulse{0%,100%{opacity:.9;transform:scale(1);transform-origin:center}50%{opacity:.55;transform:scale(1.06);transform-origin:center}}'
+      + '.cm-edge{filter:url(#edgeGlow)}'
+      + '</style>';
     s += '</defs>';
-    s += '<rect width="' + W + '" height="' + H + '" fill="#0d0f1a"/>';
+    /* Background rect uses radial gradient for subtle center warmth */
+    s += '<rect width="' + W + '" height="' + H + '" fill="url(#cmBg)"/>';
+    /* Soft ecliptic grid rings — very faint, gives sense of orbit */
+    const gCX = W/2, gCY = H/2;
+    [0.28, 0.48, 0.68].forEach(f => {
+      const rr = Math.min(gCX, gCY) * f;
+      s += '<circle cx="' + gCX + '" cy="' + gCY + '" r="' + rr + '" fill="none" stroke="rgba(170,190,240,0.06)" stroke-width="1" stroke-dasharray="2,5"/>';
+    });
     /* Open the pan/zoom group */
     s += '<g id="cm-g">';
 
-    // Universe halos
+    // Universe halos — softer, larger, subtle warmth per universe
     S.universes.forEach(u => {
       allChars.forEach(ch => {
         if (!S.events.some(ev => ev.universeId === u.id && (ev.characterIds||[]).includes(ch.id))) return;
         const p = pos[ch.id]; if (!p) return;
-        s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="46" fill="' + u.color + '18"/>';
+        s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="52" fill="' + u.color + '" opacity="0.08"/>';
       });
     });
 
@@ -8680,21 +8883,23 @@ const ConnectionMap = {
       if (members.length === 0) return;
       const avgX = members.reduce((a, ch) => a + (pos[ch.id]?pos[ch.id].x:0), 0) / members.length;
       const avgY = members.reduce((a, ch) => a + (pos[ch.id]?pos[ch.id].y:0), 0) / members.length;
-      s += '<text x="' + avgX + '" y="' + (avgY - 58) + '" text-anchor="middle" font-size="9" fill="' + u.color + '" opacity="0.65" font-family="-apple-system,sans-serif" font-weight="bold" style="pointer-events:none">' + esc(u.name) + '</text>';
+      s += '<text x="' + avgX + '" y="' + (avgY - 62) + '" text-anchor="middle" font-size="9.5" fill="' + u.color + '" opacity="0.78" font-family="-apple-system,sans-serif" font-weight="700" letter-spacing="0.8" style="pointer-events:none;text-transform:uppercase">' + esc(u.name) + '</text>';
     });
 
-    // Edges
+    // Edges — glowing cosmic threads
     edges.forEach(e => {
       const pa = pos[e.a], pb = pos[e.b]; if (!pa || !pb) return;
       const mx2 = (pa.x + pb.x) / 2, my2 = (pa.y + pb.y) / 2 - 28;
       if (e.type === 'counterpart') {
         s += '<path d="M' + pa.x + ',' + pa.y + ' Q' + mx2 + ',' + my2 + ' ' + pb.x + ',' + pb.y + '"'
-          + ' stroke="#7080f0" stroke-width="1.5" stroke-dasharray="5,4" fill="none" opacity="0.55"'
+          + ' stroke="#a495e6" stroke-width="1.6" stroke-dasharray="5,4" fill="none" opacity="0.7"'
+          + ' stroke-linecap="round"'
           + ' class="cm-edge" data-type="counterpart" data-a="' + e.a + '" data-b="' + e.b + '" style="cursor:pointer"/>';
       } else {
-        const thick = Math.min(1.2 + e.sharedEvs.length * 0.8, 6);
+        const thick = Math.min(1.4 + e.sharedEvs.length * 0.85, 6);
         s += '<path d="M' + pa.x + ',' + pa.y + ' Q' + mx2 + ',' + my2 + ' ' + pb.x + ',' + pb.y + '"'
-          + ' stroke="#40e0c0" stroke-width="' + thick + '" fill="none" opacity="0.28"'
+          + ' stroke="#6fd3c8" stroke-width="' + thick + '" fill="none" opacity="0.48"'
+          + ' stroke-linecap="round"'
           + ' class="cm-edge" data-type="shared" data-a="' + e.a + '" data-b="' + e.b
           + '" data-cnt="' + e.sharedEvs.length + '" data-evids="' + e.sharedEvs.join(',') + '" style="cursor:pointer"/>';
       }
@@ -8708,24 +8913,28 @@ const ConnectionMap = {
       const nr = 20 + Math.min(evCnt * 1.8, 15);
       const initials = ch.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
       const isFiltered = _charFilterIds.includes(ch.id);
+      /* Outer soft halo — constant for every node, gives "artifact" feel */
+      s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="' + (nr + 6) + '" fill="' + col + '" opacity="0.18" style="pointer-events:none"/>';
       if (isFiltered) {
-        s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="' + (nr + 9) + '" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-dasharray="5,3" opacity="0.85" style="pointer-events:none"/>';
+        /* Pulsing selected ring */
+        s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="' + (nr + 11) + '" fill="none" stroke="#ffd27a" stroke-width="2.5" stroke-dasharray="5,3" opacity="0.92" class="cm-sel-ring" style="pointer-events:none;transform-origin:' + p.x + 'px ' + p.y + 'px"/>';
       }
-      s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="' + nr + '" fill="' + col + 'cc" stroke="' + col + '" stroke-width="2.2"'
+      /* Main node disc */
+      s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="' + nr + '" fill="' + col + 'dd" stroke="rgba(255,255,255,0.72)" stroke-width="1.6"'
         + ' class="cm-node" data-cid="' + ch.id + '" style="cursor:pointer">'
         + '<title>' + esc(ch.name) + (evCnt ? ' \u2014 ' + evCnt + ' event' + (evCnt !== 1 ? 's' : '') : '') + '</title></circle>';
       if (ch.photo) {
-        s += '<defs><clipPath id="ccp-' + ch.id + '"><circle cx="' + p.x + '" cy="' + p.y + '" r="' + nr + '"/></clipPath></defs>';
+        s += '<defs><clipPath id="ccp-' + ch.id + '"><circle cx="' + p.x + '" cy="' + p.y + '" r="' + (nr - 1.5) + '"/></clipPath></defs>';
         s += '<image href="' + ch.photo + '" x="' + (p.x-nr) + '" y="' + (p.y-nr) + '" width="' + (nr*2) + '" height="' + (nr*2) + '"'
           + ' clip-path="url(#ccp-' + ch.id + ')" preserveAspectRatio="xMidYMid slice"'
           + ' class="cm-node" data-cid="' + ch.id + '" style="cursor:pointer"/>';
       } else {
-        s += '<text x="' + p.x + '" y="' + (p.y+5) + '" text-anchor="middle" font-size="12" font-weight="bold" fill="white"'
-          + ' font-family="-apple-system,sans-serif" style="pointer-events:none">' + initials + '</text>';
+        s += '<text x="' + p.x + '" y="' + (p.y+5) + '" text-anchor="middle" font-size="13" font-weight="700" fill="white"'
+          + ' font-family="-apple-system,sans-serif" letter-spacing="0.5" style="pointer-events:none;text-shadow:0 1px 2px rgba(0,0,0,0.4)">' + initials + '</text>';
       }
-      // Name label
-      s += '<text x="' + p.x + '" y="' + (p.y+nr+14) + '" text-anchor="middle" font-size="10" fill="#c0cce0"'
-        + ' font-family="-apple-system,sans-serif" class="cm-label" data-cid="' + ch.id + '" style="pointer-events:none">'
+      // Name label — readable against dusk bg
+      s += '<text x="' + p.x + '" y="' + (p.y+nr+15) + '" text-anchor="middle" font-size="10.5" fill="#dde4f5"'
+        + ' font-family="-apple-system,sans-serif" font-weight="600" class="cm-label" data-cid="' + ch.id + '" style="pointer-events:none;paint-order:stroke;stroke:rgba(20,22,44,0.75);stroke-width:2.5px;stroke-linejoin:round">'
         + (ch.name.length > 15 ? ch.name.slice(0,14) + '\u2026' : ch.name) + '</text>';
       // Universe dots
       const uniIds = [...new Set(S.events.filter(ev => (ev.characterIds||[]).includes(ch.id)).map(ev => ev.universeId))];
@@ -8733,7 +8942,7 @@ const ConnectionMap = {
       const dotStartX = p.x - ((totalDots - 1) * dotSp) / 2;
       uniIds.slice(0, 5).forEach((uid, di) => {
         const uu = S.universes.find(u => u.id === uid); if (!uu) return;
-        s += '<circle cx="' + (dotStartX + di * dotSp) + '" cy="' + (p.y+nr+25) + '" r="3.5" fill="' + uu.color + '" opacity="0.85"><title>' + esc(uu.name) + '</title></circle>';
+        s += '<circle cx="' + (dotStartX + di * dotSp) + '" cy="' + (p.y+nr+26) + '" r="3.5" fill="' + uu.color + '" opacity="0.92" stroke="rgba(255,255,255,0.35)" stroke-width="0.6"><title>' + esc(uu.name) + '</title></circle>';
       });
     });
 
@@ -8924,9 +9133,9 @@ const ConnectionMap = {
         const cid = el.dataset.cid;
         wrap.querySelectorAll('.cm-edge').forEach(edge => {
           if (edge.dataset.a === cid || edge.dataset.b === cid) {
-            edge.dataset.origOp = edge.getAttribute('opacity') || '0.28';
+            edge.dataset.origOp = edge.getAttribute('opacity') || '0.48';
             edge.dataset.origSw = edge.getAttribute('stroke-width') || '1.5';
-            edge.setAttribute('opacity', '0.9');
+            edge.setAttribute('opacity', '0.95');
             const sw = parseFloat(edge.getAttribute('stroke-width') || 1.5);
             edge.setAttribute('stroke-width', sw + 2.5);
           }
@@ -9085,10 +9294,813 @@ function _openEv(evId) {
 }
 
 
-/* helpTab — switches tabs in the Help modal */
+/* helpTab — legacy shim (kept for backward compatibility) */
 function helpTab(n) {
-  document.querySelectorAll('.help-tab').forEach((t, i) => t.classList.toggle('active', i === n));
-  document.querySelectorAll('.help-section').forEach((s, i) => s.classList.toggle('active', i === n));
+  const list = document.querySelectorAll('[data-obs-toc-item]');
+  if (list[n]) list[n].click();
+}
+
+/* =====================================================
+   OBSERVATORY MANUAL — premium searchable help
+   ===================================================== */
+const OBS_HELP_SECTIONS = [
+  { id:'welcome',        label:'Welcome',                 coord:'α-00', kw:'overview introduction about begin' },
+  { id:'getting-started',label:'Getting Started',         coord:'α-01', kw:'first steps begin new user' },
+  { id:'saved-locally',  label:'What Is Saved Locally',   coord:'α-02', kw:'storage browser localstorage data privacy risk' },
+  { id:'creating-events',label:'Creating Events',         coord:'β-01', kw:'add event moment title date description' },
+  { id:'timeline-nav',   label:'Timeline Navigation',     coord:'β-02', kw:'move scroll jump today reset view' },
+  { id:'pan-zoom',       label:'Pan and Zoom',            coord:'β-03', kw:'zoom in out drag pinch wheel scale' },
+  { id:'tracks',         label:'Tracks / Universes',      coord:'γ-01', kw:'rows worlds stories containers' },
+  { id:'people',         label:'People / Characters',     coord:'γ-02', kw:'characters cast dossier profile portrait' },
+  { id:'categories',     label:'Categories',              coord:'γ-03', kw:'types tags classification battle discovery' },
+  { id:'search-filters', label:'Search and Filters',      coord:'γ-04', kw:'find filter chip universe status tone tag' },
+  { id:'relationships',  label:'Relationships / Connections', coord:'δ-01', kw:'links bonds causes reveals arrows map' },
+  { id:'story-mode',     label:'Story Mode',              coord:'δ-02', kw:'story arc line narrative follow chain' },
+  { id:'importing',      label:'Importing',               coord:'ε-01', kw:'load json file bring back restore open' },
+  { id:'backups',        label:'Creating Backups',        coord:'ε-02', kw:'export save json html copy file download' },
+  { id:'restore',        label:'Restoring From Backup',   coord:'ε-03', kw:'import load replace overwrite rescue' },
+  { id:'shortcuts',      label:'Keyboard Shortcuts',      coord:'ζ-01', kw:'keys hotkeys arrow escape plus minus' },
+  { id:'mobile',         label:'Mobile Use',              coord:'ζ-02', kw:'phone tablet touch pinch tap drawer' },
+  { id:'troubleshoot',   label:'Troubleshooting',         coord:'η-01', kw:'problems bug fix missing lost broken' },
+  { id:'faq',            label:'Frequently Asked',        coord:'θ-01', kw:'faq question answer common' },
+  { id:'privacy',        label:'Privacy & Data',          coord:'θ-02', kw:'privacy offline account cookies tracking' },
+  { id:'credits',        label:'About & Credits',         coord:'θ-03', kw:'credits about version copyright thanks' }
+];
+
+let _obsHelpPrevFocus = null;
+let _obsHelpActiveId = 'welcome';
+
+function obsHelpMarkup() {
+  const toc = OBS_HELP_SECTIONS.map((s, i) => {
+    const active = i === 0 ? ' is-active' : '';
+    return `<button type="button" class="obs-toc-item${active}" data-obs-toc-item data-obs-target="${s.id}" aria-label="${s.label}" role="option" aria-selected="${i===0}">
+      <span class="obs-toc-coord">${s.coord}</span>
+      <span class="obs-toc-label">${s.label}</span>
+    </button>`;
+  }).join('');
+
+  return `
+<style id="obs-help-style">
+  #modal-bg.open .modal:has(.obs-help){ width: min(1040px, 96vw) !important; max-width:1040px; }
+  .obs-help{ font-family: ui-sans-serif, -apple-system, "Inter", "Segoe UI", system-ui, sans-serif;
+    color:#d6deee; font-size:15px; line-height:1.7; letter-spacing:0.005em;
+    position:relative; margin:-20px; padding:0;
+    background:
+      radial-gradient(1200px 600px at 85% -10%, rgba(116,120,255,0.14), transparent 55%),
+      radial-gradient(900px 500px at 10% 110%, rgba(0,210,255,0.10), transparent 60%),
+      radial-gradient(600px 360px at 55% 50%, rgba(180,90,255,0.07), transparent 70%),
+      linear-gradient(180deg, rgba(8,10,24,0.55), rgba(6,8,20,0.72));
+  }
+  .obs-help::before{ content:""; position:absolute; inset:0; pointer-events:none;
+    background-image:
+      radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,0.55), transparent 60%),
+      radial-gradient(1px 1px at 78% 42%, rgba(255,255,255,0.35), transparent 60%),
+      radial-gradient(1px 1px at 34% 76%, rgba(255,255,255,0.45), transparent 60%),
+      radial-gradient(1px 1px at 63% 88%, rgba(255,255,255,0.30), transparent 60%),
+      radial-gradient(1.5px 1.5px at 90% 10%, rgba(180,220,255,0.6), transparent 60%),
+      radial-gradient(1px 1px at 5% 55%, rgba(255,255,255,0.35), transparent 60%);
+    opacity:0.7; mix-blend-mode:screen;
+  }
+  .obs-help-hero{ position:relative; padding:22px 26px 18px; border-bottom:1px solid rgba(120,180,255,0.12);
+    background: linear-gradient(180deg, rgba(14,18,42,0.55), rgba(10,12,28,0.1)); }
+  .obs-hero-eyebrow{ font-family: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+    font-size:10.5px; letter-spacing:0.22em; text-transform:uppercase; color:#7a9ccd; margin-bottom:6px;
+    display:flex; align-items:center; gap:10px; }
+  .obs-hero-eyebrow::before{ content:""; width:22px; height:1px; background:linear-gradient(90deg, transparent, #7a9ccd); }
+  .obs-hero-title{ font-family: "Fraunces", "Cormorant Garamond", "Playfair Display", Georgia, serif;
+    font-weight:500; font-size:28px; line-height:1.15; color:#eaf0ff; letter-spacing:-0.01em;
+    margin:0 0 6px; }
+  .obs-hero-title em{ font-style:italic; color:#9fc0ff; font-weight:400; }
+  .obs-hero-sub{ font-size:13.5px; color:#9aa8c4; max-width:64ch; }
+  .obs-search-wrap{ position:relative; margin-top:16px; }
+  .obs-search{ width:100%; background:rgba(10,14,32,0.7); border:1px solid rgba(120,180,255,0.18);
+    border-radius:999px; padding:13px 46px 13px 46px; color:#e6edff; font-size:15px;
+    font-family:inherit; outline:none; transition: border-color .15s, box-shadow .15s, background .15s; }
+  .obs-search:focus{ border-color:rgba(120,200,255,0.55); box-shadow:0 0 0 4px rgba(88,160,255,0.14);
+    background:rgba(14,20,44,0.85); }
+  .obs-search::placeholder{ color:#6a7a9a; }
+  .obs-search-ico{ position:absolute; left:16px; top:50%; transform:translateY(-50%); color:#7a9ccd;
+    font-size:16px; pointer-events:none; }
+  .obs-search-hint{ position:absolute; right:12px; top:50%; transform:translateY(-50%);
+    font-family: "JetBrains Mono", ui-monospace, monospace; font-size:10.5px; letter-spacing:0.14em;
+    color:#5b6c8e; border:1px solid rgba(120,180,255,0.14); padding:3px 8px; border-radius:6px;
+    background:rgba(10,14,32,0.6); }
+  .obs-search-hint.hidden{ display:none; }
+
+  .obs-help-shell{ display:grid; grid-template-columns: 260px 1fr; gap:0;
+    min-height:420px; max-height:70vh; }
+  .obs-toc{ border-right:1px solid rgba(120,180,255,0.1);
+    padding:16px 10px; overflow-y:auto; background:rgba(8,10,22,0.35); }
+  .obs-toc-head{ font-family:"JetBrains Mono", ui-monospace, monospace;
+    font-size:10px; letter-spacing:0.24em; text-transform:uppercase; color:#5a6e92;
+    padding:6px 12px 10px; display:flex; align-items:center; gap:8px; }
+  .obs-toc-head::after{ content:""; flex:1; height:1px; background:linear-gradient(90deg, rgba(120,180,255,0.2), transparent); }
+  .obs-toc-item{ display:flex; align-items:center; gap:10px; width:100%;
+    background:transparent; border:1px solid transparent; color:#aab6d0;
+    padding:9px 12px; border-radius:8px; text-align:left; font-size:13.5px;
+    font-family:inherit; cursor:pointer; transition: all .14s ease;
+    margin-bottom:2px; }
+  .obs-toc-item:hover{ background:rgba(90,140,220,0.08); color:#dbe6ff; }
+  .obs-toc-item:focus-visible{ outline:none; border-color:rgba(120,200,255,0.55);
+    box-shadow:0 0 0 3px rgba(88,160,255,0.16); }
+  .obs-toc-item.is-active{ background:linear-gradient(90deg, rgba(90,160,255,0.18), rgba(90,160,255,0.03));
+    color:#eaf1ff; border-color:rgba(120,200,255,0.25);
+    box-shadow: inset 2px 0 0 #7fb4ff; }
+  .obs-toc-item.is-hidden{ display:none; }
+  .obs-toc-coord{ font-family:"JetBrains Mono", ui-monospace, monospace;
+    font-size:10px; color:#6b7fa6; letter-spacing:0.1em; min-width:34px; }
+  .obs-toc-item.is-active .obs-toc-coord{ color:#9ec4ff; }
+  .obs-toc-label{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .obs-toc-empty{ padding:16px 14px; font-size:12.5px; color:#6e7c98; font-style:italic; }
+
+  .obs-main{ padding:22px 28px 28px; overflow-y:auto; position:relative; }
+  .obs-section{ display:none; max-width:68ch; animation:obsFadeIn .24s ease; }
+  .obs-section.is-active{ display:block; }
+  .obs-section.is-hidden{ display:none !important; }
+  @keyframes obsFadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+
+  .obs-sec-meta{ display:flex; align-items:baseline; gap:14px; margin-bottom:6px;
+    font-family:"JetBrains Mono", ui-monospace, monospace; font-size:10.5px;
+    letter-spacing:0.2em; text-transform:uppercase; color:#6c84b0; }
+  .obs-sec-meta::after{ content:""; flex:1; height:1px;
+    background:linear-gradient(90deg, rgba(120,180,255,0.28), transparent); }
+  .obs-sec-title{ font-family:"Fraunces","Cormorant Garamond",Georgia,serif;
+    font-weight:500; font-size:26px; line-height:1.2; color:#eaf0ff;
+    letter-spacing:-0.008em; margin:0 0 14px; }
+  .obs-sec-lede{ font-size:15.5px; color:#bac7e2; margin-bottom:16px; max-width:64ch; }
+  .obs-p{ margin:0 0 12px; color:#c2cde2; max-width:64ch; }
+  .obs-p strong{ color:#ecf1ff; font-weight:600; }
+  .obs-p em{ color:#a6c3ea; font-style:italic; }
+
+  .obs-callout{ position:relative; margin:14px 0; padding:14px 16px 14px 18px;
+    border-radius:10px; border:1px solid rgba(120,180,255,0.16);
+    background:rgba(18,22,44,0.55); backdrop-filter: blur(6px);
+    font-size:14px; color:#c4cfe6; }
+  .obs-callout::before{ content:""; position:absolute; left:0; top:10px; bottom:10px; width:2px;
+    background:linear-gradient(180deg, #7fb4ff, rgba(127,180,255,0)); border-radius:2px; }
+  .obs-callout .obs-callout-tag{ display:inline-block; font-family:"JetBrains Mono",ui-monospace,monospace;
+    font-size:10px; letter-spacing:0.18em; text-transform:uppercase;
+    color:#7fb4ff; margin-bottom:6px; }
+  .obs-callout.warn{ border-color:rgba(255,180,110,0.28); background:rgba(44,28,14,0.45); }
+  .obs-callout.warn::before{ background:linear-gradient(180deg,#ffb770,rgba(255,183,112,0)); }
+  .obs-callout.warn .obs-callout-tag{ color:#ffb770; }
+  .obs-callout.danger{ border-color:rgba(255,120,120,0.3); background:rgba(50,18,22,0.5); }
+  .obs-callout.danger::before{ background:linear-gradient(180deg,#ff8c8c,rgba(255,140,140,0)); }
+  .obs-callout.danger .obs-callout-tag{ color:#ff8c8c; }
+  .obs-callout.tip{ border-color:rgba(140,230,200,0.25); background:rgba(14,38,34,0.45); }
+  .obs-callout.tip::before{ background:linear-gradient(180deg,#8ce6c8,rgba(140,230,200,0)); }
+  .obs-callout.tip .obs-callout-tag{ color:#8ce6c8; }
+
+  .obs-steps{ counter-reset: step; margin:8px 0 16px; padding:0; list-style:none; }
+  .obs-steps li{ position:relative; padding:10px 0 10px 46px; border-top:1px dashed rgba(120,180,255,0.12); }
+  .obs-steps li:first-child{ border-top:none; }
+  .obs-steps li::before{ counter-increment: step; content: counter(step, decimal-leading-zero);
+    position:absolute; left:0; top:12px; width:30px; height:30px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:"JetBrains Mono", ui-monospace, monospace; font-size:11px; color:#bfd4ff;
+    background:radial-gradient(circle at 30% 30%, rgba(90,140,220,0.35), rgba(18,22,44,0.9));
+    border:1px solid rgba(120,180,255,0.28); }
+  .obs-steps b{ display:block; color:#eaf0ff; font-weight:600; font-size:14.5px; margin-bottom:2px; }
+  .obs-steps span{ color:#b4c0d9; font-size:14px; }
+
+  .obs-kbd-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:8px;
+    margin:8px 0 18px; }
+  .obs-kbd-row{ display:flex; align-items:center; gap:12px; padding:9px 12px;
+    border:1px solid rgba(120,180,255,0.12); border-radius:8px;
+    background:rgba(12,16,34,0.5); }
+  .obs-kbd-keys{ display:flex; gap:4px; flex-shrink:0; }
+  .obs-key{ font-family:"JetBrains Mono",ui-monospace,monospace; font-size:11.5px;
+    color:#dbe6ff; background:linear-gradient(180deg, rgba(40,48,80,0.9), rgba(20,24,44,0.95));
+    border:1px solid rgba(140,180,230,0.3); border-radius:5px;
+    padding:3px 7px; min-width:22px; text-align:center;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06); }
+  .obs-kbd-desc{ font-size:13.5px; color:#b7c4dd; }
+
+  .obs-faq{ margin:4px 0 14px; }
+  .obs-faq details{ border:1px solid rgba(120,180,255,0.14); border-radius:8px;
+    padding:0; margin-bottom:8px; background:rgba(12,16,34,0.4); overflow:hidden; }
+  .obs-faq summary{ cursor:pointer; padding:12px 14px; font-weight:500; color:#dbe6ff;
+    font-size:14.5px; list-style:none; position:relative; padding-right:30px;
+    transition:background .14s; }
+  .obs-faq summary::-webkit-details-marker{ display:none; }
+  .obs-faq summary:hover{ background:rgba(90,140,220,0.06); }
+  .obs-faq summary::after{ content:"+"; position:absolute; right:16px; top:50%; transform:translateY(-50%);
+    color:#7fb4ff; font-family:"JetBrains Mono",ui-monospace,monospace; transition:transform .18s; }
+  .obs-faq details[open] summary::after{ content:"−"; }
+  .obs-faq details > div{ padding:0 14px 12px; color:#b7c4dd; font-size:14px; line-height:1.7; }
+
+  .obs-footer-note{ margin-top:28px; padding-top:16px; border-top:1px solid rgba(120,180,255,0.12);
+    font-family:"JetBrains Mono", ui-monospace, monospace; font-size:10.5px;
+    letter-spacing:0.18em; text-transform:uppercase; color:#5a6e92;
+    display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+
+  .obs-highlight{ background:rgba(255,220,120,0.25); color:#fff6c9;
+    border-radius:3px; padding:0 2px; box-shadow: 0 0 0 1px rgba(255,220,120,0.15); }
+
+  .obs-noresults{ padding:40px 20px; text-align:center; color:#7f8eac; font-size:14px; }
+  .obs-noresults strong{ display:block; color:#c5d0e9; font-size:16px; margin-bottom:6px; }
+
+  .obs-toc-toggle{ display:none; }
+
+  /* Mobile */
+  @media (max-width: 820px){
+    #modal-bg.open .modal:has(.obs-help){ width:100% !important; max-width:100% !important; }
+    .obs-help{ margin:-20px -20px -20px -20px; }
+    .obs-help-shell{ grid-template-columns: 1fr; max-height:none; }
+    .obs-toc{ border-right:none; border-bottom:1px solid rgba(120,180,255,0.12);
+      max-height:0; overflow:hidden; padding:0 10px; transition:max-height .26s ease, padding .26s ease; }
+    .obs-toc.is-open{ max-height:46vh; padding:12px 10px; overflow-y:auto; }
+    .obs-toc-toggle{ display:flex; align-items:center; justify-content:space-between;
+      width:100%; padding:12px 16px; background:rgba(12,16,34,0.6);
+      border:none; border-top:1px solid rgba(120,180,255,0.1);
+      color:#bbc9e5; font-family:inherit; font-size:13.5px; cursor:pointer;
+      text-align:left; }
+    .obs-toc-toggle .obs-chev{ transition:transform .2s; color:#7fb4ff; }
+    .obs-toc-toggle.is-open .obs-chev{ transform:rotate(180deg); }
+    .obs-main{ padding:18px 18px 24px; max-height:none; }
+    .obs-hero-title{ font-size:22px; }
+    .obs-sec-title{ font-size:21px; }
+    .obs-search-hint{ display:none; }
+  }
+</style>
+
+<div class="obs-help" data-obs-help role="dialog" aria-label="Observatory Manual for Free Timeline Universe">
+
+  <header class="obs-help-hero">
+    <div class="obs-hero-eyebrow">Observatory Manual · Star Catalogue · v8</div>
+    <h1 class="obs-hero-title">A guide to charting your universe — <em>every coordinate explained</em>.</h1>
+    <p class="obs-hero-sub">A complete field manual for Free Timeline Universe: how to build worlds, connect stories, protect your work, and move confidently through time. Search any topic, or pick a heading from the catalogue.</p>
+    <div class="obs-search-wrap">
+      <span class="obs-search-ico" aria-hidden="true">⌕</span>
+      <input type="search" class="obs-search" data-obs-search placeholder="Search the manual — try “backup”, “zoom”, “character”…" aria-label="Search the manual" autocomplete="off" spellcheck="false" />
+      <span class="obs-search-hint" data-obs-search-hint>esc · close</span>
+    </div>
+  </header>
+
+  <button type="button" class="obs-toc-toggle" data-obs-toc-toggle aria-expanded="false" aria-controls="obs-toc-list">
+    <span>Star catalogue · <strong id="obs-current-label" style="color:#eaf0ff;font-weight:500">Welcome</strong></span>
+    <span class="obs-chev">▾</span>
+  </button>
+
+  <div class="obs-help-shell">
+    <aside class="obs-toc" id="obs-toc-list" role="listbox" aria-label="Manual sections">
+      <div class="obs-toc-head">Star catalogue</div>
+      ${toc}
+      <div class="obs-toc-empty" data-obs-toc-empty style="display:none">No matching sections.</div>
+    </aside>
+    <main class="obs-main" data-obs-main tabindex="-1">
+      ${obsHelpSectionsMarkup()}
+      <div class="obs-noresults" data-obs-noresults style="display:none">
+        <strong>No results in the catalogue.</strong>
+        Try a simpler word, like <em>event</em>, <em>zoom</em>, or <em>backup</em>.
+      </div>
+      <div class="obs-footer-note">
+        <span>End of transmission · Free Timeline Universe</span>
+        <span>Press Esc to close · Focus returns to the Help button</span>
+      </div>
+    </main>
+  </div>
+</div>
+`;
+}
+
+function obsHelpSectionsMarkup(){
+  const S_ = {
+    welcome: {
+      coord:'α-00 · Prologue',
+      title:'Welcome to your observatory',
+      lede:'Free Timeline Universe is a private, offline chronicle for your imagination. You can build the history of a novel, a game, a film series, a family saga, or any world where things happen in order.',
+      body:`
+        <p class="obs-p">This manual is designed like a small observatory handbook. It explains every feature in plain language, with no technical words to memorize. Use the <strong>search bar above</strong> to jump to any topic, or browse the star catalogue on the left.</p>
+        <div class="obs-callout tip"><span class="obs-callout-tag">How to use this guide</span>
+          Each section is short. Read only what you need. You can come back any time from the ✦ Help button in the top bar.</div>
+        <p class="obs-p"><strong>If you are brand new:</strong> start with <em>Getting Started</em>, then read <em>What Is Saved Locally</em>. Those two sections prepare you for everything else.</p>
+        <p class="obs-p"><strong>If you have used it before:</strong> the search bar finds any section in under a second. Try searching <em>backup</em>, <em>story mode</em>, or <em>shortcuts</em>.</p>`
+    },
+    'getting-started': {
+      coord:'α-01 · First light',
+      title:'Getting started',
+      lede:'Five minutes is enough to place your first moment on the timeline.',
+      body:`
+        <ol class="obs-steps">
+          <li><b>Open the app.</b><span>Free Timeline Universe works the moment the page opens. There is no sign-up, no email, no account to create.</span></li>
+          <li><b>Create your first Universe.</b><span>A Universe is a container for one world or one story. Click <strong>Add Universe</strong> in the top bar. Give it a name like <em>My Fantasy Novel</em> and pick a colour.</span></li>
+          <li><b>Add your first event.</b><span>Click <strong>Add Event</strong>. Write a title, choose a date (any date — even an invented one), pick the Universe you just created, and press Save.</span></li>
+          <li><b>Explore the timeline.</b><span>Your event appears as a dot on the main canvas. Drag the canvas to move through time. Use the + and − buttons, or your mouse wheel, to zoom.</span></li>
+          <li><b>Save a backup right away.</b><span>Before you invest hours, make one backup. Open the menu, choose <strong>Export JSON</strong>, and keep the file somewhere safe. This is important — read <em>What Is Saved Locally</em> next.</span></li>
+        </ol>
+        <div class="obs-callout"><span class="obs-callout-tag">Suggestion</span>Start small. One universe, five events. You can always grow your world later.</div>`
+    },
+    'saved-locally': {
+      coord:'α-02 · Local storage',
+      title:'What is saved locally',
+      lede:'Your world lives inside this browser, on this device. Nothing is sent to the internet. This gives you privacy — and a responsibility.',
+      body:`
+        <p class="obs-p">Free Timeline Universe saves your work in your browser's own storage. That storage stays on your computer or phone. No server ever sees your world. There is no account and no cloud sync.</p>
+        <div class="obs-callout warn"><span class="obs-callout-tag">Important risk</span>
+          Because your world is stored in this browser, it can be erased by things you would not normally worry about. Please read the list below carefully — it only takes a minute.</div>
+        <p class="obs-p"><strong>Your world can disappear if any of these happen without a backup:</strong></p>
+        <ol class="obs-steps">
+          <li><b>You clear browsing data.</b><span>"Clear history", "Clear cookies and site data", or "Reset browser" will erase your world.</span></li>
+          <li><b>You use private / incognito mode.</b><span>Private windows delete everything when you close them. Do not build your world in a private window.</span></li>
+          <li><b>You change browsers or devices.</b><span>Opening the app on a different browser or a different computer will not show your world. It lives only where you created it.</span></li>
+          <li><b>You uninstall the browser.</b><span>Removing Chrome, Firefox, Safari, Edge, or similar will take the storage with it.</span></li>
+          <li><b>The browser runs out of space.</b><span>This is rare, but very large files or very low disk space can push data out.</span></li>
+          <li><b>An extension or cleanup tool removes site data.</b><span>"Cookie cleaners" and "privacy extensions" sometimes delete storage.</span></li>
+        </ol>
+        <div class="obs-callout tip"><span class="obs-callout-tag">The only true safety net</span>
+          Export a backup file regularly and keep it somewhere outside the browser — for example, a folder on your computer, a cloud drive, or a USB stick. See <em>Creating Backups</em>.</div>
+        <p class="obs-p">Autosave is always on. Every change you make is kept in this browser automatically. But autosave only protects against small things — like accidentally closing the tab. It does not protect against clearing the browser.</p>`
+    },
+    'creating-events': {
+      coord:'β-01 · Events',
+      title:'Creating events',
+      lede:'An event is one moment in your world. It can be enormous or tiny. If it matters to the story, it belongs on the timeline.',
+      body:`
+        <ol class="obs-steps">
+          <li><b>Click "Add Event".</b><span>The event form opens on top of the timeline.</span></li>
+          <li><b>Write a clear Title.</b><span>Short, specific titles work best. Examples: <em>The First Dragon Wakes</em>, <em>Founding of Moon Colony</em>, <em>The Treaty Breaks</em>.</span></li>
+          <li><b>Set the Date or Timeline Point.</b><span>Use any format that makes sense for your world. <em>Year 1</em>, <em>430 BC</em>, <em>12/04/2088</em>, or <em>xx/xx/1450</em> if only the year is known. You can edit it later.</span></li>
+          <li><b>Add a Description.</b><span>Describe what happened, who was there, and what changed after. This is the heart of your event. You can format text, add line breaks, and paste long passages.</span></li>
+          <li><b>Pick a Universe.</b><span>Choose which world this event belongs to. You can change it later.</span></li>
+          <li><b>Pick a Category.</b><span>Categories are the <em>type</em> of event — for example: Battle, Discovery, Birth, Prophecy, Political Shift. You create your own. See <em>Categories</em>.</span></li>
+          <li><b>Link characters (optional).</b><span>If you already have characters, attach the ones involved in this moment. This powers the Character Codex and story connections.</span></li>
+          <li><b>Save.</b><span>Your event appears on the timeline as a coloured marker inside its universe's track.</span></li>
+        </ol>
+        <div class="obs-callout tip"><span class="obs-callout-tag">Tip</span>Your first draft of any event does not need to be perfect. Capture it quickly, then polish later.</div>
+        <p class="obs-p"><strong>Editing an event:</strong> click any event on the timeline to open it, then press <strong>Edit</strong>. You can change any field, or delete the event. Deleting always asks for confirmation.</p>
+        <p class="obs-p"><strong>Event images:</strong> if the form offers an image field, you can paste or upload a picture for that moment. Images also live inside the browser, so they count toward the same local storage.</p>`
+    },
+    'timeline-nav': {
+      coord:'β-02 · Navigation',
+      title:'Timeline navigation',
+      lede:'The main canvas is one long road through time. You can wander, jump, and return home without fear of losing your place.',
+      body:`
+        <ol class="obs-steps">
+          <li><b>Move through time.</b><span>Click and drag the empty area of the canvas to slide the timeline left (past) or right (future). On a touchscreen, swipe with one finger.</span></li>
+          <li><b>Jump to Today.</b><span>If you use real-world dates, click <strong>Today</strong> to snap back to the current date.</span></li>
+          <li><b>Reset View.</b><span>If the timeline looks off, press <strong>Reset View</strong>. This recenters the canvas — <em>nothing is deleted, nothing is changed.</em></span></li>
+          <li><b>Fit everything.</b><span>Use <strong>Fit</strong> (if available in your toolbar) to zoom out until every event is on screen at once.</span></li>
+          <li><b>Focus on one universe.</b><span>Click a universe chip above the timeline to hide the others for a while. Click again to bring them back.</span></li>
+        </ol>
+        <div class="obs-callout"><span class="obs-callout-tag">Getting lost is normal</span>Drag too far and you might see a blank canvas. <strong>Reset View</strong> always brings you home.</div>`
+    },
+    'pan-zoom': {
+      coord:'β-03 · Pan & zoom',
+      title:'Pan and zoom',
+      lede:'Pan is how you slide the canvas. Zoom is how close you stand to it.',
+      body:`
+        <p class="obs-p"><strong>Panning (moving around):</strong></p>
+        <ol class="obs-steps">
+          <li><b>Mouse or trackpad.</b><span>Click and hold an empty part of the canvas, then drag.</span></li>
+          <li><b>Touchscreen.</b><span>Swipe with one finger.</span></li>
+          <li><b>Keyboard.</b><span>Use the Arrow keys — left/right moves through time, up/down moves between universe rows.</span></li>
+        </ol>
+        <p class="obs-p"><strong>Zooming (closer or wider):</strong></p>
+        <ol class="obs-steps">
+          <li><b>Wheel or trackpad.</b><span>Scroll up to zoom in, scroll down to zoom out. On trackpads, the pinch gesture also works.</span></li>
+          <li><b>Buttons.</b><span>Use <strong>+</strong> and <strong>−</strong> in the toolbar.</span></li>
+          <li><b>Keyboard.</b><span>Press <strong>+</strong> (or <strong>=</strong>) to zoom in, <strong>−</strong> to zoom out, <strong>0</strong> to reset.</span></li>
+          <li><b>Touchscreen.</b><span>Place two fingers on the canvas and spread them apart to zoom in; pinch them together to zoom out.</span></li>
+        </ol>
+        <div class="obs-callout tip"><span class="obs-callout-tag">Good habit</span>Zoom out before you panic. A wide view usually reveals where your events really are.</div>`
+    },
+    tracks: {
+      coord:'γ-01 · Tracks',
+      title:'Tracks and universes',
+      lede:'A universe is one world or one story. Each universe gets its own coloured row — its own track — on the timeline.',
+      body:`
+        <ol class="obs-steps">
+          <li><b>Create a universe.</b><span>Click <strong>Add Universe</strong>. Give it a name and a colour. Optionally add a short description.</span></li>
+          <li><b>Rearrange universes.</b><span>From the universe list, you can rename, recolour, or reorder them. Order controls the stacking of rows on the canvas.</span></li>
+          <li><b>Hide or show a universe.</b><span>Use the universe chips above the timeline to temporarily hide a universe without deleting it.</span></li>
+          <li><b>Delete a universe.</b><span>Deleting a universe is always confirmed. You can choose what happens to its events — they can be moved to another universe or deleted.</span></li>
+        </ol>
+        <div class="obs-callout tip"><span class="obs-callout-tag">Think of it this way</span>If your story has parallel timelines (for example, a main plot and an ancient prequel), use one universe per timeline. You can then view them side by side.</div>
+        <p class="obs-p"><strong>Universe Info:</strong> open a universe's info panel to see its event count, character count, and time span at a glance.</p>`
+    },
+    people: {
+      coord:'γ-02 · People',
+      title:'People and characters',
+      lede:'Characters are the people (or creatures, or nations) your events revolve around. Each one gets a full dossier in the Character Codex.',
+      body:`
+        <ol class="obs-steps">
+          <li><b>Open the Character Codex.</b><span>Click the <strong>Characters</strong> button in the top bar. This is your cast list.</span></li>
+          <li><b>Create a dossier.</b><span>Press <strong>New Dossier</strong>. Fill in the name, a short description, and any other details you want. You can add a portrait later.</span></li>
+          <li><b>Link characters to events.</b><span>Inside any event, attach the characters involved. The Codex will automatically track every moment each character appears in.</span></li>
+          <li><b>Browse a character's timeline.</b><span>Open a dossier and you will see all the events they participate in, in order. This is their personal chronology.</span></li>
+          <li><b>Find shared scenes.</b><span>The Codex can show you which characters appear together — useful for spotting duos, rivalries, and crossover moments.</span></li>
+        </ol>
+        <div class="obs-callout"><span class="obs-callout-tag">Writer's tip</span>Characters do not need full biographies to be useful. Even a one-line description is enough to start.</div>
+        <p class="obs-p"><strong>Affiliations</strong> group characters into factions, houses, guilds, crews, or any other grouping you invent. Manage them from the affiliation editor.</p>`
+    },
+    categories: {
+      coord:'γ-03 · Categories',
+      title:'Categories',
+      lede:'Categories are the kinds of events — the colours of moments. You create and name them yourself.',
+      body:`
+        <ol class="obs-steps">
+          <li><b>Open the Category editor.</b><span>Find <strong>Categories</strong> in the menu or settings area. This is where you build your own labels.</span></li>
+          <li><b>Add a category.</b><span>Type a name, pick a colour, and save. Good examples: Battle, Discovery, Prophecy, Birth, Political Shift, Migration, Betrayal, Technology.</span></li>
+          <li><b>Use categories on events.</b><span>Every event can be assigned one category. You can change it anytime.</span></li>
+          <li><b>Filter by category.</b><span>Use the category filter bar to show only one kind of event — for example, only battles, or only discoveries.</span></li>
+          <li><b>Edit or delete a category.</b><span>Renaming a category updates every event using it. Deleting a category is confirmed; its events are kept, just without that tag.</span></li>
+        </ol>
+        <div class="obs-callout tip"><span class="obs-callout-tag">Tip</span>A few clear categories are better than many confusing ones. Start with 5–7 and grow only when needed.</div>`
+    },
+    'search-filters': {
+      coord:'γ-04 · Lookup',
+      title:'Search and filters',
+      lede:'When your world grows large, search and filters are how you focus. Think of them as a set of lenses.',
+      body:`
+        <p class="obs-p"><strong>Universal search:</strong> the search tool looks through event titles, descriptions, characters, and connections. Matching events are highlighted on the timeline.</p>
+        <ol class="obs-steps">
+          <li><b>Universe chips.</b><span>Click a universe at the top to show only that world. Click again to show all.</span></li>
+          <li><b>Category filters.</b><span>Show only certain kinds of events — for example, only wars.</span></li>
+          <li><b>Status, Tag, and Tone filters.</b><span>Use these to narrow down by event status (if you use it), freeform tags, or emotional tone.</span></li>
+          <li><b>Character filter.</b><span>Show only events that include a chosen character.</span></li>
+          <li><b>Clear filters.</b><span>Every filter bar has a way to reset. Clearing filters never deletes anything — it just shows everything again.</span></li>
+        </ol>
+        <div class="obs-callout"><span class="obs-callout-tag">Tip</span>Filters stack. You can combine a universe filter with a category filter to see, for example, all battles in one specific world.</div>`
+    },
+    relationships: {
+      coord:'δ-01 · Connections',
+      title:'Relationships and connections',
+      lede:'Connections are arrows between events. They show cause and effect — how one moment led to another.',
+      body:`
+        <ol class="obs-steps">
+          <li><b>Open an event.</b><span>Click the event you want to connect from.</span></li>
+          <li><b>Choose the connection action.</b><span>Inside the event view, use the <strong>Connections</strong> option.</span></li>
+          <li><b>Pick the second event.</b><span>Search for and select the event this one leads to or relates to.</span></li>
+          <li><b>Add a label (optional).</b><span>Short labels work best: <em>causes</em>, <em>reveals</em>, <em>leads to</em>, <em>betrays</em>, <em>echoes</em>.</span></li>
+          <li><b>View connections on the map.</b><span>Open the <strong>Connection Map</strong> from the menu to see every link as a graph. Zoom and drag to explore it.</span></li>
+        </ol>
+        <div class="obs-callout tip"><span class="obs-callout-tag">Use sparingly</span>Connect only the moments that truly shape each other. Too many arrows become noise.</div>
+        <p class="obs-p"><strong>Character relationships</strong> can also be tracked on each character's dossier — allies, rivals, family, and so on. These are separate from event connections.</p>`
+    },
+    'story-mode': {
+      coord:'δ-02 · Story mode',
+      title:'Story mode',
+      lede:'Story Mode lets you follow a chain of connected events like a single narrative thread.',
+      body:`
+        <ol class="obs-steps">
+          <li><b>Open Story Mode.</b><span>Find the <strong>Story Line</strong> or <strong>Story Arc</strong> option in the menu or the view switcher.</span></li>
+          <li><b>Pick a starting event.</b><span>Story Mode will travel along its connections, showing each event in order.</span></li>
+          <li><b>Read forward.</b><span>Each scene shows the event, its characters, and the connection that brought you here.</span></li>
+          <li><b>Exit Story Mode.</b><span>Press Escape or use the close button. You return to the full timeline view.</span></li>
+        </ol>
+        <div class="obs-callout"><span class="obs-callout-tag">Great for</span>Previewing a plotline, checking that a quest has the right beats, or sharing a single arc with a collaborator through a backup file.</div>`
+    },
+    importing: {
+      coord:'ε-01 · Import',
+      title:'Importing',
+      lede:'Importing means bringing a saved world back into the app.',
+      body:`
+        <ol class="obs-steps">
+          <li><b>Open the menu and click Load.</b><span>This opens a file picker.</span></li>
+          <li><b>Choose your backup file.</b><span>Select the <em>.json</em> or <em>.html</em> file you saved before.</span></li>
+          <li><b>Read the warning carefully.</b><span>Importing will replace whatever world is currently open. If you have unsaved work, export it first.</span></li>
+          <li><b>Confirm.</b><span>Your saved world appears on screen — events, universes, categories, characters, connections, and all.</span></li>
+        </ol>
+        <div class="obs-callout danger"><span class="obs-callout-tag">Danger</span>Import replaces the current world. This cannot be undone automatically. Always export your current world first if you want to keep it.</div>`
+    },
+    backups: {
+      coord:'ε-02 · Export',
+      title:'Creating backups',
+      lede:'A backup is a copy of your entire world saved to a file on your device. It is the single most important habit in this app.',
+      body:`
+        <ol class="obs-steps">
+          <li><b>Open the menu.</b><span>Find the <strong>Export JSON</strong> option.</span></li>
+          <li><b>Save the file.</b><span>Choose a location you trust — a backup folder, a cloud drive like Google Drive or iCloud, or a USB stick.</span></li>
+          <li><b>Name it clearly.</b><span>Use names with dates or stage notes. Examples: <em>SpaceCampaign-2026-01-15</em>, <em>FantasyWorld-before-map-rewrite</em>, <em>MyNovel-chapter-12-complete</em>.</span></li>
+          <li><b>Repeat regularly.</b><span>A good rhythm is: after every major writing session, before every big experiment, and before clearing your browser.</span></li>
+        </ol>
+        <div class="obs-callout tip"><span class="obs-callout-tag">Two types of backups</span>
+          <strong>Export JSON</strong> is the full, re-importable backup — your primary safety net.
+          <strong>Save HTML</strong> (if available) produces a standalone page you can open in any browser to read the timeline, without importing.</div>
+        <div class="obs-callout warn"><span class="obs-callout-tag">When to back up</span>
+          Before you clear browser history. Before you update your browser. Before you switch devices. Before any change you are nervous about.</div>`
+    },
+    restore: {
+      coord:'ε-03 · Restore',
+      title:'Restoring from backup',
+      lede:'Restoring means loading a backup file back into the app to bring a previous world back.',
+      body:`
+        <ol class="obs-steps">
+          <li><b>Open the app in the browser you want to use.</b><span>The restored world will live in that browser going forward.</span></li>
+          <li><b>Choose Load / Import.</b><span>Pick the <em>.json</em> file you saved. If you only have an HTML backup, open the HTML file directly to read it, or use its export option to get the JSON again.</span></li>
+          <li><b>Confirm the replacement.</b><span>If a world is already open, importing replaces it. Export what you have first if you want to keep it.</span></li>
+          <li><b>Verify everything is there.</b><span>Check event counts, character counts, and a few open events. Connections and images should all be present.</span></li>
+        </ol>
+        <div class="obs-callout danger"><span class="obs-callout-tag">If you lost a world</span>
+          The app cannot recover a world that was never exported. This is the reason <strong>Creating Backups</strong> matters. If you do have a backup file, follow the steps above and it will come back exactly as you saved it.</div>`
+    },
+    shortcuts: {
+      coord:'ζ-01 · Keys',
+      title:'Keyboard shortcuts',
+      lede:'Shortcuts are optional but quick. Everything also works with mouse and touch.',
+      body:`
+        <div class="obs-kbd-grid">
+          <div class="obs-kbd-row"><span class="obs-kbd-keys"><span class="obs-key">+</span><span class="obs-key">=</span></span><span class="obs-kbd-desc">Zoom in</span></div>
+          <div class="obs-kbd-row"><span class="obs-kbd-keys"><span class="obs-key">−</span></span><span class="obs-kbd-desc">Zoom out</span></div>
+          <div class="obs-kbd-row"><span class="obs-kbd-keys"><span class="obs-key">0</span></span><span class="obs-kbd-desc">Reset view</span></div>
+          <div class="obs-kbd-row"><span class="obs-kbd-keys"><span class="obs-key">←</span></span><span class="obs-kbd-desc">Move toward the past</span></div>
+          <div class="obs-kbd-row"><span class="obs-kbd-keys"><span class="obs-key">→</span></span><span class="obs-kbd-desc">Move toward the future</span></div>
+          <div class="obs-kbd-row"><span class="obs-kbd-keys"><span class="obs-key">↑</span><span class="obs-key">↓</span></span><span class="obs-kbd-desc">Move between universe rows</span></div>
+          <div class="obs-kbd-row"><span class="obs-kbd-keys"><span class="obs-key">Esc</span></span><span class="obs-kbd-desc">Close any open panel, image, or this manual</span></div>
+          <div class="obs-kbd-row"><span class="obs-kbd-keys"><span class="obs-key">Ctrl</span><span class="obs-key">Z</span></span><span class="obs-kbd-desc">Undo the last change</span></div>
+          <div class="obs-kbd-row"><span class="obs-kbd-keys"><span class="obs-key">Ctrl</span><span class="obs-key">Y</span></span><span class="obs-kbd-desc">Redo</span></div>
+          <div class="obs-kbd-row"><span class="obs-kbd-keys"><span class="obs-key">Ctrl</span><span class="obs-key">Shift</span><span class="obs-key">Z</span></span><span class="obs-kbd-desc">Redo (alternative)</span></div>
+          <div class="obs-kbd-row"><span class="obs-kbd-keys"><span class="obs-key">S</span></span><span class="obs-kbd-desc">Show or hide the stats panel</span></div>
+          <div class="obs-kbd-row"><span class="obs-kbd-keys"><span class="obs-key">?</span><span class="obs-key">/</span></span><span class="obs-kbd-desc">Show or hide the on-screen key hints</span></div>
+        </div>
+        <div class="obs-callout tip"><span class="obs-callout-tag">Inside the manual</span>
+          Inside this Observatory Manual, you can also use <strong>↑ / ↓</strong> in the left catalogue to move between sections, and <strong>Esc</strong> to close the manual and return focus to the button you opened it from.</div>
+        <p class="obs-p">Shortcuts pause while you are typing in a text field or search box — so you can write plus and minus in descriptions without zooming the canvas.</p>`
+    },
+    mobile: {
+      coord:'ζ-02 · Mobile',
+      title:'Mobile use',
+      lede:'The app works on phones and tablets. Gestures replace keys, and panels become bottom sheets.',
+      body:`
+        <ol class="obs-steps">
+          <li><b>Swipe to pan.</b><span>Drag with one finger to move through time or between rows.</span></li>
+          <li><b>Pinch to zoom.</b><span>Place two fingers on the canvas. Spread them apart to zoom in, pinch them together to zoom out.</span></li>
+          <li><b>Tap to open.</b><span>Tap any event to open it. Tap a universe chip to filter.</span></li>
+          <li><b>Use the drawer menu.</b><span>On small screens, the top bar collapses into a menu. Tap it to find Add Event, Add Universe, Characters, Export, Load, and ❓ Help.</span></li>
+          <li><b>Bottom sheets.</b><span>Panels (like this manual and event forms) slide up from the bottom and can be dismissed by tapping the handle, the backdrop, or the Close button.</span></li>
+        </ol>
+        <div class="obs-callout warn"><span class="obs-callout-tag">Backups on mobile</span>
+          Mobile browsers are more aggressive about clearing storage. It is especially important to export backups often and save them to your cloud drive (iCloud, Google Drive, etc.).</div>
+        <p class="obs-p"><strong>Performance:</strong> very large worlds (thousands of events) may run smoother on a desktop or laptop. Pinching to zoom first, then tapping events, keeps things responsive.</p>`
+    },
+    troubleshoot: {
+      coord:'η-01 · Diagnostics',
+      title:'Troubleshooting',
+      lede:'Common problems and the simplest way to solve each one.',
+      body:`
+        <div class="obs-faq">
+          <details><summary>My timeline looks empty or frozen</summary><div>
+            Press <strong>Reset View</strong>. This recenters the canvas without deleting anything. If it is still empty, check that a universe chip is not hidden — click any hidden universe to bring it back.
+          </div></details>
+          <details><summary>My events are gone after I closed the browser</summary><div>
+            If you never exported a backup, check whether you cleared browsing data, used a private window, or switched browsers. Those wipe local storage. Next time, export a backup before any risky action. See <em>What Is Saved Locally</em>.
+          </div></details>
+          <details><summary>Import fails or says the file is invalid</summary><div>
+            Make sure you are picking the <em>.json</em> backup file (not a screenshot or a text file). If the file was saved by a very old version, try opening the HTML version, which can re-export a fresh JSON.
+          </div></details>
+          <details><summary>Zooming or scrolling feels slow</summary><div>
+            Filter down to one universe or category while you work on it. Close the stats panel if it is open. On very large worlds, use desktop or laptop browsers for heavy editing.
+          </div></details>
+          <details><summary>A button does nothing</summary><div>
+            Close any open modal (press <strong>Esc</strong>) and try again. If the page still misbehaves, export a backup, refresh the tab, and reopen the app — your world will load automatically.
+          </div></details>
+          <details><summary>I deleted something by mistake</summary><div>
+            Press <strong>Ctrl + Z</strong> (or <strong>⌘ + Z</strong>) to undo. If undo is not available, import your most recent backup.
+          </div></details>
+          <details><summary>The app looks broken on my phone</summary><div>
+            Rotate the phone to landscape, or pinch out slightly to reset the zoom. If panels are stuck, tap the backdrop behind them or press the Close button.
+          </div></details>
+        </div>
+        <div class="obs-callout"><span class="obs-callout-tag">Still stuck?</span>
+          Export a backup first (so nothing is lost), then try refreshing the page. The autosave will reload your world exactly as it was.</div>`
+    },
+    faq: {
+      coord:'θ-01 · FAQ',
+      title:'Frequently asked',
+      lede:'Short answers to the questions people ask most.',
+      body:`
+        <div class="obs-faq">
+          <details><summary>Do I need an account?</summary><div>No. There is no sign-up, no email, no password. The app starts working the second it loads.</div></details>
+          <details><summary>Is it free?</summary><div>Yes. Free Timeline Universe is free to use. That is in the name.</div></details>
+          <details><summary>Where is my data stored?</summary><div>Inside this browser, on this device. Nothing is sent to any server. See <em>What Is Saved Locally</em>.</div></details>
+          <details><summary>Can I use it offline?</summary><div>Yes. Once the page is open, it works without an internet connection. If you saved the HTML file, you can open it anywhere with any browser.</div></details>
+          <details><summary>Can two people edit the same timeline?</summary><div>Not live. But you can share a backup file: one person exports, the other imports. Split the work by universe if you collaborate.</div></details>
+          <details><summary>Is there a limit to how many events I can add?</summary><div>There is no hard limit. Very large worlds (thousands of events with images) may slow down a small device. Desktop browsers handle the largest worlds best.</div></details>
+          <details><summary>Can I change the colour of a universe or category later?</summary><div>Yes. Edit the universe or the category; the change applies to every event using it.</div></details>
+          <details><summary>Can I print my timeline or export it as a document?</summary><div>Use <strong>Save HTML</strong> to create a standalone page you can print from your browser's print dialog.</div></details>
+          <details><summary>How do I move my world to another computer?</summary><div>Export a backup on the old computer, email or copy the file to the new one, and import it there.</div></details>
+        </div>`
+    },
+    privacy: {
+      coord:'θ-02 · Privacy',
+      title:'Privacy & data',
+      lede:'A short and plain summary of what this app does — and does not do — with your information.',
+      body:`
+        <ol class="obs-steps">
+          <li><b>No account.</b><span>You are never asked for a name, email, password, or identity of any kind.</span></li>
+          <li><b>No server.</b><span>Your events, characters, universes, images, and backups live only on the device you use. They are not uploaded or synced.</span></li>
+          <li><b>No tracking.</b><span>There are no analytics, no ads, no cookies for advertising.</span></li>
+          <li><b>No sharing.</b><span>Nothing you write is visible to anyone else unless you personally share a backup file.</span></li>
+        </ol>
+        <div class="obs-callout warn"><span class="obs-callout-tag">Your responsibility</span>
+          Because your world lives on your device, protecting it is up to you. Keep backups outside the browser — in a folder, a cloud drive, or a USB stick.</div>`
+    },
+    credits: {
+      coord:'θ-03 · Colophon',
+      title:'About & credits',
+      lede:'About this tool and the people it is made for.',
+      body:`
+        <p class="obs-p"><strong>Free Timeline Universe</strong> is a self-contained, offline-first worldbuilding app for writers, storytellers, game masters, artists, students, and historians of imagined worlds. It runs entirely in your browser, keeps your work private, and never asks for an account.</p>
+        <p class="obs-p">This Observatory Manual — the guide you are reading — was rebuilt to be searchable, accessible from the keyboard, and easy to read on any device. Every section of the app is documented here. If something is missing, the search bar will tell you.</p>
+        <div class="obs-callout tip"><span class="obs-callout-tag">Thank you</span>
+          This tool exists because people like you have imaginary worlds worth recording. Keep building.</div>
+        <p class="obs-p" style="color:#8a98b8; font-size:13px;">Manual v8 · Observatory edition · Free Timeline Universe</p>`
+    }
+  };
+
+  return OBS_HELP_SECTIONS.map((meta, i) => {
+    const d = S_[meta.id] || { coord: meta.coord, title: meta.label, lede:'', body:'' };
+    const active = i === 0 ? ' is-active' : '';
+    return `<article class="obs-section${active}" data-obs-section="${meta.id}" data-obs-kw="${(meta.kw||'').replace(/"/g,'&quot;')}">
+      <div class="obs-sec-meta">${d.coord}</div>
+      <h2 class="obs-sec-title">${d.title}</h2>
+      ${d.lede ? `<p class="obs-sec-lede">${d.lede}</p>` : ''}
+      ${d.body}
+    </article>`;
+  }).join('');
+}
+
+function obsHelpInit(){
+  const root = document.querySelector('[data-obs-help]');
+  if (!root) return;
+  const search = root.querySelector('[data-obs-search]');
+  const tocItems = [...root.querySelectorAll('[data-obs-toc-item]')];
+  const sections = [...root.querySelectorAll('[data-obs-section]')];
+  const noResults = root.querySelector('[data-obs-noresults]');
+  const tocEmpty = root.querySelector('[data-obs-toc-empty]');
+  const mainEl = root.querySelector('[data-obs-main]');
+  const tocToggle = root.querySelector('[data-obs-toc-toggle]');
+  const tocList = root.querySelector('#obs-toc-list');
+  const currentLabel = root.querySelector('#obs-current-label');
+
+  // Remember previously focused element so we can return focus on close
+  _obsHelpPrevFocus = document.activeElement;
+  _obsHelpActiveId = 'welcome';
+
+  // Initial focus to the search field (keyboard accessible)
+  setTimeout(() => { try { search && search.focus({preventScroll:true}); } catch(_){} }, 60);
+
+  const activate = (id, opts = {}) => {
+    _obsHelpActiveId = id;
+    tocItems.forEach(t => {
+      const match = t.dataset.obsTarget === id;
+      t.classList.toggle('is-active', match);
+      t.setAttribute('aria-selected', match ? 'true' : 'false');
+      if (match && currentLabel) currentLabel.textContent = t.querySelector('.obs-toc-label').textContent;
+    });
+    sections.forEach(s => s.classList.toggle('is-active', s.dataset.obsSection === id));
+    if (mainEl && !opts.noScroll) mainEl.scrollTo({ top: 0, behavior: 'smooth' });
+    // Close mobile drawer after picking
+    if (tocToggle && tocList && tocList.classList.contains('is-open') && window.innerWidth <= 820){
+      tocList.classList.remove('is-open');
+      tocToggle.classList.remove('is-open');
+      tocToggle.setAttribute('aria-expanded', 'false');
+    }
+  };
+
+  tocItems.forEach(btn => {
+    btn.addEventListener('click', () => activate(btn.dataset.obsTarget));
+  });
+
+  // Mobile TOC toggle
+  if (tocToggle && tocList){
+    tocToggle.addEventListener('click', () => {
+      const open = !tocList.classList.contains('is-open');
+      tocList.classList.toggle('is-open', open);
+      tocToggle.classList.toggle('is-open', open);
+      tocToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
+
+  // Keyboard navigation inside TOC
+  tocList && tocList.addEventListener('keydown', e => {
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' && e.key !== 'Home' && e.key !== 'End' && e.key !== 'Enter') return;
+    const visible = tocItems.filter(t => !t.classList.contains('is-hidden'));
+    if (!visible.length) return;
+    const current = document.activeElement;
+    let idx = visible.indexOf(current);
+    if (idx === -1) idx = visible.findIndex(t => t.classList.contains('is-active'));
+    if (idx === -1) idx = 0;
+    if (e.key === 'ArrowDown') idx = Math.min(visible.length - 1, idx + 1);
+    else if (e.key === 'ArrowUp') idx = Math.max(0, idx - 1);
+    else if (e.key === 'Home') idx = 0;
+    else if (e.key === 'End') idx = visible.length - 1;
+    else if (e.key === 'Enter') { visible[Math.max(0,idx)].click(); e.preventDefault(); return; }
+    visible[idx].focus();
+    visible[idx].click();
+    e.preventDefault();
+  });
+
+  // Search helpers
+  const escapeReg = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const stripMarks = (el) => {
+    el.querySelectorAll('.obs-highlight').forEach(m => {
+      const p = m.parentNode;
+      p.replaceChild(document.createTextNode(m.textContent), m);
+      p.normalize();
+    });
+  };
+  const highlightIn = (el, re) => {
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+      acceptNode: n => {
+        if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        const p = n.parentNode;
+        if (!p || p.nodeName === 'SCRIPT' || p.nodeName === 'STYLE' || p.classList.contains('obs-highlight')) return NodeFilter.FILTER_REJECT;
+        return re.test(n.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      }
+    });
+    const targets = [];
+    let n; while ((n = walker.nextNode())) targets.push(n);
+    targets.forEach(node => {
+      const frag = document.createDocumentFragment();
+      const text = node.nodeValue;
+      let last = 0; re.lastIndex = 0;
+      let m;
+      while ((m = re.exec(text)) !== null) {
+        if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+        const mark = document.createElement('span');
+        mark.className = 'obs-highlight';
+        mark.textContent = m[0];
+        frag.appendChild(mark);
+        last = m.index + m[0].length;
+        if (!m[0]) break;
+      }
+      if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+      node.parentNode.replaceChild(frag, node);
+    });
+  };
+
+  const doSearch = () => {
+    const q = (search.value || '').trim().toLowerCase();
+    sections.forEach(s => stripMarks(s));
+    if (!q) {
+      tocItems.forEach(t => t.classList.remove('is-hidden'));
+      sections.forEach(s => s.classList.remove('is-hidden'));
+      tocEmpty.style.display = 'none';
+      noResults.style.display = 'none';
+      activate(_obsHelpActiveId || 'welcome', { noScroll:true });
+      return;
+    }
+    const re = new RegExp(escapeReg(q), 'gi');
+    let firstMatch = null;
+    let anyMatch = false;
+    sections.forEach((s, i) => {
+      const kw = (s.dataset.obsKw || '').toLowerCase();
+      const text = (s.textContent || '').toLowerCase();
+      const hit = kw.includes(q) || text.includes(q);
+      s.classList.toggle('is-hidden', !hit);
+      const tocItem = tocItems[i];
+      if (tocItem) tocItem.classList.toggle('is-hidden', !hit);
+      if (hit) {
+        anyMatch = true;
+        if (!firstMatch) firstMatch = s.dataset.obsSection;
+        highlightIn(s, re);
+      }
+    });
+    tocEmpty.style.display = anyMatch ? 'none' : 'block';
+    noResults.style.display = anyMatch ? 'none' : 'block';
+    if (firstMatch) activate(firstMatch);
+  };
+
+  if (search) {
+    search.addEventListener('input', doSearch);
+    search.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        if (search.value) {
+          // First Escape clears the search
+          e.stopPropagation();
+          e.preventDefault();
+          search.value = '';
+          doSearch();
+        } else {
+          // Second Escape closes the manual (global handler skips INPUT)
+          e.preventDefault();
+          try { M.close(); } catch(_){}
+        }
+      } else if (e.key === 'ArrowDown') {
+        // Move focus into TOC for quick keyboard nav
+        const firstVisible = tocItems.find(t => !t.classList.contains('is-hidden'));
+        if (firstVisible) { firstVisible.focus(); e.preventDefault(); }
+      }
+    });
+  }
+
+  // Focus return on close: patch M.close once for this help session
+  if (typeof M !== 'undefined' && !M._obsHelpPatched){
+    const _origClose = M.close.bind(M);
+    M.close = function(){
+      const prev = _obsHelpPrevFocus;
+      _obsHelpPrevFocus = null;
+      _origClose();
+      M.close = _origClose;
+      delete M._obsHelpPatched;
+      if (prev && typeof prev.focus === 'function') {
+        try { prev.focus({preventScroll:true}); } catch(_) { try{ prev.focus(); }catch(__){}}
+      }
+    };
+    M._obsHelpPatched = true;
+  }
 }
 
 /* buildUniStats — returns object with event/char counts */
@@ -9569,5 +10581,5 @@ function buildUniStats(uId) {
     if (e.key === 'Escape') { mobBlankCancel(); }
   });
   </script>
-  </body>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef6646e5ec8750d',t:'MTc3NjcxMTYzMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef74e58cb28c156',t:'MTc3NjcyMTIxMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
   </html>
