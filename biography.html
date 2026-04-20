@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="google-adsense-account" content="ca-pub-4135034633295293">
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
-     crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Free Timeline Biography</title>
@@ -3364,20 +3361,20 @@ const MONTHS  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','No
 
 /* ---- EVENT CATEGORIES (dynamic — editable by user) ---- */
 const DEFAULT_CATEGORIES = {
-    'Birth & Early Years':         { color: '#2ecc71', icon: '👶' },
-    'Education & Learning':        { color: '#3498db', icon: '🎓' },
-    'Career & Achievement':        { color: '#f39c12', icon: '💼' },
-    'Relationships & Family':      { color: '#e74c3c', icon: '❤️' },
-    'Health & Wellbeing':          { color: '#9b59b6', icon: '🏥' },
-    'Travel & Adventure':          { color: '#1abc9c', icon: '✈️' },
-    'Challenges & Turning Points': { color: '#e67e22', icon: '⚡' },
-    'Personal Growth & Identity':  { color: '#27ae60', icon: '🌱' },
-    'Legacy & Reflection':         { color: '#2c3e50', icon: '🕊️' },
-    'Other':                       { color: '#95a5a6', icon: '📌' },
+    'Birth & Early Years':         { color: '#5a9e6a', icon: '👶' },
+    'Education & Learning':        { color: '#4a78b8', icon: '🎓' },
+    'Career & Achievement':        { color: '#b8882a', icon: '💼' },
+    'Relationships & Family':      { color: '#b84848', icon: '❤️' },
+    'Health & Wellbeing':          { color: '#7e52a0', icon: '🏥' },
+    'Travel & Adventure':          { color: '#2e8c80', icon: '✈️' },
+    'Challenges & Turning Points': { color: '#b86830', icon: '⚡' },
+    'Personal Growth & Identity':  { color: '#4a8a58', icon: '🌱' },
+    'Legacy & Reflection':         { color: '#4a5870', icon: '🕊️' },
+    'Other':                       { color: '#8a8078', icon: '📌' },
   };
 let CATEGORIES = Object.assign({}, DEFAULT_CATEGORIES);
 const BIO_STATUSES = ['Upcoming','Ongoing','Completed','Missed','Cancelled'];
-const BIO_STATUS_COLORS = { Upcoming:'#3498db', Ongoing:'#f39c12', Completed:'#27ae60', Missed:'#e74c3c', Cancelled:'#95a5a6' };
+const BIO_STATUS_COLORS = { Upcoming:'#4a78b8', Ongoing:'#b8882a', Completed:'#4a8a58', Missed:'#b84848', Cancelled:'#8a8078' };
 function statusColor(st) { return BIO_STATUS_COLORS[st] || '#888'; }
 function catColor(cat) { return CATEGORIES[cat] ? CATEGORIES[cat].color : '#888'; }
 function catIcon(cat)  { return CATEGORIES[cat] ? CATEGORIES[cat].icon : '📌'; }
@@ -3645,9 +3642,13 @@ function render() {
 function drawRuler(c, g) {
   const W = c.width;
 
-  g.fillStyle = '#f0f2f5';
+  // Ruler bar — warm parchment gradient
+  const rulerGrad = g.createLinearGradient(0, 0, 0, RULER_H);
+  rulerGrad.addColorStop(0, '#f0ede7');
+  rulerGrad.addColorStop(1, '#f6f3ee');
+  g.fillStyle = rulerGrad;
   g.fillRect(LEFT_W, 0, W - LEFT_W, RULER_H);
-  g.strokeStyle = '#cdd0d8'; g.lineWidth = 1;
+  g.strokeStyle = '#ccc0ae'; g.lineWidth = 1;
   g.beginPath(); g.moveTo(LEFT_W, RULER_H); g.lineTo(W, RULER_H); g.stroke();
 
   const pxPerYr = BPPY * V.scale;
@@ -3700,22 +3701,22 @@ function drawRuler(c, g) {
     for (let y = ms; y <= ryear + minor; y += minor) {
       const sx = ws(yw(y));
       if (sx < LEFT_W || sx > W) continue;
-      g.strokeStyle = '#eeeff1'; g.lineWidth = 1;
+      g.strokeStyle = 'rgba(215,205,188,0.6)'; g.lineWidth = 1;
       g.beginPath(); g.moveTo(sx, RULER_H); g.lineTo(sx, c.height); g.stroke();
-      g.strokeStyle = '#cdd0d8'; g.lineWidth = 1;
-      g.beginPath(); g.moveTo(sx, RULER_H - 7); g.lineTo(sx, RULER_H); g.stroke();
+      g.strokeStyle = '#c4b89e'; g.lineWidth = 1;
+      g.beginPath(); g.moveTo(sx, RULER_H - 6); g.lineTo(sx, RULER_H); g.stroke();
     }
   }
 
   const majs = Math.floor(lyear / maj) * maj;
-  g.font = '11px -apple-system, "Segoe UI", sans-serif';
+  g.font = '11px Georgia, "Cambria", serif';
   g.textAlign = 'center';
   for (let y = majs; y <= ryear + maj; y += maj) {
     const sx = ws(yw(y));
     if (sx < LEFT_W - 80 || sx > W + 80) continue;
-    g.strokeStyle = '#aab0bc'; g.lineWidth = 1;
-    g.beginPath(); g.moveTo(sx, RULER_H - 17); g.lineTo(sx, RULER_H); g.stroke();
-    g.strokeStyle = '#e4e6ea'; g.lineWidth = 1;
+    g.strokeStyle = '#a8987e'; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(sx, RULER_H - 16); g.lineTo(sx, RULER_H); g.stroke();
+    g.strokeStyle = 'rgba(210,200,180,0.5)'; g.lineWidth = 1;
     g.beginPath(); g.moveTo(sx, RULER_H); g.lineTo(sx, c.height); g.stroke();
     if (sx > LEFT_W + 4) {
       let lbl;
@@ -3734,41 +3735,51 @@ function drawRuler(c, g) {
           if (rv < 0) lbl = String(rv) + ' BCE';
         }
       }
-      g.fillStyle = '#6b5a48';
-      g.fillText(lbl, sx, RULER_H - 21);
+      g.fillStyle = '#7a6250';
+      g.fillText(lbl, sx, RULER_H - 20);
     }
   }
 
-  // TODAY line — enhanced marker
+  // TODAY line — elegant archival marker
   const now = new Date();
   const todayDec = now.getFullYear() + now.getMonth() / 12 + now.getDate() / 365;
   const tx = ws(yw(todayDec));
   if (tx >= LEFT_W && tx <= W) {
     g.save();
-    // Glowing vertical line
-    g.strokeStyle = '#c47058'; g.lineWidth = 2;
-    g.shadowColor = 'rgba(196,112,88,0.4)'; g.shadowBlur = 6;
-    g.setLineDash([5, 3]);
+    // Warm glow underlay
+    g.strokeStyle = 'rgba(175,88,55,0.16)'; g.lineWidth = 5;
+    g.beginPath(); g.moveTo(tx, RULER_H); g.lineTo(tx, c.height); g.stroke();
+    // Refined dashed line
+    g.strokeStyle = '#b86040'; g.lineWidth = 1.5;
+    g.setLineDash([5, 4]);
     g.beginPath(); g.moveTo(tx, 0); g.lineTo(tx, c.height); g.stroke();
     g.setLineDash([]);
-    g.shadowBlur = 0;
     // Badge label pill
-    const badgeW = 42, badgeH = 15;
-    rRect(g, tx - badgeW / 2, 3, badgeW, badgeH, 4);
-    g.fillStyle = '#c47058'; g.fill();
-    g.fillStyle = '#fff';
+    const badgeW = 44, badgeH = 16;
+    rRect(g, tx - badgeW / 2, 2, badgeW, badgeH, 5);
+    g.fillStyle = '#b86040'; g.fill();
+    g.fillStyle = '#fff8f0';
     g.font = 'bold 9px Georgia, "Cambria", serif';
     g.textAlign = 'center';
     g.fillText('TODAY', tx, 14);
+    // Tick mark at ruler bottom
+    g.strokeStyle = '#b86040'; g.lineWidth = 2;
+    g.beginPath(); g.moveTo(tx, RULER_H - 10); g.lineTo(tx, RULER_H); g.stroke();
     g.restore();
   }
 
   // Left panel header (drawn over track area)
-  g.fillStyle = '#3d2b1f';
+  g.fillStyle = '#352218';
   g.fillRect(0, 0, LEFT_W, RULER_H);
-  g.strokeStyle = 'rgba(245,230,208,0.12)'; g.lineWidth = 1;
+  // Warm gradient overlay
+  const hdrGrad = g.createLinearGradient(0, 0, LEFT_W, 0);
+  hdrGrad.addColorStop(0, 'rgba(160,90,40,0.22)');
+  hdrGrad.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = hdrGrad;
+  g.fillRect(0, 0, LEFT_W, RULER_H);
+  g.strokeStyle = 'rgba(240,220,195,0.10)'; g.lineWidth = 1;
   g.beginPath(); g.moveTo(LEFT_W, 0); g.lineTo(LEFT_W, RULER_H); g.stroke();
-  g.fillStyle = 'rgba(245,230,208,0.82)';
+  g.fillStyle = 'rgba(238,218,192,0.80)';
   g.font = 'bold 10px Georgia, "Cambria", serif';
   g.textAlign = 'center';
   g.fillText('LIFE TRACKS', LEFT_W / 2, RULER_H / 2 + 4);
@@ -3798,14 +3809,28 @@ function formatLargeYear(yr) {
 function drawTracks(c, g) {
   const vc = visCount();
   if (vc === 0) {
-    g.fillStyle = '#b8bcc8';
-    g.font = 'bold 16px -apple-system, "Segoe UI", sans-serif';
+    g.save();
     g.textAlign = 'center';
-    g.fillText('\uD83D\uDCC5  Welcome! Your timeline is empty.', c.width / 2, c.height / 2 - 18);
-    g.font = '14px -apple-system, "Segoe UI", sans-serif';
-    g.fillStyle = '#c8ccd8';
-    g.fillText('Click  \u2795 Life Track  in the toolbar above to create your first row, then  \u2795 Event  to add a memory.', c.width / 2, c.height / 2 + 12);
-    g.fillText('Need help getting started? Click the  \uD83D\uDCD6 Help  button.', c.width / 2, c.height / 2 + 36);
+    // Archival seal emblem
+    g.beginPath(); g.arc(c.width / 2, c.height / 2 - 52, 28, 0, Math.PI * 2);
+    g.strokeStyle = 'rgba(160,100,50,0.18)'; g.lineWidth = 2; g.stroke();
+    g.beginPath(); g.arc(c.width / 2, c.height / 2 - 52, 20, 0, Math.PI * 2);
+    g.fillStyle = 'rgba(160,100,50,0.05)'; g.fill();
+    g.strokeStyle = 'rgba(160,100,50,0.32)'; g.lineWidth = 1.5; g.stroke();
+    g.fillStyle = 'rgba(160,100,60,0.65)';
+    g.font = '20px Georgia, serif';
+    g.fillText('◈', c.width / 2, c.height / 2 - 44);
+    // Headline
+    g.fillStyle = 'rgba(100,62,30,0.75)';
+    g.font = 'bold 17px Georgia, "Cambria", serif';
+    g.fillText('Preserve the first memory', c.width / 2, c.height / 2 - 10);
+    // Sub text
+    g.font = '13px Georgia, "Cambria", serif';
+    g.fillStyle = 'rgba(130,85,45,0.58)';
+    g.fillText('Open  ＋ Life Track  to create a chapter, then  ＋ Event  to record its first memory.', c.width / 2, c.height / 2 + 16);
+    g.fillStyle = 'rgba(120,80,40,0.38)';
+    g.fillText('Need guidance? The  📖 Help  guide is in the toolbar.', c.width / 2, c.height / 2 + 38);
+    g.restore();
     return;
   }
 
@@ -3819,38 +3844,52 @@ function drawTracks(c, g) {
     const isDimmed = !!u.dimmed;
     if (isDimmed) g.save(), g.globalAlpha = 0.25;
 
-    // Track background (alternating tint)
-    g.fillStyle = vi % 2 === 0 ? 'rgba(0,0,0,0.012)' : 'rgba(0,0,0,0.028)';
+    // Track background — warm parchment band
+    const trackGrad = g.createLinearGradient(LEFT_W, top, LEFT_W, bot);
+    trackGrad.addColorStop(0, vi % 2 === 0 ? 'rgba(120,80,30,0.012)' : 'rgba(120,80,30,0.024)');
+    trackGrad.addColorStop(0.5, vi % 2 === 0 ? 'rgba(120,80,30,0.022)' : 'rgba(120,80,30,0.038)');
+    trackGrad.addColorStop(1, vi % 2 === 0 ? 'rgba(120,80,30,0.012)' : 'rgba(120,80,30,0.024)');
+    g.fillStyle = trackGrad;
     g.fillRect(LEFT_W, top, c.width - LEFT_W, TRACK_H);
 
-    // Left panel background
-    g.fillStyle = u.color + '1a';
+    // Left panel background — warm tinted with gradient
+    const panelGrad = g.createLinearGradient(0, top, LEFT_W, top);
+    panelGrad.addColorStop(0, u.color + '30');
+    panelGrad.addColorStop(1, u.color + '10');
+    g.fillStyle = panelGrad;
     g.fillRect(0, top, LEFT_W, TRACK_H);
 
-    // Left color accent stripe
+    // Left color accent stripe — chapter band with glow
     g.fillStyle = u.color;
-    g.fillRect(LEFT_W - 4, top, 4, TRACK_H);
+    g.fillRect(LEFT_W - 5, top, 5, TRACK_H);
+    g.save();
+    const stripeGrad = g.createLinearGradient(LEFT_W - 14, top, LEFT_W - 5, top);
+    stripeGrad.addColorStop(0, u.color + '00');
+    stripeGrad.addColorStop(1, u.color + '50');
+    g.fillStyle = stripeGrad;
+    g.fillRect(LEFT_W - 14, top, 9, TRACK_H);
+    g.restore();
 
     // Track bottom separator
-    g.strokeStyle = '#e0e2e6'; g.lineWidth = 1;
+    g.strokeStyle = 'rgba(190,175,148,0.6)'; g.lineWidth = 1;
     g.beginPath(); g.moveTo(0, bot); g.lineTo(c.width, bot); g.stroke();
 
     // Left panel right border
-    g.strokeStyle = '#d8dae0'; g.lineWidth = 1;
-    g.beginPath(); g.moveTo(LEFT_W - 4, top); g.lineTo(LEFT_W - 4, bot); g.stroke();
+    g.strokeStyle = 'rgba(185,165,135,0.5)'; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(LEFT_W - 5, top); g.lineTo(LEFT_W - 5, bot); g.stroke();
 
-    // Universe name
-    g.fillStyle = '#3d2b1f';
+    // Life track name
+    g.fillStyle = '#3a2015';
     g.font = 'bold 12px Georgia, "Cambria", serif';
     g.textAlign = 'left';
     const disp = u.name.length > 16 ? u.name.slice(0, 15) + '\u2026' : u.name;
     g.fillText(disp, 10, ty - 18);
 
-    // Event count
+    // Memory count
     const evCnt = S.events.filter(e => e.universeId === u.id).length;
-    g.fillStyle = '#a0a8b8';
-    g.font = '10px -apple-system, "Segoe UI", sans-serif';
-    g.fillText(evCnt + ' event' + (evCnt !== 1 ? 's' : ''), 10, ty - 4);
+    g.fillStyle = '#9a8570';
+    g.font = '10px Georgia, "Cambria", serif';
+    g.fillText(evCnt + ' memor' + (evCnt !== 1 ? 'ies' : 'y'), 10, ty - 4);
 
     if (isDimmed) g.restore();
 
@@ -3900,10 +3939,12 @@ function drawTracks(c, g) {
     hits.push({ type: 'u-info', id: u.id, x: infoX, y: btnY2 - btnH / 2, w: btnW, h: btnH });
     hits.push({ type: 'u-del',  id: u.id, x: delX,  y: btnY2 - btnH / 2, w: btnW, h: btnH });
 
-    // Track axis centre line
+    // Track axis centre line — warm chapter line with glow
     g.save();
     if (isDimmed) g.globalAlpha = 0.25;
-    g.strokeStyle = u.color + '50'; g.lineWidth = 1.5;
+    g.strokeStyle = u.color + '2e'; g.lineWidth = 4;
+    g.beginPath(); g.moveTo(LEFT_W, ty); g.lineTo(c.width, ty); g.stroke();
+    g.strokeStyle = u.color + '60'; g.lineWidth = 1;
     g.beginPath(); g.moveTo(LEFT_W, ty); g.lineTo(c.width, ty); g.stroke();
     g.restore();
 
@@ -3930,15 +3971,23 @@ function drawConnections(c, g) {
     const mx = (fx + tx) / 2;
     g.save();
     const _connDimmed = !!fu.dimmed || !!tu.dimmed;
-    g.strokeStyle = fu.color; g.lineWidth = 1.5;
-    g.setLineDash([5, 4]); g.globalAlpha = _connDimmed ? 0.1 : 0.42;
+    const _connAlpha = _connDimmed ? 0.08 : 0.40;
+    // Warm glow underlay
+    g.strokeStyle = fu.color; g.lineWidth = 5;
+    g.globalAlpha = _connAlpha * 0.15;
+    g.beginPath(); g.moveTo(fx, fy);
+    g.bezierCurveTo(fx, my, tx, my, tx, ty2);
+    g.stroke();
+    // Main warm dashed line
+    g.lineWidth = 1.5;
+    g.setLineDash([6, 4]); g.globalAlpha = _connAlpha;
     g.beginPath(); g.moveTo(fx, fy);
     g.bezierCurveTo(fx, my, tx, my, tx, ty2);
     g.stroke();
     g.setLineDash([]); g.globalAlpha = 1;
     if (conn.label) {
-      g.globalAlpha = 0.7; g.fillStyle = '#445';
-      g.font = '9px -apple-system, sans-serif'; g.textAlign = 'center';
+      g.globalAlpha = 0.62; g.fillStyle = '#6a4828';
+      g.font = '9px Georgia, sans-serif'; g.textAlign = 'center';
       g.fillText(conn.label, mx, my - 5);
       g.globalAlpha = 1;
     }
@@ -3986,20 +4035,30 @@ function buildEventClusters(events, c) {
 
 function drawClusterBubble(g, x, y, count, sampleEv) {
   const u = getU(sampleEv.universeId);
-  const col = u ? u.color : '#888';
+  const col = u ? u.color : '#8a6040';
   const r = 12 + Math.min(count, 30) * 0.4;
 
-  g.beginPath(); g.arc(x, y + 2, r, 0, Math.PI * 2);
-  g.fillStyle = 'rgba(0,0,0,0.06)'; g.fill();
+  // Shadow
+  g.beginPath(); g.arc(x, y + 2.5, r, 0, Math.PI * 2);
+  g.fillStyle = 'rgba(80,40,10,0.10)'; g.fill();
 
+  // Warm glow aura
+  const clusterAura = g.createRadialGradient(x, y, r * 0.6, x, y, r + 5);
+  clusterAura.addColorStop(0, col + '28');
+  clusterAura.addColorStop(1, col + '00');
+  g.beginPath(); g.arc(x, y, r + 5, 0, Math.PI * 2);
+  g.fillStyle = clusterAura; g.fill();
+
+  // Ring
   g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2);
-  g.fillStyle = col + '22'; g.fill();
-  g.strokeStyle = col; g.lineWidth = 2; g.stroke();
+  g.fillStyle = col + '18'; g.fill();
+  g.strokeStyle = col; g.lineWidth = 1.8; g.stroke();
 
+  // Inner warm white
   g.beginPath(); g.arc(x, y, r - 3, 0, Math.PI * 2);
-  g.fillStyle = 'rgba(255,255,255,0.85)'; g.fill();
+  g.fillStyle = 'rgba(255,252,245,0.90)'; g.fill();
 
-  g.font = 'bold 11px -apple-system, "Segoe UI", sans-serif';
+  g.font = 'bold 11px Georgia, "Cambria", serif';
   g.textAlign = 'center'; g.textBaseline = 'middle';
   g.fillStyle = col;
   g.fillText(count > 99 ? '99+' : String(count), x, y);
@@ -4016,13 +4075,13 @@ function drawEvents(c, g) {
   // Friendly empty-state guidance when tracks exist but no events have been added yet
   if (S.events.length === 0 && S.lifeTracks.length > 0) {
     g.save();
-    g.fillStyle = '#c0c4d0';
-    g.font = 'bold 15px -apple-system, "Segoe UI", sans-serif';
     g.textAlign = 'center';
-    g.fillText('\uD83D\uDCCC  You have a Life Track — now add your first event!', c.width / 2, RULER_H + 48);
-    g.font = '13px -apple-system, "Segoe UI", sans-serif';
-    g.fillStyle = '#d0d4e0';
-    g.fillText('Click  \u2795 Event  in the toolbar, or double-click anywhere in a track row below.', c.width / 2, RULER_H + 72);
+    g.fillStyle = 'rgba(120,72,30,0.65)';
+    g.font = 'bold 14px Georgia, "Cambria", serif';
+    g.fillText('◈  Chapter open — press  ＋ Event  to record the first memory.', c.width / 2, RULER_H + 46);
+    g.font = '12px Georgia, "Cambria", serif';
+    g.fillStyle = 'rgba(140,90,45,0.48)';
+    g.fillText('Click  ＋ Event  in the toolbar, or double-click anywhere in a life track row.', c.width / 2, RULER_H + 66);
     g.restore();
   }
 
@@ -4119,23 +4178,37 @@ function drawSingleEvent(c, g, ev) {
 
     hits.push({ type: 'event', id: ev.id, x: sx, y: sy, r: EV_R + 5 });
 
-    g.beginPath(); g.arc(sx, sy, EV_R + 4, 0, Math.PI * 2);
-    g.fillStyle = 'rgba(255,255,255,0.9)'; g.fill();
+    // Warm outer aura — memory seal halo
+    g.beginPath(); g.arc(sx, sy, EV_R + 8, 0, Math.PI * 2);
+    const auraGrad = g.createRadialGradient(sx, sy, EV_R - 1, sx, sy, EV_R + 8);
+    auraGrad.addColorStop(0, u.color + '22');
+    auraGrad.addColorStop(1, u.color + '00');
+    g.fillStyle = auraGrad; g.fill();
 
-    g.beginPath(); g.arc(sx, sy + 2, EV_R + 2, 0, Math.PI * 2);
-    g.fillStyle = 'rgba(0,0,0,0.08)'; g.fill();
+    // Drop shadow (warm brown)
+    g.beginPath(); g.arc(sx, sy + 2.5, EV_R + 1, 0, Math.PI * 2);
+    g.fillStyle = 'rgba(60,30,10,0.12)'; g.fill();
 
+    // Warm backing ring (parchment white)
+    g.beginPath(); g.arc(sx, sy, EV_R + 2, 0, Math.PI * 2);
+    g.fillStyle = 'rgba(255,252,245,0.92)'; g.fill();
+
+    // Main colored fill — warm radial gradient
     g.beginPath(); g.arc(sx, sy, EV_R, 0, Math.PI * 2);
-    g.fillStyle = u.color; g.fill();
-    g.strokeStyle = 'rgba(255,255,255,0.55)'; g.lineWidth = 1.5; g.stroke();
+    const dotGrad = g.createRadialGradient(sx - 2, sy - 2, 0, sx, sy, EV_R);
+    dotGrad.addColorStop(0, u.color + 'ff');
+    dotGrad.addColorStop(1, u.color + 'c0');
+    g.fillStyle = dotGrad; g.fill();
+    g.strokeStyle = 'rgba(255,248,235,0.6)'; g.lineWidth = 1.5; g.stroke();
 
-    g.beginPath(); g.arc(sx - 3.5, sy - 3.5, EV_R * 0.3, 0, Math.PI * 2);
-    g.fillStyle = 'rgba(255,255,255,0.4)'; g.fill();
+    // Inner highlight gleam
+    g.beginPath(); g.arc(sx - 3, sy - 3, EV_R * 0.28, 0, Math.PI * 2);
+    g.fillStyle = 'rgba(255,250,235,0.48)'; g.fill();
 
     if (ev.category && CATEGORIES[ev.category]) {
       g.save();
       g.beginPath();
-      g.arc(sx, sy, EV_R + 3.5, Math.PI * (3/4), Math.PI * (9/4), false);
+      g.arc(sx, sy, EV_R + 4, Math.PI * (3/4), Math.PI * (9/4), false);
       g.strokeStyle = catColor(ev.category);
       g.lineWidth = 2.5; g.lineCap = 'round';
       g.stroke();
@@ -4144,9 +4217,9 @@ function drawSingleEvent(c, g, ev) {
 
     if (ev.status) {
       g.save();
-      g.beginPath(); g.arc(sx, sy, EV_R + 7, 0, Math.PI * 2);
+      g.beginPath(); g.arc(sx, sy, EV_R + 7.5, 0, Math.PI * 2);
       g.strokeStyle = statusColor(ev.status);
-      g.lineWidth = 2; g.globalAlpha = 0.85;
+      g.lineWidth = 1.5; g.globalAlpha = 0.78;
       if (ev.status === 'Cancelled' || ev.status === 'Missed') { g.setLineDash([3,3]); }
       g.stroke();
       g.setLineDash([]);
@@ -4156,18 +4229,20 @@ function drawSingleEvent(c, g, ev) {
     if (ev.subEvents && ev.subEvents.length > 0) {
       const bx = sx + EV_R - 1, by2 = sy - EV_R + 1;
       g.beginPath(); g.arc(bx, by2, 7, 0, Math.PI * 2);
-      g.fillStyle = '#2c2c3a'; g.fill();
-      g.fillStyle = '#ffffff';
-      g.font = 'bold 7px -apple-system, sans-serif'; g.textAlign = 'center';
+      g.fillStyle = '#3c2010'; g.fill();
+      g.strokeStyle = 'rgba(255,248,230,0.5)'; g.lineWidth = 1; g.stroke();
+      g.fillStyle = '#fff8f0';
+      g.font = 'bold 7px Georgia, sans-serif'; g.textAlign = 'center';
       g.fillText(ev.subEvents.length > 9 ? '9+' : String(ev.subEvents.length), bx, by2 + 2.5);
     }
 
     if (ev.media && ev.media.length > 0) {
       const mx2 = sx - EV_R + 1, my2 = sy - EV_R + 1;
       g.beginPath(); g.arc(mx2, my2, 6, 0, Math.PI * 2);
-      g.fillStyle = '#f39c12'; g.fill();
-      g.fillStyle = '#ffffff';
-      g.font = 'bold 7px -apple-system, sans-serif'; g.textAlign = 'center';
+      g.fillStyle = '#c88020'; g.fill();
+      g.strokeStyle = 'rgba(255,248,230,0.5)'; g.lineWidth = 1; g.stroke();
+      g.fillStyle = '#fff8f0';
+      g.font = 'bold 7px Georgia, sans-serif'; g.textAlign = 'center';
       g.fillText('\uD83D\uDCCE', mx2, my2 + 2.5);
     }
 
@@ -4175,11 +4250,11 @@ function drawSingleEvent(c, g, ev) {
     g.beginPath(); g.rect(LEFT_W, RULER_H, c.width - LEFT_W, c.height - RULER_H); g.clip();
     const label = ev.title.length > 16 ? ev.title.slice(0, 15) + '\u2026' : ev.title;
     const ly = sy + EV_R + 15;
-    g.fillStyle = '#1a1a2e';
-    g.font = 'bold 10px -apple-system, "Segoe UI", sans-serif'; g.textAlign = 'center';
+    g.fillStyle = '#3a2015';
+    g.font = 'bold 10px Georgia, "Cambria", serif'; g.textAlign = 'center';
     g.fillText(label, sx, ly);
-    g.fillStyle = '#a8abb6';
-    g.font = '9px -apple-system, "Segoe UI", sans-serif';
+    g.fillStyle = '#9a8570';
+    g.font = '9px Georgia, "Cambria", serif';
     const dateLabel = (ev.date || '?') + (ev.time ? ' ' + ev.time : '');
     g.fillText(dateLabel, sx, ly + 12);
 
@@ -4194,21 +4269,21 @@ function drawSingleEvent(c, g, ev) {
         const col2 = chd ? (chd.color || charHashColor(chd.id)) : '#aaa';
         const cx2 = sx - totalDW/2 + di*dotSp;
         g.beginPath(); g.arc(cx2, dotY+1.5, dotR, 0, Math.PI*2);
-        g.fillStyle = 'rgba(0,0,0,0.12)'; g.fill();
+        g.fillStyle = 'rgba(60,30,10,0.14)'; g.fill();
         g.beginPath(); g.arc(cx2, dotY, dotR, 0, Math.PI*2);
         g.fillStyle = col2; g.fill();
-        g.strokeStyle = '#fff'; g.lineWidth = 1.5; g.stroke();
+        g.strokeStyle = '#fff8f0'; g.lineWidth = 1.5; g.stroke();
         if (chd && chd.name) {
           const init = chd.name.charAt(0).toUpperCase();
-          g.fillStyle = 'rgba(255,255,255,0.92)';
-          g.font = 'bold 6px -apple-system,sans-serif';
+          g.fillStyle = 'rgba(255,252,240,0.92)';
+          g.font = 'bold 6px Georgia,serif';
           g.textAlign = 'center';
           g.fillText(init, cx2, dotY + 2.5);
         }
       }
       if (_chIds.length > 6) {
-        g.fillStyle = '#6070c0';
-        g.font = 'bold 8px -apple-system,sans-serif'; g.textAlign = 'center';
+        g.fillStyle = '#8b6040';
+        g.font = 'bold 8px Georgia,serif'; g.textAlign = 'center';
         g.fillText('+' + (_chIds.length - 6), sx + totalDW/2 + 11, dotY + 3);
       }
     }

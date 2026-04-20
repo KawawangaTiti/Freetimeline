@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="google-adsense-account" content="ca-pub-4135034633295293">
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
-     crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Free Timeline Universe</title>
@@ -3581,19 +3578,19 @@ const MONTHS  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','No
 
 /* ---- EVENT CATEGORIES (dynamic — editable by user) ---- */
 const DEFAULT_CATEGORIES = {
-  'Battle':    { color: '#c0392b', icon: '⚔️' },
-  'Origin':    { color: '#8e44ad', icon: '⭐' },
-  'Alliance':  { color: '#27ae60', icon: '🤝' },
-  'Betrayal':  { color: '#e67e22', icon: '🗡️' },
-  'Discovery': { color: '#2980b9', icon: '🔭' },
-  'Death':     { color: '#2c3e50', icon: '💀' },
-  'Political': { color: '#7f8c8d', icon: '🏛️' },
-  'Cosmic':    { color: '#6c3483', icon: '🌌' },
-  'Other':     { color: '#95a5a6', icon: '📌' },
+  'Battle':    { color: '#c03428', icon: '⚔️' },
+  'Origin':    { color: '#7030a0', icon: '⭐' },
+  'Alliance':  { color: '#1e8a50', icon: '🤝' },
+  'Betrayal':  { color: '#d06010', icon: '🗡️' },
+  'Discovery': { color: '#1a6ea8', icon: '🔭' },
+  'Death':     { color: '#304860', icon: '💀' },
+  'Political': { color: '#607080', icon: '🏛️' },
+  'Cosmic':    { color: '#5a1a90', icon: '🌌' },
+  'Other':     { color: '#788090', icon: '📌' },
 };
 let CATEGORIES = Object.assign({}, DEFAULT_CATEGORIES);
 const UNI_STATUSES = ['Upcoming','In Progress','Resolved','Ongoing','Cancelled'];
-const UNI_STATUS_COLORS = { Upcoming:'#3498db', 'In Progress':'#e67e22', Resolved:'#27ae60', Ongoing:'#f39c12', Cancelled:'#95a5a6' };
+const UNI_STATUS_COLORS = { Upcoming:'#1a6ea8', 'In Progress':'#d06010', Resolved:'#1e8a50', Ongoing:'#b07800', Cancelled:'#788090' };
 function statusColor(st) { return UNI_STATUS_COLORS[st] || '#888'; }
 
 const TONE_OPTIONS = ['Epic','Tragic','Hopeful','Dark','Triumphant','Mysterious'];
@@ -3853,9 +3850,13 @@ function render() {
 function drawRuler(c, g) {
   const W = c.width;
 
-  g.fillStyle = '#f0f2f5';
+  // Ruler bar — subtle gradient
+  const rulerGrad = g.createLinearGradient(0, 0, 0, RULER_H);
+  rulerGrad.addColorStop(0, '#edf0f5');
+  rulerGrad.addColorStop(1, '#f4f5f8');
+  g.fillStyle = rulerGrad;
   g.fillRect(LEFT_W, 0, W - LEFT_W, RULER_H);
-  g.strokeStyle = '#cdd0d8'; g.lineWidth = 1;
+  g.strokeStyle = '#c8ccd6'; g.lineWidth = 1;
   g.beginPath(); g.moveTo(LEFT_W, RULER_H); g.lineTo(W, RULER_H); g.stroke();
 
   const pxPerYr = BPPY * V.scale;
@@ -3908,10 +3909,10 @@ function drawRuler(c, g) {
     for (let y = ms; y <= ryear + minor; y += minor) {
       const sx = ws(yw(y));
       if (sx < LEFT_W || sx > W) continue;
-      g.strokeStyle = '#eeeff1'; g.lineWidth = 1;
+      g.strokeStyle = 'rgba(220,224,232,0.65)'; g.lineWidth = 1;
       g.beginPath(); g.moveTo(sx, RULER_H); g.lineTo(sx, c.height); g.stroke();
-      g.strokeStyle = '#cdd0d8'; g.lineWidth = 1;
-      g.beginPath(); g.moveTo(sx, RULER_H - 7); g.lineTo(sx, RULER_H); g.stroke();
+      g.strokeStyle = '#bec4d0'; g.lineWidth = 1;
+      g.beginPath(); g.moveTo(sx, RULER_H - 6); g.lineTo(sx, RULER_H); g.stroke();
     }
   }
 
@@ -3921,9 +3922,9 @@ function drawRuler(c, g) {
   for (let y = majs; y <= ryear + maj; y += maj) {
     const sx = ws(yw(y));
     if (sx < LEFT_W - 80 || sx > W + 80) continue;
-    g.strokeStyle = '#aab0bc'; g.lineWidth = 1;
-    g.beginPath(); g.moveTo(sx, RULER_H - 17); g.lineTo(sx, RULER_H); g.stroke();
-    g.strokeStyle = '#e4e6ea'; g.lineWidth = 1;
+    g.strokeStyle = '#9aa2b4'; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(sx, RULER_H - 16); g.lineTo(sx, RULER_H); g.stroke();
+    g.strokeStyle = 'rgba(210,215,228,0.55)'; g.lineWidth = 1;
     g.beginPath(); g.moveTo(sx, RULER_H); g.lineTo(sx, c.height); g.stroke();
     if (sx > LEFT_W + 4) {
       let lbl;
@@ -3937,44 +3938,54 @@ function drawRuler(c, g) {
         const rv = Math.round(y);
         lbl = formatCalendarYear(rv);
       }
-      g.fillStyle = '#5a6070';
-      g.fillText(lbl, sx, RULER_H - 21);
+      g.fillStyle = '#505868';
+      g.fillText(lbl, sx, RULER_H - 20);
     }
   }
 
   drawRangeEndpointLabel(g, YEAR_MIN, LEFT_W + 6, 'left');
   drawRangeEndpointLabel(g, YEAR_MAX, W - 6, 'right');
 
-  // TODAY line — enhanced marker
+  // TODAY line — precise marker
   const now = new Date();
   const todayDec = now.getFullYear() + now.getMonth() / 12 + now.getDate() / 365;
   const tx = ws(yw(todayDec));
   if (tx >= LEFT_W && tx <= W) {
     g.save();
-    // Glowing vertical line
-    g.strokeStyle = '#e74c3c'; g.lineWidth = 2;
-    g.shadowColor = 'rgba(231,76,60,0.4)'; g.shadowBlur = 6;
-    g.setLineDash([5, 3]);
+    // Subtle glow underlay
+    g.strokeStyle = 'rgba(220,60,50,0.18)'; g.lineWidth = 5;
+    g.beginPath(); g.moveTo(tx, RULER_H); g.lineTo(tx, c.height); g.stroke();
+    // Crisp dashed line
+    g.strokeStyle = '#d43c2e'; g.lineWidth = 1.5;
+    g.setLineDash([5, 4]);
     g.beginPath(); g.moveTo(tx, 0); g.lineTo(tx, c.height); g.stroke();
     g.setLineDash([]);
-    g.shadowBlur = 0;
-    // Badge label pill
-    const badgeW = 42, badgeH = 15;
-    rRect(g, tx - badgeW / 2, 3, badgeW, badgeH, 4);
-    g.fillStyle = '#e74c3c'; g.fill();
+    // Badge label pill — refined
+    const badgeW = 44, badgeH = 16;
+    rRect(g, tx - badgeW / 2, 2, badgeW, badgeH, 5);
+    g.fillStyle = '#d43c2e'; g.fill();
     g.fillStyle = '#fff';
     g.font = 'bold 9px -apple-system, sans-serif';
     g.textAlign = 'center';
     g.fillText('TODAY', tx, 14);
+    // Tick mark at ruler bottom
+    g.strokeStyle = '#d43c2e'; g.lineWidth = 2;
+    g.beginPath(); g.moveTo(tx, RULER_H - 10); g.lineTo(tx, RULER_H); g.stroke();
     g.restore();
   }
 
   // Left panel header (drawn over track area)
-  g.fillStyle = '#1a1a2e';
+  g.fillStyle = '#161626';
   g.fillRect(0, 0, LEFT_W, RULER_H);
-  g.strokeStyle = 'rgba(255,255,255,0.12)'; g.lineWidth = 1;
+  // Subtle gradient overlay on header
+  const hdrGrad = g.createLinearGradient(0, 0, LEFT_W, 0);
+  hdrGrad.addColorStop(0, 'rgba(60,80,180,0.18)');
+  hdrGrad.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = hdrGrad;
+  g.fillRect(0, 0, LEFT_W, RULER_H);
+  g.strokeStyle = 'rgba(255,255,255,0.10)'; g.lineWidth = 1;
   g.beginPath(); g.moveTo(LEFT_W, 0); g.lineTo(LEFT_W, RULER_H); g.stroke();
-  g.fillStyle = 'rgba(255,255,255,0.82)';
+  g.fillStyle = 'rgba(200,210,240,0.78)';
   g.font = 'bold 10px -apple-system, "Segoe UI", sans-serif';
   g.textAlign = 'center';
   g.fillText('UNIVERSES', LEFT_W / 2, RULER_H / 2 + 4);
@@ -4032,15 +4043,28 @@ function drawRangeEndpointLabel(g, year, fallbackX, align) {
 function drawTracks(c, g) {
   const vc = visCount();
   if (vc === 0) {
-    g.fillStyle = 'rgba(0,210,255,0.75)';
-    g.font = 'bold 16px -apple-system, "Segoe UI", sans-serif';
+    g.save();
     g.textAlign = 'center';
-    g.fillText('✦  Welcome to Free Timeline Universe  —  your chronicle awaits.', c.width / 2, c.height / 2 - 20);
-    g.font = '14px -apple-system, "Segoe UI", sans-serif';
-    g.fillStyle = 'rgba(180,210,240,0.7)';
-    g.fillText('Click  ＋ Universe  in the toolbar to open the first arc, then  ＋ Event  to place your first moment in history.', c.width / 2, c.height / 2 + 10);
-    g.fillStyle = 'rgba(140,180,220,0.5)';
-    g.fillText('Need guidance? Click  ✦ Help  in the toolbar for the full codex manual.', c.width / 2, c.height / 2 + 34);
+    // Emblem ring
+    g.beginPath(); g.arc(c.width / 2, c.height / 2 - 52, 28, 0, Math.PI * 2);
+    g.strokeStyle = 'rgba(100,160,255,0.18)'; g.lineWidth = 2; g.stroke();
+    g.beginPath(); g.arc(c.width / 2, c.height / 2 - 52, 20, 0, Math.PI * 2);
+    g.fillStyle = 'rgba(60,100,220,0.06)'; g.fill();
+    g.strokeStyle = 'rgba(100,160,255,0.35)'; g.lineWidth = 1.5; g.stroke();
+    g.fillStyle = 'rgba(120,180,255,0.7)';
+    g.font = '22px -apple-system, "Segoe UI", sans-serif';
+    g.fillText('✦', c.width / 2, c.height / 2 - 44);
+    // Headline
+    g.fillStyle = 'rgba(80,130,220,0.82)';
+    g.font = 'bold 17px -apple-system, "Segoe UI", sans-serif';
+    g.fillText('Your universe begins here', c.width / 2, c.height / 2 - 10);
+    // Sub text
+    g.font = '13px -apple-system, "Segoe UI", sans-serif';
+    g.fillStyle = 'rgba(110,150,210,0.62)';
+    g.fillText('Open  ＋ Universe  to forge the first arc, then  ＋ Event  to anchor its first moment.', c.width / 2, c.height / 2 + 16);
+    g.fillStyle = 'rgba(100,140,200,0.42)';
+    g.fillText('Need guidance? The  ✦ Help  codex awaits in the toolbar.', c.width / 2, c.height / 2 + 38);
+    g.restore();
     return;
   }
 
@@ -4054,28 +4078,42 @@ function drawTracks(c, g) {
     const isDimmed = !!u.dimmed;
     if (isDimmed) g.save(), g.globalAlpha = 0.25;
 
-    // Track background (alternating tint)
-    g.fillStyle = vi % 2 === 0 ? 'rgba(0,0,0,0.012)' : 'rgba(0,0,0,0.028)';
+    // Track background — subtle horizontal gradient band
+    const trackGrad = g.createLinearGradient(LEFT_W, top, LEFT_W, bot);
+    trackGrad.addColorStop(0, vi % 2 === 0 ? 'rgba(0,0,0,0.008)' : 'rgba(0,0,0,0.018)');
+    trackGrad.addColorStop(0.5, vi % 2 === 0 ? 'rgba(0,0,0,0.018)' : 'rgba(0,0,0,0.032)');
+    trackGrad.addColorStop(1, vi % 2 === 0 ? 'rgba(0,0,0,0.008)' : 'rgba(0,0,0,0.018)');
+    g.fillStyle = trackGrad;
     g.fillRect(LEFT_W, top, c.width - LEFT_W, TRACK_H);
 
-    // Left panel background
-    g.fillStyle = u.color + '1a';
+    // Left panel background — color-tinted with gradient
+    const panelGrad = g.createLinearGradient(0, top, LEFT_W, top);
+    panelGrad.addColorStop(0, u.color + '28');
+    panelGrad.addColorStop(1, u.color + '0c');
+    g.fillStyle = panelGrad;
     g.fillRect(0, top, LEFT_W, TRACK_H);
 
-    // Left color accent stripe
+    // Left color accent stripe — tapered glow
     g.fillStyle = u.color;
-    g.fillRect(LEFT_W - 4, top, 4, TRACK_H);
+    g.fillRect(LEFT_W - 5, top, 5, TRACK_H);
+    g.save();
+    const stripeGrad = g.createLinearGradient(LEFT_W - 14, top, LEFT_W - 5, top);
+    stripeGrad.addColorStop(0, u.color + '00');
+    stripeGrad.addColorStop(1, u.color + '55');
+    g.fillStyle = stripeGrad;
+    g.fillRect(LEFT_W - 14, top, 9, TRACK_H);
+    g.restore();
 
     // Track bottom separator
-    g.strokeStyle = '#e0e2e6'; g.lineWidth = 1;
+    g.strokeStyle = 'rgba(200,205,218,0.7)'; g.lineWidth = 1;
     g.beginPath(); g.moveTo(0, bot); g.lineTo(c.width, bot); g.stroke();
 
     // Left panel right border
-    g.strokeStyle = '#d8dae0'; g.lineWidth = 1;
-    g.beginPath(); g.moveTo(LEFT_W - 4, top); g.lineTo(LEFT_W - 4, bot); g.stroke();
+    g.strokeStyle = 'rgba(200,205,218,0.5)'; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(LEFT_W - 5, top); g.lineTo(LEFT_W - 5, bot); g.stroke();
 
     // Universe name
-    g.fillStyle = '#1a1a2e';
+    g.fillStyle = '#15152a';
     g.font = 'bold 12px -apple-system, "Segoe UI", sans-serif';
     g.textAlign = 'left';
     const disp = u.name.length > 16 ? u.name.slice(0, 15) + '\u2026' : u.name;
@@ -4083,11 +4121,11 @@ function drawTracks(c, g) {
 
     // Event count
     const evCnt = S.events.filter(e => e.universeId === u.id).length;
-    g.fillStyle = '#a0a8b8';
+    g.fillStyle = '#8892a8';
     g.font = '10px -apple-system, "Segoe UI", sans-serif';
     g.fillText(evCnt + ' event' + (evCnt !== 1 ? 's' : ''), 10, ty - 4);
-    g.fillStyle = '#7f8798';
-    g.font = 'bold 14px -apple-system, "Segoe UI", sans-serif';
+    g.fillStyle = '#9098b0';
+    g.font = 'bold 13px -apple-system, "Segoe UI", sans-serif';
     g.textAlign = 'right';
     g.fillText('↕', LEFT_W - 12, ty - 10);
 
@@ -4141,10 +4179,12 @@ function drawTracks(c, g) {
     hits.push({ type: 'u-info', id: u.id, x: infoX, y: btnY2 - btnH / 2, w: btnW, h: btnH });
     hits.push({ type: 'u-del',  id: u.id, x: delX,  y: btnY2 - btnH / 2, w: btnW, h: btnH });
 
-    // Track axis centre line
+    // Track axis centre line — dual: glow layer + crisp top line
     g.save();
     if (isDimmed) g.globalAlpha = 0.25;
-    g.strokeStyle = u.color + '50'; g.lineWidth = 1.5;
+    g.strokeStyle = u.color + '30'; g.lineWidth = 4;
+    g.beginPath(); g.moveTo(LEFT_W, ty); g.lineTo(c.width, ty); g.stroke();
+    g.strokeStyle = u.color + '65'; g.lineWidth = 1;
     g.beginPath(); g.moveTo(LEFT_W, ty); g.lineTo(c.width, ty); g.stroke();
     g.restore();
 
@@ -4171,16 +4211,25 @@ function drawConnections(c, g) {
     const mx = (fx + tx) / 2;
     g.save();
     const _connDimmed = !!fu.dimmed || !!tu.dimmed;
-    g.strokeStyle = getConnColor(conn, fu.color);
+    const _connColor = getConnColor(conn, fu.color);
+    const _connAlpha = _connDimmed ? 0.08 : getConnOpacity(conn);
+    // Glow underlay for connection lines
+    g.strokeStyle = _connColor;
+    g.lineWidth = getConnWidth(conn) + 3;
+    g.globalAlpha = _connAlpha * 0.18;
+    g.beginPath(); g.moveTo(fx, fy);
+    g.bezierCurveTo(fx, my, tx, my, tx, ty2);
+    g.stroke();
+    // Main line
     g.lineWidth = getConnWidth(conn);
-    if (getConnDashed(conn)) g.setLineDash([5, 4]);
-    g.globalAlpha = _connDimmed ? 0.1 : getConnOpacity(conn);
+    if (getConnDashed(conn)) g.setLineDash([6, 4]);
+    g.globalAlpha = _connAlpha;
     g.beginPath(); g.moveTo(fx, fy);
     g.bezierCurveTo(fx, my, tx, my, tx, ty2);
     g.stroke();
     g.setLineDash([]); g.globalAlpha = 1;
     if (conn.label) {
-      g.globalAlpha = 0.7; g.fillStyle = '#445';
+      g.globalAlpha = 0.65; g.fillStyle = '#384060';
       g.font = '9px -apple-system, sans-serif'; g.textAlign = 'center';
       g.fillText(conn.label, mx, my - 5);
       g.globalAlpha = 1;
@@ -4232,15 +4281,25 @@ function drawClusterBubble(g, x, y, count, sampleEv) {
   const col = u ? u.color : '#888';
   const r = 12 + Math.min(count, 30) * 0.4;
 
-  g.beginPath(); g.arc(x, y + 2, r, 0, Math.PI * 2);
-  g.fillStyle = 'rgba(0,0,0,0.06)'; g.fill();
+  // Shadow
+  g.beginPath(); g.arc(x, y + 2.5, r, 0, Math.PI * 2);
+  g.fillStyle = 'rgba(0,0,0,0.08)'; g.fill();
 
+  // Glow aura
+  const clusterAura = g.createRadialGradient(x, y, r * 0.6, x, y, r + 5);
+  clusterAura.addColorStop(0, col + '30');
+  clusterAura.addColorStop(1, col + '00');
+  g.beginPath(); g.arc(x, y, r + 5, 0, Math.PI * 2);
+  g.fillStyle = clusterAura; g.fill();
+
+  // Ring
   g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2);
-  g.fillStyle = col + '22'; g.fill();
-  g.strokeStyle = col; g.lineWidth = 2; g.stroke();
+  g.fillStyle = col + '18'; g.fill();
+  g.strokeStyle = col; g.lineWidth = 1.8; g.stroke();
 
+  // Inner white
   g.beginPath(); g.arc(x, y, r - 3, 0, Math.PI * 2);
-  g.fillStyle = 'rgba(255,255,255,0.85)'; g.fill();
+  g.fillStyle = 'rgba(255,255,255,0.88)'; g.fill();
 
   g.font = 'bold 11px -apple-system, "Segoe UI", sans-serif';
   g.textAlign = 'center'; g.textBaseline = 'middle';
@@ -4259,13 +4318,13 @@ function drawEvents(c, g) {
   // Friendly guidance when universes exist but no events have been added yet
   if (S.events.length === 0 && S.universes.length > 0) {
     g.save();
-    g.fillStyle = 'rgba(0,200,255,0.72)';
-    g.font = 'bold 15px -apple-system, "Segoe UI", sans-serif';
     g.textAlign = 'center';
-    g.fillText('✦  Your arc is open — now record the first moment.', c.width / 2, RULER_H + 48);
-    g.font = '13px -apple-system, "Segoe UI", sans-serif';
-    g.fillStyle = 'rgba(160,200,240,0.6)';
-    g.fillText('Click  ＋ Event  in the toolbar, or double-click anywhere inside a universe row.', c.width / 2, RULER_H + 72);
+    g.fillStyle = 'rgba(80,130,220,0.72)';
+    g.font = 'bold 14px -apple-system, "Segoe UI", sans-serif';
+    g.fillText('✦  Arc open — place the first event to begin the chronicle.', c.width / 2, RULER_H + 46);
+    g.font = '12px -apple-system, "Segoe UI", sans-serif';
+    g.fillStyle = 'rgba(110,150,210,0.52)';
+    g.fillText('Click  ＋ Event  in the toolbar, or double-click anywhere on a universe row.', c.width / 2, RULER_H + 66);
     g.restore();
   }
 
@@ -4576,23 +4635,37 @@ function drawSingleEvent(c, g, ev) {
 
     hits.push({ type: 'event', id: ev.id, x: sx, y: sy, r: EV_R + 5 });
 
-    g.beginPath(); g.arc(sx, sy, EV_R + 4, 0, Math.PI * 2);
-    g.fillStyle = 'rgba(255,255,255,0.9)'; g.fill();
+    // Outer glow aura — soft halo emanating from the artifact dot
+    g.beginPath(); g.arc(sx, sy, EV_R + 8, 0, Math.PI * 2);
+    const auraGrad = g.createRadialGradient(sx, sy, EV_R - 1, sx, sy, EV_R + 8);
+    auraGrad.addColorStop(0, u.color + '28');
+    auraGrad.addColorStop(1, u.color + '00');
+    g.fillStyle = auraGrad; g.fill();
 
-    g.beginPath(); g.arc(sx, sy + 2, EV_R + 2, 0, Math.PI * 2);
-    g.fillStyle = 'rgba(0,0,0,0.08)'; g.fill();
+    // Drop shadow
+    g.beginPath(); g.arc(sx, sy + 2.5, EV_R + 1, 0, Math.PI * 2);
+    g.fillStyle = 'rgba(0,0,0,0.10)'; g.fill();
 
+    // White backing ring
+    g.beginPath(); g.arc(sx, sy, EV_R + 2, 0, Math.PI * 2);
+    g.fillStyle = 'rgba(255,255,255,0.92)'; g.fill();
+
+    // Main colored fill
     g.beginPath(); g.arc(sx, sy, EV_R, 0, Math.PI * 2);
-    g.fillStyle = u.color; g.fill();
-    g.strokeStyle = 'rgba(255,255,255,0.55)'; g.lineWidth = 1.5; g.stroke();
+    const dotGrad = g.createRadialGradient(sx - 2, sy - 2, 0, sx, sy, EV_R);
+    dotGrad.addColorStop(0, u.color + 'ff');
+    dotGrad.addColorStop(1, u.color + 'cc');
+    g.fillStyle = dotGrad; g.fill();
+    g.strokeStyle = 'rgba(255,255,255,0.6)'; g.lineWidth = 1.5; g.stroke();
 
-    g.beginPath(); g.arc(sx - 3.5, sy - 3.5, EV_R * 0.3, 0, Math.PI * 2);
-    g.fillStyle = 'rgba(255,255,255,0.4)'; g.fill();
+    // Inner highlight gleam
+    g.beginPath(); g.arc(sx - 3, sy - 3, EV_R * 0.28, 0, Math.PI * 2);
+    g.fillStyle = 'rgba(255,255,255,0.5)'; g.fill();
 
     if (ev.category && CATEGORIES[ev.category]) {
       g.save();
       g.beginPath();
-      g.arc(sx, sy, EV_R + 3.5, Math.PI * (3/4), Math.PI * (9/4), false);
+      g.arc(sx, sy, EV_R + 4, Math.PI * (3/4), Math.PI * (9/4), false);
       g.strokeStyle = catColor(ev.category);
       g.lineWidth = 2.5; g.lineCap = 'round';
       g.stroke();
@@ -4601,9 +4674,9 @@ function drawSingleEvent(c, g, ev) {
 
     if (ev.status) {
       g.save();
-      g.beginPath(); g.arc(sx, sy, EV_R + 7, 0, Math.PI * 2);
+      g.beginPath(); g.arc(sx, sy, EV_R + 7.5, 0, Math.PI * 2);
       g.strokeStyle = statusColor(ev.status);
-      g.lineWidth = 2; g.globalAlpha = 0.85;
+      g.lineWidth = 1.5; g.globalAlpha = 0.8;
       if (ev.status === 'Cancelled') { g.setLineDash([3,3]); }
       g.stroke();
       g.setLineDash([]);
@@ -4613,7 +4686,8 @@ function drawSingleEvent(c, g, ev) {
     if (ev.subEvents && ev.subEvents.length > 0) {
       const bx = sx + EV_R - 1, by2 = sy - EV_R + 1;
       g.beginPath(); g.arc(bx, by2, 7, 0, Math.PI * 2);
-      g.fillStyle = '#2c2c3a'; g.fill();
+      g.fillStyle = '#252535'; g.fill();
+      g.strokeStyle = 'rgba(255,255,255,0.5)'; g.lineWidth = 1; g.stroke();
       g.fillStyle = '#ffffff';
       g.font = 'bold 7px -apple-system, sans-serif'; g.textAlign = 'center';
       g.fillText(ev.subEvents.length > 9 ? '9+' : String(ev.subEvents.length), bx, by2 + 2.5);
@@ -4622,7 +4696,8 @@ function drawSingleEvent(c, g, ev) {
     if (ev.media && ev.media.length > 0) {
       const mx2 = sx - EV_R + 1, my2 = sy - EV_R + 1;
       g.beginPath(); g.arc(mx2, my2, 6, 0, Math.PI * 2);
-      g.fillStyle = '#f39c12'; g.fill();
+      g.fillStyle = '#e8a010'; g.fill();
+      g.strokeStyle = 'rgba(255,255,255,0.5)'; g.lineWidth = 1; g.stroke();
       g.fillStyle = '#ffffff';
       g.font = 'bold 7px -apple-system, sans-serif'; g.textAlign = 'center';
       g.fillText('\uD83D\uDCCE', mx2, my2 + 2.5);
@@ -4632,10 +4707,10 @@ function drawSingleEvent(c, g, ev) {
     g.beginPath(); g.rect(LEFT_W, RULER_H, c.width - LEFT_W, c.height - RULER_H); g.clip();
     const label = ev.title.length > 16 ? ev.title.slice(0, 15) + '\u2026' : ev.title;
     const ly = sy + EV_R + 15;
-    g.fillStyle = '#1a1a2e';
+    g.fillStyle = '#18182e';
     g.font = 'bold 10px -apple-system, "Segoe UI", sans-serif'; g.textAlign = 'center';
     g.fillText(label, sx, ly);
-    g.fillStyle = '#a8abb6';
+    g.fillStyle = '#9098b0';
     g.font = '9px -apple-system, "Segoe UI", sans-serif';
     const dateLabel = (ev.date || '?') + (ev.time ? ' ' + ev.time : '');
     g.fillText(dateLabel, sx, ly + 12);
