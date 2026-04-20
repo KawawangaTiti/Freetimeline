@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta name="google-adsense-account" content="ca-pub-4135034633295293">
+   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
+     crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guides — FreeTimeline | Timeline Tips & Tutorials</title>
+<meta name="description" content="Learn how to build better timelines with our comprehensive guides on storytelling, world-building, and personal organization.">
+<link rel="canonical" href="https://freetimeline.pt/guides.html">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #050611;
+  --bg2: #080a18;
+  --surface: #0d0f20;
+  --surface2: #111328;
+  --border: rgba(255,255,255,0.06);
+  --border-mid: rgba(255,255,255,0.1);
+  --text: #e4e8f5;
+  --text-bright: #ffffff;
+  --muted: #7a84a0;
+  --dim: #434760;
+  --gold: #d4af37;
+  --accent: #4a8fde;
+  --bio: #c08040;
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: -apple-system, 'Segoe UI', system-ui, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.7;
+}
+
+.page-wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 60px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(5,6,17,0.95);
+  backdrop-filter: blur(16px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-brand {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.brand-infinity {
+  font-size: 1.4em;
+  background: linear-gradient(135deg, #5a80ff, #40c8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.brand-name {
+  background: linear-gradient(135deg, #c8d4ff, #90d8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.topbar-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+.topbar-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.topbar-links a:hover { color: var(--text-bright); }
+
+.main-content {
+  flex: 1;
+  padding: 80px 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.page-title {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: var(--text-bright);
+  margin-bottom: 16px;
+  letter-spacing: -1px;
+  text-align: center;
+}
+
+.page-subtitle {
+  font-size: 1.1rem;
+  color: var(--muted);
+  margin-bottom: 60px;
+  text-align: center;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.guides-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.guide-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.guide-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-mid);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+
+.guide-category {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.guide-category.universe { color: var(--accent); }
+.guide-category.biography { color: var(--bio); }
+.guide-category.general { color: var(--gold); }
+
+.guide-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+
+.guide-excerpt {
+  font-size: 0.95rem;
+  color: var(--muted);
+  line-height: 1.6;
+  flex: 1;
+  margin-bottom: 16px;
+}
+
+.guide-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 0.82rem;
+  color: var(--dim);
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.read-more {
+  color: var(--accent);
+  font-weight: 600;
+  margin-left: auto;
+}
+
+footer {
+  padding: 32px 40px;
+  border-top: 1px solid var(--border);
+  background: rgba(5,6,17,0.9);
+  margin-top: auto;
+}
+.footer-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--dim);
+}
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.footer-links a {
+  color: var(--dim);
+  font-size: 0.82rem;
+  text-decoration: none;
+  padding: 3px 6px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+.footer-links a:hover {
+  color: var(--muted);
+  background: rgba(255,255,255,0.04);
+}
+.footer-links .fdot {
+  color: var(--dim);
+  font-size: 0.65rem;
+}
+.footer-note {
+  font-size: 0.8rem;
+  color: var(--dim);
+  text-align: center;
+  width: 100%;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .topbar { padding: 0 20px; }
+  .topbar-links { display: none; }
+  .main-content { padding: 40px 20px; }
+  .page-title { font-size: 2rem; }
+  .guides-grid { grid-template-columns: 1fr; }
+  footer { padding: 24px 20px; }
+  .footer-inner { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <header class="topbar">
+    <a href="index.html" class="topbar-brand">
+      <span class="brand-infinity">&#8734;</span>
+      <span class="brand-name">FreeTimeline</span>
+    </a>
+    <nav class="topbar-links">
+      <a href="index.html">Home</a>
+      <a href="guides.html">Guides</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="privacy.html">Privacy</a>
+    </nav>
+  </header>
+
+  <main class="main-content">
+    <h1 class="page-title">Guides & Tutorials</h1>
+    <p class="page-subtitle">Learn how to build better timelines. From world-building techniques to personal organization tips, these guides will help you get the most out of FreeTimeline.</p>
+
+    <div class="guides-grid">
+
+      <a href="guides/how-to-build-consistent-timeline-fantasy-novel.html" class="guide-card">
+        <span class="guide-category universe">World-Building</span>
+        <h2 class="guide-title">How to Build a Consistent Timeline for Your Fantasy Novel</h2>
+        <p class="guide-excerpt">Master the art of timeline consistency in fiction. Learn techniques for tracking character ages, historical events, and avoiding plot holes in your fantasy world.</p>
+        <div class="guide-meta">
+          <span>8 min read</span>
+          <span class="read-more">Read Guide &rarr;</span>
+        </div>
+      </a>
+
+      <a href="guides/why-local-browser-storage-safer-for-diary.html" class="guide-card">
+        <span class="guide-category biography">Privacy</span>
+        <h2 class="guide-title">5 Reasons Why Local Browser Storage is Safer for Your Diary</h2>
+        <p class="guide-excerpt">Discover why keeping your personal memories in local storage offers better privacy protection than cloud-based alternatives. Your data, your control.</p>
+        <div class="guide-meta">
+          <span>6 min read</span>
+          <span class="read-more">Read Guide &rarr;</span>
+        </div>
+      </a>
+
+      <a href="guides/organizing-complex-storylines-multiple-characters.html" class="guide-card">
+        <span class="guide-category universe">Storytelling</span>
+        <h2 class="guide-title">Organizing Complex Storylines with Multiple Characters</h2>
+        <p class="guide-excerpt">Managing an ensemble cast across multiple plot threads can be overwhelming. Learn practical techniques for keeping track of who did what, when, and why.</p>
+        <div class="guide-meta">
+          <span>10 min read</span>
+          <span class="read-more">Read Guide &rarr;</span>
+        </div>
+      </a>
+
+      <a href="guides/creating-personal-memory-journal-tips.html" class="guide-card">
+        <span class="guide-category biography">Personal</span>
+        <h2 class="guide-title">Creating a Personal Memory Journal: Tips for Meaningful Entries</h2>
+        <p class="guide-excerpt">Transform your Biography Timeline into a meaningful record of your life. Practical tips for what to record, how often, and ways to make entries more valuable.</p>
+        <div class="guide-meta">
+          <span>7 min read</span>
+          <span class="read-more">Read Guide &rarr;</span>
+        </div>
+      </a>
+
+      <a href="guides/timeline-mapping-tabletop-rpg-campaigns.html" class="guide-card">
+        <span class="guide-category universe">RPG & Gaming</span>
+        <h2 class="guide-title">Timeline Mapping for Tabletop RPG Campaigns</h2>
+        <p class="guide-excerpt">Game Masters rejoice! Learn how to use timeline tools to track campaign history, faction movements, player choices, and world events for immersive RPG storytelling.</p>
+        <div class="guide-meta">
+          <span>9 min read</span>
+          <span class="read-more">Read Guide &rarr;</span>
+        </div>
+      </a>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="brand-infinity">&#8734;</span>
+        <span>FreeTimeline</span>
+      </div>
+      <nav class="footer-links">
+        <a href="about.html">About</a>
+        <span class="fdot">&#8226;</span>
+        <a href="contact.html">Contact</a>
+        <span class="fdot">&#8226;</span>
+        <a href="guides.html">Guides</a>
+        <span class="fdot">&#8226;</span>
+        <a href="terms.html">Terms of Service</a>
+        <span class="fdot">&#8226;</span>
+        <a href="privacy.html">Privacy Policy</a>
+        <span class="fdot">&#8226;</span>
+        <a href="cookies.html">Cookie Policy</a>
+      </nav>
+      <p class="footer-note">&copy; 2024 FreeTimeline. All data is saved locally in your browser.</p>
+    </div>
+  </footer>
