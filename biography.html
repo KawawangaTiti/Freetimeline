@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="google-adsense-account" content="ca-pub-4135034633295293">
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
-     crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Free Timeline Biography</title>
@@ -69,7 +66,7 @@ body {
 /* =====================================================
    CANVAS AREA
    ===================================================== */
-#canvas-wrap { flex: 1; position: relative; overflow: hidden; background: #faf6ef; display: block; }
+#canvas-wrap { flex: 1; position: relative; overflow: hidden; background: #faf6ef; display: block; contain: layout; }
 #tl-canvas { display: block; cursor: grab; }
 #tl-canvas.dragging { cursor: grabbing; }
 
@@ -355,8 +352,10 @@ input[type="color"] {
   position: absolute; top: 16px; right: 20px;
   color: rgba(255,255,255,0.75); font-size: 32px; cursor: pointer;
   line-height: 1; font-weight: 300;
+  background: none; border: none; padding: 0;
 }
 #lb-close:hover { color: #fff; }
+#lb-close:focus-visible { outline: 2px solid rgba(255,255,255,0.8); outline-offset: 4px; border-radius: 4px; }
 
 /* =====================================================
    SCROLLBAR
@@ -832,7 +831,7 @@ input[type="color"] {
     cursor: pointer;
     font-family: inherit;
     touch-action: manipulation;
-    min-height: 32px;
+    min-height: 44px;
   }
 
   .fp-mobile-section {
@@ -1893,6 +1892,9 @@ input:focus, select:focus, textarea:focus, button:focus-visible {
     gap: 4px;
     padding: 4px 6px;
     white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    overflow: hidden;
     cursor: pointer;
     touch-action: manipulation;
   }
@@ -2000,7 +2002,7 @@ input:focus, select:focus, textarea:focus, button:focus-visible {
   }
 
   .bio-mobile-drawer-close {
-    min-height: 34px;
+    min-height: 44px;
     border: 1px solid rgba(245,230,208,0.18);
     border-radius: 8px;
     background: rgba(255,255,255,0.08);
@@ -2734,6 +2736,114 @@ input:focus, select:focus, textarea:focus, button:focus-visible {
   }
 }
 
+/* =====================================================
+   ACCESSIBILITY PATCH
+   Touch targets · Focus rings · Mobile readability
+   ===================================================== */
+
+/* 1. Focus rings for interactive elements that don't inherit btn:focus-visible */
+.zbtn:focus-visible {
+  outline: 2px solid #c4915a;
+  outline-offset: 2px;
+}
+.view-tab:focus-visible {
+  box-shadow: 0 0 0 2.5px rgba(176,121,66,0.6) !important;
+}
+.cf-chip:focus-visible,
+.tag-filter-chip:focus-visible,
+.cat-filter-chip:focus-visible,
+.cf-clear:focus-visible,
+.bio-mobile-primary:focus-visible,
+.bio-mobile-action:focus-visible {
+  outline: 2px solid #c4915a;
+  outline-offset: 2px;
+}
+a:focus-visible {
+  outline: 2px solid #c4915a;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+/* Ensure input[type=color] is keyboard reachable */
+input[type="color"]:focus-visible {
+  outline: 2px solid #c4915a;
+  outline-offset: 2px;
+}
+
+/* 2. Lightbox close — always a comfortable tap target */
+#lb-close {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* 3. Mobile-specific improvements */
+@media (max-width: 767px) {
+  /* Inline ✕ delete/remove buttons inside modal content — 44px tap target */
+  .btn.sm {
+    min-height: 44px !important;
+    font-size: 13px !important;
+    padding: 8px 12px !important;
+  }
+
+  /* Zoom controls: slightly larger on touch */
+  .zbtn {
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  /* Filter chips: generous tap targets */
+  .cf-chip,
+  .tag-filter-chip,
+  .cat-filter-chip {
+    min-height: 40px !important;
+    padding: 8px 14px !important;
+    font-size: 12px !important;
+  }
+
+  /* Clear buttons inside filter bar */
+  .cf-clear,
+  #cat-clear-btn,
+  #tone-clear-btn,
+  #status-clear-btn,
+  #tag-clear-btn,
+  #cf-clear-btn,
+  #fp-mobile-clear-all {
+    min-height: 44px !important;
+    padding: 8px 14px !important;
+    font-size: 13px !important;
+  }
+
+  /* Lightbox close — extra large on touch */
+  #lb-close {
+    top: 10px !important;
+    right: 10px !important;
+    font-size: 36px !important;
+    min-width: 52px !important;
+    min-height: 52px !important;
+  }
+
+  /* Character/people search — 16px prevents iOS keyboard zoom */
+  .char-search {
+    font-size: 16px !important;
+    min-height: 44px !important;
+  }
+
+  /* Swatch colour picker: 36px min so it's tappable */
+  input[type="color"] {
+    width: 36px !important;
+    height: 44px !important;
+  }
+
+  /* Stats panel close if present */
+  #stats-panel-close {
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -3136,7 +3246,7 @@ input:focus, select:focus, textarea:focus, button:focus-visible {
 
 <!-- Keyboard shortcuts floating panel -->
 <div id="kbd-panel">
-    <button id="kbd-panel-close" onclick="UI.toggleKbd()" title="Close">&#10005;</button>
+    <button id="kbd-panel-close" type="button" onclick="UI.toggleKbd()" title="Close" aria-label="Close keyboard shortcuts panel">&#10005;</button>
     <h3>&#9875; Help &amp; Shortcuts</h3>
 
     <p class="kbd-section-label">Navigation</p>
@@ -3212,7 +3322,7 @@ input:focus, select:focus, textarea:focus, button:focus-visible {
 
 <!-- ==================== LIGHTBOX ==================== -->
 <div id="lightbox" onclick="closeLightbox()">
-  <span id="lb-close" onclick="closeLightbox()">&#10005;</span>
+  <button id="lb-close" type="button" onclick="closeLightbox()" aria-label="Close image viewer">&#10005;</button>
   <img id="lb-img" src="" alt="">
 </div>
 
@@ -4172,31 +4282,33 @@ function initCanvas() {
     render();
   }
 
+  /* Debounced resize — coalesces rapid mobile viewport/orientation events */
+  var _resizeTimer = null;
+  function scheduleResize() {
+    if (_resizeTimer) return;
+    _resizeTimer = setTimeout(function() { _resizeTimer = null; resize(); }, 80);
+  }
+
   /* Expose globally so mobile controls (filter toggle, drawer) can trigger it */
   window._tlResize = resize;
 
   /* Primary: ResizeObserver fires on any size change (address bar, rotation, filters) */
   if (typeof ResizeObserver !== 'undefined') {
-    new ResizeObserver(function() { resize(); }).observe(wrap);
+    new ResizeObserver(scheduleResize).observe(wrap);
   }
 
   /* Secondary: standard resize event (desktop, orientation on some browsers) */
-  window.addEventListener('resize', resize);
+  window.addEventListener('resize', scheduleResize);
 
   /* Tertiary: visualViewport fires when mobile browser chrome shows/hides */
   if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', resize);
+    window.visualViewport.addEventListener('resize', scheduleResize);
     /* Some browsers fire 'scroll' instead of 'resize' when address bar shows/hides */
-    window.visualViewport.addEventListener('scroll', resize);
+    window.visualViewport.addEventListener('scroll', scheduleResize);
   }
 
-  /* Orientation change — fire immediately and after layout settles */
-  window.addEventListener('orientationchange', function() {
-    resize();
-    setTimeout(resize, 120);
-    setTimeout(resize, 400);
-    setTimeout(resize, 700);
-  });
+  /* Orientation change — single debounced call covers all settle delays */
+  window.addEventListener('orientationchange', scheduleResize);
 
   resize();
 
@@ -4674,14 +4786,16 @@ const M = {
     const top = MS[MS.length - 1];
     this.btns().innerHTML = '';
 
-    const mkBtn = (lbl, cls, fn) => {
+    const mkBtn = (lbl, cls, fn, ariaLabel) => {
       const b = document.createElement('button');
       b.className = 'btn light ' + (cls || '');
+      b.type = 'button';
       b.innerHTML = lbl; b.onclick = fn;
+      if (ariaLabel) b.setAttribute('aria-label', ariaLabel);
       this.btns().appendChild(b);
     };
-    if (MS.length > 1) mkBtn('&#8592; Back', '', () => M.back());
-    mkBtn('&#10005;', '', () => M.close());
+    if (MS.length > 1) mkBtn('&#8592; Back', '', () => M.back(), 'Go back');
+    mkBtn('&#10005;', '', () => M.close(), 'Close');
 
     switch (top.t) {
       case 'evDetail':    this._evDetail(top);     break;

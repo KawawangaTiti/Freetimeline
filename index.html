@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="google-adsense-account" content="ca-pub-4135034633295293">
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
-     crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Free Timeline — Map Your Time</title>
@@ -64,6 +61,7 @@ body {
   z-index: 0;
   pointer-events: none;
   opacity: 0.85;
+  will-change: contents;
 }
 
 /* ============================================================
@@ -1636,6 +1634,44 @@ footer {
     opacity: 0.22;
   }
 }
+
+/* =====================================================
+   ACCESSIBILITY PATCH
+   Touch targets · Focus rings · Mobile readability
+   ===================================================== */
+
+/* Focus rings for links and interactive elements */
+a:focus-visible,
+.topbar-brand:focus-visible {
+  outline: 2px solid #7090ff;
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+.topbar-links a:focus-visible {
+  outline: 2px solid #7090ff;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@media (max-width: 767px) {
+  /* Consent button — 44px minimum tap target, no iOS zoom */
+  #consent-ok {
+    min-height: 44px !important;
+    font-size: 1rem !important;
+    padding: 10px 24px !important;
+  }
+
+  /* Consent bar: wrap on narrow screens so button is always reachable */
+  #consent-bar {
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    padding: 14px 16px !important;
+  }
+  .consent-actions {
+    flex-wrap: wrap !important;
+    width: 100% !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -1947,7 +1983,7 @@ footer {
     <a href="privacy.html">Privacy Policy</a>
   </p>
   <div class="consent-actions">
-    <button id="consent-ok">I Understand</button>
+    <button id="consent-ok" type="button">I Understand</button>
   </div>
 </div>
 
@@ -1963,7 +1999,11 @@ footer {
   if (!canvas) return;
   var ctx = canvas.getContext('2d');
 
+  var isMobile = window.matchMedia('(max-width: 767px), (pointer: coarse)').matches;
+
   var W, H, stars = [], drifters = [];
+  var rafId = null;
+  var paused = false;
 
   function resize() {
     W = canvas.width  = window.innerWidth;
@@ -1972,8 +2012,11 @@ footer {
   resize();
   window.addEventListener('resize', resize);
 
+  var STAR_COUNT    = isMobile ? 80  : 260;
+  var DRIFTER_COUNT = isMobile ? 18  : 55;
+
   // Static stars
-  for (var i = 0; i < 260; i++) {
+  for (var i = 0; i < STAR_COUNT; i++) {
     stars.push({
       x: Math.random(),
       y: Math.random(),
@@ -1985,7 +2028,7 @@ footer {
   }
 
   // Drifting dust particles
-  for (var j = 0; j < 55; j++) {
+  for (var j = 0; j < DRIFTER_COUNT; j++) {
     drifters.push({
       x: Math.random() * (W || 1200),
       y: Math.random() * (H || 800),
@@ -1998,6 +2041,7 @@ footer {
 
   var t = 0;
   function draw() {
+    if (paused) { rafId = null; return; }
     ctx.clearRect(0, 0, W, H);
     t += 0.012;
 
@@ -2025,8 +2069,18 @@ footer {
       ctx.fill();
     }
 
-    requestAnimationFrame(draw);
+    rafId = requestAnimationFrame(draw);
   }
+
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      paused = true;
+    } else {
+      paused = false;
+      if (!rafId) draw();
+    }
+  });
+
   draw();
 })();
 
@@ -2035,6 +2089,8 @@ footer {
    ============================================================ */
 (function() {
   var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var touch = window.matchMedia('(hover: none), (pointer: coarse)');
+  if (touch && touch.matches) return;
   var cards = document.querySelectorAll('.portal-card:not(.portal-ledger)');
   cards.forEach(function(card) {
     var glow = card.querySelector('.card-glow');

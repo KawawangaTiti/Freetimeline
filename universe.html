@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="google-adsense-account" content="ca-pub-4135034633295293">
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
-     crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Free Timeline Universe</title>
@@ -73,7 +70,7 @@ body {
 /* =====================================================
    CANVAS AREA
    ===================================================== */
-#canvas-wrap { flex: 1; position: relative; overflow: hidden; background: radial-gradient(ellipse at 50% 60%, #121428 0%, #0a0c18 55%, #06080f 100%); }
+#canvas-wrap { flex: 1; position: relative; overflow: hidden; background: radial-gradient(ellipse at 50% 60%, #121428 0%, #0a0c18 55%, #06080f 100%); contain: layout; }
 #tl-canvas { display: block; cursor: grab; }
 #tl-canvas.dragging { cursor: grabbing; }
 
@@ -403,8 +400,10 @@ input[type="color"] {
   position: absolute; top: 16px; right: 20px;
   color: rgba(255,255,255,0.75); font-size: 32px; cursor: pointer;
   line-height: 1; font-weight: 300;
+  background: none; border: none; padding: 0;
 }
 #lb-close:hover { color: #fff; }
+#lb-close:focus-visible { outline: 2px solid rgba(255,255,255,0.8); outline-offset: 4px; border-radius: 4px; }
 
 /* =====================================================
    SCROLLBAR
@@ -1552,6 +1551,26 @@ body { background: #07081a; }
   }
 }
 
+/* =====================================================
+   320px OVERFLOW SAFETY — mob-header
+   At 320px the 4 × min-width:48px buttons + nowrap
+   logo can hit 300px inner width. Allow the logo to
+   flex-shrink and reduce button footprint slightly.
+   ===================================================== */
+@media (max-width: 360px) {
+  #mob-header .mob-logo {
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 88px;
+  }
+  .mob-btn {
+    min-width: 42px;
+    padding: 6px 5px;
+  }
+}
+
 /* --- Mobile drawer overlay --- */
 #mob-drawer-overlay {
   display: none;
@@ -1876,7 +1895,7 @@ body { background: #07081a; }
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
-    min-height: 36px;
+    min-height: 44px;
     font-family: inherit;
     touch-action: manipulation;
   }
@@ -2685,6 +2704,537 @@ body { background: #07081a; }
   }
 }
 
+/* =====================================================
+   ACCESSIBILITY PATCH
+   Touch targets · Focus rings · Mobile readability
+   ===================================================== */
+
+/* 1. Focus rings for interactive elements that don't inherit .btn:focus-visible */
+.zbtn:focus-visible {
+  outline: 2px solid rgba(0,210,255,0.7);
+  outline-offset: 2px;
+}
+.cf-chip:focus-visible,
+.tag-filter-chip:focus-visible,
+.uni-toggle-chip:focus-visible,
+.cf-clear:focus-visible,
+.mob-drw-btn:focus-visible {
+  outline: 2px solid rgba(0,210,255,0.6);
+  outline-offset: 2px;
+}
+a:focus-visible {
+  outline: 2px solid rgba(0,210,255,0.7);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+input[type="color"]:focus-visible {
+  outline: 2px solid rgba(0,210,255,0.7);
+  outline-offset: 2px;
+}
+
+/* 2. Mobile-specific improvements */
+@media (max-width: 767px) {
+  /* Inline ✕ delete/remove buttons inside modal content — 44px tap target */
+  .btn.sm {
+    min-height: 44px !important;
+    font-size: 13px !important;
+    padding: 8px 12px !important;
+  }
+
+  /* Zoom controls: slightly larger on touch */
+  .zbtn {
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  /* Filter and universe toggle chips: generous tap targets */
+  .cf-chip,
+  .tag-filter-chip,
+  .uni-toggle-chip {
+    min-height: 40px !important;
+    padding: 8px 14px !important;
+    font-size: 12px !important;
+  }
+
+  /* Clear buttons inside filter bar */
+  .cf-clear,
+  #cf-clear-btn,
+  #all-clear-btn,
+  #mob-clear-all-btn {
+    min-height: 44px !important;
+    padding: 8px 14px !important;
+    font-size: 13px !important;
+  }
+
+  /* Character search inputs — 16px prevents iOS keyboard zoom */
+  .char-search,
+  .cv-search {
+    font-size: 16px !important;
+    min-height: 44px !important;
+  }
+
+  /* Swatch colour picker: tappable height */
+  input[type="color"] {
+    width: 36px !important;
+    height: 44px !important;
+  }
+
+  /* Stats panel close if present */
+  #stats-panel-close {
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+}
+
+/* =====================================================
+   FREE TIMELINE UNIVERSE — PREMIUM VISUAL LAYER v2
+   Holographic-archive • Codex-dossier • Starfield
+   ===================================================== */
+
+/* Starfield nebula overlay on canvas */
+#canvas-wrap {
+  position: relative;
+  background:
+    radial-gradient(ellipse at 18% 28%, rgba(0,80,200,0.09) 0%, transparent 52%),
+    radial-gradient(ellipse at 78% 18%, rgba(110,30,200,0.08) 0%, transparent 48%),
+    radial-gradient(ellipse at 50% 82%, rgba(0,150,120,0.05) 0%, transparent 42%),
+    radial-gradient(ellipse at 50% 40%, #0e1038 0%, #080920 45%, #04050f 100%);
+}
+#canvas-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.65;
+  background-image:
+    radial-gradient(1px 1px at 8%  12%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 22% 38%, rgba(220,235,255,0.4) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 38%  8%, rgba(200,220,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 58% 27%, rgba(255,255,255,0.55) 0%, transparent 100%),
+    radial-gradient(1px 1px at 74% 62%, rgba(210,210,255,0.4) 0%, transparent 100%),
+    radial-gradient(2px 2px at 84% 18%, rgba(255,255,255,0.65) 0%, transparent 100%),
+    radial-gradient(1px 1px at 91% 48%, rgba(255,255,255,0.35) 0%, transparent 100%),
+    radial-gradient(1px 1px at 13% 68%, rgba(200,220,255,0.5) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 33% 78%, rgba(255,255,255,0.55) 0%, transparent 100%),
+    radial-gradient(1px 1px at 52% 52%, rgba(180,200,255,0.38) 0%, transparent 100%),
+    radial-gradient(1px 1px at 68% 83%, rgba(255,255,255,0.42) 0%, transparent 100%),
+    radial-gradient(2px 2px at  4% 93%, rgba(200,220,255,0.55) 0%, transparent 100%),
+    radial-gradient(1px 1px at 93% 76%, rgba(255,255,255,0.38) 0%, transparent 100%),
+    radial-gradient(1px 1px at 46% 94%, rgba(200,220,255,0.32) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 19% 84%, rgba(255,255,255,0.48) 0%, transparent 100%),
+    radial-gradient(1px 1px at 62% 4%,  rgba(255,255,255,0.5)  0%, transparent 100%),
+    radial-gradient(1px 1px at 44% 44%, rgba(230,240,255,0.35) 0%, transparent 100%),
+    radial-gradient(2px 2px at 77% 34%, rgba(255,255,255,0.55) 0%, transparent 100%),
+    radial-gradient(1px 1px at 29% 56%, rgba(210,230,255,0.4)  0%, transparent 100%),
+    radial-gradient(1px 1px at 86% 91%, rgba(255,255,255,0.42) 0%, transparent 100%);
+}
+
+/* Nebula soft glow on canvas wrap */
+#canvas-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 30% at 15% 20%, rgba(0,60,160,0.06) 0%, transparent 100%),
+    radial-gradient(ellipse 40% 20% at 85% 30%, rgba(100,0,200,0.05) 0%, transparent 100%),
+    radial-gradient(ellipse 35% 25% at 60% 80%, rgba(0,120,100,0.04) 0%, transparent 100%);
+}
+
+/* Toolbar cluster groups — premium feel */
+.tb-group {
+  border-radius: 10px;
+  background: rgba(0,210,255,0.04);
+  border: 1px solid rgba(0,210,255,0.1);
+  padding: 3px 6px;
+  gap: 3px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.tb-group:hover {
+  border-color: rgba(0,210,255,0.18);
+  background: rgba(0,210,255,0.06);
+}
+.tb-group-label {
+  font-size: 8px;
+  color: rgba(0,210,255,0.45);
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  font-weight: 900;
+  white-space: nowrap;
+  align-self: center;
+  padding: 0 2px;
+  user-select: none;
+}
+
+/* Logo polish */
+#toolbar .logo {
+  font-size: 12px;
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+
+/* Disabled button state */
+.btn:disabled,
+.btn[disabled] {
+  opacity: 0.32 !important;
+  pointer-events: none;
+  filter: saturate(0.3) brightness(0.7);
+  cursor: not-allowed;
+}
+
+/* Holographic modal */
+.modal {
+  background: linear-gradient(175deg, #0c0f28 0%, #0a0d24 60%, #080b20 100%);
+  border: 1px solid rgba(0,210,255,0.22);
+  box-shadow:
+    0 0 0 1px rgba(0,210,255,0.08),
+    0 24px 80px rgba(0,0,0,0.78),
+    0 0 60px rgba(0,100,255,0.07),
+    inset 0 1px 0 rgba(0,210,255,0.1);
+  position: relative;
+  overflow: hidden;
+}
+.modal::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 5%, rgba(0,210,255,0.55) 50%, transparent 95%);
+  pointer-events: none;
+  z-index: 10;
+}
+.modal-hd {
+  background: linear-gradient(180deg, rgba(0,20,50,0.5) 0%, rgba(0,10,30,0.3) 100%);
+  border-bottom: 1px solid rgba(0,210,255,0.14);
+}
+.m-title {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: #c8e8ff;
+}
+.m-crumb {
+  font-size: 10px;
+  color: rgba(0,210,255,0.55);
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+}
+
+/* Codex character cards — dossier feel */
+.char-card {
+  background: rgba(6,8,26,0.65);
+  border: 1px solid rgba(0,180,220,0.14);
+  border-left: 3px solid rgba(0,180,220,0.22);
+  transition: border-color 0.18s, background 0.18s, box-shadow 0.18s, transform 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.char-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,210,255,0.03) 0%, transparent 50%);
+  pointer-events: none;
+}
+.char-card:hover {
+  border-color: rgba(0,210,255,0.5);
+  border-left-color: rgba(0,210,255,0.85);
+  background: rgba(0,50,110,0.14);
+  box-shadow: 0 0 22px rgba(0,210,255,0.1), 0 4px 18px rgba(0,0,0,0.45);
+  transform: translateX(3px);
+}
+.char-name-sm { color: #c0e2ff; font-weight: 700; letter-spacing: 0.2px; }
+.char-aliases-sm { color: rgba(0,180,220,0.5); }
+
+/* Codex grid cards */
+.cv-card {
+  background: rgba(6,8,26,0.72);
+  border: 1px solid rgba(0,180,220,0.14);
+  transition: border-color 0.18s, background 0.18s, box-shadow 0.2s, transform 0.18s;
+  position: relative;
+  overflow: hidden;
+}
+.cv-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(0,210,255,0), rgba(0,210,255,0.65), rgba(0,210,255,0));
+  transform: scaleX(0);
+  transition: transform 0.25s ease;
+  transform-origin: center;
+}
+.cv-card:hover::before { transform: scaleX(1); }
+.cv-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 40%;
+  background: linear-gradient(0deg, rgba(0,40,100,0.08) 0%, transparent 100%);
+  pointer-events: none;
+}
+.cv-card:hover {
+  border-color: rgba(0,210,255,0.42);
+  background: rgba(0,35,85,0.2);
+  box-shadow: 0 0 28px rgba(0,210,255,0.12), 0 8px 32px rgba(0,0,0,0.5);
+  transform: translateY(-3px);
+}
+.cv-name { color: #c0e2ff; font-weight: 700; }
+.cv-sub  { color: rgba(0,180,220,0.55); }
+.cv-stat { color: rgba(0,210,255,0.72); }
+
+/* Codex avatar ring */
+.cv-avatar {
+  background: rgba(0,14,40,0.85);
+  border: 2px solid rgba(0,180,220,0.32);
+  box-shadow: 0 0 0 3px rgba(0,180,220,0.08), 0 0 12px rgba(0,180,220,0.1);
+}
+.char-avatar {
+  background: rgba(0,14,40,0.85);
+  border-color: rgba(0,180,220,0.32);
+}
+
+/* Continuity tag — category chips */
+.cat-badge {
+  border: 1px solid rgba(255,255,255,0.18);
+  letter-spacing: 0.5px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.35);
+}
+.uni-toggle-chip {
+  box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+  transition: all 0.18s;
+}
+.uni-toggle-chip:hover {
+  filter: brightness(1.18);
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.45);
+}
+.uni-toggle-chip:focus-visible {
+  outline: 2px solid #00d4ff;
+  outline-offset: 2px;
+}
+.cf-chip { box-shadow: 0 1px 8px rgba(0,0,0,0.3); }
+
+/* Connection map — holographic grid feel */
+.conn-map-wrap {
+  background:
+    radial-gradient(ellipse at 28% 38%, rgba(0,50,120,0.13) 0%, transparent 55%),
+    radial-gradient(ellipse at 72% 62%, rgba(70,15,160,0.09) 0%, transparent 50%),
+    #07091a;
+}
+.cm-controls-bar {
+  background: rgba(5,7,18,0.95);
+  border-bottom: 1px solid rgba(0,210,255,0.12);
+  backdrop-filter: blur(10px);
+}
+.cm-legend-panel {
+  background: rgba(5,7,20,0.97);
+  border: 1px solid rgba(0,210,255,0.24);
+  box-shadow: 0 8px 36px rgba(0,0,0,0.65), 0 0 0 1px rgba(0,210,255,0.06);
+}
+
+/* Stats full-view data panels */
+.sfv-card {
+  background: rgba(6,8,22,0.72);
+  border: 1px solid rgba(0,180,220,0.14);
+  border-top: 2px solid rgba(0,180,220,0.22);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.sfv-card:hover {
+  border-color: rgba(0,210,255,0.3);
+  border-top-color: rgba(0,210,255,0.55);
+  box-shadow: 0 0 22px rgba(0,210,255,0.09), 0 4px 22px rgba(0,0,0,0.45);
+}
+.sfv-card h3 { color: rgba(0,210,255,0.82); letter-spacing: 0.9px; }
+.sfv-big     { color: #00d4ff; }
+.sfv-mini-val { color: #00c4ee; }
+.sfv-metric-box .m-val { color: #00ccf0; }
+
+/* Premium notification toast */
+#notif {
+  border-radius: 14px;
+  padding: 10px 26px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  backdrop-filter: blur(18px);
+}
+#notif.success {
+  background: linear-gradient(135deg, rgba(15,50,28,0.97) 0%, rgba(8,28,18,0.97) 100%);
+  border-color: rgba(46,204,113,0.5);
+  box-shadow: 0 8px 32px rgba(20,140,60,0.3), 0 0 24px rgba(30,180,80,0.14);
+}
+#notif.error {
+  background: linear-gradient(135deg, rgba(60,15,15,0.97) 0%, rgba(36,8,8,0.97) 100%);
+  border-color: rgba(231,76,60,0.55);
+  box-shadow: 0 8px 32px rgba(180,40,40,0.32);
+}
+#notif.warning {
+  background: linear-gradient(135deg, rgba(50,38,10,0.97) 0%, rgba(28,20,4,0.97) 100%);
+  border-color: rgba(230,180,50,0.5);
+  box-shadow: 0 8px 32px rgba(180,140,20,0.25);
+}
+#notif.info,
+#notif:not(.success):not(.error):not(.warning) {
+  background: linear-gradient(135deg, rgba(8,12,34,0.98) 0%, rgba(6,8,24,0.98) 100%);
+  border-color: rgba(0,210,255,0.38);
+  box-shadow: 0 8px 32px rgba(0,120,220,0.32), 0 0 24px rgba(0,180,255,0.1);
+}
+
+/* Story beat sub-event cards */
+.se-item {
+  border-left: 3px solid rgba(0,180,220,0.18);
+  transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+}
+.se-item:hover {
+  border-left-color: rgba(0,210,255,0.75);
+  box-shadow: 0 0 18px rgba(0,210,255,0.1);
+}
+
+/* Stats panel overlay */
+#stats-panel {
+  border: 1px solid rgba(0,210,255,0.18);
+  box-shadow: 0 0 0 1px rgba(0,210,255,0.06), 0 10px 36px rgba(0,0,0,0.55);
+}
+
+/* Zoom controls */
+#zoom-ctrl { filter: drop-shadow(0 4px 14px rgba(0,0,0,0.6)); }
+.zbtn {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,210,255,0.1);
+}
+.zbtn:hover {
+  box-shadow: 0 0 18px rgba(0,210,255,0.22), 0 4px 14px rgba(0,0,0,0.55);
+}
+
+/* Full-page view backgrounds */
+#chars-view {
+  background: linear-gradient(180deg, #070920 0%, #0b0d1a 100%);
+}
+#map-view { background: #07091a; }
+#stats-full-view {
+  background: linear-gradient(180deg, #070920 0%, #0b0d1a 100%);
+}
+
+/* Shared event items */
+.shared-ev-item {
+  border-left: 2px solid rgba(0,180,220,0.18);
+  transition: border-color 0.18s, background 0.18s;
+}
+.shared-ev-item:hover {
+  border-left-color: rgba(0,210,255,0.65);
+  background: rgba(0,35,88,0.22);
+}
+
+/* Char counterpart rows */
+.char-counterpart {
+  border-left: 3px solid rgba(0,180,220,0.18);
+  transition: border-color 0.18s, background 0.18s, transform 0.15s;
+}
+.char-counterpart:hover {
+  border-left-color: rgba(0,210,255,0.65);
+  background: rgba(0,50,110,0.14);
+  transform: translateX(2px);
+}
+
+/* Character event pills */
+.char-in-event { transition: all 0.18s; }
+.char-in-event:hover {
+  background: rgba(0,55,120,0.32);
+  border-color: rgba(0,210,255,0.42);
+  box-shadow: 0 0 12px rgba(0,210,255,0.12);
+}
+
+/* Range configurator — holographic */
+#range-cfg-panel {
+  background: linear-gradient(175deg, #0c0f28 0%, #080b20 100%);
+  border: 1px solid rgba(0,210,255,0.22);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.78), 0 0 0 1px rgba(0,210,255,0.08);
+}
+.rcfg-title { color: #c8e8ff; }
+.rcfg-sub   { color: rgba(0,180,220,0.5); }
+.rcfg-lbl   { color: rgba(0,180,220,0.62); }
+
+/* Notes and powers display */
+.notes-display {
+  background: rgba(28,24,8,0.28);
+  border: 1px solid rgba(180,160,50,0.18);
+}
+.notes-label { color: rgba(200,172,50,0.72); }
+.powers-block {
+  background: rgba(14,22,60,0.38);
+  border: 1px solid rgba(0,180,220,0.22);
+}
+.powers-label { color: rgba(0,210,255,0.75); }
+.powers-text  { color: rgba(0,180,220,0.82); }
+
+/* Universe stat cards */
+.uni-stat-card {
+  background: rgba(6,8,24,0.72);
+  border: 1px solid rgba(0,180,220,0.18);
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+.uni-stat-card:hover {
+  border-color: rgba(0,210,255,0.42);
+  box-shadow: 0 0 16px rgba(0,210,255,0.1);
+}
+.uni-stat-val { color: #00d4f8; }
+.uni-desc-box {
+  background: rgba(5,7,22,0.55);
+  border: 1px solid rgba(0,180,220,0.15);
+}
+
+/* Help tabs — cosmic */
+.help-tab:hover  { background: rgba(0,210,255,0.1); color: #55ccf8; }
+.help-tab.active { border-bottom-color: #00d4ff; color: #00d4ff; background: rgba(0,210,255,0.12); }
+
+/* Form inputs — enhanced glow */
+.fg input:focus, .fg textarea:focus, .fg select:focus {
+  box-shadow: 0 0 0 2.5px rgba(0,200,255,0.22), 0 0 14px rgba(0,180,255,0.09);
+}
+
+/* Tooltip */
+#tip {
+  background: rgba(5,7,22,0.97);
+  border: 1px solid rgba(0,210,255,0.26);
+  color: #c0d8f0;
+  box-shadow: 0 4px 22px rgba(0,0,0,0.55);
+}
+
+/* Save status indicator */
+.tb-save-status {
+  background: rgba(0,210,255,0.06);
+  border: 1px solid rgba(0,210,255,0.18);
+  color: rgba(0,210,255,0.62);
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  animation: savePulse 5s ease-in-out infinite;
+}
+
+/* kbd panel */
+#kbd-panel {
+  background: rgba(7,9,24,0.99);
+  border: 1px solid rgba(0,210,255,0.2);
+  box-shadow: 0 0 0 1px rgba(0,210,255,0.06), 0 16px 60px rgba(0,0,0,0.7);
+}
+
+/* Filter panel backdrop */
+#filter-panel { backdrop-filter: blur(12px); }
+
+/* Connection items */
+.conn-item {
+  background: rgba(10,12,30,0.45);
+  border-color: rgba(0,180,220,0.14);
+  transition: border-color 0.18s, background 0.18s;
+}
+.conn-item:hover {
+  border-color: rgba(0,210,255,0.38);
+  background: rgba(0,40,90,0.2);
+}
+
   </style>
 </head>
 <body>
@@ -2696,7 +3246,7 @@ body { background: #07081a; }
 
   <!-- ==================== MOBILE COMPACT HEADER (≤767px) ==================== -->
   <div id="mob-header">
-    <span class="mob-logo">∞ Universe</span>
+    <span class="mob-logo" title="Free Timeline Universe">✦ FTU</span>
     <div class="mob-actions">
       <button class="mob-btn mob-menu" onclick="goBackToMenu()" title="Back to menu">
         <span class="mob-icon">←</span>
@@ -2732,76 +3282,76 @@ body { background: #07081a; }
     <!-- ── Group 1: Navigation ── -->
     <div class="tb-group">
       <button class="btn menu-btn" title="Go back to the main menu" onclick="goBackToMenu()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;">← Menu</button>
-      <span class="logo">∞ Universe</span>
+      <span class="logo" title="Free Timeline Universe — build your world">✦ Free Timeline Universe</span>
     </div>
 
     <div class="sep"></div>
 
     <!-- ── Group 2: Create ── -->
     <div class="tb-group">
-      <span class="tb-group-label">Create</span>
-      <button class="btn accent" onclick="UI.addEvent()" title="Add a new event to a universe (also double-click any track)">＋ Event</button>
-      <button class="btn tb-secondary" onclick="UI.addUniverse()" title="Add a new universe timeline track">＋ Universe</button>
+      <span class="tb-group-label">✦ Create</span>
+      <button class="btn accent" onclick="UI.addEvent()" title="Add a new event to a universe — or double-click any track row">＋ Event</button>
+      <button class="btn tb-secondary" onclick="UI.addUniverse()" title="Add a new universe timeline track (story world, campaign, or parallel arc)">＋ Universe</button>
     </div>
 
     <div class="sep tb-secondary"></div>
 
     <!-- ── Group 3: View tabs ── -->
     <div class="view-tabs tb-secondary">
-      <button class="view-tab active" id="tab-timeline"    onclick="switchView('timeline')">Timeline</button>
-      <button class="view-tab"        id="tab-characters"  onclick="switchView('characters')">Characters</button>
-      <button class="view-tab"        id="tab-connections" onclick="switchView('connections')">Connections</button>
-      <button class="view-tab"        id="tab-stats"       onclick="switchView('stats')">Stats</button>
+      <button class="view-tab active" id="tab-timeline"    onclick="switchView('timeline')"    title="Main timeline canvas — events laid out across time">⧖ Timeline</button>
+      <button class="view-tab"        id="tab-characters"  onclick="switchView('characters')"  title="Character codex — browse and manage all character dossiers">⬡ Codex</button>
+      <button class="view-tab"        id="tab-connections" onclick="switchView('connections')" title="Connection map — visualise links between events and arcs">⬡ Map</button>
+      <button class="view-tab"        id="tab-stats"       onclick="switchView('stats')"       title="Chronicle analytics — universe statistics and breakdowns">◉ Archive</button>
     </div>
 
     <div class="sep tb-secondary"></div>
 
     <!-- ── Group 4: Organise ── -->
     <div class="tb-group tb-secondary">
-      <span class="tb-group-label">Org</span>
-      <button class="btn" onclick="UI.catEditor()"         title="Manage event categories — rename, recolour, add, remove">🏷 Categories</button>
-      <button class="btn" onclick="UI.affiliationEditor()" title="Manage character affiliations">👥 Affiliations</button>
+      <span class="tb-group-label">◈ Tags</span>
+      <button class="btn" onclick="UI.catEditor()"         title="Manage continuity tags — rename, recolour, add and remove event categories">🏷 Categories</button>
+      <button class="btn" onclick="UI.affiliationEditor()" title="Manage faction affiliations for character dossiers">👥 Factions</button>
     </div>
 
     <div class="sep tb-secondary"></div>
 
     <!-- ── Group 5: Navigate / History ── -->
     <div class="tb-group tb-secondary">
-      <span class="tb-group-label">View</span>
-      <button class="btn" onclick="goToToday()"      title="Pan to today's date (preserves zoom)">⏱ Today</button>
-      <button class="btn" onclick="resetView()"      title="Reset pan and zoom to fit the full timeline">⌂ Reset</button>
+      <span class="tb-group-label">◎ Navigate</span>
+      <button class="btn" onclick="goToToday()"      title="Jump to today's date on the timeline (preserves zoom level)">⏱ Today</button>
+      <button class="btn" onclick="resetView()"      title="Reset pan and zoom to fit the full chronicle — nothing is deleted">⌂ Reset</button>
       <button class="btn" id="undo-btn" onclick="History.undo()" title="Undo last action  (Ctrl+Z)" style="opacity:0.4" disabled>↩ Undo</button>
-      <button class="btn" id="redo-btn" onclick="History.redo()" title="Redo  (Ctrl+Y / Ctrl+Shift+Z)" style="opacity:0.4" disabled>↪ Redo</button>
+      <button class="btn" id="redo-btn" onclick="History.redo()" title="Redo last undone action  (Ctrl+Y / Ctrl+Shift+Z)" style="opacity:0.4" disabled>↪ Redo</button>
     </div>
 
     <div class="sep tb-secondary"></div>
 
-    <!-- ── Group 6: Save / Import ── -->
+    <!-- ── Group 6: Archive / Data ── -->
     <div class="tb-group tb-secondary">
-      <span class="tb-group-label">Data</span>
-      <button class="btn accent" onclick="Store.saveHTML()"  title="Save your entire timeline as a portable self-contained HTML file you can open anywhere offline">💾 Save HTML</button>
-      <button class="btn"        onclick="Store.saveJSON()"  title="Export all data as a plain JSON backup file">↓ JSON</button>
-      <button class="btn"        onclick="Store.importClick()" title="Load a previously saved HTML or JSON timeline file">↑ Load</button>
-      <button class="btn danger" onclick="Store.blankTimeline()" title="Clear all universes, events, characters, and connections (with optional JSON backup)">Blank</button>
+      <span class="tb-group-label">⬡ Archive</span>
+      <button class="btn accent" onclick="Store.saveHTML()"    title="Export your entire universe as a self-contained HTML file — open it anywhere offline">💾 Save HTML</button>
+      <button class="btn"        onclick="Store.saveJSON()"    title="Export a lightweight JSON backup of all timeline data">↓ JSON</button>
+      <button class="btn"        onclick="Store.importClick()" title="Load a previously saved HTML or JSON timeline archive">↑ Load</button>
+      <button class="btn danger" onclick="Store.blankTimeline()" title="Clear all universes, events, characters, and connections — a JSON backup is offered first">⚠ Blank</button>
     </div>
     <input type="file" id="file-in" accept=".html,.json" onchange="Store.importFile(event)" style="display:none">
 
     <div class="sep tb-secondary"></div>
 
-    <!-- ── Group 7: Insights / Tools ── -->
+    <!-- ── Group 7: Observatory Tools ── -->
     <div class="tb-group tb-secondary">
-      <span class="tb-group-label">Tools</span>
-      <button class="btn" onclick="UI.toggleStats()"    title="Toggle stats overlay panel  (S)"    id="stats-btn">📊 Stats</button>
-      <button class="btn" id="story-line-btn" onclick="toggleStoryLine()" title="Draw a connected story path through all chronological events">🔗 Story</button>
-      <button class="btn" onclick="UI.toggleKbd()"      title="Keyboard shortcuts reference  (?)">⚓ Keys</button>
-      <button class="btn" onclick="openRangeConfig()"   title="Configure the visible year range of the timeline">📅 Range</button>
-      <button class="btn" onclick="UI.help()"           title="Open the full help guide">❓ Help</button>
+      <span class="tb-group-label">◈ Tools</span>
+      <button class="btn" onclick="UI.toggleStats()"    title="Toggle the live stats overlay panel  (S)"    id="stats-btn">📊 Stats</button>
+      <button class="btn" id="story-line-btn" onclick="toggleStoryLine()" title="Reveal a connected story path through all chronological events">🔗 Story</button>
+      <button class="btn" onclick="openRangeConfig()"   title="Configure the visible year range and epoch of the timeline">📅 Range</button>
+      <button class="btn" onclick="UI.toggleKbd()"      title="Keyboard shortcuts reference  (?)">⌨ Keys</button>
+      <button class="btn" onclick="UI.help()"           title="Open the full codex help guide — navigation, events, backups, connections">✦ Help</button>
     </div>
 
     <div class="sep tb-secondary"></div>
 
     <!-- ── Row height slider ── -->
-    <label class="tb-secondary" style="font-size:11px;color:rgba(0,210,255,0.55);white-space:nowrap;display:flex;align-items:center;gap:6px;" title="Adjust universe track row height">
+    <label class="tb-secondary" style="font-size:11px;color:rgba(0,210,255,0.55);white-space:nowrap;display:flex;align-items:center;gap:6px;" title="Adjust the height of each universe track row">
       ↕ Row
       <input type="range" id="track-h-slider" min="60" max="200" step="10" value="100"
         style="width:68px;cursor:pointer;accent-color:#00d4ff;"
@@ -2809,8 +3359,8 @@ body { background: #07081a; }
       <span id="track-h-val" style="font-size:10px;color:rgba(0,180,220,0.6);width:26px">100</span>
     </label>
 
-    <!-- Saved locally status -->
-    <span class="tb-save-status tb-secondary" title="Your data is saved automatically in this browser">💾 Saved locally</span>
+    <!-- Saved locally status indicator -->
+    <span class="tb-save-status tb-secondary" title="Your chronicle is saved automatically in this browser — export regularly for permanent backup">✦ Saved locally</span>
 
   </div>
 
@@ -2894,10 +3444,10 @@ body { background: #07081a; }
   <!-- Characters Full View -->
   <div id="chars-view">
     <div class="cv-header">
-      <h2>Characters</h2>
+      <h2>⬡ Character Codex</h2>
       <div class="cv-controls">
-        <input class="cv-search" id="cv-search" placeholder="Search characters..." oninput="renderCharsView()">
-        <button class="btn accent" onclick="MS=[{t:'addChar'}]; M.push(MS[0]); M.render()">+ New Character</button>
+        <input class="cv-search" id="cv-search" placeholder="Search dossiers..." oninput="renderCharsView()">
+        <button class="btn accent" onclick="MS=[{t:'addChar'}]; M.push(MS[0]); M.render()">+ New Dossier</button>
       </div>
     </div>
     <div class="cv-grid" id="cv-grid"></div>
@@ -2911,8 +3461,8 @@ body { background: #07081a; }
 
 <!-- Keyboard shortcuts floating panel -->
 <div id="kbd-panel">
-    <button id="kbd-panel-close" onclick="UI.toggleKbd()" title="Close">&#10005;</button>
-    <h3>&#9875; Help &amp; Shortcuts</h3>
+    <button id="kbd-panel-close" type="button" onclick="UI.toggleKbd()" title="Close" aria-label="Close keyboard shortcuts panel">&#10005;</button>
+    <h3>⌨ Keys &amp; Shortcuts — Free Timeline Universe</h3>
 
     <p class="kbd-section-label">Navigation</p>
     <div class="kbd-grid">
@@ -2989,7 +3539,7 @@ body { background: #07081a; }
 
 <!-- ==================== LIGHTBOX ==================== -->
 <div id="lightbox" onclick="closeLightbox()">
-  <span id="lb-close" onclick="closeLightbox()">✕</span>
+  <button id="lb-close" type="button" onclick="closeLightbox()" aria-label="Close image viewer">✕</button>
   <img id="lb-img" src="" alt="">
 </div>
 
@@ -3479,14 +4029,15 @@ function drawRangeEndpointLabel(g, year, fallbackX, align) {
 function drawTracks(c, g) {
   const vc = visCount();
   if (vc === 0) {
-    g.fillStyle = '#b8bcc8';
+    g.fillStyle = 'rgba(0,210,255,0.75)';
     g.font = 'bold 16px -apple-system, "Segoe UI", sans-serif';
     g.textAlign = 'center';
-    g.fillText('\uD83D\uDDD3  Welcome! Your timeline is empty.', c.width / 2, c.height / 2 - 18);
+    g.fillText('✦  Welcome to Free Timeline Universe  —  your chronicle awaits.', c.width / 2, c.height / 2 - 20);
     g.font = '14px -apple-system, "Segoe UI", sans-serif';
-    g.fillStyle = '#c8ccd8';
-    g.fillText('Click  \u2795 Universe  in the toolbar above to create your first story row, then  \u2795 Event  to add a moment.', c.width / 2, c.height / 2 + 12);
-    g.fillText('Need help? Click the  \uD83D\uDCD6 Help  button in the toolbar.', c.width / 2, c.height / 2 + 36);
+    g.fillStyle = 'rgba(180,210,240,0.7)';
+    g.fillText('Click  ＋ Universe  in the toolbar to open the first arc, then  ＋ Event  to place your first moment in history.', c.width / 2, c.height / 2 + 10);
+    g.fillStyle = 'rgba(140,180,220,0.5)';
+    g.fillText('Need guidance? Click  ✦ Help  in the toolbar for the full codex manual.', c.width / 2, c.height / 2 + 34);
     return;
   }
 
@@ -3705,13 +4256,13 @@ function drawEvents(c, g) {
   // Friendly guidance when universes exist but no events have been added yet
   if (S.events.length === 0 && S.universes.length > 0) {
     g.save();
-    g.fillStyle = '#c0c4d0';
+    g.fillStyle = 'rgba(0,200,255,0.72)';
     g.font = 'bold 15px -apple-system, "Segoe UI", sans-serif';
     g.textAlign = 'center';
-    g.fillText('\uD83D\uDCCC  You have a Universe — now add your first event!', c.width / 2, RULER_H + 48);
+    g.fillText('✦  Your arc is open — now record the first moment.', c.width / 2, RULER_H + 48);
     g.font = '13px -apple-system, "Segoe UI", sans-serif';
-    g.fillStyle = '#d0d4e0';
-    g.fillText('Click  \u2795 Event  in the toolbar, or double-click anywhere in a Universe row below.', c.width / 2, RULER_H + 72);
+    g.fillStyle = 'rgba(160,200,240,0.6)';
+    g.fillText('Click  ＋ Event  in the toolbar, or double-click anywhere inside a universe row.', c.width / 2, RULER_H + 72);
     g.restore();
   }
 
@@ -4251,31 +4802,33 @@ function initCanvas() {
     if (typeof updateUniverseScrollbar === 'function') updateUniverseScrollbar();
   }
 
+  /* Debounced resize — coalesces rapid mobile viewport/orientation events */
+  var _resizeTimer = null;
+  function scheduleResize() {
+    if (_resizeTimer) return;
+    _resizeTimer = setTimeout(function() { _resizeTimer = null; resize(); }, 80);
+  }
+
   /* Expose globally so mobile controls can trigger canvas resize */
   window._tlResize = resize;
 
   /* Primary: ResizeObserver fires on any size change (address bar, rotation, filters) */
   if (typeof ResizeObserver !== 'undefined') {
-    new ResizeObserver(function() { resize(); }).observe(wrap);
+    new ResizeObserver(scheduleResize).observe(wrap);
   }
 
   /* Secondary: standard resize event */
-  window.addEventListener('resize', resize);
+  window.addEventListener('resize', scheduleResize);
 
   /* Tertiary: visualViewport fires when mobile browser chrome shows/hides */
   if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', resize);
+    window.visualViewport.addEventListener('resize', scheduleResize);
     /* Some browsers fire 'scroll' instead of 'resize' when address bar shows/hides */
-    window.visualViewport.addEventListener('scroll', resize);
+    window.visualViewport.addEventListener('scroll', scheduleResize);
   }
 
-  /* Orientation change — fire immediately and after layout settles */
-  window.addEventListener('orientationchange', function() {
-    resize();
-    setTimeout(resize, 120);
-    setTimeout(resize, 400);
-    setTimeout(resize, 700);
-  });
+  /* Orientation change — single debounced call covers all settle delays */
+  window.addEventListener('orientationchange', scheduleResize);
 
   resize();
 
@@ -4909,14 +5462,16 @@ const M = {
     const top = MS[MS.length - 1];
     this.btns().innerHTML = '';
 
-    const mkBtn = (lbl, cls, fn) => {
+    const mkBtn = (lbl, cls, fn, ariaLabel) => {
       const b = document.createElement('button');
       b.className = 'btn light ' + (cls || '');
+      b.type = 'button';
       b.innerHTML = lbl; b.onclick = fn;
+      if (ariaLabel) b.setAttribute('aria-label', ariaLabel);
       this.btns().appendChild(b);
     };
-    if (MS.length > 1) mkBtn('&#8592; Back', '', () => M.back());
-    mkBtn('&#10005;', '', () => M.close());
+    if (MS.length > 1) mkBtn('&#8592; Back', '', () => M.back(), 'Go back');
+    mkBtn('&#10005;', '', () => M.close(), 'Close');
 
     switch (top.t) {
       case 'evDetail':    this._evDetail(top);     break;
@@ -5434,7 +5989,7 @@ const M = {
   /* ---- Help (tabbed v7 — comprehensive, senior-friendly) ---- */
   _help() {
     this.crumb().textContent = '';
-    this.ttl().textContent   = '\uD83D\uDCD6 Universe Help \u2014 Build Your World';
+    this.ttl().textContent   = '✦ Free Timeline Universe — Codex Help Guide';
     this.body().innerHTML = `
 <div style="max-width:620px;font-size:15px;line-height:1.75">
   <div class="help-tabs">
@@ -5451,8 +6006,8 @@ const M = {
 
   <div class="help-section active">
     <div class="h-section-title">Start Here</div>
-    <div class="h-tip"><strong>Universe is a timeline for your imagination.</strong> Use it to map the history of a fictional world, a fantasy story, a game universe, a comic book timeline, or any creative project where events happen in sequence.</div>
-    <div class="h-action-box">Great for: novels, series, game worlds, superhero universes, historical fiction, roleplay settings.</div>
+    <div class="h-tip"><strong>Free Timeline Universe is a chronicle for your imagination.</strong> Use it to map the history of a fictional world, a fantasy story, a game universe, a comic book timeline, or any creative project where events happen in sequence — all saved locally in your browser, no account needed.</div>
+    <div class="h-action-box">Great for: novels, series, game worlds, superhero universes, historical fiction, roleplay campaigns, alternate history, and any world you are building.</div>
     <div class="h-note">Nothing can be accidentally lost without you confirming it. If a choice would erase part of your world, you will be asked first.</div>
     <div class="h-step"><div class="h-num" style="background:#4a8fde">1</div><div class="h-step-body"><div class="h-step-title">Begin with one moment</div><div class="h-step-desc">To begin, click <strong>Add Event</strong> and place the first moment in your world's history. It can be a birth, a war, a prophecy, a discovery, a landing, a coronation, or the quiet day when everything began.</div></div></div>
   </div>
@@ -5550,9 +6105,9 @@ const M = {
   _charList(top) {
     const q = (top.q || '').toLowerCase();
     this.crumb().textContent = '';
-    this.ttl().textContent   = '\u{1F464} Character Profiles';
+    this.ttl().textContent   = '⬡ Character Codex — Dossiers & Profiles';
     const eb = document.createElement('button');
-    eb.className = 'btn accent'; eb.innerHTML = '&#65291; New Character';
+    eb.className = 'btn accent'; eb.innerHTML = '&#65291; New Dossier';
     eb.onclick = () => { MS.push({ t: 'addChar' }); M.render(); };
     this.btns().insertBefore(eb, this.btns().firstChild);
     let chars = S.characters.filter(c =>
@@ -5590,8 +6145,8 @@ const M = {
       (chars.length === 0
         ? '<div style="color:#ccc;font-size:13px;padding:12px 2px">' +
           (S.characters.length === 0
-            ? 'No characters yet. Click <strong>+ New Character</strong> to add one.'
-            : 'No matches found.') + '</div>'
+            ? 'No dossiers yet. Click <strong>+ New Dossier</strong> to add your first character.'
+            : 'No matching dossiers found.') + '</div>'
         : '<div><div style="font-size:11px;color:#999;margin:8px 0 6px;padding:0 2px"><strong>' + chars.length + '</strong> character' + (chars.length!==1?'s':'') + '</div>' +
           chars.map(c => buildCharCard(c)).join('') + '</div>'
       ) +
@@ -5602,7 +6157,7 @@ const M = {
   /* ---- Character Detail ---- */
   _charDetail(top) {
     const ch = S.characters.find(c => c.id === top.charId); if (!ch) return;
-    this.crumb().textContent = 'Characters';
+    this.crumb().textContent = 'Codex';
     this.ttl().textContent   = ch.name;
     const eb = document.createElement('button');
     eb.className = 'btn light'; eb.innerHTML = '&#9998; Edit';
@@ -7432,7 +7987,7 @@ function renderStatsFullView() {
   }
 
   el.innerHTML =
-    '<div class="sfv-title">Multiverse Dashboard</div>' +
+    '<div class="sfv-title">◉ Chronicle Observatory — Universe Analytics</div>' +
     '<div class="sfv-grid">' +
       '<div class="sfv-card"><h3>World Richness Score</h3>' +
         '<div class="sfv-gauge-wrap">' + gaugeHTML +
