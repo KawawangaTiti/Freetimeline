@@ -1,9 +1,37 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
        <meta name="google-adsense-account" content="ca-pub-4135034633295293">
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
+       <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
      crossorigin="anonymous"></script>
+   <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+   <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+   <script>
+   /* Lazy-load AdSense on first user interaction or after 3.5s to avoid blocking LCP/FCP on mobile */
+   (function(){
+     var loaded=false;
+     function loadAds(){
+       if(loaded)return;loaded=true;
+       var s=document.createElement('script');
+       s.async=true;
+       s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293';
+       s.crossOrigin='anonymous';
+       document.head.appendChild(s);
+       ['scroll','touchstart','mousedown','keydown','pointerdown'].forEach(function(ev){
+         window.removeEventListener(ev,loadAds,{passive:true});
+       });
+     }
+     ['scroll','touchstart','mousedown','keydown','pointerdown'].forEach(function(ev){
+       window.addEventListener(ev,loadAds,{passive:true});
+     });
+     if('requestIdleCallback' in window){
+       requestIdleCallback(function(){setTimeout(loadAds,3500);},{timeout:4500});
+     } else {
+       setTimeout(loadAds,3500);
+     }
+   })();
+   </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Free Timeline — Map Your Time</title>
@@ -1688,6 +1716,7 @@ a:focus-visible, .topbar-brand:focus-visible {
 
 <script>
 /* STAR / PARTICLE CANVAS */
+function __ftStartCanvas(){
 (function() {
   var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
   if (mq && mq.matches) return;
@@ -1698,12 +1727,22 @@ a:focus-visible, .topbar-brand:focus-visible {
   var W, H, stars = [], drifters = [];
   var rafId = null;
   var paused = false;
-  function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
+  var resizeScheduled = false;
+  function applyResize() {
+    resizeScheduled = false;
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+    W = w; H = h;
+    canvas.width = w;
+    canvas.height = h;
   }
-  resize();
-  window.addEventListener('resize', resize);
+  function resize() {
+    if (resizeScheduled) return;
+    resizeScheduled = true;
+    requestAnimationFrame(applyResize);
+  }
+  applyResize();
+  window.addEventListener('resize', resize, { passive: true });
   var STAR_COUNT    = isMobile ? 80  : 260;
   var DRIFTER_COUNT = isMobile ? 18  : 55;
   for (var i = 0; i < STAR_COUNT; i++) {
@@ -1757,6 +1796,12 @@ a:focus-visible, .topbar-brand:focus-visible {
   });
   draw();
 })();
+}
+if ('requestIdleCallback' in window) {
+  requestIdleCallback(__ftStartCanvas, { timeout: 1500 });
+} else {
+  setTimeout(__ftStartCanvas, 200);
+}
 
 /* CURSOR-FOLLOWING GLOW ON PORTAL CARDS */
 (function() {
