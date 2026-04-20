@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     <meta name="google-adsense-account" content="ca-pub-4135034633295293">
+      <meta name="google-adsense-account" content="ca-pub-4135034633295293">
    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
      crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Free Timeline — Map Your Time</title>
+<meta name="description" content="A free, private timeline tool for mapping fictional universes, biographies, memories, and stories. All data stored locally in your browser.">
+<link rel="canonical" href="https://freetimeline.pt/">
 <style>
 /* ============================================================
    RESET & TOKENS
@@ -34,11 +36,6 @@
   --bio-glow:    rgba(192,128,64,0.22);
   --bio-border:  rgba(192,128,64,0.32);
   --bio-soft:    rgba(192,128,64,0.12);
-
-  --ledger:      #00b899;
-  --ledger-glow: rgba(0,184,153,0.18);
-  --ledger-border: rgba(0,184,153,0.28);
-  --ledger-soft: rgba(0,184,153,0.10);
 
   --gold:        #d4af37;
   --gold-glow:   rgba(212,175,55,0.3);
@@ -365,7 +362,6 @@ body {
 
 /* ============================================================
    SCROLL REVEAL — BASE STATE
-   Elements start invisible and animate in as they enter viewport
    ============================================================ */
 .sr {
   opacity: 0;
@@ -380,31 +376,15 @@ body {
   filter: none !important;
 }
 
-/* Entry from bottom (classic) */
 .sr-up    { transform: translateY(56px); }
-
-/* Entry from left */
 .sr-left  { transform: translateX(-70px); }
-
-/* Entry from right */
 .sr-right { transform: translateX(70px); }
-
-/* Zoom-in pop */
 .sr-pop   { transform: scale(0.82); filter: blur(4px); }
-
-/* Spin-in (rotate + scale) */
 .sr-spin  { transform: rotate(-8deg) scale(0.88); filter: blur(2px); }
-
-/* Flip in from perspective */
 .sr-flip  { transform: perspective(600px) rotateX(25deg) translateY(40px); filter: blur(2px); }
-
-/* Skew slide from left */
 .sr-skew  { transform: skewX(8deg) translateX(-60px); filter: blur(3px); }
-
-/* Fall from above */
 .sr-fall  { transform: translateY(-50px) scale(0.95); filter: blur(2px); }
 
-/* Stagger helpers */
 .sr-d1 { transition-delay: 0.05s; }
 .sr-d2 { transition-delay: 0.13s; }
 .sr-d3 { transition-delay: 0.22s; }
@@ -412,7 +392,6 @@ body {
 .sr-d5 { transition-delay: 0.44s; }
 .sr-d6 { transition-delay: 0.56s; }
 
-/* Floating orbit animation for trust icons */
 @keyframes orbit {
   0%   { transform: translateY(0px) rotate(0deg); }
   25%  { transform: translateY(-8px) rotate(2deg); }
@@ -421,19 +400,10 @@ body {
   100% { transform: translateY(0px) rotate(0deg); }
 }
 
-.floating {
-  animation: orbit 5s ease-in-out infinite;
-}
-.floating-2 {
-  animation: orbit 6.5s ease-in-out infinite reverse;
-  animation-delay: 1s;
-}
-.floating-3 {
-  animation: orbit 7.2s ease-in-out infinite;
-  animation-delay: 2.2s;
-}
+.floating { animation: orbit 5s ease-in-out infinite; }
+.floating-2 { animation: orbit 6.5s ease-in-out infinite reverse; animation-delay: 1s; }
+.floating-3 { animation: orbit 7.2s ease-in-out infinite; animation-delay: 2.2s; }
 
-/* Glint sweep on stat boxes */
 @keyframes glint {
   0%   { background-position: -200% center; }
   100% { background-position: 200% center; }
@@ -569,7 +539,7 @@ body {
 }
 .portals-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 380px;
+  grid-template-columns: 1fr 1fr;
   gap: 24px;
   align-items: start;
 }
@@ -600,7 +570,6 @@ body {
   outline-offset: 3px;
 }
 
-/* Glow that follows cursor */
 .portal-card .card-glow {
   position: absolute;
   width: 300px;
@@ -613,7 +582,6 @@ body {
   z-index: 0;
 }
 
-/* Ambient top glow always present */
 .portal-card::before {
   content: '';
   position: absolute;
@@ -626,7 +594,6 @@ body {
   z-index: 0;
 }
 
-/* Stars bg */
 .portal-card::after {
   content: '';
   position: absolute;
@@ -694,11 +661,9 @@ body {
 .portal-biography:hover .card-glow { opacity: 1; }
 .portal-biography:hover::before { opacity: 1; }
 
-/* Card content z-index */
 .portal-card > * { position: relative; z-index: 1; }
 .portal-card .card-glow { z-index: 0; }
 
-/* Icon */
 .portal-icon {
   width: 60px;
   height: 60px;
@@ -720,7 +685,6 @@ body {
   border-color: rgba(192,128,64,0.25);
 }
 
-/* Card world label */
 .portal-world {
   font-size: 0.68rem;
   font-weight: 700;
@@ -731,7 +695,6 @@ body {
 .portal-universe .portal-world { color: var(--uni); }
 .portal-biography .portal-world { color: var(--bio); }
 
-/* Card title */
 .portal-title {
   font-size: 1.6rem;
   font-weight: 800;
@@ -741,7 +704,6 @@ body {
   margin-bottom: 14px;
 }
 
-/* Card desc */
 .portal-desc {
   font-size: 0.93rem;
   color: var(--muted);
@@ -750,7 +712,6 @@ body {
   flex: 1;
 }
 
-/* Feature chips */
 .portal-chips {
   display: flex;
   flex-wrap: wrap;
@@ -775,7 +736,6 @@ body {
   color: #c89060;
 }
 
-/* Card footer */
 .portal-footer {
   display: flex;
   align-items: center;
@@ -785,9 +745,6 @@ body {
   border-top: 1px solid var(--border);
 }
 
-/* ============================================================
-   PORTAL CTA BUTTONS — ALL SAME SIZE
-   ============================================================ */
 .portal-cta {
   display: inline-flex;
   align-items: center;
@@ -840,62 +797,6 @@ body {
   background: var(--bio-soft);
   color: var(--bio);
   border: 1px solid rgba(192,128,64,0.25);
-}
-
-/* ============================================================
-   LEDGER CARD — COMING SOON
-   ============================================================ */
-.portal-ledger {
-  border-color: rgba(0,140,110,0.2);
-  background: linear-gradient(160deg, #060f0d 0%, #081210 60%, #050d0b 100%);
-  opacity: 0.78;
-  cursor: default;
-  pointer-events: none;
-  min-height: 0;
-  padding: 32px 28px 28px;
-}
-.portal-ledger[tabindex="0"] { pointer-events: auto; cursor: default; }
-.portal-ledger::before {
-  background: radial-gradient(ellipse at 50% 0%, rgba(0,184,153,0.12) 0%, transparent 70%);
-  opacity: 0.6;
-}
-.portal-ledger .portal-icon {
-  background: rgba(0,184,153,0.10);
-  border-color: rgba(0,184,153,0.2);
-}
-.portal-ledger .portal-world { color: var(--ledger); }
-.portal-ledger .portal-chip {
-  background: var(--ledger-soft);
-  border-color: rgba(0,184,153,0.22);
-  color: #40c8b0;
-}
-.ledger-ribbon {
-  position: absolute;
-  top: 22px;
-  right: -30px;
-  background: linear-gradient(90deg, #00a080, #008870);
-  color: rgba(255,255,255,0.9);
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  padding: 5px 44px;
-  transform: rotate(38deg);
-  box-shadow: 0 2px 8px rgba(0,140,110,0.3);
-}
-.portal-ledger .portal-cta {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: var(--muted);
-  padding: 10px 22px;
-  border-radius: 10px;
-  font-size: 0.92rem;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 160px;
-  justify-content: center;
 }
 
 /* ============================================================
@@ -1016,7 +917,6 @@ body {
   font-size: 1.4rem;
   flex-shrink: 0;
 }
-.backup-body {}
 .backup-title {
   font-size: 1.1rem;
   font-weight: 700;
@@ -1211,23 +1111,7 @@ footer {
 @media (max-width: 1100px) {
   .portals-grid {
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
   }
-  .portal-ledger {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    grid-template-rows: auto auto;
-    gap: 0 28px;
-    min-height: 0;
-    padding: 28px 28px;
-  }
-  .portal-ledger .portal-icon { margin-bottom: 0; grid-row: 1 / 3; }
-  .portal-ledger .portal-world { margin-bottom: 6px; }
-  .portal-ledger .portal-desc { display: none; }
-  .portal-ledger .portal-chips { margin-bottom: 0; }
-  .portal-ledger .portal-footer { display: none; }
-  .ledger-body { grid-column: 2; }
   .explainer-inner { grid-template-columns: 1fr; gap: 40px; }
   .explainer-right { grid-template-columns: repeat(4, 1fr); }
 }
@@ -1238,9 +1122,6 @@ footer {
   .hero { min-height: 85vh; padding: 60px 20px 48px; }
   .portals-section { padding: 60px 20px; }
   .portals-grid { grid-template-columns: 1fr; }
-  .portal-ledger { grid-column: auto; display: flex; flex-direction: column; }
-  .portal-ledger .portal-desc { display: block; }
-  .portal-ledger .portal-footer { display: flex; }
   .privacy-inner { grid-template-columns: 1fr; gap: 32px; padding: 60px 20px; }
   .map-section { padding: 60px 20px; }
   .backup-section { padding: 0 20px 60px; }
@@ -1261,9 +1142,6 @@ footer {
   .hero-ring { display: none; }
 }
 
-/* ============================================================
-   MOBILE FOUNDATION SAFEGUARDS
-   ============================================================ */
 @media (max-width: 767px) {
   html {
     width: 100%;
@@ -1274,7 +1152,6 @@ footer {
     text-size-adjust: 100%;
     scroll-padding-top: calc(60px + env(safe-area-inset-top, 0px));
   }
-
   body {
     width: 100%;
     max-width: 100%;
@@ -1283,98 +1160,47 @@ footer {
     overflow-x: hidden;
     overscroll-behavior-x: none;
   }
-
   .page-wrap {
     min-height: 100svh;
     min-height: 100dvh;
     max-width: 100%;
     overflow-x: clip;
   }
-
   .topbar {
     padding-left: max(20px, env(safe-area-inset-left, 0px));
     padding-right: max(20px, env(safe-area-inset-right, 0px));
     padding-top: env(safe-area-inset-top, 0px);
     min-height: calc(60px + env(safe-area-inset-top, 0px));
   }
-
-  .hero,
-  .portals-section,
-  .privacy-inner,
-  .map-section,
-  .backup-section,
-  .section,
-  .explainer,
-  .contact-section,
-  footer {
+  .hero, .portals-section, .privacy-inner, .map-section, .backup-section, .section, .explainer, .contact-section, footer {
     padding-left: max(20px, env(safe-area-inset-left, 0px));
     padding-right: max(20px, env(safe-area-inset-right, 0px));
   }
-
-  footer,
-  #consent-bar {
+  footer, #consent-bar {
     padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
   }
-
-  img,
-  svg,
-  canvas,
-  video,
-  iframe {
-    max-width: 100%;
-  }
-
-  button,
-  input,
-  select,
-  textarea,
-  .portal-link,
-  #consent-ok {
+  img, svg, canvas, video, iframe { max-width: 100%; }
+  button, input, select, textarea, .portal-link, #consent-ok {
     min-height: 44px;
     touch-action: manipulation;
   }
 }
 
 @media (hover: none), (pointer: coarse) {
-  .topbar-links a:hover,
-  .portal-card:hover,
-  .portal-link:hover,
-  #consent-ok:hover {
+  .topbar-links a:hover, .portal-card:hover, .portal-link:hover, #consent-ok:hover {
     transform: none;
     filter: none;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after {
-    scroll-behavior: auto !important;
-  }
-}
-
-/* ============================================================
-   LANDING PAGE MOBILE POLISH
-   ============================================================ */
 @media (max-width: 767px) {
-  #star-canvas {
-    opacity: 0.35;
-  }
-
+  #star-canvas { opacity: 0.35; }
   .ambient::before {
     background:
       radial-gradient(ellipse 120% 45% at 50% -10%, rgba(60,90,220,0.12), transparent 62%),
       radial-gradient(ellipse 80% 45% at 50% 88%, rgba(0,180,150,0.055), transparent 68%);
   }
-
-  .ambient::after,
-  .hero-ring,
-  .hero-scroll,
-  .floating,
-  .floating-2,
-  .floating-3 {
-    display: none;
-  }
-
+  .ambient::after, .hero-ring, .hero-scroll, .floating, .floating-2, .floating-3 { display: none; }
   .topbar {
     justify-content: center;
     flex-direction: column;
@@ -1382,11 +1208,7 @@ footer {
     height: auto;
     padding-bottom: 10px;
   }
-
-  .topbar-brand {
-    font-size: 0.95rem;
-  }
-
+  .topbar-brand { font-size: 0.95rem; }
   .topbar::after {
     content: 'Private timelines saved in your browser';
     color: var(--dim);
@@ -1394,14 +1216,12 @@ footer {
     line-height: 1.2;
     letter-spacing: 0.02em;
   }
-
   .hero {
     min-height: auto;
     padding-top: clamp(34px, 10vw, 54px);
     padding-bottom: clamp(34px, 10vw, 54px);
     justify-content: flex-start;
   }
-
   .hero::before {
     top: 26%;
     width: 360px;
@@ -1409,14 +1229,12 @@ footer {
     opacity: 0.75;
     animation: none;
   }
-
   .hero-eyebrow {
     font-size: clamp(0.62rem, 2.7vw, 0.72rem);
     letter-spacing: clamp(2px, 0.8vw, 3px);
     margin-bottom: clamp(14px, 4vw, 18px);
     line-height: 1.35;
   }
-
   .hero-title {
     font-size: clamp(2.65rem, 15.5vw, 4.35rem);
     line-height: 0.98;
@@ -1424,31 +1242,26 @@ footer {
     margin-bottom: clamp(18px, 5vw, 24px);
     max-width: 100%;
   }
-
   .hero-title .word-timeline {
     filter: drop-shadow(0 0 22px rgba(80,160,255,0.24));
   }
-
   .hero-tagline {
     font-size: clamp(0.74rem, 3.2vw, 0.92rem);
     letter-spacing: clamp(1.6px, 0.9vw, 2.6px);
     line-height: 1.4;
     margin-bottom: clamp(16px, 5vw, 22px);
   }
-
   .hero-desc {
     font-size: clamp(0.95rem, 4.1vw, 1.08rem);
     line-height: 1.58;
     max-width: 34rem;
     margin-bottom: clamp(24px, 7vw, 32px);
   }
-
   .hero-pills {
     gap: 8px;
     margin-bottom: 0;
     width: 100%;
   }
-
   .hero-pill {
     padding: 7px 12px;
     font-size: clamp(0.72rem, 3.2vw, 0.8rem);
@@ -1457,46 +1270,26 @@ footer {
     justify-content: center;
     max-width: 100%;
   }
-
-  .explainer,
-  .portals-section,
-  .privacy-inner,
-  .map-section,
-  .section,
-  .contact-section {
+  .explainer, .portals-section, .privacy-inner, .map-section, .section, .contact-section {
     padding-top: 48px;
     padding-bottom: 48px;
   }
-
-  .portals-header {
-    margin-bottom: 28px;
-  }
-
+  .portals-header { margin-bottom: 28px; }
   .portals-grid {
     gap: 18px;
     width: 100%;
     max-width: 430px;
     margin: 0 auto;
   }
-
-  .portal-card,
-  .portal-ledger {
+  .portal-card {
     width: 100%;
     min-width: 0;
     min-height: 0;
     padding: 26px 20px 22px;
     border-radius: 18px;
   }
-
-  .portal-card::before {
-    height: 120px;
-  }
-
-  .portal-card::after,
-  .portal-card .card-glow {
-    opacity: 0.22;
-  }
-
+  .portal-card::before { height: 120px; }
+  .portal-card::after, .portal-card .card-glow { opacity: 0.22; }
   .portal-icon {
     width: 52px;
     height: 52px;
@@ -1504,61 +1297,45 @@ footer {
     font-size: 1.65rem;
     margin-bottom: 18px;
   }
-
   .portal-world {
     font-size: 0.62rem;
     letter-spacing: 2px;
     line-height: 1.35;
     margin-bottom: 8px;
   }
-
   .portal-title {
     font-size: clamp(1.35rem, 7vw, 1.65rem);
     line-height: 1.12;
     margin-bottom: 12px;
   }
-
   .portal-desc {
     font-size: 0.92rem;
     line-height: 1.62;
     margin-bottom: 18px;
     flex: none;
   }
-
   .portal-chips {
     gap: 6px;
     margin-bottom: 20px;
   }
-
   .portal-chip {
     font-size: 0.72rem;
     line-height: 1.25;
     padding: 5px 10px;
   }
-
   .portal-footer {
     align-items: stretch;
     flex-direction: column;
     padding-top: 16px;
   }
-
   .portal-cta {
     width: 100%;
     min-width: 0;
     min-height: 44px;
     padding: 11px 16px;
   }
-
-  .event-badge.visible {
-    align-self: flex-start;
-  }
-
-  .backup-inner,
-  .footer-inner,
-  .consent-actions {
-    width: 100%;
-  }
-
+  .event-badge.visible { align-self: flex-start; }
+  .backup-inner, .footer-inner, .consent-actions { width: 100%; }
   #consent-bar {
     position: sticky;
     bottom: 0;
@@ -1569,28 +1346,14 @@ footer {
     overflow-y: auto;
     box-shadow: 0 -2px 18px rgba(0,0,0,0.42);
   }
-
   .consent-text {
     max-width: none;
     font-size: 0.78rem;
     line-height: 1.45;
   }
-
-  .consent-actions {
-    justify-content: stretch;
-  }
-
-  #consent-ok {
-    width: 100%;
-  }
-
-  .section-heading,
-  .section-sub,
-  .portal-title,
-  .portal-desc,
-  .hero-desc {
-    overflow-wrap: anywhere;
-  }
+  .consent-actions { justify-content: stretch; }
+  #consent-ok { width: 100%; }
+  .section-heading, .section-sub, .portal-title, .portal-desc, .hero-desc { overflow-wrap: anywhere; }
 }
 
 @media (max-width: 360px) {
@@ -1598,54 +1361,28 @@ footer {
     padding-top: 28px;
     padding-bottom: 34px;
   }
-
-  .hero-title {
-    font-size: clamp(2.45rem, 15vw, 3.15rem);
-  }
-
+  .hero-title { font-size: clamp(2.45rem, 15vw, 3.15rem); }
   .hero-pills {
     align-items: stretch;
     flex-direction: column;
   }
-
-  .hero-pill {
-    width: 100%;
-  }
-
-  .portal-card,
-  .portal-ledger {
+  .hero-pill { width: 100%; }
+  .portal-card {
     padding-left: 18px;
     padding-right: 18px;
   }
-
-  .explainer-right {
-    grid-template-columns: 1fr;
-  }
+  .explainer-right { grid-template-columns: 1fr; }
 }
 
 @media (hover: none), (pointer: coarse) {
-  .portal-universe:hover,
-  .portal-biography:hover,
-  .portal-card:hover .portal-cta,
-  .portal-card:hover .cta-arrow {
+  .portal-universe:hover, .portal-biography:hover, .portal-card:hover .portal-cta, .portal-card:hover .cta-arrow {
     transform: none !important;
     filter: none !important;
   }
-
-  .portal-universe:hover .card-glow,
-  .portal-biography:hover .card-glow {
-    opacity: 0.22;
-  }
+  .portal-universe:hover .card-glow, .portal-biography:hover .card-glow { opacity: 0.22; }
 }
 
-/* =====================================================
-   ACCESSIBILITY PATCH
-   Touch targets · Focus rings · Mobile readability
-   ===================================================== */
-
-/* Focus rings for links and interactive elements */
-a:focus-visible,
-.topbar-brand:focus-visible {
+a:focus-visible, .topbar-brand:focus-visible {
   outline: 2px solid #7090ff;
   outline-offset: 2px;
   border-radius: 3px;
@@ -1657,14 +1394,11 @@ a:focus-visible,
 }
 
 @media (max-width: 767px) {
-  /* Consent button — 44px minimum tap target, no iOS zoom */
   #consent-ok {
     min-height: 44px !important;
     font-size: 1rem !important;
     padding: 10px 24px !important;
   }
-
-  /* Consent bar: wrap on narrow screens so button is always reachable */
   #consent-bar {
     flex-wrap: wrap !important;
     gap: 10px !important;
@@ -1685,39 +1419,32 @@ a:focus-visible,
 
 <div class="page-wrap">
 
-  <!-- TOP NAV -->
+  <!-- TOP NAV - UPDATED WITH NEW LINKS -->
   <nav class="topbar">
     <a href="index.html" class="topbar-brand" aria-label="Free Timeline Home">
       <span class="brand-infinity" aria-hidden="true">&#8734;</span>
       <span class="brand-name">FreeTimeline</span>
     </a>
     <div class="topbar-links">
-      <a href="pricing.html">Pricing</a>
+      <a href="guides.html">Guides</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
       <a href="privacy.html">Privacy</a>
-      <a href="terms.html">Terms &amp; Conditions</a>
-      <a href="mailto:support@freetimeline.pt">Contact</a>
     </div>
   </nav>
 
-  <!-- ============================================================
-       HERO
-       ============================================================ -->
+  <!-- HERO -->
   <header class="hero" aria-label="Free Timeline introduction">
     <div class="hero-ring" aria-hidden="true"></div>
-
     <p class="hero-eyebrow">The Timeline Tool That Respects You</p>
-
     <h1 class="hero-title">
       <span class="word-free">Free</span>
       <span class="word-timeline">Timeline</span>
     </h1>
-
     <p class="hero-tagline">A REAL FREE TIMELINE</p>
-
     <p class="hero-desc">
       Map <strong>fictional universes</strong>, <strong>biographies</strong>, <strong>memories</strong>, <strong>stories</strong>, and personal timelines — all private, all yours, stored only in your browser.
     </p>
-
     <div class="hero-pills" role="list">
       <span class="hero-pill" role="listitem">
         <span class="pill-dot" aria-hidden="true"></span>
@@ -1732,16 +1459,13 @@ a:focus-visible,
         Data never leaves your device
       </span>
     </div>
-
     <div class="hero-scroll" aria-hidden="true">
       <div class="scroll-line"></div>
       <span class="scroll-label">Scroll</span>
     </div>
   </header>
 
-  <!-- ============================================================
-       EXPLAINER
-       ============================================================ -->
+  <!-- EXPLAINER -->
   <section class="explainer" aria-label="What is Free Timeline">
     <div class="explainer-inner">
       <div class="explainer-left">
@@ -1786,9 +1510,7 @@ a:focus-visible,
     </div>
   </section>
 
-  <!-- ============================================================
-       PORTAL CARDS
-       ============================================================ -->
+  <!-- PORTAL CARDS - CHRONO LEDGER REMOVED -->
   <section class="portals-section" aria-label="Choose your timeline">
     <div class="portals-header">
       <p class="section-label sr sr-fall" style="text-align:center; margin-bottom:12px;">Choose your timeline</p>
@@ -1844,31 +1566,10 @@ a:focus-visible,
         </div>
       </a>
 
-      <!-- CHRONO LEDGER — COMING SOON -->
-      <div class="portal-card portal-ledger sr sr-flip sr-d4" aria-disabled="true" tabindex="0" role="article" aria-label="Chrono Ledger — coming soon">
-        <div class="ledger-ribbon" aria-label="Coming soon">Coming Soon</div>
-        <div class="portal-icon" aria-hidden="true">&#127970;</div>
-        <p class="portal-world">Chrono Ledger</p>
-        <h3 class="portal-title">Business<br>Command Centre</h3>
-        <p class="portal-desc">
-          Track contracts, milestones, revenue events, hires, and company history — all in one professional business timeline. Coming in a future release.
-        </p>
-        <div class="portal-chips">
-          <span class="portal-chip">Contracts &amp; deadlines</span>
-          <span class="portal-chip">Financial events</span>
-          <span class="portal-chip">CSV &amp; PDF export</span>
-        </div>
-        <div class="portal-footer">
-          <span class="portal-cta" aria-label="Not yet available">Coming Soon</span>
-        </div>
-      </div>
-
     </div>
   </section>
 
-  <!-- ============================================================
-       PRIVACY / TRUST
-       ============================================================ -->
+  <!-- PRIVACY / TRUST -->
   <section class="privacy-section" aria-label="Privacy and trust">
     <div class="privacy-inner">
       <div class="trust-item sr sr-up sr-d1">
@@ -1895,9 +1596,7 @@ a:focus-visible,
     </div>
   </section>
 
-  <!-- ============================================================
-       WHAT CAN YOU MAP
-       ============================================================ -->
+  <!-- WHAT CAN YOU MAP -->
   <section class="map-section" aria-label="What you can map with Free Timeline">
     <div class="map-inner">
       <p class="section-label sr sr-spin">What can you map?</p>
@@ -1922,9 +1621,7 @@ a:focus-visible,
     </div>
   </section>
 
-  <!-- ============================================================
-       BACKUP REMINDER
-       ============================================================ -->
+  <!-- BACKUP REMINDER -->
   <div class="backup-section" aria-label="Backup reminder">
     <div class="backup-inner sr sr-skew" role="note">
       <div class="backup-icon-wrap" aria-hidden="true">&#128190;</div>
@@ -1937,9 +1634,7 @@ a:focus-visible,
     </div>
   </div>
 
-  <!-- ============================================================
-       CONTACT
-       ============================================================ -->
+  <!-- CONTACT -->
   <section class="contact-section" aria-label="Contact">
     <div class="contact-inner sr sr-pop">
       <h3>Questions or Feedback?</h3>
@@ -1951,9 +1646,7 @@ a:focus-visible,
     </div>
   </section>
 
-  <!-- ============================================================
-       FOOTER
-       ============================================================ -->
+  <!-- FOOTER - UPDATED WITH ALL LEGAL PAGES -->
   <footer>
     <div class="footer-inner">
       <div class="footer-brand">
@@ -1961,17 +1654,19 @@ a:focus-visible,
         <span>FreeTimeline</span>
       </div>
       <div class="footer-links">
+        <a href="about.html">About</a>
+        <span class="fdot" aria-hidden="true">&#8226;</span>
+        <a href="contact.html">Contact</a>
+        <span class="fdot" aria-hidden="true">&#8226;</span>
+        <a href="guides.html">Guides</a>
+        <span class="fdot" aria-hidden="true">&#8226;</span>
         <a href="terms.html">Terms of Service</a>
         <span class="fdot" aria-hidden="true">&#8226;</span>
         <a href="privacy.html">Privacy Policy</a>
         <span class="fdot" aria-hidden="true">&#8226;</span>
-        <a href="pricing.html">Pricing</a>
-        <span class="fdot" aria-hidden="true">&#8226;</span>
-        <a href="universe.html">Universe</a>
-        <span class="fdot" aria-hidden="true">&#8226;</span>
-        <a href="biography.html">Biography</a>
+        <a href="cookies.html">Cookie Policy</a>
       </div>
-      <p class="footer-note">All data is saved locally in your browser — nothing is ever uploaded anywhere.</p>
+      <p class="footer-note">&copy; 2024 FreeTimeline. All data is saved locally in your browser.</p>
     </div>
   </footer>
 
@@ -1981,9 +1676,8 @@ a:focus-visible,
 <div id="consent-bar" role="dialog" aria-label="Cookie notice" aria-live="polite">
   <p class="consent-text">
     FreeTimeline uses browser storage to save your timeline data on this device.
-    If you create an account, a session cookie keeps you signed in.
-    We do not use advertising cookies and we do not sell your data.
-    <a href="privacy.html">Privacy Policy</a>
+    We use Google AdSense for advertising.
+    <a href="privacy.html">Privacy Policy</a> · <a href="cookies.html">Cookie Policy</a>
   </p>
   <div class="consent-actions">
     <button id="consent-ok" type="button">I Understand</button>
@@ -1991,46 +1685,34 @@ a:focus-visible,
 </div>
 
 <script>
-/* ============================================================
-   STAR / PARTICLE CANVAS
-   ============================================================ */
+/* STAR / PARTICLE CANVAS */
 (function() {
   var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
   if (mq && mq.matches) return;
-
   var canvas = document.getElementById('star-canvas');
   if (!canvas) return;
   var ctx = canvas.getContext('2d');
-
   var isMobile = window.matchMedia('(max-width: 767px), (pointer: coarse)').matches;
-
   var W, H, stars = [], drifters = [];
   var rafId = null;
   var paused = false;
-
   function resize() {
     W = canvas.width  = window.innerWidth;
     H = canvas.height = window.innerHeight;
   }
   resize();
   window.addEventListener('resize', resize);
-
   var STAR_COUNT    = isMobile ? 80  : 260;
   var DRIFTER_COUNT = isMobile ? 18  : 55;
-
-  // Static stars
   for (var i = 0; i < STAR_COUNT; i++) {
     stars.push({
-      x: Math.random(),
-      y: Math.random(),
+      x: Math.random(), y: Math.random(),
       r: Math.random() * 1.2 + 0.2,
       o: Math.random() * 0.6 + 0.15,
       speed: Math.random() * 0.0006 + 0.0002,
       phase: Math.random() * Math.PI * 2
     });
   }
-
-  // Drifting dust particles
   for (var j = 0; j < DRIFTER_COUNT; j++) {
     drifters.push({
       x: Math.random() * (W || 1200),
@@ -2041,14 +1723,11 @@ a:focus-visible,
       o: Math.random() * 0.3 + 0.05
     });
   }
-
   var t = 0;
   function draw() {
     if (paused) { rafId = null; return; }
     ctx.clearRect(0, 0, W, H);
     t += 0.012;
-
-    // Stars
     for (var i = 0; i < stars.length; i++) {
       var s = stars[i];
       var o = s.o * (0.5 + 0.5 * Math.sin(t * s.speed * 60 + s.phase));
@@ -2057,12 +1736,9 @@ a:focus-visible,
       ctx.fillStyle = 'rgba(200,220,255,' + o + ')';
       ctx.fill();
     }
-
-    // Drifters
     for (var j = 0; j < drifters.length; j++) {
       var d = drifters[j];
-      d.x += d.dx;
-      d.y += d.dy;
+      d.x += d.dx; d.y += d.dy;
       if (d.y < -4) { d.y = H + 4; d.x = Math.random() * W; }
       if (d.x < -4) { d.x = W + 4; }
       if (d.x > W + 4) { d.x = -4; }
@@ -2071,30 +1747,21 @@ a:focus-visible,
       ctx.fillStyle = 'rgba(160,200,255,' + d.o + ')';
       ctx.fill();
     }
-
     rafId = requestAnimationFrame(draw);
   }
-
   document.addEventListener('visibilitychange', function() {
-    if (document.hidden) {
-      paused = true;
-    } else {
-      paused = false;
-      if (!rafId) draw();
-    }
+    if (document.hidden) { paused = true; }
+    else { paused = false; if (!rafId) draw(); }
   });
-
   draw();
 })();
 
-/* ============================================================
-   CURSOR-FOLLOWING GLOW ON PORTAL CARDS
-   ============================================================ */
+/* CURSOR-FOLLOWING GLOW ON PORTAL CARDS */
 (function() {
   var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
   var touch = window.matchMedia('(hover: none), (pointer: coarse)');
   if (touch && touch.matches) return;
-  var cards = document.querySelectorAll('.portal-card:not(.portal-ledger)');
+  var cards = document.querySelectorAll('.portal-card');
   cards.forEach(function(card) {
     var glow = card.querySelector('.card-glow');
     if (!glow) return;
@@ -2107,9 +1774,7 @@ a:focus-visible,
   });
 })();
 
-/* ============================================================
-   COOKIE / CONSENT NOTICE
-   ============================================================ */
+/* COOKIE / CONSENT NOTICE */
 (function() {
   var bar = document.getElementById('consent-bar');
   var btn = document.getElementById('consent-ok');
@@ -2119,16 +1784,13 @@ a:focus-visible,
       bar.classList.add('hidden');
     }
   } catch(e) { bar.classList.add('hidden'); }
-
   btn.addEventListener('click', function() {
     bar.classList.add('hidden');
     try { localStorage.setItem('ft_consent_acknowledged', 'true'); } catch(e) {}
   });
 })();
 
-/* ============================================================
-   EVENT COUNT BADGES
-   ============================================================ */
+/* EVENT COUNT BADGES */
 (function() {
   function countEventsFromKey(key) {
     try {
@@ -2141,7 +1803,6 @@ a:focus-visible,
       return null;
     } catch(e) { return null; }
   }
-
   function showBadge(badgeId, count) {
     var el = document.getElementById(badgeId);
     if (!el) return;
@@ -2150,15 +1811,11 @@ a:focus-visible,
     el.textContent = '\u25cf ' + count + ' ' + word + ' saved';
     el.classList.add('visible');
   }
-
   showBadge('badge-universe',  countEventsFromKey('inf_universe_v4'));
   showBadge('badge-biography', countEventsFromKey('inf_biography_v1'));
 })();
 
-/* ============================================================
-   SCROLL REVEAL — INTERSECTION OBSERVER
-   Creative multi-direction entry animations as you scroll
-   ============================================================ */
+/* SCROLL REVEAL — INTERSECTION OBSERVER */
 (function() {
   var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
   if (mq && mq.matches) {
@@ -2167,7 +1824,6 @@ a:focus-visible,
     });
     return;
   }
-
   var observer = new IntersectionObserver(function(entries) {
     entries.forEach(function(entry) {
       if (entry.isIntersecting) {
@@ -2175,15 +1831,10 @@ a:focus-visible,
         observer.unobserve(entry.target);
       }
     });
-  }, {
-    threshold: 0.12,
-    rootMargin: '0px 0px -40px 0px'
-  });
-
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.sr').forEach(function(el) {
     observer.observe(el);
   });
 })();
 </script>
-</body>
-</html>
+</bod
