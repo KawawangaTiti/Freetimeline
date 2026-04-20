@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cookie Policy — FreeTimeline</title>
+<meta name="description" content="Learn how FreeTimeline uses cookies and localStorage to provide you with a seamless, private experience.">
+<link rel="canonical" href="https://freetimeline.pt/cookies.html">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #050611;
+  --surface: #0d0f20;
+  --border: rgba(255,255,255,0.06);
+  --border-mid: rgba(255,255,255,0.1);
+  --text: #e4e8f5;
+  --text-bright: #ffffff;
+  --muted: #7a84a0;
+  --dim: #434760;
+  --gold: #d4af37;
+  --accent: #4a8fde;
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: -apple-system, 'Segoe UI', system-ui, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.7;
+}
+
+.page-wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 60px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(5,6,17,0.95);
+  backdrop-filter: blur(16px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-brand {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.brand-infinity {
+  font-size: 1.4em;
+  background: linear-gradient(135deg, #5a80ff, #40c8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.brand-name {
+  background: linear-gradient(135deg, #c8d4ff, #90d8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.topbar-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+.topbar-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.topbar-links a:hover { color: var(--text-bright); }
+
+.main-content {
+  flex: 1;
+  padding: 80px 40px;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.page-title {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: var(--text-bright);
+  margin-bottom: 12px;
+  letter-spacing: -1px;
+}
+
+.last-updated {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 40px;
+}
+
+.legal-section {
+  margin-bottom: 40px;
+}
+
+.legal-section h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.legal-section h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 20px 0 12px;
+}
+
+.legal-section p {
+  font-size: 1rem;
+  color: var(--muted);
+  margin-bottom: 16px;
+  line-height: 1.8;
+}
+
+.legal-section ul, .legal-section ol {
+  margin: 16px 0;
+  padding-left: 24px;
+  color: var(--muted);
+}
+
+.legal-section li {
+  margin-bottom: 10px;
+  line-height: 1.7;
+}
+
+.legal-section strong {
+  color: var(--text);
+}
+
+.legal-section a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.cookie-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  background: var(--surface);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.cookie-table th,
+.cookie-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.cookie-table th {
+  background: rgba(255,255,255,0.03);
+  color: var(--text-bright);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.cookie-table td {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.cookie-table tr:last-child td {
+  border-bottom: none;
+}
+
+.highlight-box {
+  background: var(--surface);
+  border: 1px solid var(--border-mid);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 24px 0;
+}
+
+.highlight-box h4 {
+  color: var(--gold);
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+
+footer {
+  padding: 32px 40px;
+  border-top: 1px solid var(--border);
+  background: rgba(5,6,17,0.9);
+  margin-top: auto;
+}
+.footer-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--dim);
+}
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.footer-links a {
+  color: var(--dim);
+  font-size: 0.82rem;
+  text-decoration: none;
+  padding: 3px 6px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+.footer-links a:hover {
+  color: var(--muted);
+  background: rgba(255,255,255,0.04);
+}
+.footer-links .fdot {
+  color: var(--dim);
+  font-size: 0.65rem;
+}
+.footer-note {
+  font-size: 0.8rem;
+  color: var(--dim);
+  text-align: center;
+  width: 100%;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .topbar { padding: 0 20px; }
+  .topbar-links { display: none; }
+  .main-content { padding: 40px 20px; }
+  .page-title { font-size: 2rem; }
+  footer { padding: 24px 20px; }
+  .footer-inner { flex-direction: column; align-items: flex-start; }
+  .cookie-table { font-size: 0.85rem; }
+  .cookie-table th, .cookie-table td { padding: 10px 12px; }
+}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <header class="topbar">
+    <a href="index.html" class="topbar-brand">
+      <span class="brand-infinity">&#8734;</span>
+      <span class="brand-name">FreeTimeline</span>
+    </a>
+    <nav class="topbar-links">
+      <a href="index.html">Home</a>
+      <a href="guides.html">Guides</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="privacy.html">Privacy</a>
+    </nav>
+  </header>
+
+  <main class="main-content">
+    <h1 class="page-title">Cookie Policy</h1>
+    <p class="last-updated">Last Updated: January 2024</p>
+
+    <section class="legal-section">
+      <h2>What Are Cookies?</h2>
+      <p>Cookies are small text files that are stored on your device (computer, tablet, or mobile) when you visit a website. They are widely used to make websites work more efficiently and to provide information to website owners.</p>
+      <p>There are also similar technologies such as localStorage and sessionStorage, which serve similar purposes but work slightly differently.</p>
+    </section>
+
+    <section class="legal-section">
+      <h2>How FreeTimeline Uses Browser Storage</h2>
+      <p>FreeTimeline is designed with privacy as a core principle. We primarily use <strong>localStorage</strong> rather than traditional cookies. Here's what we store and why:</p>
+      
+      <table class="cookie-table">
+        <thead>
+          <tr>
+            <th>Storage Key</th>
+            <th>Purpose</th>
+            <th>Type</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>inf_universe_v4</td>
+            <td>Stores your Universe Timeline data (events, characters, etc.)</td>
+            <td>localStorage</td>
+            <td>Until you clear browser data</td>
+          </tr>
+          <tr>
+            <td>inf_biography_v1</td>
+            <td>Stores your Biography Timeline data (milestones, memories)</td>
+            <td>localStorage</td>
+            <td>Until you clear browser data</td>
+          </tr>
+          <tr>
+            <td>ft_consent_acknowledged</td>
+            <td>Remembers that you've seen our cookie/storage notice</td>
+            <td>localStorage</td>
+            <td>Until you clear browser data</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="highlight-box">
+        <h4>Important: Your Data Never Leaves Your Device</h4>
+        <p style="color: var(--muted); margin: 0;">All data stored in localStorage remains on your device. FreeTimeline does not transmit, sync, or backup this data to any server. We cannot access, read, or recover your data because we never receive it in the first place.</p>
+      </div>
+    </section>
+
+    <section class="legal-section">
+      <h2>Third-Party Cookies and Advertising</h2>
+      <p>When you visit FreeTimeline, you may see advertisements served by third-party advertising networks. These networks may use cookies and similar technologies to:</p>
+      <ul>
+        <li>Display advertisements that are relevant to you based on your browsing history</li>
+        <li>Limit the number of times you see a particular advertisement</li>
+        <li>Measure the effectiveness of advertising campaigns</li>
+        <li>Understand your interests based on websites you have visited</li>
+      </ul>
+
+      <h3>Google AdSense</h3>
+      <p>We use Google AdSense to display advertisements. Google uses cookies, including the DoubleClick cookie, to serve ads based on your prior visits to our website and other websites on the internet. Google's use of advertising cookies enables it and its partners to serve ads based on your visit to FreeTimeline and/or other sites on the Internet.</p>
+      <p>You may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">Google Ads Settings</a>. Alternatively, you can opt out of some third-party vendors' use of cookies for personalized advertising by visiting <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer">www.aboutads.info/choices</a>.</p>
+
+      <h3>Cookies That May Be Set by Advertising Partners</h3>
+      <table class="cookie-table">
+        <thead>
+          <tr>
+            <th>Provider</th>
+            <th>Cookie Name</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Google (DoubleClick)</td>
+            <td>IDE, DSID, id</td>
+            <td>Personalized advertising, ad measurement</td>
+          </tr>
+          <tr>
+            <td>Google Analytics (if enabled)</td>
+            <td>_ga, _gid, _gat</td>
+            <td>Website analytics and performance measurement</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="legal-section">
+      <h2>Managing Cookies</h2>
+      <p>You have several options for managing cookies:</p>
+      
+      <h3>Browser Settings</h3>
+      <p>Most web browsers allow you to control cookies through their settings. You can usually find these settings in the "Options" or "Preferences" menu of your browser. The following links provide information on how to manage cookies in popular browsers:</p>
+      <ul>
+        <li><a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener noreferrer">Google Chrome</a></li>
+        <li><a href="https://support.mozilla.org/en-US/kb/cookies-information-websites-store-on-your-computer" target="_blank" rel="noopener noreferrer">Mozilla Firefox</a></li>
+        <li><a href="https://support.apple.com/guide/safari/manage-cookies-sfri11471/mac" target="_blank" rel="noopener noreferrer">Safari</a></li>
+        <li><a href="https://support.microsoft.com/en-us/microsoft-edge/delete-cookies-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank" rel="noopener noreferrer">Microsoft Edge</a></li>
+      </ul>
+
+      <h3>Opt-Out of Personalized Ads</h3>
+      <ul>
+        <li><a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">Google Ads Settings</a></li>
+        <li><a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer">Digital Advertising Alliance</a></li>
+        <li><a href="https://www.youronlinechoices.eu/" target="_blank" rel="noopener noreferrer">Your Online Choices (EU)</a></li>
+      </ul>
+
+      <div class="highlight-box">
+        <h4>Note About Blocking Cookies</h4>
+        <p style="color: var(--muted); margin: 0;">If you block localStorage completely, FreeTimeline's core functionality (saving your timeline data) will not work. We recommend allowing localStorage for freetimeline.pt while managing third-party advertising cookies according to your preferences.</p>
+      </div>
+    </section>
+
+    <section class="legal-section">
+      <h2>Changes to This Policy</h2>
+      <p>We may update this Cookie Policy from time to time to reflect changes in technology, regulation, or our data practices. Any changes will be posted on this page with an updated revision date.</p>
+    </section>
+
+    <section class="legal-section">
+      <h2>Contact Us</h2>
+      <p>If you have questions about our use of cookies or this policy, please contact us at <a href="mailto:support@freetimeline.pt">support@freetimeline.pt</a>.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="brand-infinity">&#8734;</span>
+        <span>FreeTimeline</span>
+      </div>
+      <nav class="footer-links">
+        <a href="about.html">About</a>
+        <span class="fdot">&#8226;</span>
+        <a href="contact.html">Contact</a>
+        <span class="fdot">&#8226;</span>
+        <a href="guides.html">Guides</a>
+        <span class="fdot">&#8226;</span>
+        <a href="terms.html">Terms of Service</a>
+        <span class="fdot">&#8226;</span>
+        <a href="privacy.html">Privacy Policy</a>
+        <span class="fdot">&#8226;</span>
+        <a href="cookies.html">Cookie Policy</a>
+      </nav>
+      <p class="footer-note">© 2024 FreeTimeline. All data is saved locally in your browser.</p>
+    </div>
+  </footer>
