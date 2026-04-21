@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="google-adsense-account" content="ca-pub-4135034633295293">
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
-     crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Free Timeline Biography</title>
@@ -942,97 +939,647 @@ input[type="color"] {
 #fp-mobile-bar { display: none; }
 #fp-mobile-active-strip { display: none; }
 
-/* === CONNECTION MAP === */
+/* === CONNECTION MAP — human constellation (redesign v7, warm) === */
 .conn-map-wrap {
   width: 100%; flex: 1; min-height: 400px; position: relative; overflow: hidden;
-  background: #0d0f1a; user-select: none;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 42%, rgba(255,244,220,0.55) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(217,192,148,0.25) 0%, transparent 70%),
+    linear-gradient(180deg, #fbf5e8 0%, #f5ead3 55%, #ecdfc2 100%);
+  user-select: none;
 }
-.conn-map-svg { width: 100%; height: 100%; }
+/* subtle paper-grain dot pattern */
+.conn-map-wrap::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    radial-gradient(rgba(140,108,66,.11) 1px, transparent 1px),
+    radial-gradient(rgba(140,108,66,.07) 1px, transparent 1px);
+  background-size: 26px 26px, 13px 13px;
+  background-position: 0 0, 7px 7px;
+  opacity: .75;
+}
+.conn-map-svg { width: 100%; height: 100%; position: relative; z-index: 1; }
 .conn-map-controls { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; margin-bottom: 11px; }
-.conn-map-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 9px; font-size: 11px; color: #6070a0; align-items: center; }
+.conn-map-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 9px; font-size: 11px; color: #8b6e4e; align-items: center; }
 .cml-item { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
 .cml-line { flex-shrink: 0; display: inline-block; border-radius: 2px; }
 /* Relationship tab full-page controls */
 .rel-controls {
   display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
-  padding: 8px 12px; background: #131525; border-bottom: 1px solid #1e2240;
+  padding: 10px 14px;
+  background: linear-gradient(180deg, #faf2dd 0%, #f3e6c5 100%);
+  border-bottom: 1px solid #d9c79d;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.55) inset;
 }
 .rel-ctrl-filters { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; flex: 1; min-width: 0; }
 .rel-ctrl-btns { display: flex; align-items: center; gap: 5px; flex-shrink: 0; margin-left: auto; }
 .rel-hint {
-  font-size: 11px; color: #6070a0; font-style: italic; flex-shrink: 0;
-  padding: 3px 14px; background: #0e1020; border-bottom: 1px solid #191c30;
+  font-size: 11.5px; color: #8b6e4e; font-style: italic; flex-shrink: 0;
+  padding: 5px 16px; background: #f9f2df; border-bottom: 1px solid #e9dcb8;
+  letter-spacing: .15px;
 }
 .cm-legend-panel {
-  position: absolute; top: 10px; right: 10px; z-index: 20;
-  background: rgba(10,12,30,0.96); border: 1px solid #2a3060;
-  border-radius: 10px; padding: 14px 16px; color: #b0c0e0;
-  min-width: 250px; box-shadow: 0 8px 30px rgba(0,0,0,.6); font-size: 12px;
+  position: absolute; top: 12px; right: 12px; z-index: 20;
+  background: rgba(253,247,233,0.97);
+  border: 1px solid #d9c79d;
+  border-radius: 12px; padding: 13px 17px;
+  color: #5b432b;
+  min-width: 250px; box-shadow: 0 10px 28px rgba(120,86,40,0.18), 0 0 0 1px rgba(255,255,255,0.5) inset;
+  font-size: 12px; line-height: 1.75;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  animation: legendInBio .25s ease;
 }
-.cm-legend-panel .cml-title { font-size: 13px; font-weight: 700; color: #d0e0ff; margin-bottom: 10px; }
-.cm-legend-panel .cml-item { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
-.mz-btn.active { background: #c8d4ff; border-color: #7080e0; }
+@keyframes legendInBio { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.cm-legend-panel .cml-title {
+  font-size: 11px; font-weight: 800; color: #7a5a34;
+  text-transform: uppercase; letter-spacing: 1.1px;
+  margin-bottom: 9px; padding-bottom: 7px; border-bottom: 1px solid #e3d3a6;
+}
+.cm-legend-panel .cml-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.mz-btn.active { background: #e8d7a8; border-color: #b5935a; color: #5b432b; }
 .map-tip {
-  position: absolute; background: rgba(15,17,38,.95); color: #e0e8ff;
-  border: 1px solid #3040a0; border-radius: 8px;
-  padding: 8px 12px; font-size: 12px; pointer-events: none;
-  max-width: 240px; z-index: 10; display: none;
-  box-shadow: 0 4px 18px rgba(0,0,0,.5); line-height: 1.5;
+  position: absolute; background: rgba(255,250,236,0.97); color: #3d2e1f;
+  border: 1px solid #c9ae78; border-radius: 10px;
+  padding: 10px 13px; font-size: 12.5px; pointer-events: none;
+  max-width: 260px; z-index: 10; display: none;
+  box-shadow: 0 10px 26px rgba(80,55,20,.22), 0 0 0 1px rgba(255,255,255,0.6) inset;
+  line-height: 1.55; letter-spacing: .1px;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
 }
+.map-tip strong { color: #5b3a12; font-weight: 700; }
+.map-tip em { color: #8b6e4e; }
 
-/* === SHARED SCENES === */
+/* Empty state — inviting, warm */
+.cm-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 100%; padding: 48px 28px; text-align: center; color: #5b432b; font-family: inherit;
+  position: relative; z-index: 1;
+}
+.cm-empty-star { font-size: 44px; margin-bottom: 14px; opacity: .9; filter: drop-shadow(0 4px 10px rgba(140,100,50,0.2)); }
+.cm-empty h3 { font-size: 19px; font-weight: 700; color: #3d2b1f; margin: 0 0 10px; letter-spacing: .2px; }
+.cm-empty p  { font-size: 14px; line-height: 1.75; max-width: 460px; margin: 0 0 16px; color: #6a523a; }
+.cm-empty-steps {
+  background: rgba(255,250,236,0.8);
+  border: 1px solid #d9c79d; border-radius: 12px;
+  padding: 14px 18px; font-size: 13px; text-align: left; max-width: 460px; line-height: 1.95;
+  color: #5b432b;
+}
+.cm-empty-steps b { color: #a0761f; font-weight: 700; }
+
+/* === SHARED EVENTS === */
 .shared-ev-item {
   display: flex; align-items: flex-start; gap: 10px;
-  padding: 7px 10px; border-radius: 7px;
-  background: #f7f8fc; border: 1px solid #e8eaf0;
-  margin-bottom: 5px; cursor: pointer; transition: background .12s;
+  padding: 8px 11px; border-radius: 8px;
+  background: #faf4e4; border: 1px solid #e9dcb8;
+  margin-bottom: 5px; cursor: pointer; transition: background .15s, transform .15s;
 }
-.shared-ev-item:hover { background: #eef1fa; }
-.shared-ev-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+.shared-ev-item:hover { background: #f1e6c4; transform: translateX(2px); }
+.shared-ev-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; box-shadow: 0 0 0 2px rgba(255,255,255,0.55); }
 
 
-/* ===== HELP TABS v7 — larger, friendlier text ===== */
-.modal { width:680px; }
-.help-tabs { display:flex; gap:0; border-bottom:2px solid #e0d4c0; margin-bottom:20px; flex-wrap:wrap; }
-.help-tab { padding:11px 15px; font-size:15px; font-weight:700; color:#8090b0; cursor:pointer;
-  border-bottom:3px solid transparent; margin-bottom:-2px; transition:all .15s; white-space:nowrap;
-  border-radius:6px 6px 0 0; }
-.help-tab:hover { color:#8b6e4e; background:#faf3e8; }
-.help-tab.active { color:#6b4c2a; border-bottom-color:#b07942; background:#faf3e8; }
-.help-section { display:none; }
-.help-section.active { display:block; animation:fadeH .16s ease; }
-@keyframes fadeH { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:none; } }
-.h-step { display:flex; align-items:flex-start; gap:14px; margin-bottom:20px; }
-.h-num { min-width:36px; height:36px; border-radius:50%; display:flex; align-items:center;
-  justify-content:center; font-size:16px; font-weight:900; color:#fff; flex-shrink:0; margin-top:2px; }
-.h-step-body { flex:1; }
-.h-step-title { font-size:18px; font-weight:800; color:#3d2b1f; margin-bottom:7px; }
-.h-step-desc { font-size:16px; color:#333; line-height:1.9; }
-.h-tip { background:#fffbea; border:1.5px solid #f5d050; border-radius:8px; padding:14px 18px;
-  font-size:16px; color:#7a5800; line-height:1.9; margin-bottom:16px; }
-.h-note { background:#faf3e8; border-left:4px solid #b07942; border-radius:0 8px 8px 0;
-  padding:14px 18px; font-size:16px; color:#4a3828; line-height:1.9; margin-bottom:16px; }
-.h-block { background:#fafbff; border:1px solid #e0e8f5; border-radius:8px; padding:15px 18px;
-  font-size:16px; color:#333; line-height:1.9; margin-bottom:16px; }
-.h-icon { font-size:26px; margin-bottom:6px; }
-.h-section-title { font-size:19px; font-weight:900; color:#3d2b1f; margin-bottom:16px; padding-bottom:10px;
-  border-bottom:2px solid #e8dcc8; }
-.h-action-box { background:#f0f7ee; border:2px solid #7ab86a; border-radius:10px; padding:16px 20px;
-  font-size:16px; color:#2e5020; line-height:1.9; margin-bottom:16px; }
+/* ===== HELP GUIDE v8 — archive curator experience ===== */
+.modal { width: 760px; }
+.help-shell {
+  max-width: 980px;
+  margin: 0 auto;
+  color: #2d2012;
+}
+.help-hero {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 18px;
+  padding: 22px 22px 18px;
+  border: 1px solid #decaa9;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at top right, rgba(255,249,236,0.95), rgba(255,249,236,0) 42%),
+    linear-gradient(135deg, #f8f1df 0%, #efe2c8 52%, #e6d5b5 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 10px 28px rgba(69,47,24,0.08);
+}
+.help-hero::after {
+  content: "";
+  position: absolute;
+  right: -46px;
+  top: -52px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(176,121,66,0.22) 0%, rgba(176,121,66,0.05) 45%, rgba(176,121,66,0) 72%);
+  pointer-events: none;
+}
+.help-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  border: 1px solid rgba(122,86,44,0.18);
+  border-radius: 999px;
+  background: rgba(255,252,246,0.82);
+  color: #6f5230;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.help-hero h3 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  line-height: 1.2;
+  color: #2d1f10;
+}
+.help-hero p {
+  margin: 0 0 10px;
+  max-width: 760px;
+  font-size: 15px;
+  line-height: 1.75;
+  color: #4d3a27;
+}
+.help-searchbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.help-search-wrap {
+  position: relative;
+  flex: 1 1 300px;
+}
+.help-search-wrap::before {
+  content: "⌕";
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8d6a42;
+  font-size: 18px;
+  pointer-events: none;
+}
+.help-search {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px 12px 42px;
+  border: 1px solid #ccb287;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.82);
+  color: #2e2012;
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.help-search:focus {
+  border-color: #9a6b35;
+  box-shadow: 0 0 0 3px rgba(176,121,66,0.18);
+  background: #fffdf8;
+}
+.help-search-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  color: #6f5334;
+  font-size: 12px;
+}
+.help-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(109,76,42,0.09);
+  color: #6c4d2e;
+  font-size: 12px;
+  font-weight: 700;
+}
+.help-chip-btn {
+  border: 1px solid #d3bb93;
+  background: rgba(255,255,255,0.66);
+  cursor: pointer;
+}
+.help-chip-btn:hover,
+.help-chip-btn:focus-visible {
+  border-color: #b07942;
+  background: rgba(255,248,236,0.96);
+}
+.help-layout {
+  display: grid;
+  grid-template-columns: minmax(225px, 245px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+.help-nav {
+  position: sticky;
+  top: 0;
+  padding: 14px;
+  border: 1px solid #eadcc6;
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255,252,246,0.98) 0%, rgba(248,242,231,0.98) 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.85);
+}
+.help-nav-title {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #7b5f3d;
+  text-transform: uppercase;
+}
+.help-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.help-nav .help-tabs {
+  display: flex !important;
+  flex-direction: column !important;
+  flex-wrap: nowrap !important;
+}
+.help-tab {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #e4d4b7;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(248,241,229,0.96));
+  color: #5e4529;
+  text-align: left;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+}
+.help-nav .help-tab {
+  width: 100% !important;
+  flex: 0 0 auto !important;
+  text-align: left !important;
+}
+.help-tab:hover,
+.help-tab:focus-visible {
+  border-color: #c89c63;
+  box-shadow: 0 6px 18px rgba(122,86,44,0.12);
+  transform: translateY(-1px);
+}
+.help-tab.active {
+  border-color: #b07942;
+  background: linear-gradient(135deg, #fdf6ea 0%, #f3e1c1 100%);
+  color: #3a2712;
+  box-shadow: 0 9px 24px rgba(122,86,44,0.16);
+}
+.help-tab-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+.help-tab-note {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: #7a6145;
+}
+.help-content {
+  min-width: 0;
+}
+.help-panel {
+  border: 1px solid #eadcc6;
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(251,246,238,0.98) 100%);
+  box-shadow: 0 12px 32px rgba(61,43,31,0.08);
+  overflow: hidden;
+}
+.help-panel-head {
+  padding: 18px 20px 12px;
+  border-bottom: 1px solid rgba(176,121,66,0.16);
+  background:
+    linear-gradient(180deg, rgba(252,248,241,0.98) 0%, rgba(248,242,231,0.98) 100%);
+}
+.help-panel-kicker {
+  margin: 0 0 6px;
+  color: #8a6840;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.help-panel-title {
+  margin: 0;
+  font-size: 25px;
+  color: #2d1f10;
+  line-height: 1.2;
+}
+.help-panel-body {
+  padding: 20px;
+}
+.help-section {
+  display: none;
+}
+.help-section.active {
+  display: block;
+  animation: fadeH .18s ease;
+}
+@keyframes fadeH {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.help-block,
+.help-tip,
+.help-note,
+.help-warning,
+.help-action-box {
+  margin-bottom: 14px;
+  padding: 15px 16px;
+  border-radius: 16px;
+  line-height: 1.75;
+  font-size: 15px;
+}
+.help-block {
+  border: 1px solid #ebe2d2;
+  background: #fffdf9;
+  color: #43301f;
+}
+.help-tip {
+  border: 1px solid #e7d18d;
+  background: linear-gradient(180deg, #fffaf0 0%, #fff5db 100%);
+  color: #6a4e1f;
+}
+.help-note {
+  border: 1px solid #d8c5a4;
+  background: linear-gradient(180deg, #fbf6ee 0%, #f4eadb 100%);
+  color: #4d3923;
+}
+.help-warning {
+  border: 1px solid #e0b5a8;
+  background: linear-gradient(180deg, #fff6f3 0%, #fbe7e1 100%);
+  color: #7a2e22;
+}
+.help-action-box {
+  border: 1px solid #b7d0a4;
+  background: linear-gradient(180deg, #f5fbef 0%, #e7f3dc 100%);
+  color: #2f5420;
+}
+.help-section p {
+  margin: 0 0 11px;
+  font-size: 15px;
+  line-height: 1.78;
+  color: #3f2f1f;
+}
+.help-section p:last-child {
+  margin-bottom: 0;
+}
+.help-steps {
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+}
+.help-step {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  margin-bottom: 12px;
+  padding: 14px;
+  border: 1px solid #eadbc4;
+  border-radius: 16px;
+  background: #fffdfa;
+}
+.help-step-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #b07942 0%, #8d6133 100%);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 900;
+}
+.help-step h4 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  color: #382513;
+}
+.help-step p {
+  margin: 0;
+}
+.help-mini-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 0 14px;
+}
+.help-mini-card {
+  padding: 13px 14px;
+  border: 1px solid #e6d9c1;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #fffefb 0%, #f7f0e4 100%);
+}
+.help-mini-card strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #3a2712;
+  font-size: 14px;
+}
+.help-mini-card span {
+  display: block;
+  color: #69523a;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.help-empty {
+  padding: 28px 18px;
+  text-align: center;
+  color: #6e5333;
+}
+.help-empty strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #3a2814;
+  font-size: 18px;
+}
+.help-footer-note {
+  margin-top: 14px;
+  color: #7a6246;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.tour-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .22s ease;
+}
+.tour-overlay.active {
+  opacity: 1;
+}
+.tour-wash {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255,245,228,0.36), rgba(255,245,228,0) 34%),
+    linear-gradient(180deg, rgba(58,37,21,0.08), rgba(58,37,21,0.02) 26%, rgba(58,37,21,0.12));
+}
+.tour-spotlight {
+  position: absolute;
+  width: 148px;
+  height: 148px;
+  margin-left: -74px;
+  margin-top: -74px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(176,121,66,0.48);
+  background: radial-gradient(circle, rgba(255,241,214,0.2) 0%, rgba(255,241,214,0.08) 36%, rgba(255,241,214,0) 74%);
+  box-shadow: 0 0 0 10px rgba(255,246,231,0.08), 0 0 26px rgba(176,121,66,0.18);
+  transition: transform .24s ease, left .24s ease, top .24s ease, opacity .24s ease;
+}
+.tour-card {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  width: min(360px, calc(100% - 36px));
+  padding: 18px 18px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(208,177,132,0.58);
+  background: linear-gradient(180deg, rgba(255,251,245,0.95) 0%, rgba(249,239,225,0.96) 100%);
+  box-shadow: 0 18px 44px rgba(73,49,29,0.16);
+  color: #352415;
+  pointer-events: auto;
+}
+.tour-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(176,121,66,0.12);
+  color: #8a6035;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.tour-title {
+  margin: 12px 0 4px;
+  font-size: 23px;
+  line-height: 1.2;
+  color: #2d1f10;
+}
+.tour-meta {
+  color: #7b6247;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.tour-desc {
+  margin-top: 12px;
+  color: #4c3826;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.tour-controls {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(206,176,131,0.46);
+  background: rgba(255,252,247,0.94);
+  box-shadow: 0 12px 34px rgba(73,49,29,0.14);
+  pointer-events: auto;
+}
+.tour-btn {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid rgba(176,121,66,0.28);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fffaf1 0%, #f4e5cc 100%);
+  color: #5c4124;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.tour-btn:hover,
+.tour-btn:focus-visible {
+  border-color: rgba(176,121,66,0.6);
+  box-shadow: 0 0 0 3px rgba(176,121,66,0.14);
+}
+.tour-btn.exit {
+  background: linear-gradient(180deg, #fff6f3 0%, #f5d8cf 100%);
+  border-color: rgba(184,88,72,0.34);
+  color: #7f3a2c;
+}
+.tour-progress {
+  min-width: 82px;
+  text-align: center;
+  color: #7b6247;
+  font-size: 12px;
+  font-weight: 800;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tour-overlay,
+  .tour-spotlight {
+    transition: none !important;
+  }
+}
+@media (max-width: 780px) {
+  .help-layout {
+    grid-template-columns: 1fr;
+  }
+  .help-nav {
+    position: static;
+  }
+  .help-hero {
+    padding: 18px 16px 16px;
+  }
+  .help-panel-head,
+  .help-panel-body {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .help-mini-list {
+    grid-template-columns: 1fr;
+  }
+  .tour-card {
+    top: 12px;
+    left: 12px;
+    width: calc(100% - 24px);
+    padding: 16px 14px 14px;
+  }
+  .tour-controls {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    transform: none;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
 
-/* ===== MAP CONTROLS v6 ===== */
-.mz-btn { width:36px; height:36px; border:1.5px solid #c8d4f0; background:#fff; border-radius:7px;
-  cursor:pointer; font-size:19px; display:flex; align-items:center; justify-content:center;
-  color:#3040a0; transition:background .12s; font-family:inherit; line-height:1; }
-.mz-btn:hover { background:#e4eaff; }
-.mz-btn:active { background:#c8d4ff; }
-.map-search { padding:5px 12px; border:1.5px solid #c0c8e0; border-radius:14px; font-size:12px;
-  font-family:inherit; background:#fff; color:#333; outline:none; width:150px; transition:border-color .15s; }
-.map-search:focus { border-color:#4a8fde; box-shadow:0 0 0 2px rgba(74,143,222,.15); }
-#cm-pct { font-size:11px; color:#7080b0; background:#f0f4ff; border:1px solid #d0daf5;
-  border-radius:5px; padding:2px 8px; min-width:44px; text-align:center; }
+/* ===== MAP CONTROLS v7 — warm personal controls ===== */
+.mz-btn { width:36px; height:36px; border:1px solid #c9ae78; background:#fdf8ea; border-radius:9px;
+  cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center;
+  color:#7a5a34; transition:all .15s ease; font-family:inherit; line-height:1; }
+.mz-btn:hover { background:#f1e2b6; border-color:#a8843d; color:#5b3a12; transform: translateY(-1px); box-shadow:0 3px 10px rgba(120,86,40,.15); }
+.mz-btn:active { background:#e6d29b; transform: translateY(0); }
+.map-search { padding:6px 13px; border:1px solid #c9ae78; border-radius:16px; font-size:12.5px;
+  font-family:inherit; background:#fffbef; color:#3d2e1f; outline:none; width:160px; transition:all .18s; }
+.map-search::placeholder { color:#a8916d; }
+.map-search:focus { border-color:#a0761f; box-shadow:0 0 0 3px rgba(160,118,31,.16); background:#fffefb; }
+#cm-pct { font-size:11px; color:#7a5a34; background:#fdf8ea; border:1px solid #d9c79d;
+  border-radius:6px; padding:3px 9px; min-width:44px; text-align:center; font-weight:600; letter-spacing:.3px; }
 #cm-wrap { cursor:grab; }
 #cm-wrap.cm-dragging { cursor:grabbing; }
+.cm-node { transition: filter .18s ease; }
+.cm-edge { transition: opacity .18s ease, stroke-width .18s ease; }
 
 /* ===== UNIVERSE INFO PANEL v6 ===== */
 .uni-stat-row { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
@@ -2744,6 +3291,49 @@ input:focus, select:focus, textarea:focus, button:focus-visible {
    Touch targets · Focus rings · Mobile readability
    ===================================================== */
 
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.skip-link {
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  transform: translateY(-160%);
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #1e1c19;
+  color: #fff6ea;
+  border: 1px solid rgba(212,165,116,0.55);
+  text-decoration: none;
+  z-index: 10000;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.28);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.field-error {
+  margin-top: 6px;
+  color: #8e241d;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+[aria-invalid="true"] {
+  border-color: #b44b3d !important;
+  box-shadow: 0 0 0 3px rgba(180,75,61,0.18) !important;
+}
+
 /* 1. Focus rings for interactive elements that don't inherit btn:focus-visible */
 .zbtn:focus-visible {
   outline: 2px solid #c4915a;
@@ -2760,6 +3350,15 @@ input:focus, select:focus, textarea:focus, button:focus-visible {
 .bio-mobile-action:focus-visible {
   outline: 2px solid #c4915a;
   outline-offset: 2px;
+}
+.fp-drop-btn:focus-visible,
+.bio-mobile-drawer-close:focus-visible,
+.bio-mobile-action-label:focus-visible,
+.empty-state-btn:focus-visible,
+#canvas-wrap:focus-visible,
+#bio-mobile-action-search:focus-visible {
+  outline: 2px solid #c4915a;
+  outline-offset: 3px;
 }
 a:focus-visible {
   outline: 2px solid #c4915a;
@@ -2847,17 +3446,335 @@ input[type="color"]:focus-visible {
   }
 }
 
-  </style>
+.zbtn,
+.view-tab,
+.fp-drop-btn,
+.bio-mobile-primary,
+.bio-mobile-action,
+.bio-mobile-action-label,
+.empty-state-btn,
+.bio-mobile-drawer-close {
+  min-height: 44px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =====================================================
+   ARCHIVE ENTRY — Biography people full-view (v2)
+   Warm, paper-like cards with relationship accent.
+   ===================================================== */
+.pv-grid { gap: 18px !important; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important; }
+
+.pv-card {
+  position: relative;
+  background: linear-gradient(180deg, #ffffff 0%, #fbf6ec 100%) !important;
+  border: 1px solid #e8ddc7 !important;
+  border-radius: 12px !important;
+  padding: 16px 16px 14px 20px !important;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color .2s ease, transform .2s ease, box-shadow .25s ease, background .2s ease;
+  box-shadow: 0 1px 3px rgba(61,43,31,0.05);
+}
+.pv-card::before {
+  content: '';
+  position: absolute; inset: 0 auto 0 0; width: 4px;
+  background: var(--pv-accent, #b07942);
+  opacity: 0.85;
+  transition: width .2s ease, opacity .2s ease;
+}
+.pv-card::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 85% 0%, rgba(176,121,66,0.06), transparent 55%);
+  pointer-events: none;
+}
+.pv-card:hover {
+  transform: translateY(-3px);
+  border-color: #c8a982 !important;
+  box-shadow: 0 12px 28px -10px rgba(90,60,30,0.25), 0 0 0 1px rgba(176,121,66,0.08) inset;
+}
+.pv-card:hover::before { width: 6px; opacity: 1; }
+.pv-card:focus-visible {
+  outline: none;
+  border-color: var(--pv-accent, #b07942) !important;
+  box-shadow: 0 0 0 2px #fbf6ec, 0 0 0 4px var(--pv-accent, #b07942);
+}
+.pv-card.is-selected {
+  border-color: var(--pv-accent, #b07942) !important;
+  background: linear-gradient(180deg, #fff8ec 0%, #f6ead3 100%) !important;
+}
+
+.pv-card-top { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 10px; position: relative; z-index: 1; }
+.pv-avatar {
+  width: 60px !important; height: 60px !important;
+  border-radius: 12px !important;
+  border: 2px solid #e8ddc7 !important;
+  box-shadow: 0 2px 6px rgba(61,43,31,0.12);
+  font-size: 18px !important;
+  letter-spacing: 0.5px;
+}
+.pv-avatar img { border-radius: 10px !important; }
+.pv-card .pv-heading { flex: 1; min-width: 0; }
+.pv-card .pv-name {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.1px;
+  color: #2a1c10 !important;
+  line-height: 1.25;
+  margin-bottom: 2px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pv-card .pv-alias {
+  font-size: 11px;
+  color: #8a7556;
+  font-style: italic;
+  margin-bottom: 4px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pv-card .pv-sub { font-size: 11px !important; color: #7d6a51 !important; margin-top: 0 !important; }
+
+.pv-chip-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; position: relative; z-index: 1; }
+.pv-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 9px; border-radius: 999px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.3px;
+  color: #fff;
+  background: #b07942;
+  border: 1px solid transparent;
+}
+.pv-chip.rel { color: #fff; }
+.pv-chip.meta { background: #f3e9d6; color: #6a5233; border-color: #e1d1b3; }
+
+.pv-tag {
+  padding: 2px 9px !important;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  box-shadow: 0 1px 2px rgba(61,43,31,0.15);
+}
+.pv-tags { margin-top: 4px !important; position: relative; z-index: 1; }
+
+.pv-meta-row {
+  font-size: 11px; color: #6a5233;
+  margin-top: 8px; position: relative; z-index: 1;
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.pv-meta-row .pv-meta-label { color: #9c8564; text-transform: uppercase; font-size: 9px; letter-spacing: 0.8px; font-weight: 700; }
+
+.pv-context {
+  font-size: 11.5px; line-height: 1.55;
+  color: #5c4a33;
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: rgba(176,121,66,0.06);
+  border-left: 2px solid var(--pv-accent, #b07942);
+  border-radius: 0 6px 6px 0;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+  position: relative; z-index: 1;
+  font-style: italic;
+}
+
+.pv-events {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #e1d1b3;
+  position: relative; z-index: 1;
+}
+.pv-events-ticks { display: flex; gap: 3px; flex: 1; overflow: hidden; }
+.pv-events-tick {
+  width: 4px; height: 14px; border-radius: 1.5px;
+  background: var(--pv-accent, #b07942);
+  opacity: 0.8;
+}
+.pv-events-tick.empty { background: #ecdfc6; opacity: 1; }
+.pv-events-count {
+  font-size: 11px; font-weight: 700;
+  color: var(--pv-accent, #8a5a2b);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.pv-events-count .zero { color: #a89270; font-weight: 600; }
+
+/* Archive empty state */
+.pv-empty {
+  grid-column: 1/-1;
+  padding: 48px 24px;
+  text-align: center;
+  color: #8a7556;
+  border: 1px dashed #d8c6a4;
+  border-radius: 14px;
+  background: radial-gradient(circle at center, rgba(176,121,66,0.05), transparent 70%);
+}
+.pv-empty .pv-empty-glyph { font-size: 28px; margin-bottom: 10px; opacity: 0.55; letter-spacing: 6px; color: #b07942; }
+.pv-empty .pv-empty-title { font-size: 15px; font-weight: 700; color: #3d2b1f; margin-bottom: 6px; letter-spacing: 0.3px; }
+.pv-empty .pv-empty-msg { font-size: 12px; line-height: 1.6; max-width: 380px; margin: 0 auto 16px; }
+.pv-empty .pv-empty-cta { font-size: 11px; color: #8a5a2b; }
+
+/* Improved modal profile header (Biography) */
+.char-profile-hd {
+  padding: 14px 14px 12px !important;
+  background: linear-gradient(135deg, #fff8ec 0%, #faf0dc 100%);
+  border: 1px solid #e8ddc7;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.char-profile-hd::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: var(--pv-accent, #b07942);
+}
+.char-profile-photo, .char-photo-placeholder {
+  box-shadow: 0 6px 16px -6px rgba(61,43,31,0.25);
+}
+
+</style>
+<style>
+@media (max-width: 767px) {
+  #bio-mobile-header {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    padding-top: max(10px, env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: 10px !important;
+  }
+
+  .bio-mobile-topline {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .bio-mobile-brand {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .bio-mobile-brand-title {
+    color: #f7e7c8;
+    font-family: 'Georgia', 'Cambria', 'Times New Roman', serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.15;
+  }
+
+  .bio-mobile-brand-subtitle {
+    color: rgba(245,220,190,0.72);
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  .bio-mobile-primary-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .bio-mobile-primary {
+    min-height: 50px !important;
+    padding: 10px 8px !important;
+    border-radius: 14px !important;
+    font-size: 11px !important;
+    gap: 5px !important;
+  }
+
+  .bio-mobile-touch-note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(176,121,66,0.12);
+    border: 1px solid rgba(176,121,66,0.24);
+    color: rgba(245,224,196,0.9);
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  .bio-mobile-touch-note strong {
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  #bio-mobile-more-drawer {
+    max-height: min(84dvh, 680px) !important;
+    border-radius: 20px 20px 0 0 !important;
+  }
+
+  .bio-mobile-drawer-search {
+    padding-bottom: 10px;
+  }
+
+  #bio-mobile-action-search {
+    width: 100%;
+    min-height: 46px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(245,230,208,0.14);
+    background: rgba(255,255,255,0.06);
+    color: #f4e1c4;
+    font: inherit;
+    font-size: 16px;
+  }
+
+  #bio-mobile-action-search::placeholder {
+    color: rgba(234,215,188,0.46);
+  }
+
+  .bio-mobile-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .bio-mobile-action,
+  .bio-mobile-action-label {
+    min-height: 48px !important;
+    padding: 10px 10px !important;
+    font-size: 12px !important;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 420px) {
+  .bio-mobile-primary-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .bio-mobile-touch-note {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .bio-mobile-actions {
+    grid-template-columns: 1fr !important;
+  }
+}
+</style>
 </head>
 <body>
 
+<a class="skip-link" href="#canvas-wrap">Skip to timeline canvas</a>
+
 <div id="app">
+  <h1 class="sr-only" id="page-title">Free Timeline Biography</h1>
 
   <!-- ==================== MOBILE BANNER ==================== -->
   <div id="mobile-banner">&#128241; Touch to pan &nbsp;&middot;&nbsp; Pinch to zoom &nbsp;&middot;&nbsp; Limited editing on mobile</div>
 
   <!-- ==================== TOOLBAR ==================== -->
-  <div id="toolbar">
+  <div id="toolbar" role="banner" aria-label="Biography timeline controls">
     <button class="btn back-btn" title="Return to the FreeTimeline menu" onclick="goBackToMenu()" style="display:inline-flex;align-items:center;gap:5px;">&#8592; Menu</button>
     <div class="sep"></div>
     <span class="logo">Free Timeline Biography</span>
@@ -2871,7 +3788,7 @@ input[type="color"]:focus-visible {
     <button class="btn tb-secondary" onclick="Store.saveJSON()" title="Export all data as a JSON backup file">&#8595; JSON</button>
     <button class="btn tb-secondary" onclick="Store.importClick()" title="Load a previously saved HTML or JSON file">&#8593; Load</button>
     <button class="btn danger tb-secondary" onclick="Store.blankTimeline()" title="Clear all Life Tracks, events, people, and connections after optional JSON export">⬜ Blank</button>
-    <input type="file" id="file-in" accept=".html,.json" onchange="Store.importFile(event)" style="display:none">
+    <input type="file" id="file-in" accept=".html,.json" onchange="Store.importFile(event)" style="display:none" aria-label="Load biography timeline file">
     <div class="sep"></div>
     <span class="tb-label">View</span>
     <div class="view-tabs">
@@ -2894,11 +3811,12 @@ input[type="color"]:focus-visible {
       <button class="btn tb-secondary" id="redo-btn" onclick="History.redo()" title="Redo (Ctrl+Y)" style="opacity:0.4" disabled>&#8618;</button>
     <div class="sep tb-secondary"></div>
     <button class="btn tb-secondary" onclick="UI.toggleStats()" title="Toggle timeline statistics panel" id="stats-btn">&#128202; Stats</button>
+    <button class="btn tb-secondary" onclick="MemoryTour.start()" title="Start a read-only guided Memory Tour through your events">&#127909; Memory Tour</button>
     <button class="btn tb-secondary" onclick="UI.toggleKbd()" title="Keyboard shortcuts reference">&#9875; Keys</button>
     <div class="sep tb-secondary"></div>
     <label class="tb-secondary" style="font-size:10px;color:rgba(196,149,106,0.75);white-space:nowrap;display:flex;align-items:center;gap:5px;letter-spacing:0.03em;" title="Adjust track row height">
       &#8597;
-      <input type="range" id="track-h-slider" min="60" max="200" step="10" value="100"
+      <input type="range" id="track-h-slider" min="60" max="200" step="10" value="100" aria-label="Adjust life track row height"
         style="width:64px;cursor:pointer;accent-color:#b07942;"
         oninput="TRACK_H=+this.value;document.getElementById('track-h-val').textContent=this.value;clampPanY();render()">
       <span id="track-h-val" style="font-size:10px;color:rgba(196,149,106,0.75);width:24px">100</span>
@@ -2910,10 +3828,23 @@ input[type="color"]:focus-visible {
 
   <!-- ==================== MOBILE HEADER / ACTIONS ==================== -->
   <div id="bio-mobile-header" aria-label="Biography mobile navigation">
-    <button class="bio-mobile-primary" type="button" onclick="goBackToMenu()">← Menu</button>
-    <button class="bio-mobile-primary accent" type="button" onclick="UI.addEvent()">＋ Add Event</button>
-    <button class="bio-mobile-primary" id="bio-mobile-filter-btn" type="button" aria-expanded="false" onclick="bioMobileToggleFilters()">🔎 Search/Filters</button>
-    <button class="bio-mobile-primary" id="bio-mobile-more-btn" type="button" aria-expanded="false" onclick="bioMobileToggleMore()">☰ More</button>
+    <div class="bio-mobile-topline">
+      <div class="bio-mobile-brand">
+        <span class="bio-mobile-brand-title">Free Timeline Biography</span>
+        <span class="bio-mobile-brand-subtitle">Capture memories, people, and chapters with touch-friendly editing and backups.</span>
+      </div>
+      <button class="bio-mobile-primary" type="button" onclick="goBackToMenu()">← Menu</button>
+    </div>
+    <div class="bio-mobile-primary-row">
+      <button class="bio-mobile-primary accent" type="button" onclick="UI.addEvent()">＋ Add Event</button>
+      <button class="bio-mobile-primary" id="bio-mobile-filter-btn" type="button" aria-expanded="false" onclick="bioMobileToggleFilters()">🔎 Filters</button>
+      <button class="bio-mobile-primary" type="button" onclick="bioOpenStoryGuide()">📖 Story</button>
+      <button class="bio-mobile-primary" id="bio-mobile-more-btn" type="button" aria-expanded="false" onclick="bioMobileToggleMore()">☰ More</button>
+    </div>
+    <div class="bio-mobile-touch-note" role="note">
+      <strong>Touch:</strong>
+      Swipe to pan, pinch to zoom, and use More for import, export, help, and timeline tools.
+    </div>
   </div>
 
   <!-- Filter sheet overlay backdrop (mobile only) -->
@@ -2924,6 +3855,9 @@ input[type="color"]:focus-visible {
     <div class="bio-mobile-drawer-head">
       <span>More biography actions</span>
       <button class="bio-mobile-drawer-close" type="button" onclick="bioMobileCloseMore()">Close</button>
+    </div>
+    <div class="bio-mobile-drawer-search">
+      <input id="bio-mobile-action-search" type="search" placeholder="Quick action: export, story, people, help..." oninput="bioMobileFilterActions(this.value)" aria-label="Search biography mobile actions">
     </div>
     <div class="bio-mobile-actions">
 
@@ -2939,7 +3873,7 @@ input[type="color"]:focus-visible {
       <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();Store.saveJSON()" title="Export a plain JSON backup of all your data">⬇ Export JSON</button>
       <!-- Import: use a label wrapping the file input for best mobile browser compatibility -->
       <label class="bio-mobile-action-label" for="bio-mob-file-in" title="Load a previously saved HTML or JSON timeline file">⬆ Load / Import</label>
-      <input type="file" id="bio-mob-file-in" accept=".html,.json" style="display:none" onchange="bioMobileImportFile(event)">
+      <input type="file" id="bio-mob-file-in" accept=".html,.json" style="display:none" onchange="bioMobileImportFile(event)" aria-label="Load biography timeline file">
       <button class="bio-mobile-action danger" type="button" onclick="bioMobileCloseMore();bioMobBlankConfirm()" title="Delete all data and start fresh — you will be asked to save a backup first">⬜ Clear / Blank</button>
 
       <!-- Views section -->
@@ -2961,12 +3895,14 @@ input[type="color"]:focus-visible {
       <!-- Navigate section -->
       <div class="bio-drawer-section-head" style="grid-column:1/-1">Navigate</div>
       <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();UI.toggleStats()">📈 Stats Panel</button>
+      <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();MemoryTour.start()">🎞 Memory Tour</button>
       <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();goToToday()">🕘 Today</button>
       <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();resetView()">⌂ Reset</button>
       <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();History.undo()">↶ Undo</button>
       <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();History.redo()">↷ Redo</button>
       <button class="bio-mobile-action warning" type="button" onclick="bioMobileCloseMore();openRangeConfig()">📅 Range</button>
       <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();UI.toggleKbd()">⌨ Keys</button>
+      <button class="bio-mobile-action warning" type="button" onclick="bioMobileCloseMore();bioOpenStoryGuide()">📖 Story Guide</button>
       <button class="bio-mobile-action warning" type="button" onclick="bioMobileCloseMore();UI.help()">❓ Help</button>
       <label class="bio-mobile-action full">
         <span>↕ Row height</span>
@@ -3007,7 +3943,7 @@ input[type="color"]:focus-visible {
 
       <!-- Search -->
       <div class="fp-search-wrap">
-        <input type="text" id="ev-search-input" placeholder="Search events…" oninput="updateEventSearch(this.value)">
+        <input type="text" id="ev-search-input" placeholder="Search events…" oninput="updateEventSearch(this.value)" aria-label="Search biography events">
       </div>
 
       <div class="fp-vsep"></div>
@@ -3134,7 +4070,7 @@ input[type="color"]:focus-visible {
       <div class="fp-mobile-section">
         <div class="fp-mobile-label">Search</div>
         <div class="fp-mobile-row">
-          <input type="text" id="ev-search-input-mobile" placeholder="&#128269; Search events…" oninput="updateEventSearch(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
+          <input type="text" id="ev-search-input-mobile" placeholder="&#128269; Search events…" oninput="updateEventSearch(this.value)" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="Search biography events">
         </div>
       </div>
 
@@ -3200,7 +4136,7 @@ input[type="color"]:focus-visible {
   </div>
 
   <!-- ==================== CANVAS ==================== -->
-  <div id="canvas-wrap">
+  <div id="canvas-wrap" tabindex="0" role="region" aria-label="Biography timeline canvas. Use toolbar buttons to add content. Use arrow keys to pan, plus and minus to zoom, and Escape to close dialogs.">
     <canvas id="tl-canvas"></canvas>
 
     <!-- EMPTY STATE — shown when no events exist, hidden by JS once events are added -->
@@ -3214,9 +4150,9 @@ input[type="color"]:focus-visible {
     </div>
 
     <div id="zoom-ctrl">
-      <button class="zbtn" onclick="doZoom(1.25, null)" title="Zoom In  (+)">+</button>
+      <button class="zbtn" onclick="doZoom(1.25, null)" title="Zoom In  (+)" aria-label="Zoom in">+</button>
       <div id="zoom-pct">100%</div>
-      <button class="zbtn" onclick="doZoom(0.8, null)" title="Zoom Out  (-)">&#8722;</button>
+      <button class="zbtn" onclick="doZoom(0.8, null)" title="Zoom Out  (-)" aria-label="Zoom out">&#8722;</button>
     </div>
 
     <div id="kbd-hint">
@@ -3227,6 +4163,23 @@ input[type="color"]:focus-visible {
 
     <!-- Stats panel (bottom-left overlay) -->
     <div id="stats-panel"></div>
+    <div class="tour-overlay" id="memory-tour-overlay" aria-hidden="true">
+      <div class="tour-wash"></div>
+      <div class="tour-spotlight" id="memory-tour-spotlight"></div>
+      <div class="tour-card">
+        <div class="tour-kicker">Memory Tour</div>
+        <div class="tour-title" id="memory-tour-title">Your story, one moment at a time</div>
+        <div class="tour-meta" id="memory-tour-meta">Read-only guided view</div>
+        <div class="tour-desc" id="memory-tour-desc">Start the tour to move gently through your life events in chronological order.</div>
+      </div>
+      <div class="tour-controls" role="group" aria-label="Memory Tour controls">
+        <button class="tour-btn" type="button" onclick="MemoryTour.prev()">◀ Previous</button>
+        <button class="tour-btn" type="button" id="memory-tour-pause" onclick="MemoryTour.togglePause()">Pause</button>
+        <button class="tour-btn" type="button" onclick="MemoryTour.next()">Next ▶</button>
+        <span class="tour-progress" id="memory-tour-progress">0 / 0</span>
+        <button class="tour-btn exit" type="button" onclick="MemoryTour.stop(true)">Exit ✕</button>
+      </div>
+    </div>
   </div>
 
   <!-- People Full View -->
@@ -3309,8 +4262,8 @@ input[type="color"]:focus-visible {
 </div><!-- /#app -->
 
 <!-- ==================== MODAL ==================== -->
-<div id="modal-bg">
-  <div class="modal" id="main-modal">
+<div id="modal-bg" aria-hidden="true">
+  <div class="modal" id="main-modal" role="dialog" aria-modal="true" aria-labelledby="m-title" tabindex="-1">
     <div class="modal-hd">
       <div class="modal-hd-txt">
         <div class="m-crumb" id="m-crumb"></div>
@@ -3330,7 +4283,8 @@ input[type="color"]:focus-visible {
 </div>
 
 <div id="tip"></div>
-<div id="notif"></div>
+<div id="notif" role="status" aria-live="polite" aria-atomic="true"></div>
+<div id="a11y-status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
 <!-- ==================== SCRIPT ==================== -->
 <script>
@@ -3351,7 +4305,7 @@ const MAX_SC  = 350;
 function getMinScale() {
   const c = CV();
   if (!c || !c.width) return 0.00012;
-  const visibleW = c.width - LEFT_W;
+  const visibleW = isVerticalTimelineLayout() ? c.height - RULER_H : c.width - LEFT_W;
   const totalWorldW = (YEAR_MAX - YEAR_MIN) * BPPY;
   return Math.max(0.00001, visibleW / totalWorldW);
 }
@@ -3445,8 +4399,12 @@ let _notifTimer;
 function notify(msg, type) {
   const el = document.getElementById('notif');
   const normalizedType = normalizeNotifyType(type, msg);
+  const urgent = normalizedType === 'error' || normalizedType === 'warning';
+  el.setAttribute('role', urgent ? 'alert' : 'status');
+  el.setAttribute('aria-live', urgent ? 'assertive' : 'polite');
   el.textContent = msg;
   el.className = normalizedType + ' show';
+  announceA11y(msg, urgent ? 'assertive' : 'polite');
   clearTimeout(_notifTimer);
   _notifTimer = setTimeout(() => el.classList.remove('show'), 2600);
 }
@@ -3461,6 +4419,84 @@ function normalizeNotifyType(type, msg) {
   if (/(deleted|removed|reset|replace all|cannot be undone|lost|overwrite|irreversible)/.test(text)) return 'warning';
   if (/(saved|exported|loaded|created|added|updated|linked|imported|✓|changes)/.test(text)) return 'success';
   return 'info';
+}
+
+function announceA11y(msg, priority) {
+  const el = document.getElementById('a11y-status');
+  if (!el) return;
+  el.setAttribute('aria-live', priority || 'polite');
+  el.textContent = '';
+  setTimeout(function() { el.textContent = msg; }, 20);
+}
+
+function ensureControlId(el, prefix) {
+  if (!el) return '';
+  if (!el.id) el.id = (prefix || 'bio-field') + '-' + Math.random().toString(36).slice(2, 9);
+  return el.id;
+}
+
+function clearFieldError(fieldId) {
+  const field = document.getElementById(fieldId);
+  if (!field) return;
+  field.removeAttribute('aria-invalid');
+  const errId = fieldId + '-error';
+  const err = document.getElementById(errId);
+  if (err) err.remove();
+  const describedBy = (field.getAttribute('aria-describedby') || '')
+    .split(/\s+/)
+    .filter(Boolean)
+    .filter(id => id !== errId);
+  if (describedBy.length) field.setAttribute('aria-describedby', describedBy.join(' '));
+  else field.removeAttribute('aria-describedby');
+}
+
+function showFieldError(fieldId, message) {
+  const field = document.getElementById(fieldId);
+  if (!field) return;
+  clearFieldError(fieldId);
+  field.setAttribute('aria-invalid', 'true');
+  const err = document.createElement('div');
+  err.id = fieldId + '-error';
+  err.className = 'field-error';
+  err.textContent = message;
+  field.insertAdjacentElement('afterend', err);
+  const describedBy = (field.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean);
+  describedBy.push(err.id);
+  field.setAttribute('aria-describedby', Array.from(new Set(describedBy)).join(' '));
+  try { field.focus(); } catch (_) {}
+}
+
+function bindFormLabels(root) {
+  if (!root) return;
+  root.querySelectorAll('label').forEach(function(label) {
+    const existingFor = label.getAttribute('for');
+    if (existingFor) return;
+    const control = label.nextElementSibling && /^(INPUT|SELECT|TEXTAREA)$/.test(label.nextElementSibling.tagName)
+      ? label.nextElementSibling
+      : label.parentElement && label.parentElement.querySelector('input, select, textarea');
+    if (!control) return;
+    label.setAttribute('for', ensureControlId(control, 'bio-field'));
+  });
+}
+
+function describeInteractiveElements(root) {
+  if (!root) return;
+  root.querySelectorAll('button, [role="button"]').forEach(function(btn) {
+    if (!btn.getAttribute('aria-label') && !btn.textContent.trim()) {
+      btn.setAttribute('aria-label', 'Action');
+    }
+  });
+  root.querySelectorAll('input, select, textarea').forEach(function(field) {
+    ensureControlId(field, 'bio-field');
+  });
+}
+
+function getFocusable(root) {
+  if (!root) return [];
+  return Array.from(root.querySelectorAll('a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'))
+    .filter(function(el) {
+      return !el.hidden && el.offsetParent !== null;
+    });
 }
 
 /* =====================================================
@@ -3575,8 +4611,23 @@ function expandRecurringEvents() {
 const CV  = () => document.getElementById('tl-canvas');
 const CTX = () => CV().getContext('2d');
 
-// Center X of the timeline scroll area
-function centerX() { return LEFT_W + (CV().width - LEFT_W) / 2; }
+function isVerticalTimelineLayout() {
+  return window.matchMedia('(max-width: 820px)').matches;
+}
+
+function timeAxisStart() { return isVerticalTimelineLayout() ? RULER_H : LEFT_W; }
+function trackAxisStart() { return isVerticalTimelineLayout() ? LEFT_W : RULER_H; }
+function timeAxisLength() {
+  const c = CV();
+  return Math.max(0, isVerticalTimelineLayout() ? c.height - RULER_H : c.width - LEFT_W);
+}
+function trackAxisLength() {
+  const c = CV();
+  return Math.max(0, isVerticalTimelineLayout() ? c.width - LEFT_W : c.height - RULER_H);
+}
+
+// Center of the timeline scroll axis
+function centerX() { return timeAxisStart() + timeAxisLength() / 2; }
 
 // Year (decimal) -> world X
 function yw(yr) { return (yr - OY) * BPPY; }
@@ -3587,14 +4638,22 @@ function sw(sx) { return (sx - centerX() - V.panX) / V.scale; }
 // Screen X -> decimal year
 function sy2yr(sx) { return OY + sw(sx) / BPPY; }
 
-// Canvas Y of track center (vIdx = visual index among visible universes)
-function trackY(vIdx) { return RULER_H + vIdx * TRACK_H + TRACK_H / 2 + V.panY; }
+// Screen coordinate of track center (vIdx = visual index among visible universes)
+function trackY(vIdx) { return trackAxisStart() + vIdx * TRACK_H + TRACK_H / 2 + V.panY; }
+function eventScreenX(decYear, vIdx) { return isVerticalTimelineLayout() ? trackY(vIdx) : ws(yw(decYear)); }
+function eventScreenY(decYear, vIdx) { return isVerticalTimelineLayout() ? ws(yw(decYear)) : trackY(vIdx); }
+function primaryScreenCoord(mx, my) { return isVerticalTimelineLayout() ? my : mx; }
+function crossScreenCoord(mx, my) { return isVerticalTimelineLayout() ? mx : my; }
+function isInPlotArea(mx, my) {
+  return isVerticalTimelineLayout()
+    ? (mx >= RULER_H && my >= LEFT_W)
+    : (mx >= LEFT_W && my >= RULER_H);
+}
 
 // Clamp vertical pan so tracks stay reachable
 function clampPanY() {
-  const c = CV();
   const total = visCount() * TRACK_H;
-  const minPY = Math.min(0, c.height - RULER_H - total - 24);
+  const minPY = Math.min(0, trackAxisLength() - total - 24);
   V.panY = clamp(V.panY, minPY, 0);
 }
 
@@ -3603,8 +4662,8 @@ function clampPanX() {
   if (!c || !c.width) return;
   const wxMin = (YEAR_MIN - OY) * BPPY;
   const wxMax = (YEAR_MAX - OY) * BPPY;
-  const sxMinDesired = LEFT_W;
-  const sxMaxDesired = c.width;
+  const sxMinDesired = timeAxisStart();
+  const sxMaxDesired = isVerticalTimelineLayout() ? c.height : c.width;
   const maxPanX = sxMinDesired - centerX() - wxMin * V.scale;
   const minPanX = sxMaxDesired - centerX() - wxMax * V.scale;
   if (maxPanX >= minPanX) V.panX = clamp(V.panX, minPanX, maxPanX);
@@ -3625,12 +4684,14 @@ function render() {
   g.fillStyle = '#f8f9fa';
   g.fillRect(0, 0, W, H);
   g.fillStyle = '#ffffff';
-  g.fillRect(LEFT_W, 0, W - LEFT_W, H);
+  if (isVerticalTimelineLayout()) g.fillRect(RULER_H, LEFT_W, W - RULER_H, H - LEFT_W);
+  else g.fillRect(LEFT_W, 0, W - LEFT_W, H);
 
   // --- clip track area below ruler ---
   g.save();
   g.beginPath();
-  g.rect(0, RULER_H, W, H - RULER_H);
+  if (isVerticalTimelineLayout()) g.rect(RULER_H, LEFT_W, W - RULER_H, H - LEFT_W);
+  else g.rect(0, RULER_H, W, H - RULER_H);
   g.clip();
   drawTracks(c, g);
   drawConnections(c, g);
@@ -3643,6 +4704,10 @@ function render() {
 
 /* ---- TIME RULER ---- */
 function drawRuler(c, g) {
+  if (isVerticalTimelineLayout()) {
+    drawRulerVertical(c, g);
+    return;
+  }
   const W = c.width;
 
   // Ruler bar — warm parchment gradient
@@ -3788,6 +4853,119 @@ function drawRuler(c, g) {
   g.fillText('LIFE TRACKS', LEFT_W / 2, RULER_H / 2 + 4);
 }
 
+function drawRulerVertical(c, g) {
+  const W = c.width, H = c.height;
+
+  const rulerGrad = g.createLinearGradient(0, 0, RULER_H, 0);
+  rulerGrad.addColorStop(0, '#f0ede7');
+  rulerGrad.addColorStop(1, '#f6f3ee');
+  g.fillStyle = rulerGrad;
+  g.fillRect(0, LEFT_W, RULER_H, H - LEFT_W);
+  g.strokeStyle = '#ccc0ae'; g.lineWidth = 1;
+  g.beginPath(); g.moveTo(RULER_H, LEFT_W); g.lineTo(RULER_H, H); g.stroke();
+
+  g.fillStyle = '#352218';
+  g.fillRect(0, 0, W, LEFT_W);
+  const hdrGrad = g.createLinearGradient(0, 0, 0, LEFT_W);
+  hdrGrad.addColorStop(0, 'rgba(160,90,40,0.22)');
+  hdrGrad.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = hdrGrad;
+  g.fillRect(0, 0, W, LEFT_W);
+  g.strokeStyle = 'rgba(240,220,195,0.10)';
+  g.beginPath(); g.moveTo(0, LEFT_W); g.lineTo(W, LEFT_W); g.stroke();
+
+  const pxPerYr = BPPY * V.scale;
+  let maj, isMon = false, isDay = false;
+  if      (pxPerYr < 3e-10)  maj = 2000000000;
+    else if (pxPerYr < 1e-9)   maj = 1000000000;
+    else if (pxPerYr < 3e-9)   maj = 500000000;
+    else if (pxPerYr < 1e-8)   maj = 200000000;
+    else if (pxPerYr < 3e-8)   maj = 100000000;
+    else if (pxPerYr < 1e-7)   maj = 50000000;
+    else if (pxPerYr < 3e-7)   maj = 20000000;
+    else if (pxPerYr < 1e-6)   maj = 10000000;
+    else if (pxPerYr < 3e-6)   maj = 5000000;
+    else if (pxPerYr < 1e-5)   maj = 1000000;
+    else if (pxPerYr < 3e-5)   maj = 500000;
+    else if (pxPerYr < 1e-4)   maj = 100000;
+    else if (pxPerYr < 0.008)  maj = 50000;
+  else if (pxPerYr < 0.025)  maj = 20000;
+  else if (pxPerYr < 0.06)   maj = 10000;
+  else if (pxPerYr < 0.18)   maj = 5000;
+  else if (pxPerYr < 0.5)    maj = 2000;
+  else if (pxPerYr < 1.5)    maj = 1000;
+  else if (pxPerYr < 4)      maj = 200;
+  else if (pxPerYr < 10)     maj = 50;
+  else if (pxPerYr < 22)     maj = 20;
+  else if (pxPerYr < 55)     maj = 10;
+  else if (pxPerYr < 130)    maj = 5;
+  else if (pxPerYr < 380)    maj = 1;
+  else if (pxPerYr < 900)    { maj = 1/4; }
+  else if (pxPerYr < 3500)   { maj = 1/12; isMon = true; }
+  else if (pxPerYr < 30000)  { maj = 1/52; isDay = true; }
+  else                        { maj = 1/365; isDay = true; }
+  const topYear = sy2yr(LEFT_W), bottomYear = sy2yr(H);
+  const minor = maj / 5;
+
+  const ms = Math.floor(topYear / minor) * minor;
+  for (let y = ms; y <= bottomYear + minor; y += minor) {
+    const sy = ws(yw(y));
+    if (sy < LEFT_W || sy > H) continue;
+    g.strokeStyle = 'rgba(215,205,188,0.6)';
+    g.beginPath(); g.moveTo(RULER_H, sy); g.lineTo(c.width, sy); g.stroke();
+    g.strokeStyle = '#c4b89e';
+    g.beginPath(); g.moveTo(RULER_H - 6, sy); g.lineTo(RULER_H, sy); g.stroke();
+  }
+
+  const majs = Math.floor(topYear / maj) * maj;
+  g.font = '11px Georgia, "Cambria", serif';
+  g.textAlign = 'left';
+  for (let y = majs; y <= bottomYear + maj; y += maj) {
+    const sy = ws(yw(y));
+    if (sy < LEFT_W - 20 || sy > H + 20) continue;
+    g.strokeStyle = '#a8987e';
+    g.beginPath(); g.moveTo(RULER_H - 16, sy); g.lineTo(RULER_H, sy); g.stroke();
+    let lbl;
+    if (isDay) {
+      const d = decYearToDate(y);
+      lbl = d.d + ' ' + MONTHS[d.m] + ' ' + d.y;
+    } else if (isMon) {
+      const d = decYearToDate(y);
+      lbl = MONTHS[d.m] + ' ' + d.y;
+    } else {
+      const rv = Math.round(y);
+      lbl = Math.abs(rv) >= 10000 ? formatLargeYear(rv) : (rv < 0 ? String(rv) + ' BCE' : String(rv));
+    }
+    g.fillStyle = '#7a6250';
+    g.fillText(lbl, 8, sy - 6);
+  }
+
+  const now = new Date();
+  const todayDec = now.getFullYear() + now.getMonth() / 12 + now.getDate() / 365;
+  const ty = ws(yw(todayDec));
+  if (ty >= LEFT_W && ty <= H) {
+    g.save();
+    g.strokeStyle = 'rgba(175,88,55,0.16)'; g.lineWidth = 5;
+    g.beginPath(); g.moveTo(RULER_H, ty); g.lineTo(c.width, ty); g.stroke();
+    g.strokeStyle = '#b86040'; g.lineWidth = 1.5;
+    g.setLineDash([5, 4]);
+    g.beginPath(); g.moveTo(0, ty); g.lineTo(c.width, ty); g.stroke();
+    g.setLineDash([]);
+    rRect(g, 6, ty - 10, 44, 16, 5);
+    g.fillStyle = '#b86040'; g.fill();
+    g.fillStyle = '#fff8f0';
+    g.font = 'bold 9px Georgia, "Cambria", serif';
+    g.textAlign = 'center';
+    g.fillText('TODAY', 28, ty + 2.5);
+    g.restore();
+  }
+
+  g.fillStyle = 'rgba(238,218,192,0.80)';
+  g.font = 'bold 10px Georgia, "Cambria", serif';
+  g.textAlign = 'left';
+  g.fillText('TIMELINE', 10, 18);
+}
+
 function decYearToDate(dec) {
   const y = Math.floor(dec);
   const frac = dec - y;
@@ -3810,6 +4988,10 @@ function formatLargeYear(yr) {
 
 /* ---- UNIVERSE TRACKS ---- */
 function drawTracks(c, g) {
+  if (isVerticalTimelineLayout()) {
+    drawTracksVertical(c, g);
+    return;
+  }
   const vc = visCount();
   if (vc === 0) {
     g.save();
@@ -3955,6 +5137,80 @@ function drawTracks(c, g) {
   });
 }
 
+function drawTracksVertical(c, g) {
+  const vc = visCount();
+  if (vc === 0) return;
+
+  let vi = 0;
+  S.lifeTracks.forEach(u => {
+    if (u.visible === false) return;
+    const tx = trackY(vi);
+    const left = tx - TRACK_H / 2;
+    const right = tx + TRACK_H / 2;
+    const isDimmed = !!u.dimmed;
+    if (isDimmed) g.save(), g.globalAlpha = 0.25;
+
+    const colGrad = g.createLinearGradient(left, LEFT_W, right, LEFT_W);
+    colGrad.addColorStop(0, vi % 2 === 0 ? 'rgba(120,80,30,0.012)' : 'rgba(120,80,30,0.024)');
+    colGrad.addColorStop(0.5, vi % 2 === 0 ? 'rgba(120,80,30,0.022)' : 'rgba(120,80,30,0.038)');
+    colGrad.addColorStop(1, vi % 2 === 0 ? 'rgba(120,80,30,0.012)' : 'rgba(120,80,30,0.024)');
+    g.fillStyle = colGrad;
+    g.fillRect(left, LEFT_W, TRACK_H, c.height - LEFT_W);
+
+    const panelGrad = g.createLinearGradient(left, 0, left, LEFT_W);
+    panelGrad.addColorStop(0, u.color + '30');
+    panelGrad.addColorStop(1, u.color + '10');
+    g.fillStyle = panelGrad;
+    g.fillRect(left, 0, TRACK_H, LEFT_W);
+
+    g.fillStyle = u.color;
+    g.fillRect(left, LEFT_W - 5, TRACK_H, 5);
+
+    g.strokeStyle = 'rgba(190,175,148,0.6)';
+    g.beginPath(); g.moveTo(right, 0); g.lineTo(right, c.height); g.stroke();
+
+    g.fillStyle = '#3a2015';
+    g.font = 'bold 11px Georgia, "Cambria", serif';
+    g.textAlign = 'center';
+    const disp = u.name.length > 12 ? u.name.slice(0, 11) + '\u2026' : u.name;
+    g.fillText(disp, tx, 22);
+
+    const evCnt = S.events.filter(e => e.universeId === u.id).length;
+    g.fillStyle = '#9a8570';
+    g.font = '10px Georgia, "Cambria", serif';
+    g.fillText(evCnt + ' memor' + (evCnt !== 1 ? 'ies' : 'y'), tx, 38);
+
+    if (isDimmed) g.restore();
+
+    const btnW = 34, btnH = 24;
+    const col1 = left + 8, col2 = right - btnW - 8;
+    const row1 = 56, row2 = 86;
+    [['u-hide', col1, row1, u.dimmed ? 'show' : 'hide', '#dde0e8', '#5c4030'],
+     ['u-edit', col2, row1, 'edit', '#dde0e8', '#5c4030'],
+     ['u-info', col1, row2, 'info', '#f0e8d8', '#8b6e4e'],
+     ['u-del',  col2, row2, 'del',  '#ffe8e8', '#c03030']].forEach(function(btn) {
+      rRect(g, btn[1], btn[2], btnW, btnH, 5);
+      g.fillStyle = btn[4]; g.fill();
+      g.strokeStyle = '#c8ccda'; g.lineWidth = 0.7; g.stroke();
+      g.fillStyle = btn[5];
+      g.font = 'bold 9px Georgia, "Cambria", serif';
+      g.textAlign = 'center';
+      g.fillText(btn[3], btn[1] + btnW / 2, btn[2] + 15);
+      hits.push({ type: btn[0], id: u.id, x: btn[1], y: btn[2], w: btnW, h: btnH });
+    });
+
+    g.save();
+    if (isDimmed) g.globalAlpha = 0.25;
+    g.strokeStyle = u.color + '2e'; g.lineWidth = 4;
+    g.beginPath(); g.moveTo(tx, LEFT_W); g.lineTo(tx, c.height); g.stroke();
+    g.strokeStyle = u.color + '60'; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(tx, LEFT_W); g.lineTo(tx, c.height); g.stroke();
+    g.restore();
+
+    vi++;
+  });
+}
+
 /* ---- CONNECTIONS (curves between events) ---- */
 function drawConnections(c, g) {
   S.connections.forEach(conn => {
@@ -3966,9 +5222,13 @@ function drawConnections(c, g) {
     const fd = parseDate(fe.date, fe.time), td = parseDate(te.date, te.time);
     if (fd === null || td === null) return;
 
-    const fx = ws(yw(fd)), fy = trackY(getVisIdx(fe.universeId));
-    const tx = ws(yw(td)), ty2 = trackY(getVisIdx(te.universeId));
-    if ((fx < LEFT_W - 300 && tx < LEFT_W - 300) || (fx > c.width + 300 && tx > c.width + 300)) return;
+    const fvi = getVisIdx(fe.universeId), tvi = getVisIdx(te.universeId);
+    const fx = eventScreenX(fd, fvi), fy = eventScreenY(fd, fvi);
+    const tx = eventScreenX(td, tvi), ty2 = eventScreenY(td, tvi);
+    const fTime = isVerticalTimelineLayout() ? fy : fx;
+    const tTime = isVerticalTimelineLayout() ? ty2 : tx;
+    const maxTime = isVerticalTimelineLayout() ? c.height + 300 : c.width + 300;
+    if ((fTime < LEFT_W - 300 && tTime < LEFT_W - 300) || (fTime > maxTime && tTime > maxTime)) return;
 
     const my = (fy + ty2) / 2;
     const mx = (fx + tx) / 2;
@@ -3979,13 +5239,15 @@ function drawConnections(c, g) {
     g.strokeStyle = fu.color; g.lineWidth = 5;
     g.globalAlpha = _connAlpha * 0.15;
     g.beginPath(); g.moveTo(fx, fy);
-    g.bezierCurveTo(fx, my, tx, my, tx, ty2);
+    if (isVerticalTimelineLayout()) g.bezierCurveTo(mx, fy, mx, ty2, tx, ty2);
+    else g.bezierCurveTo(fx, my, tx, my, tx, ty2);
     g.stroke();
     // Main warm dashed line
     g.lineWidth = 1.5;
     g.setLineDash([6, 4]); g.globalAlpha = _connAlpha;
     g.beginPath(); g.moveTo(fx, fy);
-    g.bezierCurveTo(fx, my, tx, my, tx, ty2);
+    if (isVerticalTimelineLayout()) g.bezierCurveTo(mx, fy, mx, ty2, tx, ty2);
+    else g.bezierCurveTo(fx, my, tx, my, tx, ty2);
     g.stroke();
     g.setLineDash([]); g.globalAlpha = 1;
     if (conn.label) {
@@ -4026,9 +5288,9 @@ function buildEventClusters(events, c) {
       const last = clusters[clusters.length - 1];
       if (last && Math.abs(sx - last.x) < CLUSTER_PX_THRESHOLD) {
         last.events.push(ev);
-        last.x = (last.x * (last.events.length - 1) + sx) / last.events.length;
+        last.timeCoord = (last.timeCoord * (last.events.length - 1) + sx) / last.events.length;
       } else {
-        clusters.push({ x: sx, vi: vi, events: [ev] });
+        clusters.push({ timeCoord: sx, vi: vi, events: [ev] });
       }
     });
     allClusters.push(...clusters);
@@ -4073,7 +5335,7 @@ function drawClusterBubble(g, x, y, count, sampleEv) {
 /* ---- EVENT DOTS ---- */
 function drawEvents(c, g) {
   const visYearLeft = sy2yr(LEFT_W - 200);
-  const visYearRight = sy2yr(c.width + 200);
+  const visYearRight = sy2yr((isVerticalTimelineLayout() ? c.height : c.width) + 200);
 
   // Friendly empty-state guidance when tracks exist but no events have been added yet
   if (S.events.length === 0 && S.lifeTracks.length > 0) {
@@ -4098,20 +5360,25 @@ function drawEvents(c, g) {
     if (dec < visYearLeft || dec > visYearRight) return false;
     const vi = getVisIdx(ev.universeId);
     if (vi < 0) return false;
-    const sy = trackY(vi);
-    if (sy < RULER_H - TRACK_H || sy > c.height + TRACK_H) return false;
+    const cross = trackY(vi);
+    const time = ws(yw(dec));
+    if (cross < trackAxisStart() - TRACK_H || cross > (isVerticalTimelineLayout() ? c.width : c.height) + TRACK_H) return false;
+    if (time < LEFT_W - TRACK_H || time > (isVerticalTimelineLayout() ? c.height : c.width) + TRACK_H) return false;
     return true;
   });
 
   if (V.scale < CLUSTER_SCALE_THRESHOLD) {
     const clusters = buildEventClusters(culled, c);
     clusters.forEach(cluster => {
-      const sy = trackY(cluster.vi);
-      if (cluster.x < LEFT_W - 30 || cluster.x > c.width + 30) return;
+      const cross = trackY(cluster.vi);
+      const sx = isVerticalTimelineLayout() ? cross : cluster.timeCoord;
+      const sy = isVerticalTimelineLayout() ? cluster.timeCoord : cross;
+      const time = cluster.timeCoord;
+      if (time < LEFT_W - 30 || time > (isVerticalTimelineLayout() ? c.height : c.width) + 30) return;
       if (cluster.events.length === 1) {
         drawSingleEvent(c, g, cluster.events[0]);
       } else {
-        drawClusterBubble(g, cluster.x, sy, cluster.events.length, cluster.events[0]);
+        drawClusterBubble(g, sx, sy, cluster.events.length, cluster.events[0]);
       }
     });
     return;
@@ -4125,12 +5392,14 @@ function drawSingleEvent(c, g, ev) {
     if (!u || u.visible === false) return;
     const dec = parseDate(ev.date, ev.time);
     if (dec === null) return;
-    const sx = ws(yw(dec));
-    if (sx < LEFT_W - 70 || sx > c.width + 70) return;
     const vi = getVisIdx(ev.universeId);
     if (vi < 0) return;
-    const sy = trackY(vi);
-    if (sy < RULER_H - TRACK_H || sy > c.height + TRACK_H) return;
+    const sx = eventScreenX(dec, vi);
+    const sy = eventScreenY(dec, vi);
+    const timeCoord = isVerticalTimelineLayout() ? sy : sx;
+    const crossCoord = isVerticalTimelineLayout() ? sx : sy;
+    if (timeCoord < LEFT_W - 70 || timeCoord > (isVerticalTimelineLayout() ? c.height : c.width) + 70) return;
+    if (crossCoord < trackAxisStart() - TRACK_H || crossCoord > (isVerticalTimelineLayout() ? c.width : c.height) + TRACK_H) return;
 
     const _uDimmed = !!u.dimmed;
     if (_uDimmed) { g.save(); g.globalAlpha = 0.2; }
@@ -4250,16 +5519,21 @@ function drawSingleEvent(c, g, ev) {
     }
 
     g.save();
-    g.beginPath(); g.rect(LEFT_W, RULER_H, c.width - LEFT_W, c.height - RULER_H); g.clip();
+    g.beginPath();
+    if (isVerticalTimelineLayout()) g.rect(RULER_H, LEFT_W, c.width - RULER_H, c.height - LEFT_W);
+    else g.rect(LEFT_W, RULER_H, c.width - LEFT_W, c.height - RULER_H);
+    g.clip();
     const label = ev.title.length > 16 ? ev.title.slice(0, 15) + '\u2026' : ev.title;
-    const ly = sy + EV_R + 15;
+    const ly = isVerticalTimelineLayout() ? sy + 4 : sy + EV_R + 15;
+    const lx = isVerticalTimelineLayout() ? sx + EV_R + 10 : sx;
     g.fillStyle = '#3a2015';
-    g.font = 'bold 10px Georgia, "Cambria", serif'; g.textAlign = 'center';
-    g.fillText(label, sx, ly);
+    g.font = 'bold 10px Georgia, "Cambria", serif';
+    g.textAlign = isVerticalTimelineLayout() ? 'left' : 'center';
+    g.fillText(label, lx, ly);
     g.fillStyle = '#9a8570';
     g.font = '9px Georgia, "Cambria", serif';
     const dateLabel = (ev.date || '?') + (ev.time ? ' ' + ev.time : '');
-    g.fillText(dateLabel, sx, ly + 12);
+    g.fillText(dateLabel, lx, ly + 12);
 
     const _chIds = ev.characterIds || [];
     if (_chIds.length > 0) {
@@ -4409,8 +5683,8 @@ function initCanvas() {
     if (drag.on) {
       const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
       if (Math.abs(dx) > 2 || Math.abs(dy) > 2) drag.moved = true;
-      V.panX = drag.px + dx;
-      V.panY = drag.py + dy;
+      V.panX = drag.px + (isVerticalTimelineLayout() ? dy : dx);
+      V.panY = drag.py + (isVerticalTimelineLayout() ? dx : dy);
       clampPanX();
       clampPanY();
       render();
@@ -4434,11 +5708,11 @@ function initCanvas() {
   c.addEventListener('wheel', e => {
     e.preventDefault();
     const r  = c.getBoundingClientRect();
-    const mx = e.clientX - r.left;
+    const mx = e.clientX - r.left, my = e.clientY - r.top;
     if (e.ctrlKey || e.metaKey) {
       // Ctrl+scroll = zoom (original behaviour)
       const fac = e.deltaY < 0 ? 1.1 : 0.909;
-      doZoom(fac, mx);
+      doZoom(fac, primaryScreenCoord(mx, my));
     } else if (e.shiftKey) {
       // Shift+scroll = pan vertically
       V.panY -= e.deltaY;
@@ -4472,7 +5746,10 @@ function initCanvas() {
       return Math.hypot(ts[0].clientX - ts[1].clientX, ts[0].clientY - ts[1].clientY);
     }
     function pinchMidX(ts) {
-      return (ts[0].clientX + ts[1].clientX) / 2 - c.getBoundingClientRect().left;
+      const r = c.getBoundingClientRect();
+      const mx = (ts[0].clientX + ts[1].clientX) / 2 - r.left;
+      const my = (ts[0].clientY + ts[1].clientY) / 2 - r.top;
+      return primaryScreenCoord(mx, my);
     }
 
     c.addEventListener('touchstart', e => {
@@ -4492,15 +5769,15 @@ function initCanvas() {
         longTimer = setTimeout(() => {
           if (!t1 || t1.moved) return;
           longFired = true; cancelLong();
-          if (t1.cx >= LEFT_W) {
+          if (isInPlotArea(t1.cx, t1.cy)) {
             let bestId = null, bestDist = Infinity, vi = 0;
             S.lifeTracks.forEach(u => {
               if (u.visible === false) return;
-              const d = Math.abs(t1.cy - trackY(vi));
+              const d = Math.abs(crossScreenCoord(t1.cx, t1.cy) - trackY(vi));
               if (d < TRACK_H / 2 && d < bestDist) { bestDist = d; bestId = u.id; }
               vi++;
             });
-            UI.addEvent(bestId, String(Math.round(sy2yr(t1.cx))));
+            UI.addEvent(bestId, String(Math.round(sy2yr(primaryScreenCoord(t1.cx, t1.cy)))));
           }
         }, LPRESS_MS);
 
@@ -4530,8 +5807,8 @@ function initCanvas() {
         const tx = e.touches[0].clientX, ty = e.touches[0].clientY;
         const dx = tx - t1.sx, dy = ty - t1.sy;
         if (!t1.moved && (Math.abs(dx) > TAP_SLOP || Math.abs(dy) > TAP_SLOP)) t1.moved = true;
-        V.panX = t1.px + dx;
-        V.panY = t1.py + dy;
+        V.panX = t1.px + (isVerticalTimelineLayout() ? dy : dx);
+        V.panY = t1.py + (isVerticalTimelineLayout() ? dx : dy);
         clampPanX(); clampPanY();
         render();
       }
@@ -4564,18 +5841,18 @@ function initCanvas() {
   c.addEventListener('dblclick', e => {
     const r  = c.getBoundingClientRect();
     const mx = e.clientX - r.left, my = e.clientY - r.top;
-    if (mx < LEFT_W) return;
+    if (!isInPlotArea(mx, my)) return;
 
     // Find nearest visible universe track
     let bestId = null, bestDist = Infinity;
     let vi = 0;
     S.lifeTracks.forEach(u => {
       if (u.visible === false) return;
-      const d = Math.abs(my - trackY(vi));
+      const d = Math.abs(crossScreenCoord(mx, my) - trackY(vi));
       if (d < TRACK_H / 2 && d < bestDist) { bestDist = d; bestId = u.id; }
       vi++;
     });
-    const yr = Math.round(sy2yr(mx));
+    const yr = Math.round(sy2yr(primaryScreenCoord(mx, my)));
     UI.addEvent(bestId, String(yr));
   });
 }
@@ -4586,7 +5863,7 @@ function updateTip(mx, my) {
   let found = false;
   for (const t of [...hits].reverse()) {
     if (t.type === 'cluster') {
-      if (mx < LEFT_W) continue;
+      if (!isInPlotArea(mx, my)) continue;
       const dx = mx - t.x, dy = my - t.y;
       if (dx * dx + dy * dy < t.r * t.r) {
         const tbH = document.getElementById('toolbar').clientHeight;
@@ -4599,7 +5876,7 @@ function updateTip(mx, my) {
       }
     }
     if (t.type === 'event') {
-      if (mx < LEFT_W) continue;
+      if (!isInPlotArea(mx, my)) continue;
       const dx = mx - t.x, dy = my - t.y;
       if (dx * dx + dy * dy < t.r * t.r) {
         const ev = S.events.find(e => e.id === t.id);
@@ -4627,15 +5904,15 @@ function updateTip(mx, my) {
 function handleClick(mx, my) {
   for (const t of [...hits].reverse()) {
     if (t.type === 'cluster') {
-      if (mx < LEFT_W) continue;
+      if (!isInPlotArea(mx, my)) continue;
       const dx = mx - t.x, dy = my - t.y;
       if (dx * dx + dy * dy < t.r * t.r) {
-        doZoom(2.5, t.x);
+        doZoom(2.5, isVerticalTimelineLayout() ? t.y : t.x);
         return;
       }
     }
     if (t.type === 'event') {
-      if (mx < LEFT_W) continue;
+      if (!isInPlotArea(mx, my)) continue;
       const dx = mx - t.x, dy = my - t.y;
       if (dx * dx + dy * dy < t.r * t.r) { M.openEvDetail(t.id); return; }
     }
@@ -4662,7 +5939,6 @@ function handleClick(mx, my) {
    ZOOM
    ===================================================== */
 function doZoom(factor, mouseX) {
-  const c = CV();
   const mxF = mouseX != null ? mouseX : centerX();
   const wx0 = sw(mxF);
   const minSc = getMinScale();
@@ -4708,6 +5984,212 @@ function goToToday() {
   }
   requestAnimationFrame(step);
 }
+
+const MemoryTour = {
+  active: false,
+  paused: false,
+  items: [],
+  idx: 0,
+  snapshot: null,
+  reducedMotion: false,
+  _timer: null,
+  _raf: null,
+
+  start() {
+    const switched = _currentView !== 'timeline';
+    if (switched) switchView('timeline');
+    this.items = this._buildItems();
+    if (!this.items.length) {
+      notify('Add at least one dated or ordered event before starting Memory Tour.', 'info');
+      return;
+    }
+    if (this.active) {
+      this.idx = 0;
+      this.paused = false;
+      this.focusCurrent(true);
+      return;
+    }
+    this.snapshot = { panX: V.panX, panY: V.panY, scale: V.scale };
+    this.active = true;
+    this.paused = false;
+    this.idx = 0;
+    this.reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    this._overlay().classList.add('active');
+    this._overlay().setAttribute('aria-hidden', 'false');
+    this.focusCurrent(true);
+    if (switched) setTimeout(() => { if (this.active) this.focusCurrent(true); }, 80);
+  },
+
+  stop(restoreView) {
+    this._clearTimers();
+    if (!this.active && !restoreView) return;
+    const shouldRestore = restoreView && this.snapshot;
+    this.active = false;
+    this.paused = false;
+    this.items = [];
+    this.idx = 0;
+    this._overlay().classList.remove('active');
+    this._overlay().setAttribute('aria-hidden', 'true');
+    if (shouldRestore) this._applyView(this.snapshot, this.reducedMotion);
+    this.snapshot = null;
+  },
+
+  next() {
+    if (!this.active || !this.items.length) return;
+    this.idx = (this.idx + 1) % this.items.length;
+    this.focusCurrent();
+  },
+
+  prev() {
+    if (!this.active || !this.items.length) return;
+    this.idx = (this.idx - 1 + this.items.length) % this.items.length;
+    this.focusCurrent();
+  },
+
+  togglePause() {
+    if (!this.active) return;
+    this.paused = !this.paused;
+    this._pauseBtn().textContent = this.paused ? 'Resume' : 'Pause';
+    if (this.paused) this._clearTimerOnly();
+    else this._scheduleAdvance();
+  },
+
+  focusCurrent(instant) {
+    if (!this.active || !this.items.length) return;
+    const item = this.items[this.idx];
+    this._renderCard(item);
+    this._renderSpotlight(item);
+    this._applyView(this._targetFor(item), !!instant || this.reducedMotion);
+    this._pauseBtn().textContent = this.paused ? 'Resume' : 'Pause';
+    this._progress().textContent = (this.idx + 1) + ' / ' + this.items.length;
+    if (!this.paused) this._scheduleAdvance();
+  },
+
+  _buildItems() {
+    const all = S.events.map((ev, index) => {
+      const parsed = parseDate(ev.date, ev.time);
+      return { ev, index, parsed };
+    }).filter(item => getVisIdx(item.ev.universeId) !== -1);
+    if (!all.length) return [];
+    const withDates = all.filter(item => item.parsed !== null).sort((a, b) => a.parsed - b.parsed || a.index - b.index);
+    const withoutDates = all.filter(item => item.parsed === null).sort((a, b) => a.index - b.index);
+    const currentYear = sy2yr(CV().width * 0.5);
+    let lastKnownYear = withDates.length ? withDates[0].parsed : currentYear;
+    const ordered = withDates.concat(withoutDates);
+    return ordered.map(item => {
+      const focusYear = item.parsed != null ? item.parsed : lastKnownYear;
+      if (item.parsed != null) lastKnownYear = item.parsed;
+      return {
+        ev: item.ev,
+        focusYear,
+        dateLabel: item.ev.date || 'Date not set',
+        desc: ((item.ev.description || item.ev.notes || '').trim() || 'No extra notes for this moment yet.').slice(0, 220)
+      };
+    });
+  },
+
+  _targetFor(item) {
+    const c = CV();
+    const vi = Math.max(0, getVisIdx(item.ev.universeId));
+    const desiredScale = clamp(Math.max(this.snapshot ? this.snapshot.scale : V.scale, 1.08), MIN_SC, MAX_SC);
+    const targetX = Math.max(LEFT_W + 130, c.width * 0.6);
+    const targetY = Math.min(c.height - 120, Math.max(RULER_H + 100, c.height * 0.5));
+    const panX = targetX - centerX() - yw(item.focusYear) * desiredScale;
+    const panY = targetY - (RULER_H + vi * TRACK_H + TRACK_H / 2);
+    return { panX, panY, scale: desiredScale };
+  },
+
+  _applyView(target, instant) {
+    this._clearAnimOnly();
+    if (instant) {
+      V.panX = target.panX;
+      V.panY = target.panY;
+      V.scale = target.scale;
+      clampPanX();
+      clampPanY();
+      render();
+      this._renderSpotlight(this.items[this.idx]);
+      return;
+    }
+    const start = { panX: V.panX, panY: V.panY, scale: V.scale };
+    const startTime = performance.now();
+    const duration = 850;
+    const ease = t => 1 - Math.pow(1 - t, 3);
+    const tick = now => {
+      const t = Math.min(1, (now - startTime) / duration);
+      const k = ease(t);
+      V.panX = start.panX + (target.panX - start.panX) * k;
+      V.panY = start.panY + (target.panY - start.panY) * k;
+      V.scale = start.scale + (target.scale - start.scale) * k;
+      clampPanX();
+      clampPanY();
+      render();
+      this._renderSpotlight(this.items[this.idx]);
+      if (t < 1 && this.active) this._raf = requestAnimationFrame(tick);
+    };
+    this._raf = requestAnimationFrame(tick);
+  },
+
+  _renderCard(item) {
+    const title = document.getElementById('memory-tour-title');
+    const meta = document.getElementById('memory-tour-meta');
+    const desc = document.getElementById('memory-tour-desc');
+    const track = getU(item.ev.universeId);
+    if (title) title.textContent = item.ev.title || 'Untitled memory';
+    if (meta) meta.textContent = (item.dateLabel || 'Date not set') + (track ? '  •  ' + track.name : '');
+    if (desc) desc.textContent = item.desc;
+  },
+
+  _renderSpotlight(item) {
+    const spot = document.getElementById('memory-tour-spotlight');
+    if (!spot || !item) return;
+    const vi = Math.max(0, getVisIdx(item.ev.universeId));
+    spot.style.left = ws(yw(item.focusYear)) + 'px';
+    spot.style.top = trackY(vi) + 'px';
+    spot.style.opacity = this.active ? '1' : '0';
+  },
+
+  _scheduleAdvance() {
+    this._clearTimerOnly();
+    this._timer = setTimeout(() => {
+      if (!this.active || this.paused) return;
+      this.next();
+    }, this.reducedMotion ? 5200 : 4600);
+  },
+
+  _clearTimerOnly() {
+    if (this._timer) clearTimeout(this._timer);
+    this._timer = null;
+  },
+
+  _clearAnimOnly() {
+    if (this._raf) cancelAnimationFrame(this._raf);
+    this._raf = null;
+  },
+
+  _clearTimers() {
+    this._clearTimerOnly();
+    this._clearAnimOnly();
+  },
+
+  _overlay() { return document.getElementById('memory-tour-overlay'); },
+  _pauseBtn() { return document.getElementById('memory-tour-pause'); },
+  _progress() { return document.getElementById('memory-tour-progress'); }
+};
+
+document.addEventListener('keydown', function(e) {
+  if (MemoryTour.active && e.key === 'Escape') {
+    e.preventDefault();
+    e.stopPropagation();
+    MemoryTour.stop(true);
+  }
+}, true);
+
+window.addEventListener('resize', function() {
+  if (MemoryTour.active) {
+    setTimeout(function() { MemoryTour.focusCurrent(true); }, 80);
+  }
+});
 
 function toggleVis(id) {
   const u = getU(id);
@@ -4846,6 +6328,8 @@ function buildNotesDisplay(notes) {
 /* =====================================================
    MODAL ENGINE
    ===================================================== */
+let _modalReturnFocus = null;
+
 const M = {
   bg:   () => document.getElementById('modal-bg'),
   crumb:() => document.getElementById('m-crumb'),
@@ -4854,8 +6338,24 @@ const M = {
   body: () => document.getElementById('m-body'),
   foot: () => document.getElementById('m-foot'),
 
-  open()  { this.bg().classList.add('open'); },
-  close() { this.bg().classList.remove('open'); MS = []; },
+  open()  {
+    if (!this.bg().classList.contains('open')) {
+      const active = document.activeElement;
+      _modalReturnFocus = active && typeof active.focus === 'function' ? active : null;
+    }
+    this.bg().classList.add('open');
+  },
+  close() {
+    this.bg().classList.remove('open');
+    MS = [];
+    const toFocus = _modalReturnFocus;
+    _modalReturnFocus = null;
+    if (toFocus && document.contains(toFocus)) {
+      setTimeout(() => {
+        try { toFocus.focus(); } catch (_) {}
+      }, 0);
+    }
+  },
   back()  {
     MS.pop();
     if (MS.length === 0) this.close(); else this.render();
@@ -4902,7 +6402,7 @@ const M = {
   },
 
   /* -- push helper -- */
-  push(frame) { MS.push(frame); this.open(); this.render(); },
+  push(frame) { if (typeof MemoryTour !== 'undefined' && MemoryTour.active) MemoryTour.stop(false); MS.push(frame); this.open(); this.render(); },
   openEvDetail(id) { MS = [{ t: 'evDetail', evId: id }]; this.open(); this.render(); },
   openEditUni(id)  { MS = [{ t: 'editUni',  uId:  id }]; this.open(); this.render(); },
   openUniInfo(id)  { MS = [{ t: 'uniInfo',  uId:  id }]; this.open(); this.render(); },
@@ -5475,603 +6975,14 @@ const M = {
       '<button class="btn accent" onclick="affiliationEditorSave()">Save Changes</button>';
   },
 
-  /* ---- Help (tabbed — journaling guide) ---- */
+  /* ---- Help (searchable archive guide) ---- */
   _help() {
     this.crumb().textContent = '';
-    this.ttl().textContent   = '\u{1F4D6} Help Guide — Your Life Story App';
-    this.body().innerHTML = `
-  <div style="max-width:620px;margin:0 auto">
-  <div class="help-tabs">
-    <button class="help-tab active" style="min-height:38px" onclick="helpTab(0)">&#127775; Start Here</button>
-    <button class="help-tab" style="min-height:38px" onclick="helpTab(1)">&#128197; Add an Event</button>
-    <button class="help-tab" style="min-height:38px" onclick="helpTab(2)">&#128433; Moving Around</button>
-    <button class="help-tab" style="min-height:38px" onclick="helpTab(3)">&#128100; People</button>
-    <button class="help-tab" style="min-height:38px" onclick="helpTab(4)">&#128190; Save &amp; Backup</button>
-    <button class="help-tab" style="min-height:38px" onclick="helpTab(5)">&#128274; Safety Tips</button>
-    <button class="help-tab" style="min-height:38px" onclick="helpTab(6)">&#9997; Life Tracks</button>
-    <button class="help-tab" style="min-height:38px" onclick="helpTab(7)">&#127991; Categories</button>
-    <button class="help-tab" style="min-height:38px" onclick="helpTab(8)">&#9997; Shortcuts</button>
-    <button class="help-tab" style="min-height:38px" onclick="helpTab(9)">&#128228; Import &amp; Export</button>
-    <button class="help-tab" style="min-height:38px" onclick="helpTab(10)">&#128202; Large Timelines</button>
-    <button class="help-tab" style="min-height:38px" onclick="helpTab(11)">&#9993; Contact</button>
-  </div>
-
-  <!-- ===== TAB 0: START HERE ===== -->
-  <div class="help-section active">
-    <div class="h-section-title">&#127775; Welcome to Your Biography Timeline</div>
-
-    <div class="h-tip">
-      <strong>&#128075; Hello, and welcome!</strong> This is your personal life timeline. It is a quiet, private place to write down your memories, mark important moments, and tell the story of your life &#8212; in your own words, at your own pace.
-    </div>
-
-    <div class="h-block">
-      <p style="font-size:16px;line-height:1.9;margin-bottom:14px"><strong>What Biography does:</strong> It lets you record the moments that mattered &#8212; a birth, a marriage, a move, a loss, a celebration. Each moment gets its own dot on a long, scrollable timeline. You can zoom in to read the details of a single year, or zoom out to see a whole lifetime at a glance.</p>
-      <p style="font-size:16px;line-height:1.9;margin:0">&#128274; <strong>Everything stays on your computer.</strong> Nothing is sent to the internet. Nothing is shared with anyone. Your life story is completely private.</p>
-    </div>
-
-    <div class="h-section-title" style="margin-top:22px">Good news before you start</div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#2ecc71">&#10003;</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Nothing can be accidentally deleted</div>
-        <div class="h-step-desc">The app will always ask you to confirm before removing anything. If you make a mistake, there is an Undo button in the toolbar that can reverse your last change.</div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#3498db">&#10003;</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Your work saves automatically</div>
-        <div class="h-step-desc">The app quietly saves your work in this browser every minute. You do not need to press any Save button to keep the timeline itself. You only press Save when saving individual events, or when making a backup file.</div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#b07942">&#10003;</div>
-      <div class="h-step-body">
-        <div class="h-step-title">You do not need to start at the beginning</div>
-        <div class="h-step-desc">Start with whatever memory comes to mind first. It does not matter if it happened in 1950 or yesterday. One event is a perfect place to begin. You can always add more later.</div>
-      </div>
-    </div>
-
-    <div class="h-action-box">
-      <strong style="font-size:17px">Ready to begin?</strong><br><br>
-      Click the orange <strong>"+ Life Track"</strong> button at the top of the screen. This creates your first row on the timeline &#8212; give it a simple name like "My Life". Then click <strong>"+ Event"</strong> to add your first memory.
-    </div>
-  </div>
-
-  <!-- ===== TAB 1: ADD FIRST EVENT ===== -->
-  <div class="help-section">
-    <div class="h-section-title">&#128197; How to Add Your First Event</div>
-
-    <div class="h-tip">
-      An event is any moment worth remembering. A birthday, a wedding, a first job, a move to a new home. Big or small &#8212; if it mattered to you, it belongs here.
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#b07942">1</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Create a Life Track first</div>
-        <div class="h-step-desc">
-          Before adding an event, you need at least one <strong>Life Track</strong>. Think of this as a labelled row on your timeline &#8212; like a shelf to put your memories on.<br><br>
-          Click the <strong>"+ Life Track"</strong> button at the top of the screen. Give it a name (something simple like "My Life" is perfect). Choose a colour if you like. Then click Save.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#3498db">2</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Click the orange "+ Event" button</div>
-        <div class="h-step-desc">
-          You will find it in the toolbar at the very top of the screen. Click it and a form will open.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#2ecc71">3</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Fill in the details</div>
-        <div class="h-step-desc">
-          The form has a few fields. Here is what each one means:<br><br>
-          &#8226; <strong>Title</strong> &#8212; The name of your memory. Keep it short and clear. For example: <em>"Born in Lisbon"</em> or <em>"Started working at the factory"</em>.<br><br>
-          &#8226; <strong>Date</strong> &#8212; When it happened. Use the format: <em>day / month / year</em>. If you only know the year, that is perfectly fine &#8212; type <strong>XX</strong> for the parts you do not know (e.g. <em>XX/XX/1965</em> means sometime in 1965).<br><br>
-          &#8226; <strong>Description</strong> &#8212; The full story in your own words. This is optional, but it is the most valuable part. Write what it felt like, not just what happened.<br><br>
-          &#8226; <strong>Category</strong> &#8212; The type of event. Choose from the list: Birthday, Travel, Family, Career, and so on. This helps colour-code your timeline later.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#9b59b6">4</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Click Save</div>
-        <div class="h-step-desc">
-          Your event will appear on the timeline as a coloured dot. Click the dot at any time to read it again, or to make changes.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-note">
-      &#128161; <strong>Do not worry about getting it perfect.</strong> You can always edit any event later. Just write what you remember today. You can come back and add more details another time.
-    </div>
-
-    <div class="h-tip">
-      <strong>A quick tip for writing descriptions:</strong> Try to capture how it felt, not just what happened. Instead of writing <em>"Got married in 1984"</em>, try: <em>"We got married on a rainy Saturday in May. We laughed all day."</em> Even one honest sentence will make this memory come alive for whoever reads it.
-    </div>
-  </div>
-
-  <!-- ===== TAB 2: MOVING AROUND ===== -->
-  <div class="help-section">
-    <div class="h-section-title">&#128433; Moving Around the Timeline</div>
-
-    <div class="h-tip">
-      The timeline is like a very long scroll of paper. You can slide it left to see older events, slide it right to see newer ones, zoom in to read the details of a single year, or zoom out to see your whole life at once.
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#3498db">1</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Scroll left to see older events</div>
-        <div class="h-step-desc">
-          Click and hold on any <strong>empty part</strong> of the timeline (not on an event dot), then drag your mouse to the left. The timeline will move with you, showing you earlier years.<br><br>
-          You can also use the <strong>left arrow key</strong> on your keyboard to nudge it gently.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#2ecc71">2</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Scroll right to see newer events</div>
-        <div class="h-step-desc">
-          Drag to the right, or press the <strong>right arrow key</strong>. This moves you forward in time.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#e74c3c">3</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Zoom in to see one month in detail</div>
-        <div class="h-step-desc">
-          Hold the <strong>Ctrl key</strong> on your keyboard and <strong>scroll your mouse wheel upward</strong>. The timeline zooms in, showing fewer years but in much more detail.<br><br>
-          You can also click the <strong>+</strong> button in the bottom-right corner of the screen.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#9b59b6">4</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Zoom out to see many years at once</div>
-        <div class="h-step-desc">
-          Hold <strong>Ctrl</strong> and <strong>scroll your mouse wheel downward</strong>. This zooms out so you can see more of your timeline at once.<br><br>
-          You can also click the <strong>&minus;</strong> button in the bottom-right corner.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#b07942">5</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Jump back to today &#8212; the Today button</div>
-        <div class="h-step-desc">
-          Click the <strong>"&#128345; Today"</strong> button in the toolbar. The timeline will immediately scroll to show the current date. Nothing is deleted. You are just moving the view.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-note">
-      <strong>If the timeline looks wrong or you feel lost:</strong><br><br>
-      Click the <strong>"&#8962; Reset View"</strong> button in the toolbar. This returns the timeline to its normal position and zoom level. <strong>Nothing will be deleted.</strong> It only resets what you are looking at.
-    </div>
-  </div>
-
-  <!-- ===== TAB 3: PEOPLE ===== -->
-  <div class="help-section">
-    <div class="h-section-title">&#128100; Adding People and Relationships</div>
-
-    <div class="h-tip">
-      You can add people &#8212; family members, friends, important figures &#8212; and connect them to events in your timeline. This lets you see, at a glance, who was part of each moment in your story.
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#3498db">1</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Add a person</div>
-        <div class="h-step-desc">
-          Click the <strong>"People"</strong> tab at the top of the screen, then click <strong>"+ New Person"</strong>.<br><br>
-          You can record their name, a photo, their relationship to you (family, friend, colleague), and a short description of who they were. You only need a name &#8212; everything else is optional.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#2ecc71">2</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Connect a person to an event</div>
-        <div class="h-step-desc">
-          Open any event by clicking its dot on the timeline. Inside the event, scroll down to find the <strong>People</strong> section. Click <strong>"Link People"</strong> and choose the person from the list.<br><br>
-          Now that person is connected to that event. You can see all their events together on their profile.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#e74c3c">3</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Remove a connection</div>
-        <div class="h-step-desc">
-          Open the event and click the small <strong>&#10005;</strong> next to the person's name in the People section. This removes the connection only &#8212; it does not delete the person or the event. <strong>Nothing is lost.</strong>
-        </div>
-      </div>
-    </div>
-
-    <div class="h-tip">
-      &#128161; Adding or removing a connection does not delete anything. The person stays in your list. The event stays on the timeline. Only the link between them changes.
-    </div>
-  </div>
-
-  <!-- ===== TAB 4: SAVE & BACKUP ===== -->
-  <div class="help-section">
-    <div class="h-section-title">&#128190; Saving and Making Backups</div>
-
-    <div class="h-tip">
-      <strong>Good news:</strong> Your timeline saves automatically in this browser. You do not need to press Save for the timeline itself &#8212; only when saving individual events or making a backup file.
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#2ecc71">1</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Automatic saving &#8212; happens by itself</div>
-        <div class="h-step-desc">
-          The app quietly saves your timeline in this browser every minute. As long as you use the same browser on the same computer, your work will still be there next time you open the page.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#b07942">2</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Export &#8212; save a backup file to your computer</div>
-        <div class="h-step-desc">
-          Click the <strong>"&#128190; Save HTML"</strong> button in the toolbar at the top.<br><br>
-          This saves a backup file to your computer. It contains <strong>everything</strong> &#8212; all your events, people, notes, and photos. Give it a clear name like <em>my-life-story-2024.html</em> and save it somewhere safe, like your <strong>Documents folder</strong> or a <strong>USB memory stick</strong>.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#3498db">3</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Import &#8212; bring back a backup you saved before</div>
-        <div class="h-step-desc">
-          Click the <strong>"&#8593; Load"</strong> button in the toolbar and find the backup file on your computer.<br><br>
-          <strong>Important:</strong> Loading a file replaces everything that is currently in the timeline. Always make a new backup first if you want to keep your current work.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-note" style="border-left:4px solid #e74c3c;background:#fef5f5;color:#7a1a1a">
-      &#9888;&#65039; <strong>Very important warning:</strong><br><br>
-      If you ever <strong>clear your browser history</strong>, the timeline saved in your browser <strong>will be erased</strong>. The backup file on your computer will survive this &#8212; which is exactly why keeping one is so important.<br><br>
-      We recommend <strong>exporting a backup once a month</strong>, or after adding many important events.
-    </div>
-  </div>
-
-  <!-- ===== TAB 5: SAFETY TIPS ===== -->
-  <div class="help-section">
-    <div class="h-section-title">&#128274; Safety Tips &#8212; Keeping Your Story Safe</div>
-
-    <div class="h-tip">
-      Think of the backup file like a printed photo album. Keep it somewhere safe. Here are a few simple habits that will protect years of your precious work.
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#e74c3c">1</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Always export a backup before clearing your browser history</div>
-        <div class="h-step-desc">
-          Clearing browser history removes the saved copy inside the browser. Before you do this, click <strong>"&#128190; Save HTML"</strong> to save your timeline as a file on your computer first.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#b07942">2</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Always export a backup before making major changes</div>
-        <div class="h-step-desc">
-          If you are about to delete a lot of events, or make big changes, save a backup file first. That way, if anything goes wrong, you can always go back to the previous version.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#3498db">3</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Keep your backup file in a safe place</div>
-        <div class="h-step-desc">
-          Do not leave your backup file only in one place. Try to keep it in at least two locations:<br><br>
-          &#8226; Your <strong>Documents folder</strong> on your computer<br>
-          &#8226; A <strong>USB memory stick</strong> kept somewhere safe at home<br><br>
-          Even just one backup in a safe folder is much better than none.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#9b59b6">4</div>
-      <div class="h-step-body">
-        <div class="h-step-title">You can always undo a mistake</div>
-        <div class="h-step-desc">
-          Made a mistake? Click the <strong>"&#8617; Undo"</strong> button in the toolbar. It reverses your last action. You can also press <strong>Ctrl + Z</strong> on your keyboard. You can undo up to 60 actions back.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-note">
-      &#128161; Your life story is worth protecting. A backup takes about two seconds to make. Please do it regularly &#8212; at the end of every session if you can.
-    </div>
-  </div>
-
-  <!-- ===== TAB 6: LIFE TRACKS ===== -->
-  <div class="help-section">
-    <div class="h-section-title">&#9997; Life Tracks &#8212; Rows on Your Timeline</div>
-
-    <div class="h-tip">
-      A Life Track is one labelled row on your timeline. You can have just one row for your own life, or you can add extra rows &#8212; for example, one for "Family History" and one for "My Life".
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#3498db">1</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Create a Life Track</div>
-        <div class="h-step-desc">
-          Click <strong>"+ Life Track"</strong> in the toolbar. Give it a name &#8212; anything you like &#8212; and choose a colour. Then click Save. A new row will appear on the timeline.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#2ecc71">2</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Show or hide a Life Track</div>
-        <div class="h-step-desc">
-          Use the coloured buttons in the filter bar just below the toolbar. Click a button once to hide that row. Click it again to bring it back. The events are never deleted &#8212; the row is just hidden from view.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#e74c3c">3</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Edit or delete a Life Track</div>
-        <div class="h-step-desc">
-          Click the <strong>edit button</strong> next to a Life Track's name on the left panel. You can rename it or change its colour. To delete a Life Track, open its edit form and scroll to the red Delete button.<br><br>
-          <strong>Warning:</strong> Deleting a Life Track will delete all the events inside it too. Always export a backup first.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== TAB 7: CATEGORIES ===== -->
-  <div class="help-section">
-    <div class="h-section-title">&#127991; Categories &#8212; Colour-Coding Your Events</div>
-
-    <div class="h-tip">
-      Categories are labels that give each event a colour and a type. For example, "Birthday" events might appear in gold, and "Career" events in blue. This makes it easy to spot the shape of your life at a glance.
-    </div>
-
-    <div class="h-block" style="line-height:1.9">
-      <strong>The built-in categories are:</strong><br><br>
-      &#11088; <strong>Milestone</strong> &#8212; Births, graduations, weddings, turning points<br>
-      &#127891; <strong>Education</strong> &#8212; School, university, courses<br>
-      &#128188; <strong>Career</strong> &#8212; Jobs, promotions, retirements<br>
-      &#10084;&#65039; <strong>Relationship</strong> &#8212; Meeting someone important<br>
-      &#127968; <strong>Home &amp; Place</strong> &#8212; Moving house, travel, places that mattered<br>
-      &#128157; <strong>Loss &amp; Grief</strong> &#8212; Bereavements and endings<br>
-      &#127381; <strong>Achievement</strong> &#8212; Things you worked for and earned<br>
-      &#128140; <strong>Health</strong> &#8212; Illness, recovery, and health events
-    </div>
-
-    <div class="h-tip">
-      You can create your own custom categories. Click <strong>"&#127991; Categories"</strong> in the toolbar to add, rename, or change the colour of any category. Your changes apply right away.
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#b07942">1</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Filter by category</div>
-        <div class="h-step-desc">
-          Use the filter bar below the toolbar to show only certain types of events. Click a category button to show only events of that type. Click it again to turn the filter off. This is a great way to see, for example, all your "Career" events together.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== TAB 8: KEYBOARD SHORTCUTS ===== -->
-  <div class="help-section">
-    <div class="h-section-title">&#9997; Keyboard Shortcuts</div>
-
-    <div class="h-tip">
-      This tool is designed to be used with your mouse or touch screen. You do not need to use keyboard shortcuts at all. But if you would like to, here are the ones available.
-    </div>
-
-    <div class="h-block" style="line-height:2.1">
-      <strong style="font-size:16px">Moving around:</strong><br>
-      &#8226; <strong>Left Arrow key</strong> &#8212; Scroll the timeline left (toward older events)<br>
-      &#8226; <strong>Right Arrow key</strong> &#8212; Scroll the timeline right (toward newer events)<br>
-      &#8226; <strong>+ key</strong> &#8212; Zoom in<br>
-      &#8226; <strong>&minus; key</strong> &#8212; Zoom out<br>
-      &#8226; <strong>Ctrl + Scroll wheel</strong> &#8212; Zoom in or out with the mouse<br><br>
-      <strong style="font-size:16px">Undoing mistakes:</strong><br>
-      &#8226; <strong>Ctrl + Z</strong> &#8212; Undo your last action<br>
-      &#8226; <strong>Ctrl + Y</strong> &#8212; Redo something you undid<br><br>
-      <strong style="font-size:16px">Panels and forms:</strong><br>
-      &#8226; <strong>Escape (Esc) key</strong> &#8212; Close any open panel or form
-    </div>
-
-    <div class="h-note">
-      &#128161; <strong>Remember:</strong> You can always use your mouse for everything. Keyboard shortcuts are completely optional.
-    </div>
-  </div>
-
-  <!-- ===== TAB 9: IMPORT & EXPORT IN DETAIL ===== -->
-  <div class="help-section">
-    <div class="h-section-title">&#128228; Import and Export &#8212; Step by Step</div>
-
-    <div class="h-section-title" style="font-size:17px;margin-top:0;border-bottom:none;padding-bottom:0">How to export (save a backup)</div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#2ecc71">1</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Click "&#128190; Save HTML" in the toolbar</div>
-        <div class="h-step-desc">You will find this button near the top of the screen.</div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#3498db">2</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Choose where to save the file</div>
-        <div class="h-step-desc">Your browser will ask you where to save the file. Choose a folder you will remember, such as <strong>Documents</strong>. Give the file a clear name, like <em>my-life-2024.html</em>.</div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#b07942">3</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Keep the file somewhere safe</div>
-        <div class="h-step-desc">Put a copy on a USB stick too if you can. The file contains your entire timeline &#8212; treat it like a precious document.</div>
-      </div>
-    </div>
-
-    <div style="border-top:2px solid #e8dcc8;margin:22px 0;padding-top:22px">
-      <div class="h-section-title" style="font-size:17px;margin-top:0;border-bottom:none;padding-bottom:0">How to import (bring back a saved backup)</div>
-    </div>
-
-    <div class="h-note" style="border-left:4px solid #e74c3c;background:#fef5f5;color:#7a1a1a;margin-bottom:16px">
-      &#9888;&#65039; <strong>Read this first:</strong> Importing a backup <strong>replaces everything</strong> that is currently in the timeline. If you have new work that is not in the backup, it will be lost. Always export your current work before importing.
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#3498db">1</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Click "&#8593; Load" in the toolbar</div>
-        <div class="h-step-desc">You will find this button near the top of the screen, next to the Save HTML button.</div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#2ecc71">2</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Find your backup file</div>
-        <div class="h-step-desc">A window will open. Navigate to wherever you saved the backup file (for example, your Documents folder or USB stick). Click on the file to select it.</div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#b07942">3</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Your timeline will be restored</div>
-        <div class="h-step-desc">Everything in the backup file &#8212; all your events, people, and notes &#8212; will appear on the timeline.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== TAB 10: LARGE TIMELINES ===== -->
-  <div class="help-section">
-    <div class="h-section-title">&#128202; Tips for Large Timelines</div>
-
-    <div class="h-tip">
-      As your timeline grows, it can get harder to find things. Here are some simple ways to stay organised.
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#3498db">1</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Use the search box to find events</div>
-        <div class="h-step-desc">
-          The filter bar below the toolbar has a search box. Type a word from the event title, and only matching events will appear on the timeline. This is the quickest way to find something when you have many events.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#2ecc71">2</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Filter by category</div>
-        <div class="h-step-desc">
-          Click a category button in the filter bar to show only events of that type. For example, click "Milestone" to see only the biggest moments. Click it again to show everything.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#e74c3c">3</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Zoom out to see all events at once</div>
-        <div class="h-step-desc">
-          Hold <strong>Ctrl</strong> and scroll your mouse wheel downward to zoom out. At a zoomed-out view, all your events appear as small dots. This is a lovely way to see the full shape of a life.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#9b59b6">4</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Use categories to colour-code your life</div>
-        <div class="h-step-desc">
-          When you have many events, categories help you tell them apart at a glance. "Career" events in blue, "Family" in orange, "Travel" in green. Use the <strong>"&#127991; Categories"</strong> button in the toolbar to customise the colours.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-step">
-      <div class="h-num" style="background:#b07942">5</div>
-      <div class="h-step-body">
-        <div class="h-step-title">Use multiple Life Tracks</div>
-        <div class="h-step-desc">
-          If you have many events from different parts of life, try splitting them into separate Life Tracks &#8212; one for "Career", one for "Family", one for "Health". You can then show or hide each track whenever you like.
-        </div>
-      </div>
-    </div>
-
-    <div class="h-tip">
-      &#128161; <strong>Remember:</strong> No matter how many events you add, you can always find any event by searching for it or by filtering by category. The timeline is designed to handle a full lifetime of memories.
-    </div>
-  </div>
-
-  <!-- ===== TAB 11: CONTACT SUPPORT ===== -->
-  <div class="help-section">
-    <div class="h-section-title">&#9993; Contact Support</div>
-
-    <div class="h-tip">
-      <strong>&#128075; Need help?</strong> We are happy to hear from you &#8212; whether you have a question, found a problem, or just want to say hello.
-    </div>
-
-    <div class="h-block" style="text-align:center;padding:28px 20px;">
-      <p style="font-size:16px;color:#555;line-height:1.9;margin-bottom:22px;">
-        Send us an email and we will get back to you as soon as we can.<br>
-        <strong style="color:#2d1f12;">We read every message.</strong>
-      </p>
-      <a href="mailto:support@freetimeline.pt" style="display:inline-flex;align-items:center;gap:10px;padding:14px 32px;border-radius:10px;background:#b07942;color:#fff;text-decoration:none;font-size:16px;font-weight:700;box-shadow:0 2px 12px rgba(176,121,66,0.35);">
-        &#9993;&nbsp; support@freetimeline.pt
-      </a>
-    </div>
-
-    <div class="h-note" style="margin-top:16px;">
-      &#128274; <strong>Privacy reminder:</strong> Your timeline never leaves your computer &#8212; we do not have access to it. If you share any information for troubleshooting, please remove anything personal first.
-    </div>
-  </div>
-
-  </div>`
-      this.foot().innerHTML = '<button class="btn accent" style="font-size:15px;padding:9px 30px;" onclick="M.close()">&#10003; Ready &mdash; let\'s begin</button>';
-    },
+    this.ttl().textContent   = '\u{1F4D6} Free Timeline Biography Guide';
+    this.body().innerHTML = buildHelpGuide();
+    this.foot().innerHTML = '<button class="btn light" onclick="M.close()">Close</button>';
+    initHelpGuide();
+  },
 
   /* ---- Character List ---- */
   _charList(top) {
@@ -6151,11 +7062,12 @@ const M = {
 
     const charEvCount = S.events.filter(e => (e.characterIds||[]).includes(ch.id)).length;
 
-    const relationshipColors = { 'Family': '#e91e63', 'Partner': '#9b59b6', 'Friend': '#3498db', 'Mentor': '#f39c12', 'Colleague': '#27ae60', 'Other': '#95a5a6' };
-    const relCol = relationshipColors[ch.alignment] || '#95a5a6';
+    const relationshipColors = { 'Family': '#b05070', 'Partner': '#9b59b6', 'Friend': '#3498db', 'Mentor': '#e09a3c', 'Colleague': '#4a9375', 'Other': '#95867a' };
+    const relCol = relationshipColors[ch.alignment] || '#95867a';
+    const _hdAccent = relCol;
 
     this.body().innerHTML =
-      '<div class="char-profile-hd">' +
+      '<div class="char-profile-hd" style="--pv-accent:' + _hdAccent + '">' +
         '<div class="char-photo-wrap">' + photoHTML + '</div>' +
         '<div class="char-profile-meta">' +
           '<div class="char-profile-name">' + esc(ch.name) + '</div>' +
@@ -6354,6 +7266,63 @@ const M = {
         : '');
   }
 };
+
+function syncModalAccessibility() {
+  const bg = document.getElementById('modal-bg');
+  const modal = document.getElementById('main-modal');
+  const title = document.getElementById('m-title');
+  if (!bg || !modal) return;
+  bg.setAttribute('aria-hidden', bg.classList.contains('open') ? 'false' : 'true');
+  if (title) {
+    title.setAttribute('role', 'heading');
+    title.setAttribute('aria-level', '2');
+  }
+  bindFormLabels(modal);
+  describeInteractiveElements(modal);
+  if (bg.classList.contains('open') && !modal.contains(document.activeElement)) {
+    const focusable = getFocusable(modal);
+    (focusable[0] || modal).focus();
+  }
+}
+
+const _mOpen = M.open.bind(M);
+M.open = function() {
+  _mOpen();
+  requestAnimationFrame(syncModalAccessibility);
+};
+
+const _mClose = M.close.bind(M);
+M.close = function() {
+  _mClose();
+  syncModalAccessibility();
+};
+
+const _mRender = M.render.bind(M);
+M.render = function() {
+  _mRender();
+  requestAnimationFrame(syncModalAccessibility);
+};
+
+document.addEventListener('keydown', function(e) {
+  const bg = document.getElementById('modal-bg');
+  const modal = document.getElementById('main-modal');
+  if (!bg || !modal || !bg.classList.contains('open') || e.key !== 'Tab') return;
+  const focusable = getFocusable(modal);
+  if (!focusable.length) {
+    e.preventDefault();
+    modal.focus();
+    return;
+  }
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
+}, true);
 
 /* =====================================================
    HTML BUILDERS
@@ -6622,7 +7591,12 @@ function clearCharPhoto() {
 
 function submitAddChar() {
   const name = (document.getElementById('ac-name')||{value:''}).value.trim();
-  if (!name) { notify('Please enter a name.', 'error'); return; }
+  clearFieldError('ac-name');
+  if (!name) {
+    showFieldError('ac-name', 'Enter a person name.');
+    notify('Please enter a name.', 'error');
+    return;
+  }
   const ch = {
     id: uid(),
     name,
@@ -6652,7 +7626,12 @@ function submitAddChar() {
 function saveChar(charId) {
   const ch = S.people.find(c => c.id === charId); if (!ch) return;
   const name = (document.getElementById('ec-name')||{value:''}).value.trim();
-  if (!name) { notify('Name is required.', 'error'); return; }
+  clearFieldError('ec-name');
+  if (!name) {
+    showFieldError('ec-name', 'Name is required.');
+    notify('Name is required.', 'error');
+    return;
+  }
   ch.name      = name;
   ch.aliases   = (document.getElementById('ec-aliases')||{value:''}).value.trim();
   ch.status    = (document.getElementById('ec-status')||{value:''}).value;
@@ -6716,10 +7695,29 @@ function submitAddEv() {
   const internalChange = (document.getElementById('ae-internal')||{value:''}).value.trim();
   const status = (document.getElementById('ae-status')||{value:''}).value || null;
   const recFreq = (document.getElementById('ae-recurring')||{value:''}).value;
-  if (!title)          { notify('Please enter a title.', 'error'); return; }
-  if (!date)           { notify('Please enter a date.', 'error'); return; }
-  if (!uId)            { notify('Please select a life track (create one first).', 'error'); return; }
-  if (parseDate(date) === null){ notify('Year must be a number (e.g. xx/xx/2006, xx/xx/-50000).', 'error'); return; }
+  clearFieldError('ae-t');
+  clearFieldError('ae-d');
+  clearFieldError('ae-u');
+  if (!title) {
+    showFieldError('ae-t', 'Enter an event title.');
+    notify('Please enter a title.', 'error');
+    return;
+  }
+  if (!date) {
+    showFieldError('ae-d', 'Enter a date in dd/mm/yyyy format.');
+    notify('Please enter a date.', 'error');
+    return;
+  }
+  if (!uId) {
+    showFieldError('ae-u', 'Select a life track before creating the event.');
+    notify('Please select a life track (create one first).', 'error');
+    return;
+  }
+  if (parseDate(date) === null){
+    showFieldError('ae-d', 'Year must be numeric, for example xx/xx/2006 or xx/xx/-50000.');
+    notify('Year must be a number (e.g. xx/xx/2006, xx/xx/-50000).', 'error');
+    return;
+  }
   const cat = document.getElementById('ae-cat').value;
   const tags = (document.getElementById('ae-tags')||{value:''}).value.split(',').map(t=>t.trim()).filter(Boolean);
   S.events.push({ id: uid(), universeId: uId, date, dateEnd: dateEnd || null, time: time || null,
@@ -6736,8 +7734,29 @@ function saveEv(evId) {
   const title = document.getElementById('ee-t').value.trim();
   const date  = document.getElementById('ee-d').value.trim();
   const time  = (document.getElementById('ee-time')||{value:''}).value.trim();
-  if (!title)          { notify('Title is required.', 'error'); return; }
-  if (parseDate(date) === null){ notify('Year must be a number.', 'error'); return; }
+  clearFieldError('ee-t');
+  clearFieldError('ee-d');
+  clearFieldError('ee-u');
+  if (!title) {
+    showFieldError('ee-t', 'Title is required.');
+    notify('Title is required.', 'error');
+    return;
+  }
+  if (!date) {
+    showFieldError('ee-d', 'Enter a date in dd/mm/yyyy format.');
+    notify('Please enter a date.', 'error');
+    return;
+  }
+  if (parseDate(date) === null){
+    showFieldError('ee-d', 'Year must be numeric.');
+    notify('Year must be a number.', 'error');
+    return;
+  }
+  if (!document.getElementById('ee-u').value) {
+    showFieldError('ee-u', 'Select a life track for this event.');
+    notify('Please select a life track.', 'error');
+    return;
+  }
   ev.title          = title;
   ev.date           = date;
   ev.dateEnd        = (document.getElementById('ee-dend')||{value:''}).value.trim() || null;
@@ -6829,7 +7848,12 @@ function delConn(connId, evId) {
 function submitAddUni() {
   const name  = document.getElementById('au-n').value.trim();
   const color = document.getElementById('au-c').value;
-  if (!name) { notify('Please enter a name.', 'error'); return; }
+  clearFieldError('au-n');
+  if (!name) {
+    showFieldError('au-n', 'Enter a life track name.');
+    notify('Please enter a name.', 'error');
+    return;
+  }
   const uDesc      = (document.getElementById('au-desc') ||{value:''}).value.trim();
   const uNotes     = (document.getElementById('au-notes')||{value:''}).value.trim();
   const uBirthDate = (document.getElementById('au-birth')||{value:''}).value.trim();
@@ -6840,7 +7864,14 @@ function submitAddUni() {
 
 function saveUni(uId) {
   const u = getU(uId); if (!u) return;
-  u.name        = document.getElementById('eu-n').value.trim() || u.name;
+  const name = document.getElementById('eu-n').value.trim();
+  clearFieldError('eu-n');
+  if (!name) {
+    showFieldError('eu-n', 'Name is required.');
+    notify('Name is required.', 'error');
+    return;
+  }
+  u.name        = name;
   u.color       = document.getElementById('eu-c').value;
   u.birthDate   = (document.getElementById('eu-birth')||{value:''}).value.trim() || null;
   u.description = (document.getElementById('eu-desc') ||{value:''}).value.trim();
@@ -7020,6 +8051,7 @@ const UI = {
     M.push({ t: 'addUni', name: '', color: PALETTE[S.lifeTracks.length % PALETTE.length] });
   },
   help() {
+    _helpState = { query: '', activeId: HELP_GUIDE_SECTIONS[0].id };
     M.push({ t: 'help' });
   },
   people() {
@@ -7492,6 +8524,7 @@ function loadSample() {
    ===================================================== */
 let _currentView = 'timeline';
 function switchView(view) {
+  if (typeof MemoryTour !== 'undefined' && MemoryTour.active && view !== 'timeline') MemoryTour.stop(false);
   _currentView = view;
   const canvasWrap = document.getElementById('canvas-wrap');
   const filterPanel = document.getElementById('filter-panel');
@@ -7538,41 +8571,96 @@ function renderPeopleView() {
     return ch.name.toLowerCase().includes(q) ||
       (ch.aliases || '').toLowerCase().includes(q) ||
       (ch.occupation || '').toLowerCase().includes(q) ||
-      (ch.affiliation || '').toLowerCase().includes(q);
+      (ch.affiliation || '').toLowerCase().includes(q) ||
+      (ch.alignment || '').toLowerCase().includes(q) ||
+      (ch.notes || '').toLowerCase().includes(q) ||
+      (ch.relationshipNotes || '').toLowerCase().includes(q);
   });
 
   if (chars.length === 0) {
-    grid.innerHTML = '<div style="color:#999;font-size:13px;padding:20px;text-align:center;grid-column:1/-1">' +
-      (S.people.length === 0 ? 'No people yet. Click "+ New Person" to add one.' : 'No matches found.') + '</div>';
+    var isFirst = S.people.length === 0;
+    grid.innerHTML =
+      '<div class="pv-empty">' +
+        '<div class="pv-empty-glyph">\u2766 \u2766 \u2766</div>' +
+        '<div class="pv-empty-title">' + (isFirst ? 'Your archive is waiting' : 'No one matches that search') + '</div>' +
+        '<div class="pv-empty-msg">' +
+          (isFirst
+            ? 'Every life is a tapestry of the people in it. Start by adding someone who shaped your story \u2014 family, a friend, a mentor.'
+            : 'Try a different name, alias, occupation, relationship, or note keyword.') +
+        '</div>' +
+        (isFirst ? '<div class="pv-empty-cta">Use the <strong>+ New Person</strong> button to begin.</div>' : '') +
+      '</div>';
     return;
   }
+
+  var relationshipColors = { 'Family': '#b05070', 'Partner': '#9b59b6', 'Friend': '#3498db', 'Mentor': '#e09a3c', 'Colleague': '#4a9375', 'Other': '#95867a' };
 
   grid.innerHTML = chars.map(function(ch) {
     var evCnt = S.events.filter(function(e) { return (e.characterIds||[]).includes(ch.id); }).length;
     var uniIds = getCharUniverseIds(ch);
-    var tagsHTML = uniIds.map(function(uid) {
+    var tagsHTML = uniIds.slice(0, 4).map(function(uid) {
       var u = getU(uid);
       return u ? '<span class="pv-tag" style="background:' + u.color + '">' + esc(u.name) + '</span>' : '';
     }).join('');
+    if (uniIds.length > 4) {
+      tagsHTML += '<span class="pv-tag" style="background:#8a7556">+' + (uniIds.length - 4) + '</span>';
+    }
 
     var avatarInner = ch.photo
       ? '<img src="' + ch.photo + '" alt="' + esc(ch.name) + '">'
-      : ch.name.split(' ').map(function(w){return w[0]}).join('').slice(0,2).toUpperCase();
+      : ch.name.split(' ').map(function(w){return w[0]||''}).join('').slice(0,2).toUpperCase();
 
-    var statusColors = { 'Living': '#2ecc71', 'Passed Away': '#e74c3c', 'Lost Touch': '#f39c12', 'Unknown': '#95a5a6' };
-    var sCol = statusColors[ch.status] || '';
-    var statusHTML = ch.status ? '<span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:9px;color:#fff;font-weight:700;background:' + sCol + ';margin-right:4px">' + esc(ch.status) + '</span>' : '';
+    var statusColors = { 'Living': '#4a9375', 'Passed Away': '#7a5a4a', 'Lost Touch': '#c08040', 'Unknown': '#95867a' };
+    var sCol = statusColors[ch.status] || '#95867a';
+    var relCol = relationshipColors[ch.alignment] || '#95867a';
+    var accent = relCol;
 
-    return '<div class="pv-card" onclick="MS=[{t:\'charDetail\',charId:\'' + ch.id + '\'}];M.push(MS[0]);M.render()">' +
+    var chipsHTML = '';
+    if (ch.alignment) chipsHTML += '<span class="pv-chip rel" style="background:' + relCol + '">' + esc(ch.alignment) + '</span>';
+    if (ch.status)    chipsHTML += '<span class="pv-chip rel" style="background:' + sCol + '">' + esc(ch.status) + '</span>';
+    if (ch.occupation) chipsHTML += '<span class="pv-chip meta">' + esc(ch.occupation) + '</span>';
+
+    var ticksMax = 8;
+    var ticksFilled = Math.min(evCnt, ticksMax);
+    var ticksHTML = '';
+    for (var i = 0; i < ticksMax; i++) {
+      ticksHTML += '<span class="pv-events-tick' + (i >= ticksFilled ? ' empty' : '') + '"></span>';
+    }
+    var eventsLabel = evCnt === 0
+      ? '<span class="zero">No linked memories</span>'
+      : evCnt + ' memor' + (evCnt !== 1 ? 'ies' : 'y');
+
+    var metaHTML = '';
+    if (ch.yearsKnown) metaHTML += '<span class="pv-meta-label">Years</span><span>' + esc(String(ch.yearsKnown)) + '</span>';
+    if (ch.yearsKnown && ch.affiliation) metaHTML += '<span style="color:#d8c6a4">\u2022</span>';
+    if (ch.affiliation) metaHTML += '<span class="pv-meta-label">Where</span><span>' + esc(ch.affiliation) + '</span>';
+
+    var contextText = ch.relationshipNotes || ch.howWeMet || ch.notes || '';
+    var contextHTML = contextText ? '<div class="pv-context">' + esc(contextText) + '</div>' : '';
+
+    var avatarStyle = ch.photo ? '' : 'background:' + accent + ';color:#fff;font-weight:800';
+
+    return '<div class="pv-card" tabindex="0" role="button" aria-label="Open archive entry for ' + esc(ch.name) + '" ' +
+        'data-cid="' + ch.id + '" ' +
+        'style="--pv-accent:' + accent + '" ' +
+        'onclick="MS=[{t:\'charDetail\',charId:\'' + ch.id + '\'}];M.push(MS[0]);M.render()" ' +
+        'onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();MS=[{t:\'charDetail\',charId:\'' + ch.id + '\'}];M.push(MS[0]);M.render();}">' +
       '<div class="pv-card-top">' +
-        '<div class="pv-avatar" style="' + (ch.photo ? '' : 'background:' + (ch.color || charHashColor(ch.id)) + ';color:#fff;font-weight:700;font-size:16px') + '">' + avatarInner + '</div>' +
-        '<div><div class="pv-name">' + esc(ch.name) + '</div>' +
-          (ch.occupation ? '<div class="pv-sub">' + esc(ch.occupation) + '</div>' : '') +
+        '<div class="pv-avatar" style="' + avatarStyle + '">' + avatarInner + '</div>' +
+        '<div class="pv-heading">' +
+          '<div class="pv-name">' + esc(ch.name) + '</div>' +
+          (ch.aliases ? '<div class="pv-alias">aka ' + esc(ch.aliases) + '</div>' : '') +
+          (ch.birthDate ? '<div class="pv-sub">Born ' + esc(ch.birthDate) + '</div>' : '') +
         '</div>' +
       '</div>' +
-      statusHTML +
+      (chipsHTML ? '<div class="pv-chip-row">' + chipsHTML + '</div>' : '') +
       (tagsHTML ? '<div class="pv-tags">' + tagsHTML + '</div>' : '') +
-      '<div class="pv-stat">' + evCnt + ' event' + (evCnt !== 1 ? 's' : '') + ' linked</div>' +
+      (metaHTML ? '<div class="pv-meta-row">' + metaHTML + '</div>' : '') +
+      contextHTML +
+      '<div class="pv-events">' +
+        '<div class="pv-events-ticks" aria-hidden="true">' + ticksHTML + '</div>' +
+        '<div class="pv-events-count">' + eventsLabel + '</div>' +
+      '</div>' +
     '</div>';
   }).join('');
 }
@@ -8237,10 +9325,12 @@ function updateUniToggleBar() {
   if (hint) hint.textContent = '';
   chips.innerHTML = S.lifeTracks.map(u => {
     const hidden = u.visible === false;
-    return '<span class="uni-toggle-chip' + (hidden ? ' hidden-uni' : '') + '" ' +
+    return '<button type="button" class="uni-toggle-chip' + (hidden ? ' hidden-uni' : '') + '" ' +
       'style="background:' + u.color + ';border-color:' + u.color + ';" ' +
-      'onclick="toggleUniverse(\'' + u.id + '\')" title="Click to show/hide this life track">' +
-      (hidden ? '🚫 ' : '✅ ') + esc(u.name) + '</span>';
+      'onclick="toggleUniverse(\'' + u.id + '\')" title="Click to show or hide this life track" ' +
+      'aria-pressed="' + (!hidden) + '" aria-label="' + (hidden ? 'Show life track ' : 'Hide life track ') + esc(u.name) + '">' +
+      '<span aria-hidden="true">' + (hidden ? '🚫 ' : '✅ ') + esc(u.name) + '</span>' +
+      '<span class="sr-only">' + (hidden ? 'Hidden' : 'Visible') + '</span></button>';
   }).join('');
 }
 
@@ -8250,6 +9340,7 @@ function toggleUniverse(uid2) {
   u.visible = u.visible === false ? true : false;
   updateUniToggleBar();
   render();
+  notify((u.visible === false ? 'Hidden life track: ' : 'Showing life track: ') + u.name, 'info');
 }
 
 /* =====================================================
@@ -8266,7 +9357,17 @@ const ConnectionMap = {
     this._container = container;
     this._mx = 0; this._my = 0; this._mscale = 1;
     if (S.people.length === 0) {
-      container.innerHTML = '<div style="padding:50px;text-align:center;color:#a0a8c0;font-size:14px">No people yet \u2014 add some via the \uD83D\uDC64 People panel first.</div>';
+      container.innerHTML =
+        '<div class="conn-map-wrap" id="cm-wrap"><div class="cm-empty">'
+        + '<div class="cm-empty-star">\uD83C\uDF3F</div>'
+        + '<h3>No one linked to your story yet</h3>'
+        + '<p>This is where the people in your life become a constellation \u2014 connected by the moments you shared. Add someone, link them to a memory, and watch the web grow.</p>'
+        + '<div class="cm-empty-steps">'
+          + '<b>1.</b> Click <b>\uD83D\uDC64 People</b> in the toolbar and add a name (a photo and notes are optional).<br>'
+          + '<b>2.</b> Open any event on your timeline and tap <b>\uD83D\uDC64 People</b> to link them to the memory.<br>'
+          + '<b>3.</b> Return here \u2014 warm lines will appear between people who share events.'
+        + '</div>'
+        + '</div></div>';
       return;
     }
 
@@ -8302,42 +9403,72 @@ const ConnectionMap = {
     });
 
     /* --- Build SVG --- */
+    /* Relationship type -> muted color palette (data-driven) */
+    const _relCol = { 'Family':'#c17a95', 'Partner':'#9d7eb5', 'Friend':'#6b9ac4', 'Mentor':'#d4a058', 'Colleague':'#74a080', 'Other':'#a49282' };
+    const _edgeColorFor = (a, b) => {
+      const pa = S.people.find(p => p.id === a), pb = S.people.find(p => p.id === b);
+      const ra = pa && pa.alignment, rb = pb && pb.alignment;
+      if (ra && rb && ra === rb) return { col: _relCol[ra] || '#b29070', label: ra };
+      if (ra && _relCol[ra]) return { col: _relCol[ra], label: ra };
+      if (rb && _relCol[rb]) return { col: _relCol[rb], label: rb };
+      return { col: '#b29070', label: '' };
+    };
     let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" id="cm-svg" class="conn-map-svg">';
     s += '<defs>';
-    s += '<filter id="glow2"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
-    s += '<filter id="glow3"><feGaussianBlur stdDeviation="9" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+    s += '<filter id="glow2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+    s += '<filter id="glow3" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+    s += '<filter id="edgeGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+    s += '<radialGradient id="cmBg" cx="50%" cy="48%" r="65%">'
+      + '<stop offset="0%" stop-color="#fff5dd" stop-opacity="0.85"/>'
+      + '<stop offset="55%" stop-color="#f3e4c0" stop-opacity="0.7"/>'
+      + '<stop offset="100%" stop-color="#e7d4a6" stop-opacity="0.5"/>'
+      + '</radialGradient>';
+    s += '<style>'
+      + '.cm-sel-ring{animation:cmSelPulse 2s ease-in-out infinite}'
+      + '@keyframes cmSelPulse{0%,100%{opacity:.9}50%{opacity:.5}}'
+      + '.cm-edge{filter:url(#edgeGlow)}'
+      + '</style>';
     s += '</defs>';
-    s += '<rect width="' + W + '" height="' + H + '" fill="#0d0f1a" rx="10"/>';
+    s += '<rect width="' + W + '" height="' + H + '" fill="url(#cmBg)" rx="10"/>';
+    /* Subtle concentric "life-ring" guide — very faint */
+    const gCX = W/2, gCY = H/2;
+    [0.3, 0.5, 0.7].forEach(f => {
+      const rr = Math.min(gCX, gCY) * f;
+      s += '<circle cx="' + gCX + '" cy="' + gCY + '" r="' + rr + '" fill="none" stroke="rgba(140,108,66,0.08)" stroke-width="1" stroke-dasharray="2,6"/>';
+    });
     /* Open the pan/zoom group */
     s += '<g id="cm-g">';
 
-    // Universe halos
+    // Life-track halos — warm & subtle
     S.lifeTracks.forEach(u => {
       allChars.forEach(ch => {
         if (!S.events.some(ev => ev.universeId === u.id && (ev.characterIds||[]).includes(ch.id))) return;
         const p = pos[ch.id]; if (!p) return;
-        s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="46" fill="' + u.color + '18"/>';
+        s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="50" fill="' + u.color + '" opacity="0.11"/>';
       });
     });
 
-    // Universe cluster labels
+    // Life-track cluster labels
     S.lifeTracks.forEach(u => {
       const members = allChars.filter(ch => S.events.some(ev => ev.universeId === u.id && (ev.characterIds||[]).includes(ch.id)));
       if (members.length === 0) return;
       const avgX = members.reduce((a, ch) => a + (pos[ch.id]?pos[ch.id].x:0), 0) / members.length;
       const avgY = members.reduce((a, ch) => a + (pos[ch.id]?pos[ch.id].y:0), 0) / members.length;
-      s += '<text x="' + avgX + '" y="' + (avgY - 58) + '" text-anchor="middle" font-size="9" fill="' + u.color + '" opacity="0.65" font-family="-apple-system,sans-serif" font-weight="bold" style="pointer-events:none">' + esc(u.name) + '</text>';
+      s += '<text x="' + avgX + '" y="' + (avgY - 62) + '" text-anchor="middle" font-size="9.5" fill="' + u.color + '" opacity="0.85" font-family="-apple-system,sans-serif" font-weight="700" letter-spacing="0.8" style="pointer-events:none;text-transform:uppercase">' + esc(u.name) + '</text>';
     });
 
-    // Edges
+    // Edges — warm threads, colored by relationship type where data exists
     edges.forEach(e => {
       const pa = pos[e.a], pb = pos[e.b]; if (!pa || !pb) return;
       const mx2 = (pa.x + pb.x) / 2, my2 = (pa.y + pb.y) / 2 - 28;
-      const thick = Math.min(1.2 + e.sharedEvs.length * 0.8, 6);
+      const thick = Math.min(1.6 + e.sharedEvs.length * 0.85, 6);
+      const ec = _edgeColorFor(e.a, e.b);
       s += '<path d="M' + pa.x + ',' + pa.y + ' Q' + mx2 + ',' + my2 + ' ' + pb.x + ',' + pb.y + '"'
-        + ' stroke="#40e0c0" stroke-width="' + thick + '" fill="none" opacity="0.28"'
+        + ' stroke="' + ec.col + '" stroke-width="' + thick + '" fill="none" opacity="0.6"'
+        + ' stroke-linecap="round"'
         + ' class="cm-edge" data-type="shared" data-a="' + e.a + '" data-b="' + e.b
-        + '" data-cnt="' + e.sharedEvs.length + '" data-evids="' + e.sharedEvs.join(',') + '" style="cursor:pointer"/>';
+        + '" data-reltype="' + esc(ec.label || '') + '"'
+        + ' data-cnt="' + e.sharedEvs.length + '" data-evids="' + e.sharedEvs.join(',') + '" style="cursor:pointer"/>';
     });
 
     // Nodes
@@ -8348,32 +9479,35 @@ const ConnectionMap = {
       const nr = 20 + Math.min(evCnt * 1.8, 15);
       const initials = ch.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
       const isFiltered = _charFilterIds.includes(ch.id);
+      /* Soft warm halo around every node */
+      s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="' + (nr + 6) + '" fill="' + col + '" opacity="0.2" style="pointer-events:none"/>';
       if (isFiltered) {
-        s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="' + (nr + 9) + '" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-dasharray="5,3" opacity="0.85" style="pointer-events:none"/>';
+        s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="' + (nr + 11) + '" fill="none" stroke="#c77c21" stroke-width="2.5" stroke-dasharray="5,3" opacity="0.95" class="cm-sel-ring" style="pointer-events:none"/>';
       }
-      s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="' + nr + '" fill="' + col + 'cc" stroke="' + col + '" stroke-width="2.2"'
-        + ' class="cm-node" data-cid="' + ch.id + '" style="cursor:pointer">'
+      /* Main node disc — warm cream ring */
+      s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="' + nr + '" fill="' + col + 'e6" stroke="#fff8e4" stroke-width="2.2"'
+        + ' class="cm-node" data-cid="' + ch.id + '" style="cursor:pointer;filter:drop-shadow(0 2px 4px rgba(120,86,40,0.22))">'
         + '<title>' + esc(ch.name) + (evCnt ? ' \u2014 ' + evCnt + ' event' + (evCnt !== 1 ? 's' : '') : '') + '</title></circle>';
       if (ch.photo) {
-        s += '<defs><clipPath id="ccp-' + ch.id + '"><circle cx="' + p.x + '" cy="' + p.y + '" r="' + nr + '"/></clipPath></defs>';
+        s += '<defs><clipPath id="ccp-' + ch.id + '"><circle cx="' + p.x + '" cy="' + p.y + '" r="' + (nr - 2) + '"/></clipPath></defs>';
         s += '<image href="' + ch.photo + '" x="' + (p.x-nr) + '" y="' + (p.y-nr) + '" width="' + (nr*2) + '" height="' + (nr*2) + '"'
           + ' clip-path="url(#ccp-' + ch.id + ')" preserveAspectRatio="xMidYMid slice"'
           + ' class="cm-node" data-cid="' + ch.id + '" style="cursor:pointer"/>';
       } else {
-        s += '<text x="' + p.x + '" y="' + (p.y+5) + '" text-anchor="middle" font-size="12" font-weight="bold" fill="white"'
-          + ' font-family="-apple-system,sans-serif" style="pointer-events:none">' + initials + '</text>';
+        s += '<text x="' + p.x + '" y="' + (p.y+5) + '" text-anchor="middle" font-size="13" font-weight="700" fill="white"'
+          + ' font-family="-apple-system,sans-serif" letter-spacing="0.5" style="pointer-events:none;text-shadow:0 1px 2px rgba(80,50,20,0.4)">' + initials + '</text>';
       }
-      // Name label
-      s += '<text x="' + p.x + '" y="' + (p.y+nr+14) + '" text-anchor="middle" font-size="10" fill="#c0cce0"'
-        + ' font-family="-apple-system,sans-serif" class="cm-label" data-cid="' + ch.id + '" style="pointer-events:none">'
+      // Name label — warm, readable on cream bg
+      s += '<text x="' + p.x + '" y="' + (p.y+nr+15) + '" text-anchor="middle" font-size="10.5" fill="#3d2b1f"'
+        + ' font-family="-apple-system,sans-serif" font-weight="600" class="cm-label" data-cid="' + ch.id + '" style="pointer-events:none;paint-order:stroke;stroke:rgba(253,247,233,0.85);stroke-width:2.8px;stroke-linejoin:round">'
         + (ch.name.length > 15 ? ch.name.slice(0,14) + '\u2026' : ch.name) + '</text>';
-      // Universe dots
+      // Life-track dots
       const uniIds = [...new Set(S.events.filter(ev => (ev.characterIds||[]).includes(ch.id)).map(ev => ev.universeId))];
       const dotSp = 9, totalDots = Math.min(uniIds.length, 5);
       const dotStartX = p.x - ((totalDots - 1) * dotSp) / 2;
       uniIds.slice(0, 5).forEach((uid, di) => {
         const uu = S.lifeTracks.find(u => u.id === uid); if (!uu) return;
-        s += '<circle cx="' + (dotStartX + di * dotSp) + '" cy="' + (p.y+nr+25) + '" r="3.5" fill="' + uu.color + '" opacity="0.85"><title>' + esc(uu.name) + '</title></circle>';
+        s += '<circle cx="' + (dotStartX + di * dotSp) + '" cy="' + (p.y+nr+26) + '" r="3.5" fill="' + uu.color + '" opacity="0.95" stroke="rgba(255,250,236,0.85)" stroke-width="0.8"><title>' + esc(uu.name) + '</title></circle>';
       });
     });
 
@@ -8412,13 +9546,19 @@ const ConnectionMap = {
       + '<div class="map-tip" id="map-tip"></div>'
       + '<div id="cm-legend-panel" class="cm-legend-panel" style="display:none">'
       + '<div class="cml-title">\uD83D\uDDFA\uFE0F Map Legend</div>'
-      + '<div class="cml-item"><span class="cml-line" style="background:#40e0c0;width:24px;height:2px"></span>Shared event (thicker = more events together)</div>'
-      + '<div class="cml-item"><span class="cml-line" style="background:#40e0c0;width:24px;height:5px"></span>Strong connection (5+ shared events)</div>'
+      + '<div class="cml-item"><span class="cml-line" style="background:#b29070;width:24px;height:3px;border-radius:2px"></span>Line = shared memory (thicker = more events)</div>'
+      + '<div style="font-size:10.5px;color:#7a5a34;margin:4px 0 6px;font-weight:600;letter-spacing:.3px;text-transform:uppercase">Line color = relationship type</div>'
+      + '<div class="cml-item"><span class="cml-line" style="background:#c17a95;width:20px;height:3px;border-radius:2px"></span>Family</div>'
+      + '<div class="cml-item"><span class="cml-line" style="background:#9d7eb5;width:20px;height:3px;border-radius:2px"></span>Partner</div>'
+      + '<div class="cml-item"><span class="cml-line" style="background:#6b9ac4;width:20px;height:3px;border-radius:2px"></span>Friend</div>'
+      + '<div class="cml-item"><span class="cml-line" style="background:#d4a058;width:20px;height:3px;border-radius:2px"></span>Mentor</div>'
+      + '<div class="cml-item"><span class="cml-line" style="background:#74a080;width:20px;height:3px;border-radius:2px"></span>Colleague</div>'
+      + '<div class="cml-item"><span class="cml-line" style="background:#b29070;width:20px;height:3px;border-radius:2px"></span>Other / unspecified</div>'
       + '<div style="height:6px"></div>'
-      + '<div class="cml-item"><span style="width:16px;height:16px;border-radius:50%;background:#4a8fde;flex-shrink:0;display:inline-block"></span>Person node — size reflects event count</div>'
-      + '<div class="cml-item"><span style="width:16px;height:16px;border-radius:50%;border:2.5px dashed #ffd700;flex-shrink:0;display:inline-block;background:transparent"></span>Highlighted by active filter</div>'
+      + '<div class="cml-item"><span style="width:16px;height:16px;border-radius:50%;background:#9d7eb5;flex-shrink:0;display:inline-block;border:2px solid #fff8e4;box-shadow:0 1px 3px rgba(80,55,20,.2)"></span>Person \u2014 size reflects event count</div>'
+      + '<div class="cml-item"><span style="width:16px;height:16px;border-radius:50%;border:2.5px dashed #c77c21;flex-shrink:0;display:inline-block;background:transparent"></span>Highlighted by active filter</div>'
       + '<div style="height:6px"></div>'
-      + '<div style="font-size:10px;color:#5070a0;line-height:1.7">Colored dots below each node = life tracks<br>Hover a node to see details &nbsp;&middot;&nbsp; Click to open profile<br>Click a connection line to see shared events</div>'
+      + '<div style="font-size:10.5px;color:#7a5a34;line-height:1.75">Colored dots below each node = life tracks<br>Hover a person for details &nbsp;&middot;&nbsp; Click to open profile<br>Click a line for shared memories</div>'
       + '</div>'
       + '</div>';
 
@@ -8568,9 +9708,9 @@ const ConnectionMap = {
         const cid = el.dataset.cid;
         wrap.querySelectorAll('.cm-edge').forEach(edge => {
           if (edge.dataset.a === cid || edge.dataset.b === cid) {
-            edge.dataset.origOp = edge.getAttribute('opacity') || '0.28';
+            edge.dataset.origOp = edge.getAttribute('opacity') || '0.6';
             edge.dataset.origSw = edge.getAttribute('stroke-width') || '1.5';
-            edge.setAttribute('opacity', '0.9');
+            edge.setAttribute('opacity', '0.95');
             const sw = parseFloat(edge.getAttribute('stroke-width') || 1.5);
             edge.setAttribute('stroke-width', sw + 2.5);
           }
@@ -8593,14 +9733,16 @@ const ConnectionMap = {
         if (!ch) { tip.style.display = 'none'; return; }
         const evs = S.events.filter(ev => (ev.characterIds||[]).includes(ch.id));
         const unis = [...new Set(evs.map(ev => { const uu = S.lifeTracks.find(u => u.id === ev.universeId); return uu ? uu.name : null; }).filter(Boolean))];
+        const _relPal = { 'Family':'#b05070', 'Partner':'#9b59b6', 'Friend':'#3498db', 'Mentor':'#d08838', 'Colleague':'#4a9375', 'Other':'#95867a' };
+        const _statusPal = { 'Living':'#4a9375', 'Passed Away':'#b05060', 'Lost Touch':'#c17a2c' };
         tip.innerHTML = '<strong>' + esc(ch.name) + '</strong>'
-          + (ch.aliases ? '<br><em style="color:#a0b0d0">' + esc(ch.aliases) + '</em>' : '')
-          + (ch.species ? '<br>\uD83D\uDC64 ' + esc(ch.species) : '')
-          + (ch.status  ? '<br><span style="color:' + ({'Living':'#2ecc71','Passed Away':'#e74c3c','Lost Touch':'#f39c12'}[ch.status]||'#95a5a6') + '">\u25CF</span> ' + esc(ch.status) : '')
+          + (ch.aliases ? '<br><em>' + esc(ch.aliases) + '</em>' : '')
+          + (ch.alignment ? '<br><span style="color:' + (_relPal[ch.alignment]||'#95867a') + '">\u25CF</span> ' + esc(ch.alignment) : '')
+          + (ch.status  ? '<br><span style="color:' + (_statusPal[ch.status]||'#8b6e4e') + '">\u25CF</span> ' + esc(ch.status) : '')
           + '<br>\uD83D\uDCC5 ' + evs.length + ' event' + (evs.length !== 1 ? 's' : '')
-          + (unis.length ? '<br>\uD83C\uDF0D ' + esc(unis.join(', ')) : '')
-          + (ch.powers ? '<br>\u26A1 ' + esc(ch.powers.split('\n')[0].slice(0, 65)) + (ch.powers.length > 65 ? '\u2026' : '') : '')
-          + '<br><span style="font-size:10px;color:#6070a0;margin-top:4px;display:block">Click to open full profile</span>';
+          + (unis.length ? '<br>\uD83C\uDF31 ' + esc(unis.join(', ')) : '')
+          + (ch.powers ? '<br>\u2728 ' + esc(ch.powers.split('\n')[0].slice(0, 65)) + (ch.powers.length > 65 ? '\u2026' : '') : '')
+          + '<br><span style="font-size:10.5px;color:#8b6e4e;margin-top:4px;display:block">Click to open full profile</span>';
         _showMapTip(tip, e, wrap);
       });
     });
@@ -8617,7 +9759,7 @@ const ConnectionMap = {
         if (!panel) {
           panel = document.createElement('div');
           panel.id = 'cm-edge-panel';
-          panel.style.cssText = 'position:absolute;background:#fff;border:1.5px solid #c8d4f0;border-radius:11px;padding:14px 16px;font-size:13px;z-index:30;max-width:295px;box-shadow:0 8px 30px rgba(0,0,0,.22);max-height:320px;overflow-y:auto;';
+          panel.style.cssText = 'position:absolute;background:#fffaec;border:1px solid #c9ae78;border-radius:12px;padding:14px 16px;font-size:13px;z-index:30;max-width:300px;box-shadow:0 10px 32px rgba(80,55,20,.25),0 0 0 1px rgba(255,255,255,.55) inset;max-height:320px;overflow-y:auto;backdrop-filter:blur(6px);';
           document.getElementById('cm-wrap').appendChild(panel);
         }
         const rect = wrap.getBoundingClientRect();
@@ -8627,17 +9769,16 @@ const ConnectionMap = {
         panel.style.left = lx + 'px'; panel.style.top = ly + 'px';
         panel.innerHTML =
           '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">'
-          + '<strong style="font-size:14px;color:#1a1a2e">\uD83C\uDFAD Shared Events</strong>'
-          + '<button onclick="document.getElementById(\'cm-edge-panel\').style.display=\'none\'" style="background:none;border:none;cursor:pointer;font-size:20px;color:#aaa;line-height:1;padding:0 0 0 10px">&times;</button>'
+          + '<strong style="font-size:14px;color:#3d2b1f">\uD83D\uDD56 Shared Memories</strong>'
+          + '<button onclick="document.getElementById(\'cm-edge-panel\').style.display=\'none\'" style="background:none;border:none;cursor:pointer;font-size:20px;color:#a8916d;line-height:1;padding:0 0 0 10px">&times;</button>'
           + '</div>'
-          + '<div style="font-size:12px;color:#6080a0;margin-bottom:10px;font-style:italic">' + esc(ca.name) + ' &amp; ' + esc(cb.name) + '</div>'
+          + '<div style="font-size:12px;color:#8b6e4e;margin-bottom:10px;font-style:italic">' + esc(ca.name) + ' &amp; ' + esc(cb.name) + '</div>'
           + evs.map(ev => {
               const uu = getU(ev.universeId);
-              return '<div class="shared-ev-item" onclick="MS.push({t:\'evDetail\',evId:\'' + ev.id + '\'});M.render()"'
-                + ' style="cursor:pointer;padding:7px 4px;border-bottom:1px solid #f0f4fc">'
-                + '<div class="shared-ev-dot" style="background:' + (uu?uu.color:'#ccc') + '"></div>'
-                + '<div><div style="font-size:12px;font-weight:600;color:#1a1a2e">' + esc(ev.title) + '</div>'
-                + '<div style="font-size:10px;color:#7080a0">' + esc(ev.date||'?') + (uu ? ' \u2014 ' + esc(uu.name) : '') + '</div></div>'
+              return '<div class="shared-ev-item" onclick="MS.push({t:\'evDetail\',evId:\'' + ev.id + '\'});M.render()">'
+                + '<div class="shared-ev-dot" style="background:' + (uu?uu.color:'#b29070') + '"></div>'
+                + '<div><div style="font-size:12.5px;font-weight:600;color:#3d2b1f">' + esc(ev.title) + '</div>'
+                + '<div style="font-size:10.5px;color:#8b6e4e">' + esc(ev.date||'?') + (uu ? ' \u2014 ' + esc(uu.name) : '') + '</div></div>'
                 + '</div>';
             }).join('');
         panel.style.display = 'block';
@@ -8649,12 +9790,15 @@ const ConnectionMap = {
         const cb = S.people.find(c => c.id === el.dataset.b);
         if (!ca || !cb) return;
         const cnt = parseInt(el.dataset.cnt) || 0;
+        const relType = el.dataset.reltype || '';
         const evIds = (el.dataset.evids || '').split(',').filter(Boolean);
         const evTitles = evIds.slice(0, 4).map(eid => { const ev = S.events.find(ev => ev.id === eid); return ev ? '\u2022 ' + esc(ev.title) : null; }).filter(Boolean).join('<br>');
         tip.innerHTML = '<strong>' + cnt + ' Shared Event' + (cnt !== 1 ? 's' : '') + '</strong><br>'
-          + esc(ca.name) + ' &amp; ' + esc(cb.name) + '<br>' + evTitles
+          + esc(ca.name) + ' &amp; ' + esc(cb.name)
+          + (relType ? '<br><em>Relationship: ' + esc(relType) + '</em>' : '')
+          + '<br>' + evTitles
           + (evIds.length > 4 ? '<br>\u2026 +' + (evIds.length - 4) + ' more' : '')
-          + '<br><span style="font-size:10px;color:#6070a0">\uD83D\uDC49 Click to see all events</span>';
+          + '<br><span style="font-size:10.5px;color:#8b6e4e">\uD83D\uDC49 Click to see all events</span>';
         _showMapTip(tip, e, wrap);
       });
       el.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
@@ -8720,11 +9864,419 @@ function _openEv(evId) {
   setTimeout(() => { M.openEvDetail(evId); }, 80);
 }
 
+let _helpState = { query: '', activeId: 'getting-started' };
 
-/* helpTab — switches tabs in the Help modal */
-function helpTab(n) {
-  document.querySelectorAll('.help-tab').forEach((t, i) => t.classList.toggle('active', i === n));
-  document.querySelectorAll('.help-section').forEach((s, i) => s.classList.toggle('active', i === n));
+const HELP_GUIDE_SECTIONS = [
+  {
+    id: 'getting-started',
+    title: 'Getting Started',
+    note: 'Your first visit and what to do first.',
+    kicker: 'First steps',
+    searchText: 'start begin first visit help guide life track event autosave private local',
+    html: `
+      <div class="help-tip"><strong>Welcome to Free Timeline Biography.</strong> Think of it as a private archive for one life story. You add moments, place them on a timeline, and come back whenever you want to add more.</div>
+      <p>Most people start with one life track and one event. Click <strong>+ Life Track</strong>, give the row a simple name such as <em>My Life</em>, then click <strong>+ Event</strong> to record your first memory.</p>
+      <p>You do not need to begin at birth. Start with any moment you remember well. You can move backward and forward later.</p>
+      <div class="help-action-box"><strong>A calm way to begin:</strong> create one track, add one event, write one honest sentence, then save that event. The rest can grow little by little.</div>
+      <div class="help-mini-list">
+        <div class="help-mini-card"><strong>Where to click</strong><span>The main buttons are in the top toolbar. On mobile, open <strong>More</strong> for extra actions.</span></div>
+        <div class="help-mini-card"><strong>What appears next</strong><span>Each saved event becomes a dot on the timeline. Click the dot any time to read or edit it.</span></div>
+      </div>
+    `
+  },
+  {
+    id: 'what-is-saved-locally',
+    title: 'What is saved locally',
+    note: 'What stays on this device, and the risks to know.',
+    kicker: 'Storage and privacy',
+    searchText: 'local saved browser device privacy offline clearing history browser data same browser same computer localStorage photos attachments risk',
+    html: `
+      <div class="help-warning"><strong>Important:</strong> your working timeline is saved in this browser on this device. It is not sent to a server, and it does not automatically appear in another browser, another phone, or another computer.</div>
+      <p>The app saves your current timeline in the browser every minute. That local copy includes your life tracks, events, people, connections, categories, groups, notes, and anything else already in the timeline.</p>
+      <p>If you clear browser data, use a different browser, use private browsing, reset the device, or lose the device, that local copy can disappear. That is why backups matter.</p>
+      <p>Your exported backup files are different. Those are saved where you choose, such as your Documents folder or a USB drive, and they stay there until you delete them.</p>
+      <div class="help-note"><strong>Safe rule:</strong> treat the browser copy as your working table, and treat backups as your archive boxes.</div>
+    `
+  },
+  {
+    id: 'creating-events',
+    title: 'Creating events',
+    note: 'How to add a memory and what each field means.',
+    kicker: 'Record a moment',
+    searchText: 'create event add event title date description category save people media tags start date end date',
+    html: `
+      <p>An event is one moment, period, or memory. It can be a birthday, a move, a job, a loss, a trip, or something very ordinary that still matters to you.</p>
+      <ol class="help-steps">
+        <li class="help-step"><div class="help-step-num">1</div><div><h4>Click <strong>+ Event</strong></h4><p>Choose the life track where the event belongs. If you only have one track, it is usually selected for you.</p></div></li>
+        <li class="help-step"><div class="help-step-num">2</div><div><h4>Add the main details</h4><p>Use a short title, a date if you know it, and a description in your own words. If you only know part of the date, you can use <strong>X</strong> for the unknown parts, such as <strong>XX/XX/1965</strong>.</p></div></li>
+        <li class="help-step"><div class="help-step-num">3</div><div><h4>Choose a category</h4><p>Categories color the event and make it easier to find later.</p></div></li>
+        <li class="help-step"><div class="help-step-num">4</div><div><h4>Save the event</h4><p>After you save, the event appears on the timeline as a dot. Click that dot to read, edit, or link people.</p></div></li>
+      </ol>
+      <div class="help-tip"><strong>Writing tip:</strong> a few real details make the story stronger. What happened, where were you, and how did it feel?</div>
+    `
+  },
+  {
+    id: 'timeline-navigation',
+    title: 'Timeline navigation',
+    note: 'How to move around without changing your data.',
+    kicker: 'Move through time',
+    searchText: 'navigation pan move timeline drag scroll today reset event dot double click row open event',
+    html: `
+      <p>The timeline is your reading surface. Moving around it does not change your data. It only changes what part of the timeline you are looking at.</p>
+      <p>Drag on empty space to move left or right through time. Older years are on one side, newer years on the other. Click an event dot to open it. Double-click an empty part of a track to add an event quickly in that area.</p>
+      <div class="help-mini-list">
+        <div class="help-mini-card"><strong><span aria-hidden="true">🕘</span> Today</strong><span>Jumps the view back to the current date without changing zoom.</span></div>
+        <div class="help-mini-card"><strong><span aria-hidden="true">⌂</span> Reset</strong><span>Returns the view to the normal position and zoom if you feel lost.</span></div>
+      </div>
+      <div class="help-note">If your events seem to have disappeared, first check whether you are simply looking at a different part of the timeline. <strong>Today</strong> and <strong>Reset</strong> are the fastest way back.</div>
+    `
+  },
+  {
+    id: 'pan-and-zoom',
+    title: 'Pan and zoom',
+    note: 'See the full life or a small period in more detail.',
+    kicker: 'View detail',
+    searchText: 'zoom in out pan ctrl scroll plus minus wheel shift scroll row height scale detail',
+    html: `
+      <p>Panning means moving the view. Zooming means changing how much time fits on the screen.</p>
+      <p>Use the mouse wheel to move across the timeline. Hold <strong>Ctrl</strong> while scrolling to zoom in or out. You can also use the <strong>+</strong> and <strong>−</strong> zoom buttons on the screen.</p>
+      <p>Zoom in when you want to work on a small period with more detail. Zoom out when you want the wider shape of a life, a decade, or many tracks at once.</p>
+      <div class="help-tip"><strong>Helpful reminder:</strong> zoom does not change the event itself. It only changes how close you are looking.</div>
+    `
+  },
+  {
+    id: 'tracks-universes',
+    title: 'Tracks/universes',
+    note: 'Rows on the timeline, including older file names.',
+    kicker: 'Organize rows',
+    searchText: 'tracks universes life tracks rows rename hide show delete legacy universe old backup',
+    html: `
+      <p>A life track is one row on the timeline. Use separate tracks when you want a cleaner story, such as one track for your own life and another for family history or a special chapter.</p>
+      <p>Older backup files may still use the word <strong>Universe</strong>. In Biography, that same idea now appears as <strong>Life Track</strong>.</p>
+      <ol class="help-steps">
+        <li class="help-step"><div class="help-step-num">1</div><div><h4>Create a track</h4><p>Click <strong>+ Life Track</strong>, give it a name, choose a color, and save.</p></div></li>
+        <li class="help-step"><div class="help-step-num">2</div><div><h4>Show or hide it</h4><p>Use the track chips in the filter bar. Hiding a track does not delete anything.</p></div></li>
+        <li class="help-step"><div class="help-step-num">3</div><div><h4>Edit carefully</h4><p>You can rename a track or change its color. If you delete a track, the events inside that track are deleted too, so make a backup first.</p></div></li>
+      </ol>
+    `
+  },
+  {
+    id: 'people-characters',
+    title: 'People/characters',
+    note: 'How to build the people archive beside the timeline.',
+    kicker: 'People archive',
+    searchText: 'people characters person profile new person relationship family friend mentor pin filter timeline path life track context',
+    html: `
+      <p>The <strong>People</strong> view is where you keep important people, family members, friends, colleagues, or any figure connected to the story.</p>
+      <p>Click <strong>People</strong>, then <strong>+ New Person</strong>. Only the name is required. Photo, notes, relationship, occupation, and other details are optional.</p>
+      <p>Each person gets a profile page. That profile shows their linked events, a timeline path, and a <strong>Life Track Context</strong> option so you can read their moments with more background around them.</p>
+      <div class="help-note"><strong>Pin Filter:</strong> inside a person profile you can pin that person as a filter. This is a quick way to show only events connected to them.</div>
+    `
+  },
+  {
+    id: 'categories',
+    title: 'Categories',
+    note: 'Color and label your events for easier reading.',
+    kicker: 'Visual labels',
+    searchText: 'categories category colors labels milestone education career relationship home place grief achievement health',
+    html: `
+      <p>Categories help you understand the timeline at a glance. They give events a type and a color, so one look can tell you whether a period is full of family events, work changes, travel, or something else.</p>
+      <p>Click <strong>Categories</strong> in the toolbar to add your own categories, rename existing ones, or change their colors.</p>
+      <p>When you save an event with a category, the event uses that category color on the timeline and becomes easier to filter later.</p>
+      <div class="help-tip"><strong>Simple habit:</strong> if you are unsure which category to use, pick the closest one and keep going. You can always change it later.</div>
+    `
+  },
+  {
+    id: 'search-and-filters',
+    title: 'Search and filters',
+    note: 'Find one memory fast, even in a large timeline.',
+    kicker: 'Find anything',
+    searchText: 'search filters category people tone status tags clear all mobile search bar pin person',
+    html: `
+      <p>The search box looks through event text so you can find a memory by a word, name, or phrase. Type in the box and the timeline narrows to matching events.</p>
+      <p>The filter bar can also narrow by category, emotional tone, status, tags, and pinned people. On mobile, open <strong>Search/Filters</strong> to reach the same tools.</p>
+      <div class="help-mini-list">
+        <div class="help-mini-card"><strong>Category</strong><span>Show only one type of event.</span></div>
+        <div class="help-mini-card"><strong>People</strong><span>Use a pinned person to show connected moments.</span></div>
+        <div class="help-mini-card"><strong>Tone and status</strong><span>Useful when you want a certain kind of period.</span></div>
+        <div class="help-mini-card"><strong>Clear</strong><span>Turn filters off when you want the full timeline back.</span></div>
+      </div>
+      <div class="help-note">If something seems missing, check whether a search or filter is still active before assuming the event is gone.</div>
+    `
+  },
+  {
+    id: 'relationships-connections',
+    title: 'Relationships/connections',
+    note: 'See how people and events connect together.',
+    kicker: 'Connected lives',
+    searchText: 'relationships connections map people linked events event people section connection map shared events',
+    html: `
+      <p>Connections are created when you link people to events. For example, if a wedding event is linked to two people, both of those people become part of that moment in the archive.</p>
+      <p>Open any event and use the <strong>People</strong> section to link or unlink people. This changes the relationship between the event and the person. It does not delete either one.</p>
+      <p>The <strong>Relationships</strong> view gives you a map of how people connect across the story. It is especially helpful when you want to understand who appears together, who shaped a chapter, or how a circle changed over time.</p>
+    `
+  },
+  {
+    id: 'story-mode',
+    title: 'Story Mode',
+    note: 'How to read Biography as a story.',
+    kicker: 'Read the archive',
+    searchText: 'story mode reading story biography timeline path life track context descriptions media people profiles',
+    html: `
+      <div class="help-note"><strong>There is no separate button called Story Mode in this version.</strong> In Biography, story mode is the way the archive becomes readable when you combine events, descriptions, people, and context.</div>
+      <p>To read the story, open an event dot and read the title, dates, description, notes, and media together. Then open the linked people to see their profiles and linked moments.</p>
+      <p>On a person profile, <strong>Timeline Path</strong> shows their own trail through the story. <strong>Life Track Context</strong> adds surrounding events from the same track, which helps a single memory feel like part of a larger chapter.</p>
+      <p>If you want Biography to feel more like a narrative, write short descriptions instead of only titles. Even one extra sentence often changes the whole reading experience.</p>
+    `
+  },
+  {
+    id: 'importing',
+    title: 'Importing',
+    note: 'Bring in a backup file from your device.',
+    kicker: 'Load a file',
+    searchText: 'import load html json file replace current data choose file',
+    html: `
+      <div class="help-warning"><strong>Import replaces the current timeline.</strong> If the current timeline matters, make a fresh backup before you load anything.</div>
+      <p>Click <strong>Load</strong>, choose a saved <strong>.html</strong> or <strong>.json</strong> backup file, and confirm the import. The timeline on screen will switch to the data from that file.</p>
+      <p>Imported older files still work. If an older file used the word <strong>Universe</strong>, Biography keeps the data and shows those rows as life tracks.</p>
+    `
+  },
+  {
+    id: 'creating-backups',
+    title: 'Creating backups',
+    note: 'Save a copy you can keep outside the browser.',
+    kicker: 'Protect your work',
+    searchText: 'backup create save html save json export documents usb safe copy',
+    html: `
+      <p>Use <strong>Save HTML</strong> when you want a full portable copy that can reopen as its own timeline page. Use <strong>JSON</strong> when you want a plain data backup file.</p>
+      <p>Choose a clear file name and save it somewhere you can find again, such as your Documents folder. For important work, keep a second copy on another device or USB drive.</p>
+      <div class="help-action-box"><strong>Good routine:</strong> create a backup at the end of each session, before big edits, and before clearing browser data or changing devices.</div>
+    `
+  },
+  {
+    id: 'restoring-from-backup',
+    title: 'Restoring from backup',
+    note: 'Bring your saved archive back into the app.',
+    kicker: 'Restore safely',
+    searchText: 'restore backup load current work replace restore timeline from file',
+    html: `
+      <ol class="help-steps">
+        <li class="help-step"><div class="help-step-num">1</div><div><h4>Back up the current timeline first</h4><p>If there is anything on screen that you may want to keep, export it before restoring a different file.</p></div></li>
+        <li class="help-step"><div class="help-step-num">2</div><div><h4>Click <strong>Load</strong></h4><p>Select your saved HTML or JSON backup file.</p></div></li>
+        <li class="help-step"><div class="help-step-num">3</div><div><h4>Confirm the replacement</h4><p>Once confirmed, the app loads the archive from that file and shows it as the current timeline.</p></div></li>
+      </ol>
+      <div class="help-warning">Restore is not a merge. It is a replacement of the current timeline with the backup you chose.</div>
+    `
+  },
+  {
+    id: 'keyboard-shortcuts',
+    title: 'Keyboard shortcuts',
+    note: 'Useful if you have a physical keyboard.',
+    kicker: 'Keyboard help',
+    searchText: 'keyboard shortcuts esc escape arrows ctrl z ctrl y plus minus zero keys',
+    html: `
+      <p>You can use Biography without a keyboard. These shortcuts are optional and mainly helpful on desktop or when a tablet has a connected keyboard.</p>
+      <div class="help-mini-list">
+        <div class="help-mini-card"><strong>Esc</strong><span>Closes an open panel or modal.</span></div>
+        <div class="help-mini-card"><strong>Arrow keys</strong><span>Move the timeline view.</span></div>
+        <div class="help-mini-card"><strong>+</strong> and <strong>−</strong><span>Zoom in or out.</span></div>
+        <div class="help-mini-card"><strong>0</strong><span>Reset zoom and position.</span></div>
+        <div class="help-mini-card"><strong>Ctrl + Z</strong><span>Undo the last change.</span></div>
+        <div class="help-mini-card"><strong>Ctrl + Y</strong><span>Redo a change you undid.</span></div>
+      </div>
+      <div class="help-note"><strong>Inside this guide:</strong> use <strong>Tab</strong> to move, <strong>Enter</strong> or <strong>Space</strong> to open a section, and <strong>Esc</strong> to close the guide.</div>
+    `
+  },
+  {
+    id: 'mobile-use',
+    title: 'Mobile use',
+    note: 'How Biography works on phones and tablets.',
+    kicker: 'Phone and tablet',
+    searchText: 'mobile phone tablet more search filters touch mobile use drawer buttons add event',
+    html: `
+      <p>Biography works on mobile with touch-friendly buttons and drawers. The top bar gives you <strong>Add Event</strong>, <strong>Search/Filters</strong>, and <strong>More</strong>.</p>
+      <p>Open <strong>More</strong> to reach backups, load/import, views, categories, groups, navigation tools, and this guide. Open <strong>Search/Filters</strong> to search events and filter the timeline.</p>
+      <p>On smaller screens, using the on-screen zoom buttons is often easier than keyboard shortcuts. If you have a connected keyboard, the usual shortcuts still help.</p>
+      <div class="help-tip"><strong>Mobile habit:</strong> after any important session, open <strong>More</strong> and make a backup before you close the page.</div>
+    `
+  },
+  {
+    id: 'troubleshooting',
+    title: 'Troubleshooting',
+    note: 'Common problems and the fastest checks.',
+    kicker: 'When something feels wrong',
+    searchText: 'troubleshooting missing events no data reset view filters hidden track browser data import wrong file image too large',
+    html: `
+      <div class="help-mini-list">
+        <div class="help-mini-card"><strong>I cannot see my events</strong><span>Press <strong>Today</strong> or <strong>Reset</strong>, then clear any search or filters. Also check whether the track is hidden.</span></div>
+        <div class="help-mini-card"><strong>My work is gone</strong><span>Check whether you opened the same browser on the same device. If browser data was cleared, restore from a backup file.</span></div>
+        <div class="help-mini-card"><strong>The wrong file loaded</strong><span>Make a backup of what is on screen now if needed, then load the correct backup file.</span></div>
+        <div class="help-mini-card"><strong>An image will not save</strong><span>Large images can fail. Try a smaller image. The app warns when an image is too large for local storage.</span></div>
+      </div>
+      <p>If something still feels wrong, make a backup of the current state before trying more changes. That gives you a safe point to return to.</p>
+      <p>If you need outside help, share only what you are comfortable sharing. Your timeline is private by default.</p>
+    `
+  }
+];
+
+function helpMatchedSections() {
+  const q = (_helpState.query || '').trim().toLowerCase();
+  if (!q) return HELP_GUIDE_SECTIONS;
+  return HELP_GUIDE_SECTIONS.filter(section =>
+    (section.title + ' ' + section.note + ' ' + section.kicker + ' ' + section.searchText + ' ' + section.html.replace(/<[^>]+>/g, ' '))
+      .toLowerCase()
+      .includes(q)
+  );
+}
+
+function helpCurrentId() {
+  const matches = helpMatchedSections();
+  if (!matches.length) return '';
+  const exists = matches.some(section => section.id === _helpState.activeId);
+  if (!exists) _helpState.activeId = matches[0].id;
+  return _helpState.activeId;
+}
+
+function buildHelpGuide() {
+  const matches = helpMatchedSections();
+  const activeId = helpCurrentId();
+  const active = matches.find(section => section.id === activeId);
+  const tabHTML = matches.map((section, idx) =>
+    '<button class="help-tab' + (section.id === activeId ? ' active' : '') + '" type="button" role="tab" aria-selected="' + (section.id === activeId ? 'true' : 'false') + '" aria-controls="help-panel-' + section.id + '" id="help-tab-' + section.id + '" tabindex="' + (section.id === activeId ? '0' : '-1') + '" onclick="helpTab(\'' + section.id + '\')" onkeydown="helpTabKey(event,' + idx + ')">' +
+      '<span class="help-tab-label">' + esc(section.title) + '</span>' +
+      '<span class="help-tab-note">' + esc(section.note) + '</span>' +
+    '</button>'
+  ).join('');
+
+  const sectionHTML = matches.map(section =>
+    '<section class="help-section' + (section.id === activeId ? ' active' : '') + '" id="help-panel-' + section.id + '" role="tabpanel" aria-labelledby="help-tab-' + section.id + '">' +
+      '<div class="help-panel-head">' +
+        '<div class="help-panel-kicker">' + esc(section.kicker) + '</div>' +
+        '<h3 class="help-panel-title">' + esc(section.title) + '</h3>' +
+      '</div>' +
+      '<div class="help-panel-body">' + section.html + '</div>' +
+    '</section>'
+  ).join('');
+
+  const countLabel = matches.length === 1 ? '1 section' : matches.length + ' sections';
+  return '' +
+    '<div class="help-shell" id="help-shell">' +
+      '<div class="help-hero">' +
+        '<div class="help-kicker">Archive Curator Guide</div>' +
+        '<h3>Everything you need to use Free Timeline Biography</h3>' +
+        '<p>This guide is written for real use, not for technical reading. Search for a topic, open a section, and follow the steps at your own pace.</p>' +
+        '<p>Nothing in this guide changes your data. It simply explains how the timeline works and how to keep your archive safe.</p>' +
+        '<div class="help-searchbar">' +
+          '<div class="help-search-wrap">' +
+            '<input class="help-search" id="help-search-input" type="text" placeholder="Search the guide: backup, people, mobile, filters…" value="' + esc(_helpState.query || '') + '" oninput="helpSearch(this.value)">' +
+          '</div>' +
+          '<div class="help-search-meta">' +
+            '<span class="help-chip">' + countLabel + '</span>' +
+            ((_helpState.query || '').trim()
+              ? '<button type="button" class="help-chip help-chip-btn" onclick="helpSearch(\'\')">Clear search</button>'
+              : '<span class="help-chip">Esc closes</span>') +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      (matches.length
+        ? '<div class="help-layout">' +
+            '<aside class="help-nav" aria-label="Guide sections">' +
+              '<div class="help-nav-title">Sections</div>' +
+              '<div class="help-tabs" role="tablist" aria-label="Help guide sections">' + tabHTML + '</div>' +
+              '<div class="help-footer-note">Tip: use search to jump to backups, people, filters, keyboard help, or mobile instructions.</div>' +
+            '</aside>' +
+            '<div class="help-content"><div class="help-panel">' + sectionHTML + '</div></div>' +
+          '</div>'
+        : '<div class="help-panel"><div class="help-empty"><strong>No section matches that search.</strong>Try a simpler word such as <em>backup</em>, <em>people</em>, <em>mobile</em>, or <em>filters</em>.</div></div>') +
+    '</div>';
+}
+
+function helpSearch(val) {
+  _helpState.query = val || '';
+  const active = document.activeElement;
+  const activeId = active && active.id;
+  const selectionStart = active && typeof active.selectionStart === 'number' ? active.selectionStart : null;
+  const selectionEnd = active && typeof active.selectionEnd === 'number' ? active.selectionEnd : null;
+  renderHelpGuide({ preserveFocusId: activeId, selectionStart, selectionEnd });
+}
+
+function helpTab(id, shouldFocusBtn) {
+  _helpState.activeId = id;
+  renderHelpGuide({ focusTabId: shouldFocusBtn ? id : '' });
+}
+
+function helpTabKey(e, idx) {
+  const matches = helpMatchedSections();
+  if (!matches.length) return;
+  if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' && e.key !== 'ArrowRight' && e.key !== 'ArrowLeft' && e.key !== 'Home' && e.key !== 'End') return;
+  e.preventDefault();
+  let next = idx;
+  if (e.key === 'Home') next = 0;
+  else if (e.key === 'End') next = matches.length - 1;
+  else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') next = (idx + 1) % matches.length;
+  else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') next = (idx - 1 + matches.length) % matches.length;
+  helpTab(matches[next].id, true);
+}
+
+function helpFocusableEls() {
+  const shell = document.getElementById('help-shell');
+  if (!shell) return [];
+  return Array.from(shell.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'))
+    .filter(el => !el.disabled && el.offsetParent !== null);
+}
+
+function helpTrapFocus(e) {
+  if (e.key !== 'Tab') return;
+  const els = helpFocusableEls();
+  if (!els.length) return;
+  const first = els[0];
+  const last = els[els.length - 1];
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
+}
+
+function initHelpGuide(opts) {
+  const shell = document.getElementById('help-shell');
+  if (!shell) return;
+  shell.addEventListener('keydown', helpTrapFocus);
+  const preserveFocusId = opts && opts.preserveFocusId;
+  const focusTabId = opts && opts.focusTabId;
+  if (preserveFocusId) {
+    const target = document.getElementById(preserveFocusId);
+    if (target && typeof target.focus === 'function') {
+      target.focus();
+      if (preserveFocusId === 'help-search-input' && typeof opts.selectionStart === 'number' && typeof target.setSelectionRange === 'function') {
+        target.setSelectionRange(opts.selectionStart, opts.selectionEnd == null ? opts.selectionStart : opts.selectionEnd);
+      }
+      return;
+    }
+  }
+  if (focusTabId) {
+    const btn = document.getElementById('help-tab-' + focusTabId);
+    if (btn) { btn.focus(); return; }
+  }
+  const search = document.getElementById('help-search-input');
+  if (search) {
+    setTimeout(() => {
+      try {
+        search.focus();
+        const len = search.value.length;
+        if (typeof search.setSelectionRange === 'function') search.setSelectionRange(len, len);
+      } catch (_) {}
+    }, 0);
+  }
+}
+
+function renderHelpGuide(opts) {
+  const body = document.getElementById('m-body');
+  if (!body) return;
+  body.innerHTML = buildHelpGuide();
+  initHelpGuide(opts || {});
 }
 
 /* buildUniStats — returns object with event/char counts */
@@ -9108,11 +10660,16 @@ window.addEventListener('resize', repositionOpenDrops);
     const drawer = document.getElementById('bio-mobile-more-drawer');
     const scrim = document.getElementById('bio-mobile-scrim');
     const btn = document.getElementById('bio-mobile-more-btn');
+    const search = document.getElementById('bio-mobile-action-search');
     if (!drawer) return;
     const open = !drawer.classList.contains('open');
     drawer.classList.toggle('open', open);
     if (scrim) scrim.classList.toggle('open', open);
     if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (search && open) {
+      search.value = '';
+      bioMobileFilterActions('');
+    }
     if (open) bioMobileCloseFilters();
   }
 
@@ -9128,6 +10685,32 @@ window.addEventListener('resize', repositionOpenDrops);
   function bioMobileGoView(view) {
     bioMobileCloseMore();
     switchView(view);
+  }
+  function bioMobileFilterActions(query) {
+    const q = (query || '').trim().toLowerCase();
+    const items = document.querySelectorAll('#bio-mobile-more-drawer .bio-mobile-action, #bio-mobile-more-drawer .bio-mobile-action-label');
+    items.forEach(function(item) {
+      const hay = ((item.textContent || '') + ' ' + (item.getAttribute('title') || '')).toLowerCase();
+      item.style.display = (!q || hay.indexOf(q) !== -1) ? '' : 'none';
+    });
+    const heads = document.querySelectorAll('#bio-mobile-more-drawer .bio-drawer-section-head');
+    heads.forEach(function(head) {
+      let node = head.nextElementSibling;
+      let hasVisible = false;
+      while (node && !node.classList.contains('bio-drawer-section-head')) {
+        if ((node.classList.contains('bio-mobile-action') || node.classList.contains('bio-mobile-action-label')) && node.style.display !== 'none') {
+          hasVisible = true;
+          break;
+        }
+        node = node.nextElementSibling;
+      }
+      head.style.display = hasVisible || !q ? '' : 'none';
+    });
+  }
+  function bioOpenStoryGuide() {
+    bioMobileCloseMore();
+    _helpState = { query: '', activeId: 'story-mode' };
+    UI.help();
   }
 
   function bioMobileSetTrackHeight(value) {
@@ -9212,5 +10795,5 @@ window.addEventListener('resize', repositionOpenDrops);
     notify('Blank timeline ready.', 'warning');
   }
   </script>
-  </body>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef66464f9a5e3c8',t:'MTc3NjcxMTYyOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
   </html>
