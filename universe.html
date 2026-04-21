@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-      <meta name="google-adsense-account" content="ca-pub-4135034633295293">
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293"
-     crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Free Timeline Universe</title>
@@ -4304,8 +4301,56 @@ function expandRecurringEvents() {
 const CV  = () => document.getElementById('tl-canvas');
 const CTX = () => CV().getContext('2d');
 
+/* =====================================================
+   ORIENTATION MODE SWITCH (Phase 2)
+   -----------------------------------------------------
+   Single source of truth for the timeline's layout
+   orientation. All future mobile-only logic must be
+   gated behind `ORIENTATION === 'vertical'`.
+
+   - 'horizontal'  -> desktop (time = X axis, universes stacked as rows)
+   - 'vertical'    -> mobile  (time = Y axis, universes laid out as columns)
+
+   `isVerticalTimelineLayout()` is kept as a backward-
+   compatible alias so existing call sites (drag, draw,
+   touch, hit-test, clamp) keep working unchanged.
+   ===================================================== */
+const _orientationMQ =
+  window.matchMedia('(max-width: 820px) and (pointer: coarse)');
+
+function _detectIsMobile() { return _orientationMQ.matches; }
+let isMobile = _detectIsMobile();
+let ORIENTATION = isMobile ? 'vertical' : 'horizontal';
+
+function setOrientation(o) {
+  if (o !== 'horizontal' && o !== 'vertical') return;
+  if (o === ORIENTATION) return;
+  ORIENTATION = o;
+  isMobile = (o === 'vertical');
+  /* Re-measure the canvas (DPR + new plot area) and repaint.
+     `_tlResize` is exposed by initCanvas() once it runs;
+     fall back to render() before that. */
+  if (typeof window._tlResize === 'function') window._tlResize();
+  else if (typeof render === 'function') render();
+}
+
+function _reevaluateOrientation() {
+  setOrientation(_detectIsMobile() ? 'vertical' : 'horizontal');
+}
+
+/* Listen for layout-mode flips (rotation, browser resize,
+   plugging in a mouse on a hybrid device, etc.). */
+if (typeof _orientationMQ.addEventListener === 'function') {
+  _orientationMQ.addEventListener('change', _reevaluateOrientation);
+} else if (typeof _orientationMQ.addListener === 'function') {
+  /* Safari < 14 */
+  _orientationMQ.addListener(_reevaluateOrientation);
+}
+window.addEventListener('resize', _reevaluateOrientation);
+window.addEventListener('orientationchange', _reevaluateOrientation);
+
 function isVerticalTimelineLayout() {
-  return window.matchMedia('(max-width: 820px)').matches;
+  return ORIENTATION === 'vertical';
 }
 
 function timeAxisStart() { return isVerticalTimelineLayout() ? RULER_H : LEFT_W; }
@@ -4331,20 +4376,713 @@ function sw(sx) { return (sx - centerX() - V.panX) / V.scale; }
 // Screen X -> decimal year
 function sy2yr(sx) { return OY + sw(sx) / BPPY; }
 
-// Screen coordinate of track center (vIdx = visual index among visible universes)
-function trackY(vIdx) { return trackAxisStart() + vIdx * TRACK_H + TRACK_H / 2 + V.panY; }
-function eventScreenX(decYear, vIdx) { return isVerticalTimelineLayout() ? trackY(vIdx) : ws(yw(decYear)); }
-function eventScreenY(decYear, vIdx) { return isVerticalTimelineLayout() ? ws(yw(decYear)) : trackY(vIdx); }
+/* =====================================================
+   AXIS MAPPING ABSTRACTION (Phase 3.1)
+   -----------------------------------------------------
+   The timeline has two logical axes:
+     - MAIN  axis = the time axis the user scrolls along
+     - CROSS axis = the universe / life-track lane axis
+
+   On desktop  (ORIENTATION === 'horizontal'):
+     MAIN  = X (left -> right, time)
+     CROSS = Y (top  -> bottom, one ROW per universe)
+   On mobile   (ORIENTATION === 'vertical'):
+     MAIN  = Y (top  -> bottom, time, Instagram-style scroll)
+     CROSS = X (left -> right, one COLUMN per universe)
+
+   Every site that needs a screen coordinate for an event
+   or a track lane goes through these two helpers.
+   ===================================================== */
+
+// MAIN axis: decimal year -> screen pixel along the time axis
+function timeToMain(decYear) { return ws(yw(decYear)); }
+
+// CROSS axis: visible-track index -> screen pixel along the lane axis
+function universeToCross(vIdx) {
+  return trackAxisStart() + vIdx * TRACK_H + TRACK_H / 2 + V.panY;
+}
+
+// Backward-compatible alias used throughout the renderer.
+function trackY(vIdx) { return universeToCross(vIdx); }
+
+// Composite screen coordinates for an event (delegates to the two helpers).
+function eventScreenX(decYear, vIdx) {
+  return isVerticalTimelineLayout() ? universeToCross(vIdx) : timeToMain(decYear);
+}
+function eventScreenY(decYear, vIdx) {
+  return isVerticalTimelineLayout() ? timeToMain(decYear) : universeToCross(vIdx);
+}
+
+// Pointer/touch coordinate projected onto the MAIN / CROSS axis.
 function primaryScreenCoord(mx, my) { return isVerticalTimelineLayout() ? my : mx; }
-function crossScreenCoord(mx, my) { return isVerticalTimelineLayout() ? mx : my; }
+function crossScreenCoord(mx, my)   { return isVerticalTimelineLayout() ? mx : my; }
 function isInPlotArea(mx, my) {
   return isVerticalTimelineLayout()
     ? (mx >= RULER_H && my >= LEFT_W)
     : (mx >= LEFT_W && my >= RULER_H);
 }
 
+/* =====================================================
+   UNIVERSE PILL BAR (Phase 3.2) — mobile only
+   -----------------------------------------------------
+   Renders a sticky top bar inside #canvas-wrap that lists
+   every visible universe as a horizontally-scrollable
+   pill. Tapping a pill scrolls the canvas so that
+   universe's COLUMN is centered on screen. Whichever
+   column is currently centered is highlighted as active.
+   On desktop the bar is hidden and the original left-side
+   universe labels remain in charge.
+   ===================================================== */
+(function setupUniversePillBar() {
+  function tracksArr() {
+    if (typeof S === 'undefined' || !S) return [];
+    return S.lifeTracks || S.universes || [];
+  }
+  function visibleTracks() { return tracksArr().filter(u => u.visible !== false); }
+  function escapeHTML(str) {
+    return String(str == null ? '' : str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  /* One-time stylesheet injection (mobile-only via media query). */
+  function injectStyles() {
+    if (document.getElementById('upb-styles')) return;
+    const s = document.createElement('style');
+    s.id = 'upb-styles';
+    s.textContent = [
+      '#universe-pill-bar { display: none; }',
+      '@media (max-width: 820px) and (pointer: coarse) {',
+      '  #universe-pill-bar {',
+      '    display: flex; gap: 6px;',
+      '    position: absolute; top: 0; left: 0; right: 0;',
+      '    z-index: 7; padding: 8px 10px;',
+      '    background: linear-gradient(180deg, rgba(14,16,32,0.96) 0%, rgba(14,16,32,0.78) 80%, rgba(14,16,32,0) 100%);',
+      '    overflow-x: auto; overflow-y: hidden;',
+      '    scroll-snap-type: x mandatory;',
+      '    -webkit-overflow-scrolling: touch;',
+      '    scrollbar-width: none;',
+      '    padding-top: calc(8px + env(safe-area-inset-top, 0px));',
+      '    border-bottom: 1px solid rgba(100,120,200,0.18);',
+      '  }',
+      '  #universe-pill-bar::-webkit-scrollbar { display: none; }',
+      '  .upb-pill {',
+      '    flex: 0 0 auto; scroll-snap-align: center;',
+      '    display: inline-flex; align-items: center; gap: 7px;',
+      '    padding: 7px 14px; border-radius: 999px;',
+      '    background: rgba(200,210,240,0.10);',
+      '    color: #c8cde0; font: 600 12.5px/1 inherit;',
+      '    border: 1px solid rgba(100,120,200,0.25);',
+      '    cursor: pointer; opacity: 0.6;',
+      '    transition: opacity .18s, background .18s, border-color .18s, transform .12s;',
+      '    white-space: nowrap; max-width: 50vw;',
+      '    min-height: 36px;',
+      '  }',
+      '  .upb-pill:active { transform: scale(0.96); }',
+      '  .upb-pill.is-active {',
+      '    opacity: 1; font-weight: 700;',
+      '    background: linear-gradient(135deg, rgba(74,143,222,0.35), rgba(58,112,192,0.35));',
+      '    border-color: rgba(120,170,255,0.6);',
+      '    text-decoration: underline; text-underline-offset: 4px;',
+      '    box-shadow: 0 0 12px rgba(74,143,222,0.35);',
+      '  }',
+      '  .upb-dot {',
+      '    width: 10px; height: 10px; border-radius: 50%;',
+      '    box-shadow: 0 0 0 1px rgba(0,0,0,0.35) inset;',
+      '    flex-shrink: 0;',
+      '  }',
+      '  .upb-name {',
+      '    overflow: hidden; text-overflow: ellipsis; max-width: 40vw;',
+      '  }',
+      '}'
+    ].join('\n');
+    document.head.appendChild(s);
+  }
+
+  function ensureBar() {
+    let bar = document.getElementById('universe-pill-bar');
+    if (bar) return bar;
+    const wrap = document.getElementById('canvas-wrap');
+    if (!wrap) return null;
+    bar = document.createElement('div');
+    bar.id = 'universe-pill-bar';
+    bar.setAttribute('role', 'tablist');
+    bar.setAttribute('aria-label', 'Universe selector');
+    /* Insert as the first child so it overlays the top of the canvas. */
+    wrap.insertBefore(bar, wrap.firstChild);
+    return bar;
+  }
+
+  function currentCenteredVIdx() {
+    if (!isVerticalTimelineLayout()) return -1;
+    const c = CV(); if (!c || !c.width) return -1;
+    const vis = visibleTracks();
+    if (vis.length === 0) return -1;
+    const centerCross = c.width / 2;
+    let best = 0, bestD = Infinity;
+    for (let i = 0; i < vis.length; i++) {
+      const x = universeToCross(i);
+      const d = Math.abs(x - centerCross);
+      if (d < bestD) { bestD = d; best = i; }
+    }
+    return best;
+  }
+
+  function renderPillBar() {
+    const bar = ensureBar(); if (!bar) return;
+    if (!isVerticalTimelineLayout()) {
+      if (bar.style.display !== 'none') {
+        bar.style.display = 'none'; bar.innerHTML = ''; bar._sig = '';
+      }
+      return;
+    }
+    bar.style.display = '';
+    const vis = visibleTracks();
+    const sig = vis.map(u => u.id + '|' + (u.name||'') + '|' + (u.color||'')).join('§');
+    if (bar._sig !== sig) {
+      bar._sig = sig;
+      bar._lastActive = -1;
+      bar.innerHTML = vis.map((u, i) =>
+        '<button type="button" class="upb-pill" role="tab" data-uid="' +
+        escapeHTML(u.id) + '" data-vidx="' + i + '" aria-selected="false">' +
+          '<span class="upb-dot" style="background:' + escapeHTML(u.color || '#888') + '"></span>' +
+          '<span class="upb-name">' + escapeHTML(u.name || 'Untitled') + '</span>' +
+        '</button>'
+      ).join('');
+      bar.querySelectorAll('.upb-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const uid = btn.getAttribute('data-uid');
+          centerUniverseColumn(uid, true);
+        });
+      });
+    }
+    /* Active highlight — driven by S.activeUniverseId (source of truth on
+       mobile). Falls back to the geometrically centered column when the
+       state hasn't been seeded yet. */
+    let activeIdx = -1;
+    if (typeof S === 'object' && S && S.activeUniverseId) {
+      activeIdx = vis.findIndex(u => u.id === S.activeUniverseId);
+    }
+    if (activeIdx < 0) {
+      activeIdx = currentCenteredVIdx();
+      if (activeIdx >= 0 && S) S.activeUniverseId = vis[activeIdx].id;
+    }
+    const pills = bar.querySelectorAll('.upb-pill');
+    pills.forEach((btn, i) => {
+      const isActive = (i === activeIdx);
+      btn.classList.toggle('is-active', isActive);
+      btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+    if (activeIdx >= 0 && activeIdx !== bar._lastActive) {
+      bar._lastActive = activeIdx;
+      const btn = pills[activeIdx];
+      if (btn) {
+        const target = btn.offsetLeft - bar.clientWidth / 2 + btn.clientWidth / 2;
+        const reduce = window.matchMedia &&
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        bar.scrollTo({ left: Math.max(0, target), behavior: reduce ? 'auto' : 'smooth' });
+      }
+    }
+  }
+
+  /* Per-universe time-axis scroll memory. Mobile-only: we save V.panX
+     (the primary/time-axis pan in vertical layout) when leaving a
+     universe column and restore it when returning, so the user lands
+     back on the same point in time they left. */
+  const _timeScrollByUniverse = Object.create(null);
+  function _saveTimeScrollFor(uid) {
+    if (!uid || typeof V !== 'object' || !V) return;
+    _timeScrollByUniverse[uid] = V.panX;
+  }
+  function _restoreTimeScrollFor(uid) {
+    if (!uid || typeof V !== 'object' || !V) return false;
+    if (!Object.prototype.hasOwnProperty.call(_timeScrollByUniverse, uid)) return false;
+    V.panX = _timeScrollByUniverse[uid];
+    if (typeof clampPanX === 'function') clampPanX();
+    return true;
+  }
+
+  function centerUniverseColumn(uId, animated) {
+    const vis = visibleTracks();
+    const i = vis.findIndex(u => u.id === uId);
+    if (i < 0) return;
+
+    const verticalMode = isVerticalTimelineLayout();
+
+    /* Update the source of truth + per-universe time-scroll memory.
+       On desktop the state is recorded but never affects rendering. */
+    if (verticalMode && typeof S === 'object' && S
+        && S.activeUniverseId && S.activeUniverseId !== uId) {
+      _saveTimeScrollFor(S.activeUniverseId);
+    }
+    if (typeof S === 'object' && S) S.activeUniverseId = uId;
+
+    if (!verticalMode) return; /* desktop: no visual change */
+
+    _restoreTimeScrollFor(uId);
+
+    const c = CV(); if (!c || !c.width) { renderPillBar(); return; }
+    const targetPanY = c.width / 2 - trackAxisStart() - i * TRACK_H - TRACK_H / 2;
+    const reduce = window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!animated || reduce) {
+      V.panY = targetPanY;
+      if (typeof clampPanY === 'function') clampPanY();
+      if (typeof render === 'function') render();
+      renderPillBar();
+      return;
+    }
+    const startPan = V.panY;
+    const t0 = performance.now();
+    const dur = 300; /* 300ms ease-out per spec */
+    (function step(now) {
+      const t = Math.min(1, ((now || performance.now()) - t0) / dur);
+      const e = 1 - Math.pow(1 - t, 3); /* ease-out cubic */
+      V.panY = startPan + (targetPanY - startPan) * e;
+      if (typeof clampPanY === 'function') clampPanY();
+      if (typeof render === 'function') render();
+      if (t < 1) requestAnimationFrame(step);
+      else renderPillBar();
+    })(t0);
+  }
+  window.centerUniverseColumn = centerUniverseColumn;
+  window._renderUniversePillBar = renderPillBar;
+
+  /* Lightweight rAF watcher: keeps active highlight in sync as the user
+     pans/swipes between universe columns, without monkey-patching render(). */
+  let lastPanY = NaN, lastVisCount = -1, lastOrient = '';
+  (function tick() {
+    const orient = ORIENTATION;
+    const panY = V ? V.panY : 0;
+    const vc = visibleTracks().length;
+    if (orient !== lastOrient || panY !== lastPanY || vc !== lastVisCount) {
+      lastOrient = orient; lastPanY = panY; lastVisCount = vc;
+      try { renderPillBar(); } catch (_) {}
+    }
+    requestAnimationFrame(tick);
+  })();
+
+  function init() {
+    injectStyles();
+    ensureBar();
+    renderPillBar();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  window.addEventListener('resize', renderPillBar);
+  window.addEventListener('orientationchange', renderPillBar);
+})();
+
+/* ============================================================
+   MOBILE UNIVERSE FEED — Instagram-style vertical card list.
+   Replaces the rotated-canvas event rendering for the active
+   universe column on mobile (vertical layout). Desktop and
+   horizontal layout are completely unaffected; this overlay
+   stays display:none unless mobile + vertical timeline.
+   ============================================================ */
+(function () {
+  'use strict';
+  if (typeof window === 'undefined') return;
+
+  const FEED_ID = 'mob-uni-feed';
+  const _scrollByUniverse = Object.create(null);
+
+  function escapeHTML(str) {
+    return String(str == null ? '' : str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function injectStyles() {
+    if (document.getElementById('muf-styles')) return;
+    const s = document.createElement('style');
+    s.id = 'muf-styles';
+    s.textContent = [
+      '#mob-uni-feed { display: none; }',
+      '@media (max-width: 820px) and (pointer: coarse) {',
+      '  #mob-uni-feed {',
+      '    position: absolute; left: 0; right: 0; top: 0; bottom: 0;',
+      '    z-index: 5; background: #0e1020;',
+      '    overflow-y: auto; overflow-x: hidden;',
+      '    -webkit-overflow-scrolling: touch; touch-action: pan-y;',
+      '    padding: calc(60px + env(safe-area-inset-top, 0px)) 0 24px;',
+      '    box-sizing: border-box;',
+      '  }',
+      '  #mob-uni-feed.is-empty { display: flex; align-items: center; justify-content: center; }',
+      '  .muf-empty { color: #8088a8; font: 500 14px/1.4 inherit; text-align: center; padding: 40px 24px; }',
+      '  .muf-stack { display: flex; flex-direction: column; gap: 14px; padding: 0 8px; }',
+      '  .muf-row { display: flex; gap: 10px; padding: 0 8px; align-items: stretch; }',
+      '  .muf-rail {',
+      '    flex: 0 0 56px; min-width: 56px; padding-top: 10px; position: relative;',
+      '    display: flex; flex-direction: column; align-items: center;',
+      '    color: #a8b0d0; font: 600 11px/1.2 inherit; text-align: center;',
+      '  }',
+      '  .muf-rail::before {',
+      '    content: ""; position: absolute; top: 0; bottom: 0;',
+      '    left: 50%; width: 2px; transform: translateX(-50%);',
+      '    background: rgba(120,140,200,0.18);',
+      '  }',
+      '  .muf-rail-dot {',
+      '    width: 10px; height: 10px; border-radius: 50%;',
+      '    background: var(--muf-accent, #4a8fde); position: relative; z-index: 1;',
+      '    box-shadow: 0 0 0 3px #0e1020;',
+      '  }',
+      '  .muf-rail-date { margin-top: 6px; position: relative; z-index: 1; background: #0e1020; padding: 2px 0; }',
+      '  .muf-card {',
+      '    flex: 1 1 auto; min-width: 0;',
+      '    background: linear-gradient(180deg, rgba(28,32,56,0.95), rgba(22,26,44,0.95));',
+      '    border: 1px solid rgba(100,120,200,0.22);',
+      '    border-left: 3px solid var(--muf-accent, #4a8fde);',
+      '    border-radius: 14px; padding: 12px 14px; color: #e0e8ff;',
+      '    cursor: pointer; transition: transform .12s, background .18s, border-color .18s;',
+      '    display: flex; flex-direction: column; gap: 8px;',
+      '  }',
+      '  .muf-card:active { transform: scale(0.985); background: rgba(40,46,78,0.95); }',
+      '  .muf-card-head { display: flex; align-items: flex-start; gap: 10px; justify-content: space-between; }',
+      '  .muf-card-title {',
+      '    font: 700 15px/1.3 inherit; color: #e8eeff;',
+      '    overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;',
+      '    word-break: break-word; flex: 1 1 auto; min-width: 0;',
+      '  }',
+      '  .muf-card-date {',
+      '    flex: 0 0 auto; font: 600 11px/1 inherit; color: #c8cde0;',
+      '    background: rgba(74,143,222,0.18); border: 1px solid rgba(120,170,255,0.35);',
+      '    padding: 4px 8px; border-radius: 999px; white-space: nowrap;',
+      '  }',
+      '  .muf-card-desc {',
+      '    font: 400 13px/1.45 inherit; color: #b8c0d8;',
+      '    overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;',
+      '    word-break: break-word;',
+      '  }',
+      '  .muf-card-thumb {',
+      '    width: 100%; max-height: 180px; object-fit: cover; border-radius: 10px;',
+      '    background: rgba(0,0,0,0.25);',
+      '  }',
+      '  .muf-card-meta {',
+      '    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;',
+      '    font: 500 11px/1 inherit; color: #8a93b3;',
+      '  }',
+      '  .muf-sub-list {',
+      '    display: flex; flex-direction: column; gap: 8px; margin-top: 4px;',
+      '    padding-left: 14px; border-left: 2px dashed rgba(120,140,200,0.3);',
+      '  }',
+      '  .muf-sub-card {',
+      '    background: rgba(40,46,78,0.55);',
+      '    border: 1px solid rgba(100,120,200,0.18);',
+      '    border-radius: 10px; padding: 8px 10px;',
+      '    font: 600 12.5px/1.3 inherit; color: #d6dcf2;',
+      '    display: flex; gap: 8px; align-items: center; justify-content: space-between;',
+      '    cursor: pointer; transition: background .18s, transform .12s;',
+      '  }',
+      '  .muf-sub-card:active { transform: scale(0.985); background: rgba(56,64,100,0.7); }',
+      '  .muf-sub-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1 1 auto; }',
+      '  .muf-sub-date {',
+      '    flex: 0 0 auto; color: #a8b0d0; font: 500 10.5px/1 inherit;',
+      '    background: rgba(120,140,200,0.15); padding: 3px 7px; border-radius: 999px;',
+      '  }',
+      '}'
+    ].join('\n');
+    document.head.appendChild(s);
+  }
+
+  function ensureFeed() {
+    let feed = document.getElementById(FEED_ID);
+    if (feed) return feed;
+    const wrap = document.getElementById('canvas-wrap');
+    if (!wrap) return null;
+    feed = document.createElement('div');
+    feed.id = FEED_ID;
+    feed.setAttribute('role', 'region');
+    feed.setAttribute('aria-label', 'Universe events feed');
+    /* Insert after the pill bar so the bar overlays it visually. */
+    const pill = document.getElementById('universe-pill-bar');
+    if (pill && pill.nextSibling) wrap.insertBefore(feed, pill.nextSibling);
+    else wrap.appendChild(feed);
+    feed.addEventListener('scroll', function () {
+      const uid = (typeof S === 'object' && S) ? S.activeUniverseId : null;
+      if (uid) _scrollByUniverse[uid] = feed.scrollTop;
+    }, { passive: true });
+    return feed;
+  }
+
+  function isVertical() {
+    return typeof isVerticalTimelineLayout === 'function' && isVerticalTimelineLayout();
+  }
+
+  function visibleUniverses() {
+    if (typeof S !== 'object' || !S) return [];
+    const arr = (S.universes || S.lifeTracks || []);
+    return arr.filter(u => u.visible !== false);
+  }
+
+  function activeUniverse() {
+    if (typeof S !== 'object' || !S) return null;
+    const arr = (S.universes || S.lifeTracks || []);
+    if (S.activeUniverseId) {
+      const u = arr.find(x => x.id === S.activeUniverseId);
+      if (u) return u;
+    }
+    return arr.find(x => x.visible !== false) || null;
+  }
+
+  function eventDateMs(ev) {
+    if (typeof parseDate === 'function') {
+      const v = parseDate(ev.date, ev.time);
+      if (typeof v === 'number') return v;
+    }
+    return 0;
+  }
+
+  function firstImage(ev) {
+    if (!ev || !Array.isArray(ev.media)) return null;
+    for (const m of ev.media) {
+      if (m && m.type === 'image' && m.src) return m;
+    }
+    return null;
+  }
+
+  function shortDesc(ev) {
+    const raw = ((ev && (ev.description || ev.notes)) || '').trim();
+    if (!raw) return '';
+    return raw.length > 180 ? raw.slice(0, 177) + '\u2026' : raw;
+  }
+
+  function cardHTML(ev, accent) {
+    const img = firstImage(ev);
+    const desc = shortDesc(ev);
+    const subCount = (ev.subEvents && ev.subEvents.length) || 0;
+    return (
+      '<div class="muf-card" data-evid="' + escapeHTML(ev.id) + '" ' +
+        'style="--muf-accent:' + escapeHTML(accent || '#4a8fde') + '" ' +
+        'role="button" tabindex="0" aria-label="' + escapeHTML(ev.title || 'Untitled event') + '">' +
+        '<div class="muf-card-head">' +
+          '<div class="muf-card-title">' + escapeHTML(ev.title || 'Untitled event') + '</div>' +
+          '<div class="muf-card-date">' + escapeHTML(ev.date || '\u2014') +
+            (ev.time ? ' \u00b7 ' + escapeHTML(ev.time) : '') +
+          '</div>' +
+        '</div>' +
+        (img ? '<img class="muf-card-thumb" src="' + escapeHTML(img.src) + '" alt="" loading="lazy">' : '') +
+        (desc ? '<div class="muf-card-desc">' + escapeHTML(desc) + '</div>' : '') +
+        (subCount > 0
+          ? '<div class="muf-card-meta"><span>\u21b3 ' + subCount + ' sub-event' + (subCount !== 1 ? 's' : '') + '</span></div>'
+          : '') +
+      '</div>'
+    );
+  }
+
+  function subListHTML(parent) {
+    const subs = parent.subEvents || [];
+    if (!subs.length) return '';
+    return '<div class="muf-sub-list">' +
+      subs.map((se, i) => (
+        '<div class="muf-sub-card" data-parent-evid="' + escapeHTML(parent.id) +
+          '" data-sub-idx="' + i + '" role="button" tabindex="0">' +
+          '<span class="muf-sub-title">' + escapeHTML(se.title || 'Untitled sub-event') + '</span>' +
+          '<span class="muf-sub-date">' + escapeHTML(se.date || '\u2014') + '</span>' +
+        '</div>'
+      )).join('') +
+    '</div>';
+  }
+
+  function rowHTML(ev, accent) {
+    const dateText = ev.date ? escapeHTML(ev.date) : '\u2014';
+    return (
+      '<div class="muf-row">' +
+        '<div class="muf-rail" style="--muf-accent:' + escapeHTML(accent || '#4a8fde') + '">' +
+          '<div class="muf-rail-dot"></div>' +
+          '<div class="muf-rail-date">' + dateText + '</div>' +
+        '</div>' +
+        '<div style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:8px;">' +
+          cardHTML(ev, accent) +
+          subListHTML(ev) +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  let _lastSig = '', _lastUid = '';
+
+  function render() {
+    const feed = ensureFeed(); if (!feed) return;
+    if (!isVertical()) {
+      if (feed.style.display !== 'none') {
+        feed.style.display = 'none';
+        feed.innerHTML = '';
+        _lastSig = ''; _lastUid = '';
+      }
+      return;
+    }
+    feed.style.display = '';
+    const u = activeUniverse();
+    if (!u) {
+      if (_lastSig !== '\u2205') {
+        feed.classList.add('is-empty');
+        feed.innerHTML = '<div class="muf-empty">No universe selected.</div>';
+        _lastSig = '\u2205'; _lastUid = '';
+      }
+      return;
+    }
+    const accent = u.color || '#4a8fde';
+    const evs = ((typeof S === 'object' && S && S.events) ? S.events : [])
+      .filter(e => e.universeId === u.id);
+    evs.sort((a, b) => (eventDateMs(a) || 0) - (eventDateMs(b) || 0));
+    const sig = u.id + '|' + accent + '|' + evs.length + '|' +
+      evs.map(e => e.id + ':' + (e.title||'') + ':' + (e.date||'') + ':' +
+        ((e.subEvents||[]).length) + ':' + ((e.media||[]).length)).join('\u00a7');
+    if (sig === _lastSig) return;
+    _lastSig = sig;
+    if (evs.length === 0) {
+      feed.classList.add('is-empty');
+      feed.innerHTML = '<div class="muf-empty">No events yet in <strong>' +
+        escapeHTML(u.name || 'this universe') + '</strong>.<br>Long-press the timeline to add one.</div>';
+    } else {
+      feed.classList.remove('is-empty');
+      feed.innerHTML = '<div class="muf-stack">' +
+        evs.map(e => rowHTML(e, accent)).join('') +
+      '</div>';
+    }
+    if (_lastUid !== u.id) {
+      _lastUid = u.id;
+      const sv = _scrollByUniverse[u.id];
+      feed.scrollTop = (typeof sv === 'number') ? sv : 0;
+    }
+  }
+
+  function bindTaps() {
+    const feed = ensureFeed(); if (!feed || feed._mufBound) return;
+    feed._mufBound = true;
+    feed.addEventListener('click', function (e) {
+      const sub = e.target.closest && e.target.closest('.muf-sub-card');
+      if (sub) {
+        const pid = sub.getAttribute('data-parent-evid');
+        if (pid && typeof M === 'object' && M && typeof M.openEvDetail === 'function') {
+          M.openEvDetail(pid);
+        }
+        e.stopPropagation();
+        return;
+      }
+      const card = e.target.closest && e.target.closest('.muf-card');
+      if (card) {
+        const id = card.getAttribute('data-evid');
+        if (id && typeof M === 'object' && M && typeof M.openEvDetail === 'function') {
+          M.openEvDetail(id);
+        }
+      }
+    });
+    feed.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const target = e.target.closest && (e.target.closest('.muf-sub-card') || e.target.closest('.muf-card'));
+      if (target) { e.preventDefault(); target.click(); }
+    });
+  }
+
+  /* Horizontal swipe on the feed → page to prev/next visible universe.
+     Native vertical scroll is preserved via touch-action: pan-y. */
+  function bindSwipe() {
+    const feed = ensureFeed(); if (!feed || feed._mufSwipe) return;
+    feed._mufSwipe = true;
+    let sx = 0, sy = 0, st = 0, locked = '', activePid = -1;
+    const LOCK = 10, COMMIT_RATIO = 0.35, COMMIT_VEL = 0.4;
+    feed.addEventListener('pointerdown', function (e) {
+      if (e.pointerType !== 'touch') return;
+      sx = e.clientX; sy = e.clientY;
+      st = e.timeStamp || performance.now();
+      locked = ''; activePid = e.pointerId;
+    }, { passive: true });
+    feed.addEventListener('pointermove', function (e) {
+      if (e.pointerId !== activePid || e.pointerType !== 'touch') return;
+      const dx = e.clientX - sx, dy = e.clientY - sy;
+      if (!locked) {
+        if (Math.abs(dx) > LOCK && Math.abs(dx) > Math.abs(dy) * 1.2) {
+          locked = 'x';
+          try { feed.setPointerCapture(e.pointerId); } catch (_) {}
+        } else if (Math.abs(dy) > LOCK) {
+          locked = 'y';
+        }
+      }
+      if (locked === 'x' && e.cancelable) e.preventDefault();
+    }, { passive: false });
+    function endHandler(e) {
+      if (e.pointerId !== activePid) return;
+      activePid = -1;
+      if (locked !== 'x') return;
+      const dx = e.clientX - sx;
+      const dt = Math.max(1, (e.timeStamp || performance.now()) - st);
+      const vel = Math.abs(dx) / dt;
+      const w = feed.clientWidth || 1;
+      const commit = Math.abs(dx) > w * COMMIT_RATIO || vel > COMMIT_VEL;
+      if (!commit) return;
+      const dir = dx < 0 ? 1 : -1;
+      const vis = visibleUniverses();
+      if (!vis.length) return;
+      const cur = (typeof S === 'object' && S && S.activeUniverseId) ? S.activeUniverseId : vis[0].id;
+      let idx = vis.findIndex(u => u.id === cur);
+      if (idx < 0) idx = 0;
+      const next = vis[Math.max(0, Math.min(vis.length - 1, idx + dir))];
+      if (next && next.id !== cur && typeof window.centerUniverseColumn === 'function') {
+        window.centerUniverseColumn(next.id, true);
+      }
+    }
+    feed.addEventListener('pointerup', endHandler);
+    feed.addEventListener('pointercancel', endHandler);
+  }
+
+  let lastOrient = '', lastActive = '', lastEvLen = -1, lastUniLen = -1;
+  (function tick() {
+    try {
+      const orient = (typeof ORIENTATION !== 'undefined') ? ORIENTATION : '';
+      const active = (typeof S === 'object' && S) ? (S.activeUniverseId || '') : '';
+      const evLen = (typeof S === 'object' && S && S.events) ? S.events.length : -1;
+      const uniLen = visibleUniverses().length;
+      if (orient !== lastOrient || active !== lastActive || evLen !== lastEvLen || uniLen !== lastUniLen) {
+        lastOrient = orient; lastActive = active; lastEvLen = evLen; lastUniLen = uniLen;
+        render();
+      } else if (orient === 'vertical') {
+        render();
+      }
+    } catch (_) {}
+    requestAnimationFrame(tick);
+  })();
+
+  function init() {
+    injectStyles();
+    ensureFeed();
+    bindTaps();
+    bindSwipe();
+    render();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  window.addEventListener('resize', render);
+  window.addEventListener('orientationchange', render);
+  window._renderMobileUniverseFeed = render;
+})();
+
 // Clamp vertical pan so tracks stay reachable
 function clampPanY() {
+  /* Vertical (mobile) mode: V.panY drives the CROSS axis (universe columns).
+     Allow the cross-pan to range so that the FIRST and LAST columns can be
+     centered on screen — otherwise tap-to-center on edge universes would be
+     pinned by the desktop clamp. */
+  if (isVerticalTimelineLayout()) {
+    const c = CV(); if (!c || !c.width) return;
+    const total = visCount();
+    if (total === 0) { V.panY = 0; return; }
+    const centerCross  = c.width / 2;
+    const firstCenterPY = centerCross - trackAxisStart() - TRACK_H / 2;
+    const lastCenterPY  = centerCross - trackAxisStart() - (total - 1) * TRACK_H - TRACK_H / 2;
+    const lo = Math.min(firstCenterPY, lastCenterPY);
+    const hi = Math.max(firstCenterPY, lastCenterPY);
+    V.panY = clamp(V.panY, lo, hi);
+    return;
+  }
+  /* Horizontal (desktop) mode — original behavior preserved. */
   const total = visCount() * TRACK_H;
   const minPY = Math.min(0, trackAxisLength() - total - 24);
   V.panY = clamp(V.panY, minPY, 0);
@@ -5756,129 +6494,250 @@ function initCanvas() {
     }
   }, { passive: false });
 
-  // ---- Touch: tap / smooth pan / smooth pinch-zoom / long-press add ----
-  // Desktop mouse behavior is completely unchanged — all touch code is isolated here.
+  // ---- Pointer Events: native-feeling mobile gestures ----
+  // Desktop mouse drag is handled above and remains unchanged. These handlers
+  // service touch (and pen) only. touch-action: none is applied to the canvas
+  // exclusively while ORIENTATION === 'vertical' so desktop scroll/zoom is
+  // unaffected. The universe-row reorder drag in the left panel is preserved.
   (function() {
-    const TAP_SLOP  = 12;   // px: max movement still counted as a tap
-    const TAP_TIME  = 300;  // ms: max duration for a tap gesture
-    const LPRESS_MS = 620;  // ms: hold time to trigger long-press → add event
+    const TAP_SLOP    = 10;     // px: max finger movement still counted as a tap
+    const TAP_TIME    = 300;    // ms: max duration for a tap gesture
+    const LPRESS_MS   = 500;    // ms: hold time to trigger long-press → add event
+    const AXIS_LOCK   = 8;      // px movement before pan axis is locked
+    const FLING_VEL   = 0.4;    // px/ms threshold to commit a paging fling
+    const PAGE_RATIO  = 0.35;   // fraction of viewport width to commit a page
+    const MOMENTUM_DECAY = 0.94;
+    const MOMENTUM_MIN   = 0.02;
 
-    let t1 = null;           // 1-finger state: {sx,sy,px,py,cx,cy,t,moved}
-    let t2 = null;           // 2-finger state: {dist, midX}
-    let longTimer = null;
-    let longFired = false;
+    const pointers = new Map();   // pointerId -> {cx,cy,clientX,clientY}
+    let drag       = null;        // {pointerId,sx,sy,px,py,cx,cy,t,moved,axis,recent,reorder}
+    let pinch      = null;        // {dist}
+    let longTimer  = null;
+    let longFired  = false;
+    let momentumRAF = null;
 
-    function cancelLong() {
-      if (longTimer) { clearTimeout(longTimer); longTimer = null; }
+    function applyTouchAction() {
+      c.style.touchAction = (ORIENTATION === 'vertical') ? 'none' : '';
     }
-    function pinchDist(ts) {
-      return Math.hypot(ts[0].clientX - ts[1].clientX, ts[0].clientY - ts[1].clientY);
+    applyTouchAction();
+    if (typeof setOrientation === 'function' && !setOrientation.__patched) {
+      const _origSO = setOrientation;
+      window.setOrientation = function(o) {
+        const r = _origSO(o);
+        applyTouchAction();
+        return r;
+      };
+      window.setOrientation.__patched = true;
     }
-    function pinchMidX(ts) {
+    window.addEventListener('resize', applyTouchAction);
+    window.addEventListener('orientationchange', applyTouchAction);
+
+    function isTouch(e) { return e.pointerType === 'touch' || e.pointerType === 'pen'; }
+    function cancelLong() { if (longTimer) { clearTimeout(longTimer); longTimer = null; } }
+    function cancelMomentum() { if (momentumRAF) { cancelAnimationFrame(momentumRAF); momentumRAF = null; } }
+
+    function pinchDist(p1, p2) { return Math.hypot(p1.clientX - p2.clientX, p1.clientY - p2.clientY); }
+    function pinchMidPrimary(p1, p2) {
       const r = c.getBoundingClientRect();
-      const mx = (ts[0].clientX + ts[1].clientX) / 2 - r.left;
-      const my = (ts[0].clientY + ts[1].clientY) / 2 - r.top;
+      const mx = (p1.clientX + p2.clientX) / 2 - r.left;
+      const my = (p1.clientY + p2.clientY) / 2 - r.top;
       return primaryScreenCoord(mx, my);
     }
 
-    c.addEventListener('touchstart', e => {
+    c.addEventListener('pointerdown', e => {
+      if (!isTouch(e)) return;
+      cancelMomentum();
+      const r = c.getBoundingClientRect();
+      pointers.set(e.pointerId, {
+        cx: e.clientX - r.left, cy: e.clientY - r.top,
+        clientX: e.clientX,     clientY: e.clientY
+      });
+      try { c.setPointerCapture(e.pointerId); } catch(_) {}
       e.preventDefault();
-      cancelLong();
-      longFired = false;
 
-      if (e.touches.length === 1) {
-        const r  = c.getBoundingClientRect();
-        const tx = e.touches[0].clientX, ty = e.touches[0].clientY;
-        const mx = tx - r.left,          my = ty - r.top;
-        t2 = null;
+      if (pointers.size === 1) {
+        const p = pointers.get(e.pointerId);
+        pinch = null; longFired = false;
 
-        /* Universe row reorder — left panel drag (preserve existing behavior) */
-        const uRow = getUniverseRowAt(mx, my);
-        if (uRow && !isUniverseActionTarget(mx, my)) {
-          startUniverseDrag(uRow.id, ty);
-          t1 = null; return;
+        /* Preserve universe-row reorder drag from the left panel. */
+        const uRow = (typeof getUniverseRowAt === 'function') ? getUniverseRowAt(p.cx, p.cy) : null;
+        if (uRow && (typeof isUniverseActionTarget !== 'function' || !isUniverseActionTarget(p.cx, p.cy))) {
+          startUniverseDrag(uRow.id, e.clientY);
+          drag = { pointerId: e.pointerId, reorder: true };
+          return;
         }
 
-        t1 = { sx: tx, sy: ty, px: V.panX, py: V.panY,
-               cx: mx, cy: my, t: Date.now(), moved: false };
-
-        /* Long-press: hold still for LPRESS_MS to open add-event dialog */
+        drag = {
+          pointerId: e.pointerId,
+          sx: e.clientX, sy: e.clientY,
+          px: V.panX,    py: V.panY,
+          cx: p.cx,      cy: p.cy,
+          t: Date.now(), moved: false, axis: null, recent: []
+        };
+        cancelLong();
         longTimer = setTimeout(() => {
-          if (!t1 || t1.moved) return;
+          if (!drag || drag.reorder || drag.moved) return;
           longFired = true; cancelLong();
-          if (isInPlotArea(t1.cx, t1.cy)) {
+          if (isInPlotArea(drag.cx, drag.cy)) {
             let bestId = null, bestDist = Infinity, vi = 0;
             S.universes.forEach(u => {
               if (u.visible === false) return;
-              const d = Math.abs(crossScreenCoord(t1.cx, t1.cy) - trackY(vi));
+              const d = Math.abs(crossScreenCoord(drag.cx, drag.cy) - trackY(vi));
               if (d < TRACK_H / 2 && d < bestDist) { bestDist = d; bestId = u.id; }
               vi++;
             });
-            UI.addEvent(bestId, String(Math.round(sy2yr(primaryScreenCoord(t1.cx, t1.cy)))));
+            UI.addEvent(bestId, String(Math.round(sy2yr(primaryScreenCoord(drag.cx, drag.cy)))));
           }
         }, LPRESS_MS);
-
-      } else if (e.touches.length >= 2) {
+      } else if (pointers.size === 2) {
         cancelLong();
-        t1 = null;
-        t2 = { dist: pinchDist(e.touches), midX: pinchMidX(e.touches) };
+        if (drag && drag.reorder && typeof finishUniverseDrag === 'function') finishUniverseDrag();
+        drag = null;
+        const [a, b] = [...pointers.values()];
+        pinch = { dist: pinchDist(a, b) };
       }
-    }, { passive: false });
+    });
 
-    c.addEventListener('touchmove', e => {
-      e.preventDefault();
-      cancelLong();
+    c.addEventListener('pointermove', e => {
+      if (!isTouch(e) || !pointers.has(e.pointerId)) return;
+      const r = c.getBoundingClientRect();
+      const p = pointers.get(e.pointerId);
+      p.cx = e.clientX - r.left; p.cy = e.clientY - r.top;
+      p.clientX = e.clientX;     p.clientY = e.clientY;
 
-      /* Universe row drag takes priority */
-      if (uniDrag.on && e.touches.length === 1) { updateUniverseDrag(e.touches[0].clientY); return; }
-
-      if (e.touches.length >= 2) {
-        /* Transition from 1-finger to 2-finger mid-gesture */
-        if (!t2) { t2 = { dist: pinchDist(e.touches), midX: pinchMidX(e.touches) }; t1 = null; return; }
-        const newDist = pinchDist(e.touches);
-        const newMid  = pinchMidX(e.touches);
-        /* Continuous smooth zoom — ratio per frame, focused on pinch midpoint */
-        if (t2.dist > 1) doZoom(newDist / t2.dist, newMid);
-        t2.dist = newDist; t2.midX = newMid;
+      /* Universe row drag takes priority while active. */
+      if (drag && drag.reorder && drag.pointerId === e.pointerId && pointers.size === 1) {
+        if (typeof updateUniverseDrag === 'function') updateUniverseDrag(e.clientY);
+        e.preventDefault();
         return;
       }
 
-      if (e.touches.length === 1 && t1) {
-        const tx = e.touches[0].clientX, ty = e.touches[0].clientY;
-        const dx = tx - t1.sx, dy = ty - t1.sy;
-        if (!t1.moved && (Math.abs(dx) > TAP_SLOP || Math.abs(dy) > TAP_SLOP)) t1.moved = true;
-        V.panX = t1.px + (isVerticalTimelineLayout() ? dy : dx);
-        V.panY = t1.py + (isVerticalTimelineLayout() ? dx : dy);
-        clampPanX(); clampPanY();
-        render();
+      if (pointers.size >= 2 && pinch) {
+        const [a, b] = [...pointers.values()];
+        const newDist = pinchDist(a, b);
+        const midPrimary = pinchMidPrimary(a, b);
+        /* Pinch zooms only the time (primary) axis, anchored at the midpoint. */
+        if (pinch.dist > 1 && newDist > 1) doZoom(newDist / pinch.dist, midPrimary);
+        pinch.dist = newDist;
+        e.preventDefault();
+        return;
       }
-    }, { passive: false });
 
-    c.addEventListener('touchend', e => {
-      cancelLong();
-      if (e.touches.length === 0) {
-        /* Universe row drag finish */
-        if (uniDrag.on) { finishUniverseDrag(); t1 = null; t2 = null; longFired = false; return; }
-        /* Tap detection: short, barely-moved touch → treat as click */
-        if (t1 && !t1.moved && !longFired && (Date.now() - t1.t) < TAP_TIME) {
-          handleClick(t1.cx, t1.cy);
+      if (pointers.size === 1 && drag && drag.pointerId === e.pointerId) {
+        const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+        const adx = Math.abs(dx), ady = Math.abs(dy);
+        if (!drag.moved && (adx > TAP_SLOP || ady > TAP_SLOP)) drag.moved = true;
+        if (drag.moved) cancelLong();
+
+        const now = Date.now();
+        drag.recent.push({ x: e.clientX, y: e.clientY, t: now });
+        while (drag.recent.length > 1 && now - drag.recent[0].t > 100) drag.recent.shift();
+
+        if (isVerticalTimelineLayout()) {
+          if (!drag.axis && (adx > AXIS_LOCK || ady > AXIS_LOCK)) {
+            drag.axis = (ady >= adx) ? 'time' : 'universe';
+          }
+          if (drag.axis === 'time') {
+            V.panX = drag.px + dy;
+            clampPanX();
+            render();
+          } else if (drag.axis === 'universe') {
+            V.panY = drag.py + dx;
+            clampPanY();
+            render();
+          }
+        } else {
+          V.panX = drag.px + dx;
+          V.panY = drag.py + dy;
+          clampPanX(); clampPanY();
+          render();
         }
-        t1 = null; t2 = null; longFired = false;
-      } else if (e.touches.length === 1) {
-        /* One finger lifted while pinching → switch back to pan */
-        t2 = null;
-        const r = c.getBoundingClientRect();
-        const tx = e.touches[0].clientX, ty = e.touches[0].clientY;
-        t1 = { sx: tx, sy: ty, px: V.panX, py: V.panY,
-               cx: tx - r.left, cy: ty - r.top, t: Date.now(), moved: false };
+        e.preventDefault();
       }
-    }, { passive: false });
+    });
 
-    c.addEventListener('touchcancel', e => {
+    function endPointer(e) {
+      if (!isTouch(e)) return;
+      const wasReorder = !!(drag && drag.reorder && drag.pointerId === e.pointerId);
+      if (pointers.has(e.pointerId)) {
+        try { c.releasePointerCapture(e.pointerId); } catch(_) {}
+        pointers.delete(e.pointerId);
+      }
+      if (pointers.size < 2) pinch = null;
+      if (pointers.size > 0 || !drag) {
+        if (wasReorder && pointers.size === 0 && typeof finishUniverseDrag === 'function') finishUniverseDrag();
+        if (pointers.size === 0) drag = null;
+        return;
+      }
+
       cancelLong();
-      if (uniDrag.on) finishUniverseDrag();
-      t1 = null; t2 = null; longFired = false;
-    }, { passive: false });
+
+      if (drag.reorder) {
+        if (typeof finishUniverseDrag === 'function') finishUniverseDrag();
+        drag = null; longFired = false;
+        return;
+      }
+
+      const dur = Date.now() - drag.t;
+
+      if (!drag.moved && !longFired && dur < TAP_TIME) {
+        handleClick(drag.cx, drag.cy);
+        drag = null; longFired = false;
+        return;
+      }
+
+      if (drag.moved && !longFired && isVerticalTimelineLayout()) {
+        const samples = drag.recent || [];
+        let velX = 0, velY = 0;
+        if (samples.length >= 2) {
+          const a = samples[0], b = samples[samples.length - 1];
+          const dt = Math.max(1, b.t - a.t);
+          velX = (b.x - a.x) / dt;
+          velY = (b.y - a.y) / dt;
+        }
+
+        if (drag.axis === 'universe') {
+          const tracks = (S.lifeTracks || S.universes || [])
+            .filter(u => u.visible !== false);
+          const cnv = CV();
+          if (tracks.length > 0 && cnv && cnv.width) {
+            const centerCross = cnv.width / 2;
+            let curIdx = 0, bestD = Infinity;
+            for (let i = 0; i < tracks.length; i++) {
+              const d = Math.abs(universeToCross(i) - centerCross);
+              if (d < bestD) { bestD = d; curIdx = i; }
+            }
+            const totalDx = e.clientX - drag.sx;
+            const ratio = Math.abs(totalDx) / Math.max(1, cnv.width);
+            let targetIdx = curIdx;
+            if (velX > FLING_VEL || (totalDx > 0 && ratio > PAGE_RATIO)) targetIdx = curIdx - 1;
+            else if (velX < -FLING_VEL || (totalDx < 0 && ratio > PAGE_RATIO)) targetIdx = curIdx + 1;
+            targetIdx = Math.max(0, Math.min(tracks.length - 1, targetIdx));
+            if (typeof window.centerUniverseColumn === 'function') {
+              window.centerUniverseColumn(tracks[targetIdx].id, true);
+            }
+          }
+        } else if (drag.axis === 'time') {
+          let v = velY;
+          if (Math.abs(v) > 0.05) {
+            const step = () => {
+              V.panX += v * 16;
+              v *= MOMENTUM_DECAY;
+              clampPanX();
+              render();
+              if (Math.abs(v) > MOMENTUM_MIN) momentumRAF = requestAnimationFrame(step);
+              else momentumRAF = null;
+            };
+            momentumRAF = requestAnimationFrame(step);
+          }
+        }
+      }
+
+      drag = null; longFired = false;
+    }
+
+    c.addEventListener('pointerup',     endPointer);
+    c.addEventListener('pointercancel', endPointer);
   })();
 
   // ---- Double-click: add event at that position ----
@@ -11634,5 +12493,410 @@ function buildUniStats(uId) {
     if (e.key === 'Escape') { mobBlankCancel(); }
   });
   </script>
-  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef6646e5ec8750d',t:'MTc3NjcxMTYzMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef74e58cb28c156',t:'MTc3NjcyMTIxMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef6646e5ec8750d',t:'MTc3NjcxMTYzMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef74e58cb28c156',t:'MTc3NjcyMTIxMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>  <!-- ===== MOBILE COMPACT TOOLBAR / BOTTOM SHEET / ZOOM PILL / FULLSCREEN MODAL ===== -->
+  <style id="tlb-mobile-compact-style">
+@media (max-width: 767px) {
+  /* Hide pre-existing alternative mobile headers/drawers if present */
+  #bio-mobile-header,
+  #bio-mobile-scrim,
+  #bio-mobile-more-drawer,
+  #bio-mob-blank-confirm,
+  #mob-header,
+  #mob-bar,
+  #mob-drawer,
+  #mob-drawer-overlay,
+  #mobile-banner { display: none !important; }
+
+  /* Show #toolbar as a compact 44px-tall bar */
+  #toolbar {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    padding: env(safe-area-inset-top, 0px) max(10px, env(safe-area-inset-right, 0px)) 0 max(10px, env(safe-area-inset-left, 0px)) !important;
+    height: calc(44px + env(safe-area-inset-top, 0px)) !important;
+    min-height: calc(44px + env(safe-area-inset-top, 0px)) !important;
+    overflow: hidden !important;
+  }
+  /* Hide every original toolbar child except the .logo and our new menu trigger */
+  #toolbar > *:not(.logo):not(#tlb-mobile-menu) { display: none !important; }
+  /* In universe.html the logo lives inside .tb-group — show that wrapper too */
+  #toolbar > .tb-group:first-of-type { display: inline-flex !important; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0; overflow: hidden; }
+  #toolbar > .tb-group:first-of-type > *:not(.logo) { display: none !important; }
+  #toolbar .logo {
+    display: inline-block !important;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px !important;
+    margin: 0 !important;
+  }
+  #tlb-mobile-menu {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 36px;
+    flex: 0 0 auto;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.22);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0;
+  }
+  #tlb-mobile-menu:active { background: rgba(255,255,255,0.18); }
+
+  /* Bottom sheet & scrim */
+  #tlb-sheet-scrim {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 240;
+    display: none;
+    backdrop-filter: blur(2px);
+  }
+  #tlb-sheet-scrim.open { display: block; }
+  #tlb-sheet {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 250;
+    background: #1c1008;
+    color: #ead7bc;
+    border-radius: 18px 18px 0 0;
+    border-top: 1px solid rgba(255,255,255,0.10);
+    box-shadow: 0 -16px 50px rgba(0,0,0,0.6);
+    max-height: 80dvh;
+    padding: 6px max(12px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
+    transform: translateY(110%);
+    transition: transform .22s cubic-bezier(.32,.72,0,1);
+    display: flex; flex-direction: column;
+  }
+  /* Universe variant uses a deep-blue palette */
+  body[style*="background"] #tlb-sheet { /* no-op safety selector */ }
+  html:has(body[style*="0b0d1a"]) #tlb-sheet,
+  html:has(#canvas-wrap[style*="radial"]) #tlb-sheet {
+    background: #161830;
+    color: #c8d4ff;
+  }
+  #tlb-sheet.open { transform: translateY(0); }
+  .tlb-sheet-handle {
+    width: 40px; height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.28);
+    margin: 6px auto 8px;
+    flex-shrink: 0;
+  }
+  .tlb-sheet-body {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex: 1 1 auto;
+    padding-top: 4px;
+  }
+  .tlb-sheet-section {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 10px 0;
+    border-top: 1px solid rgba(255,255,255,0.10);
+  }
+  .tlb-sheet-section:first-child { border-top: 0; padding-top: 4px; }
+  .tlb-sheet-section .btn,
+  .tlb-sheet-section .view-tab {
+    width: 100% !important;
+    min-height: 44px !important;
+    justify-content: center !important;
+    font-size: 13px !important;
+    padding: 6px 10px !important;
+    margin: 0 !important;
+    white-space: normal !important;
+    line-height: 1.2 !important;
+  }
+  .tlb-sheet-section .tlb-sheet-slider {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    color: inherit;
+    font-size: 12px;
+  }
+  .tlb-sheet-section .tlb-sheet-slider input[type="range"] {
+    flex: 1;
+    accent-color: #b07942;
+  }
+
+  /* Floating zoom pill at bottom-center */
+  #zoom-ctrl {
+    flex-direction: row !important;
+    top: auto !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+    transform: translateX(-50%) !important;
+    background: rgba(20,12,6,0.88);
+    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 999px;
+    padding: 4px 6px;
+    gap: 2px !important;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.45);
+    z-index: 12;
+  }
+  #zoom-ctrl .zbtn {
+    width: 36px !important;
+    height: 32px !important;
+    border-radius: 999px !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    font-size: 20px !important;
+    color: #fff !important;
+  }
+  #zoom-ctrl .zbtn:active { background: rgba(255,255,255,0.12) !important; }
+  #zoom-pct {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 6px !important;
+    font-size: 12px !important;
+    color: #fff !important;
+    min-width: 44px !important;
+    align-self: center !important;
+  }
+
+  /* Hide keyboard hint on mobile */
+  #kbd-hint { display: none !important; }
+
+  /* Fullscreen modals */
+  #modal-bg {
+    padding: 0 !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+  }
+  #modal-bg .modal {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+    animation: none !important;
+  }
+  #modal-bg .modal::before { display: none !important; } /* hide any pre-existing drag handle */
+  #modal-bg .modal-hd {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 3;
+    flex-shrink: 0 !important;
+    padding: calc(10px + env(safe-area-inset-top, 0px)) 14px 12px !important;
+  }
+  #modal-bg .modal-bd {
+    flex: 1 1 auto !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  #modal-bg .modal-ft {
+    position: sticky !important;
+    bottom: 0 !important;
+    z-index: 3;
+    flex-shrink: 0 !important;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  .modal-back-chevron {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 36px; height: 36px;
+    flex-shrink: 0;
+    background: transparent;
+    border: 0;
+    color: inherit;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    margin: -4px 6px -4px -6px;
+    padding: 0;
+    border-radius: 8px;
+  }
+  .modal-back-chevron:active { background: rgba(0,0,0,0.08); }
+}
+  </style>
+  <script>
+(function(){
+  var MQ = window.matchMedia('(max-width: 767px)');
+
+  function init() {
+    var toolbar = document.getElementById('toolbar');
+    if (!toolbar) return;
+
+    // Inject ≡ menu button at the right end of #toolbar
+    if (!document.getElementById('tlb-mobile-menu')) {
+      var menuBtn = document.createElement('button');
+      menuBtn.id = 'tlb-mobile-menu';
+      menuBtn.type = 'button';
+      menuBtn.setAttribute('aria-label', 'Open menu');
+      menuBtn.setAttribute('aria-haspopup', 'dialog');
+      menuBtn.textContent = '\u2261';
+      toolbar.appendChild(menuBtn);
+      menuBtn.addEventListener('click', openSheet);
+    }
+
+    // Build sheet & scrim once
+    if (!document.getElementById('tlb-sheet')) {
+      var scrim = document.createElement('div');
+      scrim.id = 'tlb-sheet-scrim';
+      scrim.addEventListener('click', closeSheet);
+      document.body.appendChild(scrim);
+
+      var sheet = document.createElement('div');
+      sheet.id = 'tlb-sheet';
+      sheet.setAttribute('role', 'dialog');
+      sheet.setAttribute('aria-modal', 'true');
+      sheet.setAttribute('aria-label', 'Toolbar menu');
+      sheet.innerHTML = '<div class="tlb-sheet-handle"></div><div class="tlb-sheet-body"></div>';
+      document.body.appendChild(sheet);
+    }
+
+    setupModalBackChevron();
+  }
+
+  function buildSheetContent() {
+    var toolbar = document.getElementById('toolbar');
+    var sheet = document.getElementById('tlb-sheet');
+    if (!toolbar || !sheet) return;
+    var body = sheet.querySelector('.tlb-sheet-body');
+    body.innerHTML = '';
+    var section = document.createElement('div');
+    section.className = 'tlb-sheet-section';
+    function flushSection() {
+      if (section.children.length) body.appendChild(section);
+      section = document.createElement('div');
+      section.className = 'tlb-sheet-section';
+    }
+
+    // Walk linearly, treating .sep as section boundaries.
+    var nodes = toolbar.querySelectorAll('.sep, .btn, .view-tab, input[type="range"]');
+    nodes.forEach(function(node){
+      if (node.id === 'tlb-mobile-menu') return;
+      if (node.classList.contains('sep')) { flushSection(); return; }
+
+      if (node.matches('input[type="range"]')) {
+        var lbl = node.closest('label');
+        var wrap = document.createElement('div');
+        wrap.className = 'tlb-sheet-slider';
+        var caption = document.createElement('span');
+        caption.textContent = (lbl ? (lbl.textContent || '').replace(/\s+/g,' ').trim() : 'Adjust') || 'Adjust';
+        var clone = node.cloneNode(true);
+        clone.removeAttribute('id');
+        clone.addEventListener('input', function(){
+          node.value = clone.value;
+          node.dispatchEvent(new Event('input', { bubbles: true }));
+          node.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+        wrap.appendChild(caption);
+        wrap.appendChild(clone);
+        section.appendChild(wrap);
+        return;
+      }
+
+      // Hidden inputs/buttons should be skipped
+      var cs = window.getComputedStyle(node);
+      if (cs.display === 'none' || cs.visibility === 'hidden') {
+        // still allow buttons that are visually hidden by the mobile rule
+        // because that rule is what we're working around
+      }
+
+      var btn = node.cloneNode(true);
+      btn.removeAttribute('id');
+      btn.removeAttribute('onclick');
+      btn.removeAttribute('style');
+      if (node.disabled) btn.disabled = true;
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        closeSheet();
+        setTimeout(function(){
+          try { node.click(); } catch (err) {}
+        }, 60);
+      });
+      section.appendChild(btn);
+    });
+    flushSection();
+  }
+
+  function openSheet() {
+    if (!MQ.matches) return;
+    buildSheetContent();
+    var scrim = document.getElementById('tlb-sheet-scrim');
+    var sheet = document.getElementById('tlb-sheet');
+    if (scrim) scrim.classList.add('open');
+    if (sheet) sheet.classList.add('open');
+  }
+  function closeSheet() {
+    var scrim = document.getElementById('tlb-sheet-scrim');
+    var sheet = document.getElementById('tlb-sheet');
+    if (scrim) scrim.classList.remove('open');
+    if (sheet) sheet.classList.remove('open');
+  }
+
+  function setupModalBackChevron() {
+    var modalBg = document.getElementById('modal-bg');
+    if (!modalBg) return;
+
+    function ensureBackChevron() {
+      if (!MQ.matches) return;
+      var modal = modalBg.querySelector('.modal');
+      if (!modal) return;
+      var hd = modal.querySelector('.modal-hd');
+      if (!hd || hd.querySelector('.modal-back-chevron')) return;
+      var back = document.createElement('button');
+      back.type = 'button';
+      back.className = 'modal-back-chevron';
+      back.setAttribute('aria-label', 'Close');
+      back.innerHTML = '\u2039';
+      back.addEventListener('click', function(){
+        // Try Escape first (most apps wire Esc to close modal cleanly)
+        try {
+          document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', bubbles: true }));
+        } catch (err) {}
+        // Fallback: if still open after a tick, force-hide
+        setTimeout(function(){
+          if (modalBg.classList.contains('open')) {
+            modalBg.classList.remove('open');
+            modalBg.style.display = '';
+            modalBg.setAttribute('aria-hidden', 'true');
+          }
+        }, 120);
+      });
+      hd.insertBefore(back, hd.firstChild);
+    }
+
+    var mo = new MutationObserver(function(){
+      if (modalBg.classList.contains('open')) ensureBackChevron();
+    });
+    mo.observe(modalBg, { attributes: true, attributeFilter: ['class'], childList: true, subtree: true });
+    if (modalBg.classList.contains('open')) ensureBackChevron();
+  }
+
+  // Close sheet on Escape
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeSheet();
+  });
+  // Close sheet when crossing back to desktop
+  if (MQ.addEventListener) MQ.addEventListener('change', function(e){ if (!e.matches) closeSheet(); });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+  </script>
+
+</body>
   </html>
