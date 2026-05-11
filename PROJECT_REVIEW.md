@@ -337,7 +337,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #013 — Privacy/Terms last-updated dates are stale (`April 21, 2026`)
+### #013 — Privacy/Terms last-updated dates are stale (`April 21, 2026`)  ✅ Done 2026-05-11
 
 - **Category:** Legal · Trust
 - **Severity:** 🟡 Medium
