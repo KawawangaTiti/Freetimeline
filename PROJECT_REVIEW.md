@@ -964,7 +964,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #059 — Guides hub `<a href="how-to-build-consistent-timeline-fantasy-novel.html">` is relative without the `guides/` prefix
+### #059 — Guides hub `<a href="how-to-build-consistent-timeline-fantasy-novel.html">` is relative without the `guides/` prefix  ✅ Done 2026-05-11
 
 - **Category:** SEO · 🔴 Bug
 - **Severity:** 🔴 Critical (re-classified)
