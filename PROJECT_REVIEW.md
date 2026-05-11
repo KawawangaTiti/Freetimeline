@@ -514,7 +514,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #024 — Commented-out Discord placeholder in `contact.html`
+### #024 — Commented-out Discord placeholder in `contact.html`  ✅ Done 2026-05-11
 
 - **Category:** Cleanup
 - **Severity:** ⚪ Cosmetic
