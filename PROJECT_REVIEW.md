@@ -580,7 +580,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #029 — `index.html` hero section says "Universe Timeline" features include "Marvel & DC storylines" — inconsistent with #005 fix
+### #029 — `index.html` hero section says "Universe Timeline" features include "Marvel & DC storylines" — inconsistent with #005 fix  ✅ Done 2026-05-11
 
 - **Category:** Content auditor · IP
 - **Severity:** 🟠 High
