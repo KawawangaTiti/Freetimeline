@@ -245,7 +245,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #008 — Missing `ads.txt`
+### #008 — Missing `ads.txt`  ✅ Done 2026-05-11
 
 - **Category:** Critical · AdSense
 - **Severity:** 🔴 Critical
