@@ -469,7 +469,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #021 — Default sample data in Biography (need to check) may also include personal info
+### #021 — Default sample data in Biography (need to check) may also include personal info  ✅ Done 2026-05-11
 
 - **Category:** Functional · End-user
 - **Severity:** 🟠 High

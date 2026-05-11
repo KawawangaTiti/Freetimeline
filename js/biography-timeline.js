@@ -5493,165 +5493,55 @@ const Store = {
    ===================================================== */
 function loadSample() {
   if (Store.load()) return;
-    S.lifeTracks = [
-      { id:'u1', name:'My Life — Alex Rivera', color:'#9b59b6', visible:true, description:'A personal overview — the moments, moves, and milestones that shaped who I became.' },
-      { id:'u2', name:'Career Journey',        color:'#3498db', visible:true, description:'Education, first jobs, professional growth, and the turning points that defined my working life.' },
-      { id:'u3', name:'Family Life',           color:'#e91e63', visible:true, description:'The people I loved, lost, chose, and built a life with.' },
-    ];
-    S.events = [
-      { id:'e01', universeId:'u1', date:'xx/xx/1992', title:'Born',
-        description:'Born in Porto, Portugal, on a cold morning in early spring. The second child of Miguel and Ana Rivera. The family lived in a small apartment in the Bonfim neighbourhood, two floors above a bakery.',
-        notes:'Worth asking: what was the city like then? What was happening in the family at the time?',
-        location:'Porto, Portugal',
-        emotionalTone:'Hopeful', roleStatus:null, internalChange:null,
-        category:'Birth & Early Years', media:[], characterIds:['ch01'],
-        subEvents:[]},
-      { id:'e02', universeId:'u1', date:'xx/xx/1997', title:'Started Primary School',
-        description:'Enrolled at Escola Básica da Fontinha in Porto. Shy at first, but quickly found a small circle of friends. Loved drawing and making up stories. Struggled with maths.',
-        notes:'The name of a favourite teacher here would be worth remembering.',
-        location:'Porto, Portugal',
-        emotionalTone:'Exciting', roleStatus:'Student', internalChange:null,
-        category:'Education & Learning', media:[], characterIds:[],
-        subEvents:[]},
-      { id:'e03', universeId:'u3', date:'xx/xx/2003', title:"Parents' Divorce",
-        description:"Miguel and Ana separated after a long period of tension. Alex was eleven. The house was suddenly quieter — and much smaller. Nothing that had felt stable felt stable anymore.",
-        notes:'This was a formative rupture. Worth exploring: how did it shape the relationship with each parent afterwards?',
-        location:'Porto, Portugal',
-        emotionalTone:'Difficult', roleStatus:null, internalChange:'Stability crumbling',
-        category:'Challenges & Turning Points', media:[], characterIds:['ch01'],
-        subEvents:[]},
-      { id:'e04', universeId:'u1', date:'xx/xx/2005', title:'Moved Cities',
-        description:"Ana decided to move the family to Lisbon for a fresh start. Leaving Porto meant leaving every friend, every familiar street, every sense of home. It was the first time Alex felt truly uprooted.",
-        notes:'What was the first impression of Lisbon? Who made it easier — or harder?',
-        location:'Porto → Lisbon',
-        emotionalTone:'Bittersweet', roleStatus:null, internalChange:'Learning to start over',
-        category:'Travel & Adventure', media:[], characterIds:[],
-        subEvents:[]},
-      { id:'e05', universeId:'u2', date:'xx/xx/2010', title:'High School Graduation',
-        description:'Graduated from Escola Secundária de Camões in Lisbon. The ceremony was small — family only. Elena Kovač, the closest friend from those years, stood beside Alex the whole afternoon. It felt like the end of one world and the beginning of an unknown one.',
-        notes:'What grades? What subject was strongest? What came next felt uncertain at the time.',
-        location:'Lisbon, Portugal',
-        emotionalTone:'Hopeful', roleStatus:'Graduate', internalChange:'Proud',
-        category:'Education & Learning', media:[], characterIds:['ch04'],
-        subEvents:[]},
-      { id:'e06', universeId:'u2', date:'xx/xx/2012', title:'First Job',
-        description:'Started work at a small design agency in Lisbon — junior role, long hours, low pay. Sarah Chen, the creative director, became an unexpected mentor. The work was exhausting and formative in equal measure.',
-        notes:'First salary. First professional mistake. First time feeling like an adult with responsibilities.',
-        location:'Lisbon, Portugal',
-        emotionalTone:'Exciting', roleStatus:'Junior Designer', internalChange:'Broke → Stable',
-        category:'Career & Achievement', media:[], characterIds:['ch03'],
-        subEvents:[]},
-      { id:'e07', universeId:'u3', date:'xx/xx/2014', title:'Met Jordan',
-        description:'Met Jordan Lee at a mutual friend\'s dinner party in Lisbon. Jordan was visiting from abroad and was only supposed to stay two weeks. They stayed six months. Everything shifted.',
-        notes:'Where exactly? Who introduced them? What was said that first evening that made it different from any other conversation?',
-        location:'Lisbon, Portugal',
-        emotionalTone:'Transformative', roleStatus:null, internalChange:'Life opening up',
-        category:'Relationships & Family', media:[], characterIds:['ch02'],
-        subEvents:[]},
-      { id:'e08', universeId:'u2', date:'xx/xx/2015', title:'University Degree',
-        description:'Completed a degree in Communication Design at IADE — Universidade Europeia in Lisbon. Three years of late nights, failed drafts, creative breakthroughs, and the slow building of a professional identity.',
-        notes:'What was the final thesis about? What professor left the biggest mark?',
-        location:'Lisbon, Portugal',
-        emotionalTone:'Hopeful', roleStatus:'Student → Graduate', internalChange:'3 years of late nights — finally done',
-        category:'Education & Learning', media:[], characterIds:[],
-        subEvents:[
-          { id:'s08a', title:'Freshman Year', date:'xx/xx/2012',
-            description:'The first year was a shock — more demanding than expected, more freedom than ever known. Found a rhythm slowly.',
-            notes:'', media:[], subEvents:[] },
-          { id:'s08b', title:'Study Abroad Semester', date:'xx/xx/2014',
-            description:'A semester in Barcelona on the Erasmus programme. Living alone in a foreign city for the first time. One of the most formative periods of the degree.',
-            notes:'Where did you live? Who did you meet?', media:[], subEvents:[] },
-          { id:'s08c', title:'Final Thesis', date:'xx/xx/2015',
-            description:'The thesis explored visual storytelling in personal memoir. Submitted on time — barely. The defence went better than expected.',
-            notes:'What was the title? What mark did it receive?', media:[], subEvents:[] }
-        ]},
-      { id:'e09', universeId:'u3', date:'xx/xx/2018', title:'Married Jordan',
-        description:'A small wedding at a quinta outside Lisbon — forty guests, olive trees, late-summer light. Miguel Rivera attended despite his illness. It was one of the last times the whole family was together.',
-        notes:'Who was there? What do you remember most clearly from that day?',
-        location:'Outside Lisbon, Portugal',
-        emotionalTone:'Joyful', roleStatus:'Newlywed', internalChange:null,
-        category:'Relationships & Family', media:[], characterIds:['ch02'],
-        subEvents:[]},
-      { id:'e10', universeId:'u3', date:'xx/xx/2020', title:'First Child Born',
-        description:'A daughter, Beatriz, born in March 2020 — the same week the world went into lockdown. The timing was surreal. The love was immediate and overwhelming. Nothing about identity felt the same afterwards.',
-        notes:'Weight, name meaning, first feeling on holding her. What was the hospital like during lockdown?',
-        location:'Lisbon, Portugal',
-        emotionalTone:'Transformative', roleStatus:'New Parent', internalChange:'Identity shift',
-        category:'Relationships & Family', media:[], characterIds:['ch02'],
-        subEvents:[]},
-      { id:'e11', universeId:'u2', date:'xx/xx/2022', title:'Career Promotion',
-        description:'Promoted to Senior Creative Director at the agency. Sarah Chen, who had believed in Alex since the beginning, made the recommendation. A decade of quiet, steady work — suddenly recognised.',
-        notes:'What changed day-to-day? What did the promotion mean beyond the title?',
-        location:'Lisbon, Portugal',
-        emotionalTone:'Hopeful', roleStatus:'Senior Creative Director', internalChange:'Stable → Thriving',
-        category:'Career & Achievement', media:[], characterIds:['ch03'],
-        subEvents:[]}
-    ];
-
-    S.people = [
-      {
-        id: 'ch01', name: 'Miguel Rivera', aliases: 'Dad',
-        status: 'Passed Away', alignment: 'Family', species: 'Father', color: '#9b59b6',
-        photo: null, birthDate: 'xx/xx/1962',
-        occupation: 'Carpenter', affiliation: 'Rivera Family',
-        locations: 'Porto, Portugal',
-        powers: 'Quiet strength\nPatient with his hands\nMade things last\nNever raised his voice',
-        biography: 'Miguel Rivera was a carpenter from Porto who built furniture and raised two children with a care that was mostly shown through actions rather than words. He and Ana separated in 2003. His illness in later years brought him and Alex closer than they had ever been. He attended the wedding in 2018 despite being unwell. He passed away the following year.',
-        notes: 'Ask Ana for the stories he never told directly.',
-        relationshipNotes: 'The divorce created distance for years. The final few years — after the diagnosis — changed everything. There is still more to say about him than has been written.',
-        yearsKnown: 27, howWeMet: 'He was there from the beginning.',
-        media: [], universeIds: ['u1', 'u3']
-      },
-      {
-        id: 'ch02', name: 'Jordan Lee', aliases: 'J',
-        status: 'Living', alignment: 'Partner', species: 'Spouse', color: '#e91e63',
-        photo: null, birthDate: 'xx/xx/1990',
-        occupation: 'Architect', affiliation: '',
-        locations: 'Lisbon, Portugal; Barcelona',
-        powers: 'Sees solutions where others see problems\nGenerous listener\nKnows when to push and when to hold back\nMakes every space feel considered',
-        biography: 'Jordan Lee came to Lisbon for two weeks in 2014 and stayed. An architect by training, calm by nature, and the person who has known Alex most completely. They married in 2018. Together they navigated early parenthood during a global pandemic — a baptism by fire that deepened something already solid.',
-        notes: '',
-        relationshipNotes: 'Met at a dinner party. Something was immediately different. Jordan stayed. The rest followed naturally.',
-        yearsKnown: 10, howWeMet: 'A mutual friend\'s dinner party in Lisbon, autumn 2014.',
-        media: [], universeIds: ['u3']
-      },
-      {
-        id: 'ch03', name: 'Sarah Chen', aliases: 'Sarah',
-        status: 'Living', alignment: 'Mentor', species: 'Mentor', color: '#3498db',
-        photo: null, birthDate: 'xx/xx/1975',
-        occupation: 'Creative Director', affiliation: 'Design Agency, Lisbon',
-        locations: 'Lisbon, Portugal; Hong Kong',
-        powers: 'Precise eye for what is missing\nDirect without being harsh\nGives credit generously\nLong memory for good work',
-        biography: 'Sarah Chen hired Alex as a junior designer in 2012 and saw something worth developing long before it was visible. She offered honest feedback, clear standards, and — eventually — a promotion that reflected a decade of trust. Originally from Hong Kong, she has lived in Lisbon since 2005.',
-        notes: 'The recommendation for the 2022 promotion came from her. Worth documenting that conversation.',
-        relationshipNotes: 'Started as manager and employee. Became something closer to a guide. Still in regular contact.',
-        yearsKnown: 12, howWeMet: 'She conducted the job interview in 2012.',
-        media: [], universeIds: ['u2']
-      },
-      {
-        id: 'ch04', name: 'Elena Kovač', aliases: 'Ela',
-        status: 'Living', alignment: 'Friend', species: 'Friend', color: '#27ae60',
-        photo: null, birthDate: 'xx/xx/1991',
-        occupation: 'Nurse', affiliation: '',
-        locations: 'Lisbon, Portugal; Zagreb, Croatia',
-        powers: 'Tells the truth even when it is uncomfortable\nRemembers birthdays and anniversaries of harder things\nShows up\nLaughs easily',
-        biography: 'Elena Kovač and Alex met on the first day of secondary school in Lisbon — two newcomers in an unfamiliar city. The friendship that formed in that first uncertain year has lasted through every move, change, and loss since. She was there at the graduation. She was at the wedding. She has always been in the room.',
-        notes: '',
-        relationshipNotes: 'The kind of friend who knows your whole story. No need to explain context — she was there for most of it.',
-        yearsKnown: 18, howWeMet: 'First day of secondary school in Lisbon, 2005.',
-        media: [], universeIds: ['u1', 'u3']
-      }
-    ];
-
-    S.connections = [
-      { id:'c1', fromEventId:'e03', toEventId:'e04', label:'Led to \u2192' },
-      { id:'c2', fromEventId:'e05', toEventId:'e08', label:'Followed by \u2192' },
-      { id:'c3', fromEventId:'e06', toEventId:'e11', label:'Built toward \u2192' },
-      { id:'c4', fromEventId:'e07', toEventId:'e09', label:'Led to \u2192' },
-      { id:'c5', fromEventId:'e09', toEventId:'e10', label:'Followed by \u2192' },
-    ];
-    syncCategoriesToState();
-  }
+  /* #021: Neutral, generic sample data shown on first run when localStorage is empty.
+     Replace with your own content by clicking + Event / + Life Track / + Person.
+     (Real user data lives in localStorage and is never touched by this fallback.) */
+  S.lifeTracks = [
+    { id: 'u1', name: 'Sample Track A — Personal',  color: '#9b59b6', visible: true, description: 'Example life-track. Replace with your own.' },
+    { id: 'u2', name: 'Sample Track B — Career',    color: '#3498db', visible: true, description: 'Another example track. Use these to group events by theme.' },
+    { id: 'u3', name: 'Sample Track C — Relationships', color: '#e91e63', visible: true, description: 'Tracks are just labels — give them any meaning you like.' }
+  ];
+  S.events = [
+    { id: 'e01', universeId: 'u1', date: 'xx/xx/2000', title: 'Sample Event 1',
+      description: 'This is an example event. Click it to edit, or delete it and add your own.',
+      notes: '', location: '',
+      emotionalTone: '', roleStatus: null, internalChange: null,
+      category: 'Other', media: [], characterIds: ['ch01'],
+      subEvents: [] },
+    { id: 'e02', universeId: 'u2', date: 'xx/xx/2010', title: 'Sample Event 2',
+      description: 'Events can be linked to any number of people and tracks.',
+      notes: '', location: '',
+      emotionalTone: '', roleStatus: null, internalChange: null,
+      category: 'Other', media: [], characterIds: [],
+      subEvents: [] },
+    { id: 'e03', universeId: 'u3', date: 'xx/xx/2020', title: 'Sample Event 3',
+      description: 'Drag to pan the timeline, scroll or pinch to zoom.',
+      notes: '', location: '',
+      emotionalTone: '', roleStatus: null, internalChange: null,
+      category: 'Other', media: [], characterIds: ['ch01'],
+      subEvents: [] }
+  ];
+  S.people = [
+    {
+      id: 'ch01', name: 'Sample Person A', aliases: '',
+      status: 'Living', alignment: 'Other', species: '', color: '#3498db',
+      photo: null, birthDate: '',
+      occupation: '', affiliation: '',
+      locations: '',
+      powers: '',
+      biography: 'This is an example person. Replace with someone from your life — or delete and add your own.',
+      notes: '',
+      relationshipNotes: '',
+      yearsKnown: 0, howWeMet: '',
+      media: [], universeIds: ['u1']
+    }
+  ];
+  S.connections = [
+    { id: 'c1', fromEventId: 'e01', toEventId: 'e02', label: 'Followed by →' },
+    { id: 'c2', fromEventId: 'e02', toEventId: 'e03', label: 'Followed by →' }
+  ];
+  syncCategoriesToState();
+}
 
 
 /* =====================================================
