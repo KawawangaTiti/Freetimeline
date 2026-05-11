@@ -539,7 +539,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #026 — `feed.xml` lastBuildDate is hardcoded ("Tue, 21 Apr 2026 12:00:00 GMT") and all five articles have identical `pubDate`
+### #026 — `feed.xml` lastBuildDate is hardcoded ("Tue, 21 Apr 2026 12:00:00 GMT") and all five articles have identical `pubDate`  ✅ Done 2026-05-11
 
 - **Category:** SEO · RSS
 - **Severity:** 🟡 Medium
@@ -555,7 +555,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #027 — Guide articles' JSON-LD `Article` blocks use `datePublished: "2024-01-15"` but `feed.xml` says April 2026
+### #027 — Guide articles' JSON-LD `Article` blocks use `datePublished: "2024-01-15"` but `feed.xml` says April 2026  ✅ Done 2026-05-11 — RSS `<pubDate>` now matches JSON-LD `datePublished` (15 Jan 2024). dateModified (21 Apr 2026) preserved. Visible "Updated April 2026" string in each article still matches dateModified, unchanged.
 
 - **Category:** SEO · Consistency
 - **Severity:** 🟡 Medium
