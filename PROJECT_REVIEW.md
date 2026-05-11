@@ -136,7 +136,7 @@ Severity legend: 🔴 Critical · 🟠 High · 🟡 Medium · 🟢 Low · ⚪ Co
 
 ---
 
-### #003 — Universe app opens with personal-looking default data ("Liga BRT", "Liga Knokout", "40 Graus")
+### #003 — Universe app opens with personal-looking default data ("Liga BRT", "Liga Knokout", "40 Graus")  ✅ Done 2026-05-11 — superseded by #005 (Universe JS fallback replaced) and #021 (Biography JS fallback replaced). Owner clarified Day 2 that "Liga BRT" etc. are real localStorage data and must remain; first-run UX for new visitors is now neutral.
 
 - **Category:** Critical / blocks deployment · End-user · AdSense
 - **Severity:** 🔴 Critical
@@ -398,7 +398,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ## 🟠 Broken features & bugs
 
-### #017 — The AdSense loader on `index.html` lazy-loads on first user interaction; but the actual ad-slot push is missing
+### #017 — The AdSense loader on `index.html` lazy-loads on first user interaction; but the actual ad-slot push is missing  ✅ Done 2026-05-11 — superseded by #001 (Day 2). The legacy lazy-loader was removed from index.html; `js/ft-consent.js` now (a) loads the AdSense library only after Accept, (b) calls `adsbygoogle.push({})` for every `<ins>` slot it finds on the page.
 
 - **Category:** Functional · AdSense
 - **Severity:** 🟠 High
@@ -494,7 +494,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #023 — Contact form pretends to be a form but is actually a `mailto:` trigger
+### #023 — Contact form pretends to be a form but is actually a `mailto:` trigger  ✅ Done 2026-05-11 — deceptive `<form action="mailto:...">` block removed. Page keeps the prominent "Email us directly" button + the "Other Ways to Reach Us" alternatives.
 
 - **Category:** UX · Trust · Functional
 - **Severity:** 🟠 High
@@ -621,7 +621,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ## 🟠 Mobile & responsive
 
-### #032 — Cookie consent stub alert is a usability disaster on mobile
+### #032 — Cookie consent stub alert is a usability disaster on mobile  ✅ Done 2026-05-11 — superseded by #001 (Day 2). Placeholder `alert(...)` was removed from every page; `ft-consent.js` shows a real bottom-sheet banner with mobile-friendly tap targets.
 
 - **Category:** Mobile · Critical (overlaps #001)
 - **Severity:** 🟠 High
