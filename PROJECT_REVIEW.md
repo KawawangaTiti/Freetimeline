@@ -1084,7 +1084,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ### #070 — `.DS_Store` (already listed in #063).
 
-### #071 — No `robots.txt`
+### #071 — No `robots.txt`  ✅ Done 2026-05-11
 
 - **Category:** SEO · Code quality
 - **Severity:** 🟢 Low
