@@ -748,7 +748,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #042 — Buttons use 11-12px font in the toolbars — small for older eyes
+### #042 — Buttons use 11-12px font in the toolbars — small for older eyes  ✅ Done 2026-05-11 — base `.btn` rule in both apps bumped: font-size to 16px (was 13px/12.5px), min-height to 40px (was 34px), padding to 8px/16px. CSS-cascade keeps these everywhere unless overridden.
 
 - **Category:** Usability · Elderly
 - **Severity:** 🟡 Medium
