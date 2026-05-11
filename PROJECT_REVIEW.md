@@ -185,7 +185,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #005 — Marvel/DC copyrighted content shipped as default Universe sample
+### #005 — Marvel/DC copyrighted content shipped as default Universe sample  ✅ Done 2026-05-11
 
 - **Category:** Critical · AdSense · Legal
 - **Severity:** 🔴 Critical
