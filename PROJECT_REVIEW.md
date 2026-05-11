@@ -351,7 +351,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #014 — "Team photo coming soon" placeholder in About
+### #014 — "Team photo coming soon" placeholder in About  ✅ Done 2026-05-11
 
 - **Category:** AdSense · Trust · Under-construction
 - **Severity:** 🟠 High
