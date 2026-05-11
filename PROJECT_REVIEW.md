@@ -313,7 +313,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #011 — Privacy Policy claims "no tracking" in meta description
+### #011 — Privacy Policy claims "no tracking" in meta description  ✅ Done 2026-05-11
 
 - **Category:** AdSense · Marketing · Honesty
 - **Severity:** 🟠 High
