@@ -6210,15 +6210,27 @@ const Store = {
     const r = new FileReader();
     r.onload = ev => {
       try {
-        let d;
+        /* #053: enforce a hard size cap before parsing \u2014 protects against
+           memory-DoS via a deliberately huge file. */
+        if (typeof ftImportSizeOK === 'function' && !ftImportSizeOK(ev.target.result)) {
+          notify('File is too large (max ' + Math.round(ftImportMaxBytes/1024/1024) + ' MB).', 'error');
+          return;
+        }
+        let raw;
         if (f.name.endsWith('.html') || f.type === 'text/html') {
           /* Extract embedded state from a saved HTML file using markers */
           const match = ev.target.result.match(/\/\*STATE_START\*\/let S\s*=\s*([\s\S]*?);\/\*STATE_END\*\//);
           if (!match) { notify('Could not find timeline data in this HTML file.', 'error'); return; }
-          d = JSON.parse(match[1]);
+          raw = JSON.parse(match[1]);
         } else {
-          d = JSON.parse(ev.target.result);
+          raw = JSON.parse(ev.target.result);
         }
+        /* #053: every imported field goes through the shared validator/sanitiser.
+           Any javascript:/data: URL injected into media[].src or character.photo
+           is stripped before it can reach the renderer. */
+        const d = (typeof ftValidateImport === 'function')
+          ? ftValidateImport(raw, { kind: 'universe' })
+          : raw;
         ftConfirmGate('Loading will replace ALL current data. Continue?', function () {
           S.universes    = d.universes   || [];
           S.events       = d.events      || [];

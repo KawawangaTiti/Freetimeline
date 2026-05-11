@@ -22,14 +22,6 @@ _None outstanding._
 - **Estimate:** Half a day for spot check; 1-2 days for full audit.
 - **Full detail:** see `PROJECT_REVIEW.md` issue #052.
 
-### #053 — HTML import (`.html` files) is supported but I did not verify the sanitisation
-- **What it is:** Importing user-provided HTML is dangerous. The export likely produces self-contained HTML (with the saved JSON embedded). If a malicious imported file contains script tags, *what stops them from running?* — depends on how the importer parses the file. I did not audit the importer code.
-- **Where it lives:** `universe.html` line 3926 and `biography.html` line 3905: `<input type="file" id="file-in" accept=".html,.json">`. The handler is `Store.importFile(event)`.
-- **Difficulty:** Medium
-- **Estimate:** 1 hour audit; up to half a day to fix if broken.
-- **Full detail:** see `PROJECT_REVIEW.md` issue #053.
-
-
 ## 🟡 Medium priority
 ### #012 — Privacy Policy says "no analytics today" but Cookie Policy implies there is none
 - **What it is:** These are accurate today, but they need to stay accurate as soon as you add any analytics (Plausible, Matomo, Google Analytics, AdSense's own analytics, etc.). Make a mental note. No action required *now*, but flag in your roadmap.

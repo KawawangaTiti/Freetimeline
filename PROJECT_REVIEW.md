@@ -886,7 +886,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #053 — HTML import (`.html` files) is supported but I did not verify the sanitisation
+### #053 — HTML import (`.html` files) is supported but I did not verify the sanitisation  ✅ Done 2026-05-12 — Audit confirmed real XSS path via unsanitised `media[].src` and `character.photo` interpolated into `<img src="…">`. Added shared `js/ft-import-validate.js`: rejects non-object roots; 50 MB size cap; filters every collection to plain objects; whitelists URLs to http(s)/relative/`data:image/<safe>;base64,…` (strips javascript:, vbscript:, blob:, file:, data:text/html, SVG-with-script, attribute-injection payloads). Wired into both engines' `Store.importFile`. Smoke-tested: 6/6 safe URLs preserved, 10/10 XSS payloads stripped, non-object roots rejected.
 
 - **Category:** Security · Data integrity
 - **Severity:** 🟠 High
