@@ -367,7 +367,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #015 — Pricing page advertises features that don't exist ("Chrono Ledger", "Encrypted cloud sync")
+### #015 — Pricing page advertises features that don't exist ("Chrono Ledger", "Encrypted cloud sync")  ✅ Done 2026-05-11
 
 - **Category:** AdSense · Marketing · Trust
 - **Severity:** 🟡 Medium
