@@ -526,7 +526,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #025 — Sitemap omits `roadmap.html`
+### #025 — Sitemap omits `roadmap.html`  ✅ Done 2026-05-11
 
 - **Category:** SEO
 - **Severity:** 🟢 Low
