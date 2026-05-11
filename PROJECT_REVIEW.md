@@ -265,7 +265,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #009 — Missing favicon
+### #009 — Missing favicon  ✅ Done 2026-05-11
 
 - **Category:** Critical · Branding · Trust
 - **Severity:** 🔴 Critical
