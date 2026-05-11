@@ -606,7 +606,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #031 — `universe.html` line 3963 hardcodes universe chips that should be JS-rendered
+### #031 — `universe.html` line 3963 hardcodes universe chips that should be JS-rendered  ✅ Done 2026-05-11 — pre-rendered chips were already removed by #005 (Day 1). Day 3 sweep also caught a stray Marvel/DC reference in the index.html Universe portal card description; replaced with generic "shared comic-book universes" wording.
 
 - **Category:** Functional · Architecture
 - **Severity:** 🟠 High
