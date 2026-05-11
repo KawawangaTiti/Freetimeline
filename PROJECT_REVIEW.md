@@ -207,7 +207,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #006 — Open Graph image (`og.png`) does not exist
+### #006 — Open Graph image (`og.png`) does not exist  ✅ Done 2026-05-11
 
 - **Category:** Critical · SEO · Marketing
 - **Severity:** 🔴 Critical
@@ -226,7 +226,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #007 — Guides reference a *different* OG image filename (`og-image.png`) that also doesn't exist
+### #007 — Guides reference a *different* OG image filename (`og-image.png`) that also doesn't exist  ✅ Done 2026-05-11
 
 - **Category:** Critical · SEO · Inconsistency
 - **Severity:** 🔴 Critical
