@@ -413,7 +413,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #018 — Universe uses native `confirm()` for destructive actions; Biography has a custom mobile-safe dialog — feature parity break
+### #018 — Universe uses native `confirm()` for destructive actions; Biography has a custom mobile-safe dialog — feature parity break  ⏳ Part 1 ✅ Done 2026-05-11 — `js/ft-confirm.js` shared module created, included on both apps, wired into Universe `Store.blankTimeline()`. Part 2 (remaining `confirm()` call sites) deferred.
 
 - **Category:** Functional · UX · Inconsistency
 - **Severity:** 🟠 High

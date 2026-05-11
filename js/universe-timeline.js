@@ -6132,8 +6132,35 @@ const Store = {
   },
 
   blankTimeline() {
+    /* #018: mobile-safe confirm gate. Falls back to native confirm() if ft-confirm.js
+       failed to load. Once confirmed, ask about a backup with the same fallback. */
+    if (typeof ftConfirm === 'function') {
+      ftConfirm({
+        title: 'Clear and start a blank timeline?',
+        message: 'This will clear all universes, events, characters, and connections from your browser. You can save a JSON backup first.',
+        confirmLabel: 'Continue',
+        cancelLabel: 'Cancel',
+        danger: true
+      }).then(function (ok) {
+        if (!ok) return;
+        ftConfirm({
+          title: 'Save a backup first?',
+          message: 'Recommended: export a JSON file so you can restore your work later.',
+          confirmLabel: 'Save backup, then clear',
+          cancelLabel: 'Clear without saving'
+        }).then(function (save) {
+          if (save) Store.saveJSON();
+          Store._doBlank();
+        });
+      });
+      return;
+    }
     if (!confirm('Are you sure you want a blank template?')) return;
     if (confirm('Do you want to save your work before making a blank template?')) Store.saveJSON();
+    Store._doBlank();
+  },
+
+  _doBlank() {
     /* B-2: mark blank-template intent so autosave doesn't lock us out of sample data. */
     _blankTemplateMode = true;
     S.universes = [{ id: uid(), name: 'Untitled', color: PALETTE[0], visible: true, description: '', notes: '' }];
