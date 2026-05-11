@@ -717,7 +717,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ## 🟡 Usability (incl. for elderly users)
 
-### #040 — Toolbar tooltips use unfamiliar Unicode symbols (⧖, ⬡, ◉, ⛶) without text labels in many cases
+### #040 — Toolbar tooltips use unfamiliar Unicode symbols (⧖, ⬡, ◉, ⛶) without text labels in many cases  ✅ Done 2026-05-11 (renames only) — Universe: tab "Codex" → "Characters", tab "Archive" → "Stats", toolbar group label "⬡ Archive" → "⬡ Data", view heading "Character Codex" → "Characters", help text and breadcrumb strings updated. Internal API names (`switchView('characters')`, `tab-characters`, `tab-stats`) and CSS class names left alone — renaming would risk saved data. Unicode glyph removal deferred (would require a CSS pass).
 
 - **Category:** Usability · Elderly
 - **Severity:** 🟠 High

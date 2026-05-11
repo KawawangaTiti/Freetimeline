@@ -4490,7 +4490,7 @@ const M = {
   _charList(top) {
     const q = (top.q || '').toLowerCase();
     this.crumb().textContent = '';
-    this.ttl().textContent   = '⬡ Character Codex — Dossiers & Profiles';
+    this.ttl().textContent   = '⬡ Characters — Dossiers & Profiles';
     const eb = document.createElement('button');
     eb.className = 'btn accent'; eb.innerHTML = '&#65291; New Dossier';
     eb.onclick = () => { MS.push({ t: 'addChar' }); M.render(); };
@@ -4542,7 +4542,7 @@ const M = {
   /* ---- Character Detail ---- */
   _charDetail(top) {
     const ch = S.characters.find(c => c.id === top.charId); if (!ch) return;
-    this.crumb().textContent = 'Codex';
+    this.crumb().textContent = 'Characters';
     this.ttl().textContent   = ch.name;
     const eb = document.createElement('button');
     eb.className = 'btn light'; eb.innerHTML = '&#9998; Edit';
@@ -6603,7 +6603,7 @@ function renderCharsView() {
     grid.innerHTML =
       '<div class="cv-empty">' +
         '<div class="cv-empty-glyph">\u2756 \u2756 \u2756</div>' +
-        '<div class="cv-empty-title">' + (isFirst ? 'The Codex is empty' : 'No dossier matches your search') + '</div>' +
+        '<div class="cv-empty-title">' + (isFirst ? 'The character list is empty' : 'No dossier matches your search') + '</div>' +
         '<div class="cv-empty-msg">' +
           (isFirst
             ? 'Every universe begins with its first name. Create a dossier to record a character\u2019s identity, organizations, and the events that shape them.'
@@ -7380,7 +7380,7 @@ const ConnectionMap = {
         + '<h3>Your constellation is waiting</h3>'
         + '<p>Connections appear when two characters share events, or when you mark them as counterparts across universes. Add a few characters first, then link them to scenes \u2014 the map will light up on its own.</p>'
         + '<div class="cm-empty-steps">'
-          + '<b>1.</b> Open the \u2318 Codex tab and add characters.<br>'
+          + '<b>1.</b> Open the \u2318 Characters tab and add characters.<br>'
           + '<b>2.</b> Open any event and attach two or more characters to it.<br>'
           + '<b>3.</b> (Optional) In a character profile, list counterparts to link alt-universe versions.<br>'
           + '<b>4.</b> Return here \u2014 edges will glow between shared characters.'
@@ -8350,7 +8350,7 @@ function obsHelpSectionsMarkup(){
           <li><b>Add a Description.</b><span>Describe what happened, who was there, and what changed after. This is the heart of your event. You can format text, add line breaks, and paste long passages.</span></li>
           <li><b>Pick a Universe.</b><span>Choose which world this event belongs to. You can change it later.</span></li>
           <li><b>Pick a Category.</b><span>Categories are the <em>type</em> of event — for example: Battle, Discovery, Birth, Prophecy, Political Shift. You create your own. See <em>Categories</em>.</span></li>
-          <li><b>Link characters (optional).</b><span>If you already have characters, attach the ones involved in this moment. This powers the Character Codex and story connections.</span></li>
+          <li><b>Link characters (optional).</b><span>If you already have characters, attach the ones involved in this moment. This powers the Characters tab and story connections.</span></li>
           <li><b>Save.</b><span>Your event appears on the timeline as a coloured marker inside its universe's track.</span></li>
         </ol>
         <div class="obs-callout tip"><span class="obs-callout-tag">Tip</span>Your first draft of any event does not need to be perfect. Capture it quickly, then polish later.</div>
@@ -8408,14 +8408,14 @@ function obsHelpSectionsMarkup(){
     people: {
       coord:'γ-02 · People',
       title:'People and characters',
-      lede:'Characters are the people (or creatures, or nations) your events revolve around. Each one gets a full dossier in the Character Codex.',
+      lede:'Characters are the people (or creatures, or nations) your events revolve around. Each one gets a full dossier in the Characters tab.',
       body:`
         <ol class="obs-steps">
-          <li><b>Open the Character Codex.</b><span>Click the <strong>Characters</strong> button in the top bar. This is your cast list.</span></li>
+          <li><b>Open the Characters tab.</b><span>Click the <strong>Characters</strong> button in the top bar. This is your cast list.</span></li>
           <li><b>Create a dossier.</b><span>Press <strong>New Dossier</strong>. Fill in the name, a short description, and any other details you want. You can add a portrait later.</span></li>
-          <li><b>Link characters to events.</b><span>Inside any event, attach the characters involved. The Codex will automatically track every moment each character appears in.</span></li>
+          <li><b>Link characters to events.</b><span>Inside any event, attach the characters involved. The Characters tab will automatically track every moment each character appears in.</span></li>
           <li><b>Browse a character's timeline.</b><span>Open a dossier and you will see all the events they participate in, in order. This is their personal chronology.</span></li>
-          <li><b>Find shared scenes.</b><span>The Codex can show you which characters appear together — useful for spotting duos, rivalries, and crossover moments.</span></li>
+          <li><b>Find shared scenes.</b><span>The Characters tab can show you which characters appear together — useful for spotting duos, rivalries, and crossover moments.</span></li>
         </ol>
         <div class="obs-callout"><span class="obs-callout-tag">Writer's tip</span>Characters do not need full biographies to be useful. Even a one-line description is enough to start.</div>
         <p class="obs-p"><strong>Organizations</strong> group characters into factions, houses, guilds, crews, or any other grouping you invent. Manage them from the organization editor.</p>`

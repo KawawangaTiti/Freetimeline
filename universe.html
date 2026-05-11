@@ -3870,9 +3870,9 @@ input[type="color"]:focus-visible {
     <!-- ── Group 3: View tabs ── -->
     <div class="view-tabs tb-secondary">
       <button class="view-tab active" id="tab-timeline"    onclick="switchView('timeline')"    title="Main timeline canvas — events laid out across time">⧖ Timeline</button>
-      <button class="view-tab"        id="tab-characters"  onclick="switchView('characters')"  title="Character codex — browse and manage all character dossiers">⬡ Codex</button>
+      <button class="view-tab"        id="tab-characters"  onclick="switchView('characters')"  title="Character directory — browse and manage all character dossiers">⬡ Characters</button>
       <button class="view-tab"        id="tab-connections" onclick="switchView('connections')" title="Connection map — visualise links between events and arcs">⬡ Map</button>
-      <button class="view-tab"        id="tab-stats"       onclick="switchView('stats')"       title="Chronicle analytics — universe statistics and breakdowns">◉ Archive</button>
+      <button class="view-tab"        id="tab-stats"       onclick="switchView('stats')"       title="Universe statistics and breakdowns">◉ Stats</button>
       <button class="view-tab" id="tab-list" onclick="ftListView.toggle()" title="Accessible list view of all events grouped by year" aria-pressed="false">▤ List</button>
     </div>
 
@@ -3913,7 +3913,7 @@ input[type="color"]:focus-visible {
 
     <!-- ── Group 6: Archive / Data ── -->
     <div class="tb-group tb-secondary">
-      <span class="tb-group-label">⬡ Archive</span>
+      <span class="tb-group-label">⬡ Data</span>
       <button class="btn accent" onclick="Store.saveHTML()"    title="Export your entire universe as a self-contained HTML file — open it anywhere offline">💾 Save HTML</button>
       <button class="btn"        onclick="Store.saveJSON()"    title="Export a lightweight JSON backup of all timeline data">↓ JSON</button>
       <button class="btn"        onclick="Store.importClick()" title="Load a previously saved HTML or JSON timeline archive">↑ Load</button>
@@ -4170,7 +4170,7 @@ input[type="color"]:focus-visible {
   <!-- Characters Full View -->
   <div id="chars-view">
     <div class="cv-header">
-      <h2>⬡ Character Codex</h2>
+      <h2>⬡ Characters</h2>
       <div class="cv-controls">
         <input class="cv-search" id="cv-search" placeholder="Search dossiers..." oninput="renderCharsView()">
         <button class="btn accent" onclick="MS=[{t:'addChar'}]; M.push(MS[0]); M.render()">+ New Dossier</button>
