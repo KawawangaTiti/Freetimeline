@@ -157,7 +157,7 @@ Severity legend: 🔴 Critical · 🟠 High · 🟡 Medium · 🟢 Low · ⚪ Co
 
 ---
 
-### #004 — No ad slots on the entire site; loader only on homepage
+### #004 — No ad slots on the entire site; loader only on homepage  ✅ Done 2026-05-11 — Manual placements (no Auto Ads). 11 slots across index (2), guides hub (1), 5 guide articles (2 each), about/pricing/roadmap/contact (1 each). AdSense library is gated through `js/ft-consent.js` — only loads after the user accepts the cookie banner. NOT placed on terms/privacy/cookies/universe/biography. **MANUAL STEP REQUIRED:** create real ad units in the AdSense console and replace every `data-ad-slot="0000000000"` placeholder with the real unit IDs.
 
 - **Category:** AdSense · Critical
 - **Severity:** 🔴 Critical
