@@ -288,7 +288,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 (See also #001, #002, #004, #005, #006, #007, #008, #009 above.)
 
-### #010 — `cookies.html` lists wrong localStorage keys
+### #010 — `cookies.html` lists wrong localStorage keys  ✅ Done 2026-05-11
 
 - **Category:** AdSense · Legal · GDPR · Inconsistency
 - **Severity:** 🔴 Critical
