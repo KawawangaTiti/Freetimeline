@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — FreeTimeline</title>
+<meta name="description" content="Read the Privacy Policy for FreeTimeline. Learn how we protect your privacy and handle your data.">
+<link rel="canonical" href="https://freetimeline.pt/privacy.html">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #050611;
+  --surface: #0d0f20;
+  --border: rgba(255,255,255,0.06);
+  --border-mid: rgba(255,255,255,0.1);
+  --text: #e4e8f5;
+  --text-bright: #ffffff;
+  --muted: #aab3cc;
+  --dim: #434760;
+  --gold: #d4af37;
+  --accent: #4a8fde;
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: -apple-system, 'Segoe UI', system-ui, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.7;
+}
+
+.page-wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 60px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(5,6,17,0.95);
+  backdrop-filter: blur(16px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-brand {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.brand-infinity {
+  font-size: 1.4em;
+  background: linear-gradient(135deg, #5a80ff, #40c8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.brand-name {
+  background: linear-gradient(135deg, #c8d4ff, #90d8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.topbar-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+.topbar-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.topbar-links a:hover { color: var(--text-bright); }
+
+.main-content {
+  flex: 1;
+  padding: 80px 40px;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.page-title {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: var(--text-bright);
+  margin-bottom: 12px;
+  letter-spacing: -1px;
+}
+
+.last-updated {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 40px;
+}
+
+.legal-section {
+  margin-bottom: 40px;
+}
+
+.legal-section h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.legal-section h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 20px 0 12px;
+}
+
+.legal-section p {
+  font-size: 1rem;
+  color: var(--muted);
+  margin-bottom: 16px;
+  line-height: 1.8;
+}
+
+.legal-section ul, .legal-section ol {
+  margin: 16px 0;
+  padding-left: 24px;
+  color: var(--muted);
+}
+
+.legal-section li {
+  margin-bottom: 10px;
+  line-height: 1.7;
+}
+
+.legal-section strong {
+  color: var(--text);
+}
+
+.legal-section a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.highlight-box {
+  background: var(--surface);
+  border: 1px solid var(--border-mid);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 24px 0;
+}
+
+.highlight-box h4 {
+  color: var(--gold);
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+
+footer {
+  padding: 32px 40px;
+  border-top: 1px solid var(--border);
+  background: rgba(5,6,17,0.9);
+  margin-top: auto;
+}
+.footer-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--dim);
+}
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.footer-links a {
+  color: var(--dim);
+  font-size: 0.82rem;
+  text-decoration: none;
+  padding: 3px 6px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+.footer-links a:hover {
+  color: var(--muted);
+  background: rgba(255,255,255,0.04);
+}
+.footer-links .fdot {
+  color: var(--dim);
+  font-size: 0.65rem;
+}
+.footer-note {
+  font-size: 0.8rem;
+  color: var(--dim);
+  text-align: center;
+  width: 100%;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .topbar { padding: 0 20px; }
+  .topbar-links { display: none; }
+  .main-content { padding: 40px 20px; }
+  .page-title { font-size: 2rem; }
+  footer { padding: 24px 20px; }
+  .footer-inner { flex-direction: column; align-items: flex-start; }
+}
+
+.footer-links .ft-cookie-prefs{background:none;border:0;color:var(--dim);font:inherit;font-size:.82rem;padding:3px 6px;border-radius:6px;cursor:pointer;text-decoration:underline;text-underline-offset:2px;font-family:inherit;}
+.footer-links .ft-cookie-prefs:hover{color:var(--muted);background:rgba(255,255,255,.04);}
+
+
+/* --- PART 12: A11y baseline --- */
+.skip-link{position:absolute;left:-9999px;top:0;z-index:99999;background:#ffd166;color:#050611;padding:10px 16px;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;}
+.skip-link:focus{left:0;outline:3px solid #ffd166;outline-offset:2px;}
+:focus-visible{outline:3px solid #ffd166;outline-offset:2px;border-radius:4px;}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[tabindex]:focus-visible,summary:focus-visible{outline:3px solid #ffd166;outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:0.001ms!important;animation-iteration-count:1!important;transition-duration:0.001ms!important;scroll-behavior:auto!important;}}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<div class="page-wrap">
+
+  <header class="topbar">
+    <a href="index.html" class="topbar-brand">
+      <span class="brand-infinity">&#8734;</span>
+      <span class="brand-name">FreeTimeline</span>
+    </a>
+    <nav class="topbar-links">
+      <a href="index.html">Home</a>
+      <a href="guides.html">Guides</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="privacy.html">Privacy</a>
+    </nav>
+  </header>
+
+  <main class="main-content" id="main" tabindex="-1">
+    <h1 class="page-title">Privacy Policy</h1>
+    <p class="last-updated">Last Updated: April 21, 2026</p>
+
+    <section class="legal-section">
+      <h2>Introduction</h2>
+      <p>FreeTimeline ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard information when you use our website at freetimeline.pt (the "Service").</p>
+      <p>By using the Service, you agree to the collection and use of information in accordance with this policy.</p>
+    </section>
+
+    <div class="highlight-box">
+      <h4>Our Core Privacy Principle</h4>
+      <p style="color: var(--muted); margin: 0;">FreeTimeline is built with privacy-by-design. Your timeline data (events, characters, memories, etc.) is stored exclusively in your browser's localStorage. We never collect, transmit, or store your timeline content on our servers. We cannot access your data because we never receive it.</p>
+    </div>
+
+    <section class="legal-section">
+      <h2>Information We Do NOT Collect</h2>
+      <p>To be absolutely clear about our privacy practices, here is what we do NOT collect:</p>
+      <ul>
+        <li>Your timeline data (events, characters, stories, memories)</li>
+        <li>Personal information you enter into your timelines</li>
+        <li>Images or attachments you add to your timelines</li>
+        <li>Account credentials (we don't require accounts)</li>
+        <li>Your real name, address, or phone number</li>
+      </ul>
+    </section>
+
+    <section class="legal-section">
+      <h2>Information Collected Automatically</h2>
+      <p>Like most websites, our web server automatically collects certain technical information when you visit:</p>
+      <ul>
+        <li><strong>IP Address:</strong> Your IP address may be logged by our web hosting provider for security and analytics purposes.</li>
+        <li><strong>Browser Information:</strong> Type, version, and language settings of your web browser.</li>
+        <li><strong>Device Information:</strong> Operating system and device type.</li>
+        <li><strong>Access Times:</strong> Date and time of your visits.</li>
+        <li><strong>Referring URLs:</strong> The page that linked you to our site.</li>
+      </ul>
+      <p>This information is used solely for maintaining site security, analyzing aggregate traffic patterns, and improving the Service. It is not linked to any personally identifiable information.</p>
+    </section>
+
+    <section class="legal-section">
+      <h2>Local Storage</h2>
+      <p>FreeTimeline uses your browser's localStorage to save your timeline data. This means:</p>
+      <ul>
+        <li>Your data is stored on your device, not on our servers</li>
+        <li>We have no access to this data</li>
+        <li>Your data persists only in the browser where you created it</li>
+        <li>Clearing your browser data will delete your timelines</li>
+        <li>You can export your data at any time using the built-in export feature</li>
+      </ul>
+      <p>For more details about what we store in localStorage, please see our <a href="cookies.html">Cookie Policy</a>.</p>
+    </section>
+
+    <section class="legal-section">
+      <h2>Cookies and Tracking Technologies</h2>
+      
+      <h3>Our Cookies</h3>
+      <p>FreeTimeline itself uses minimal cookies. We use localStorage to remember your consent acknowledgment and to store your timeline data. We do not use cookies for tracking your behavior.</p>
+      
+      <h3>Third-Party Advertising Cookies</h3>
+      <p>We display advertisements through third-party advertising networks to support the free operation of this Service. These partners may use cookies and similar technologies to:</p>
+      <ul>
+        <li>Serve advertisements based on your interests</li>
+        <li>Measure ad performance</li>
+        <li>Limit the frequency of ads shown</li>
+      </ul>
+
+      <h3>Google AdSense</h3>
+      <p>We use Google AdSense to display advertisements. Google uses cookies to serve ads based on your prior visits to our website and other sites. Google's use of the DoubleClick cookie enables it and its partners to serve ads to you based on your visit to FreeTimeline and/or other sites on the Internet.</p>
+      <p><strong>You may opt out of personalized advertising by visiting:</strong></p>
+      <ul>
+        <li><a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">Google Ads Settings</a></li>
+        <li><a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer">Digital Advertising Alliance Opt-Out</a></li>
+        <li><a href="https://www.youronlinechoices.eu/" target="_blank" rel="noopener noreferrer">Your Online Choices (EU)</a></li>
+      </ul>
+    </section>
+
+    <section class="legal-section" id="third-party-processors">
+      <h2>Third-Party Processors</h2>
+      <p>FreeTimeline relies on a small number of third-party service providers to operate the site. None of them receive your timeline data, because that data never leaves your browser. They do, however, process limited technical information (such as your IP address and request headers) on our behalf:</p>
+      <ul>
+        <li><strong>Google AdSense</strong> &mdash; serves the advertising that supports the free tier, and may set cookies described in our <a href="cookies.html">Cookie Policy</a>. See <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google's Privacy Policy</a> and the <a href="https://www.google.com/adsense/new/localized-terms" target="_blank" rel="noopener noreferrer">AdSense Programme Policies</a>.</li>
+        <li><strong>DNS &amp; CDN host (Cloudflare)</strong> &mdash; routes traffic to freetimeline.pt and protects the site from abuse. See <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare's Privacy Policy</a>.</li>
+      </ul>
+      <p><strong>Data Processing Addendum (DPA) &mdash; AdSense.</strong> Where Google AdSense processes personal data on our behalf within the meaning of the GDPR, that processing is governed by the <a href="https://privacy.google.com/businesses/processorterms/" target="_blank" rel="noopener noreferrer">Google Ads Data Processing Terms</a>, which we have accepted. Google may also act as an independent controller for ad-personalisation purposes, as disclosed in its own privacy notices.</p>
+      <p><strong>No analytics today.</strong> FreeTimeline does <em>not</em> currently use Google Analytics, Plausible, Matomo, or any other analytics platform. If we add a privacy-friendly analytics tool in the future, we will list it here and update the "Last Updated" date.</p>
+    </section>
+
+    <section class="legal-section">
+      <h2>EU Consent &amp; Personalised Ads</h2>
+      <p>If you visit FreeTimeline from the European Economic Area, the United Kingdom, or Switzerland, personalised advertising will only be served after you give consent through our cookie consent banner. Until you choose, only non-personalised ads are shown. You can change your decision at any time using the <strong>"Manage cookie preferences"</strong> link in the footer of every page, or directly on our <a href="cookies.html">Cookie Policy</a> page.</p>
+    </section>
+
+    <section class="legal-section">
+      <h2>How We Use Information</h2>
+      <p>The limited information we do collect is used to:</p>
+      <ul>
+        <li>Operate and maintain the Service</li>
+        <li>Monitor and analyze usage patterns to improve user experience</li>
+        <li>Detect and prevent security threats or fraud</li>
+        <li>Display advertisements through our advertising partners</li>
+        <li>Respond to your inquiries if you contact us</li>
+      </ul>
+    </section>
+
+    <section class="legal-section">
+      <h2>Data Sharing</h2>
+      <p>We do not sell, trade, or rent your personal information to others. We may share anonymized, aggregate statistics about site usage (such as total number of visitors) but this data cannot identify any individual.</p>
+      <p>Our advertising partners (such as Google AdSense) have their own privacy policies governing their data practices. We encourage you to review their policies.</p>
+    </section>
+
+    <section class="legal-section">
+      <h2>Data Security</h2>
+      <p>We implement appropriate technical measures to protect against unauthorized access to our systems. However, since your timeline data is stored locally in your browser:</p>
+      <ul>
+        <li>The security of that data depends on your device and browser security</li>
+        <li>We recommend keeping your browser updated</li>
+        <li>We recommend regularly exporting backups of your important timelines</li>
+        <li>Anyone with access to your browser can access your timeline data</li>
+      </ul>
+    </section>
+
+    <section class="legal-section">
+      <h2>Children's Privacy</h2>
+      <p>FreeTimeline is not directed at children under the age of 13. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal information, please contact us.</p>
+    </section>
+
+    <section class="legal-section">
+      <h2>Your Rights (GDPR)</h2>
+      <p>If you are a resident of the European Economic Area (EEA), you have certain data protection rights:</p>
+      <ul>
+        <li><strong>Right to Access:</strong> You can request information about data we process about you.</li>
+        <li><strong>Right to Rectification:</strong> You can request correction of inaccurate data.</li>
+        <li><strong>Right to Erasure:</strong> You can request deletion of your data.</li>
+        <li><strong>Right to Restrict Processing:</strong> You can request we limit how we use your data.</li>
+        <li><strong>Right to Data Portability:</strong> You can request a copy of your data.</li>
+        <li><strong>Right to Object:</strong> You can object to our processing of your data.</li>
+      </ul>
+      <p>Because we do not store your timeline data, most of these rights apply only to server logs and contact information you may have provided.</p>
+      <p>To exercise these rights, please contact us at <a href="mailto:privacy@freetimeline.pt">privacy@freetimeline.pt</a>.</p>
+    </section>
+
+    <section class="legal-section">
+      <h2>Changes to This Policy</h2>
+      <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.</p>
+      <p>We encourage you to review this Privacy Policy periodically for any changes.</p>
+    </section>
+
+    <section class="legal-section">
+      <h2>Contact Us</h2>
+      <p>If you have any questions about this Privacy Policy, please contact us:</p>
+      <p><strong>General contact:</strong> <a href="mailto:support@freetimeline.pt">support@freetimeline.pt</a></p>
+      <p><strong>Privacy &amp; data requests:</strong> <a href="mailto:privacy@freetimeline.pt">privacy@freetimeline.pt</a></p>
+    </section>
+  </main>
+
+    <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="brand-infinity">&#8734;</span>
+        <span>FreeTimeline</span>
+      </div>
+      <nav class="footer-links">
+        <a href="about.html">About</a>
+        <span class="fdot">&#8226;</span>
+        <a href="contact.html">Contact</a>
+        <span class="fdot">&#8226;</span>
+        <a href="guides.html">Guides</a>
+        <span class="fdot">&#8226;</span>
+        <a href="terms.html">Terms</a>
+        <span class="fdot">&#8226;</span>
+        <a href="privacy.html">Privacy</a>
+        <span class="fdot">&#8226;</span>
+        <a href="cookies.html">Cookies</a>
+        <span class="fdot">&#8226;</span>
+        <button type="button" class="ft-cookie-prefs" id="ft-cookie-prefs-footer">Manage cookie preferences</button>
+      </nav>
+      <p class="footer-note">&copy; <span id="footer-year">2026</span> FreeTimeline &mdash; All data is saved locally in your browser.</p>
+    </div>
+  </footer>
+
+</div>
+<script>(function(){var y=document.getElementById('footer-year');if(y)y.textContent=new Date().getFullYear();var b=document.getElementById('ft-cookie-prefs-footer');if(b)b.addEventListener('click',function(e){e.preventDefault();alert('The cookie consent banner is delivered by our IAB TCF v2.2 CMP (planned in Part 15). Until it is wired in, no personalised ads are loaded.');});})();</script>
+</body>
+</html>

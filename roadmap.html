@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roadmap — FreeTimeline</title>
+<meta name="description" content="What we're building next for FreeTimeline. A public, honest list of planned features, work in progress, and recently shipped improvements.">
+<link rel="canonical" href="https://freetimeline.pt/roadmap.html">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #050611;
+  --bg2: #080a18;
+  --surface: #0d0f20;
+  --surface2: #111328;
+  --border: rgba(255,255,255,0.06);
+  --border-mid: rgba(255,255,255,0.1);
+  --text: #e4e8f5;
+  --text-bright: #ffffff;
+  --muted: #aab3cc;
+  --dim: #434760;
+  --gold: #d4af37;
+  --accent: #4a8fde;
+  --green: #4ade80;
+  --amber: #f4b84a;
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: -apple-system, 'Segoe UI', system-ui, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.7;
+}
+
+.page-wrap { display: flex; flex-direction: column; min-height: 100vh; }
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; height: 60px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(5,6,17,0.95);
+  backdrop-filter: blur(16px);
+  position: sticky; top: 0; z-index: 100;
+}
+.topbar-brand {
+  font-size: 1rem; font-weight: 800; color: #fff; text-decoration: none;
+  display: flex; align-items: center; gap: 6px;
+}
+.brand-infinity {
+  font-size: 1.4em;
+  background: linear-gradient(135deg, #5a80ff, #40c8ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.brand-name {
+  background: linear-gradient(135deg, #c8d4ff, #90d8ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.topbar-links { display: flex; align-items: center; gap: 28px; }
+.topbar-links a {
+  color: var(--muted); text-decoration: none;
+  font-size: 0.85rem; font-weight: 500; transition: color 0.2s;
+}
+.topbar-links a:hover { color: var(--text-bright); }
+
+.main-content {
+  flex: 1; padding: 80px 40px;
+  max-width: 820px; margin: 0 auto; width: 100%;
+}
+
+.page-title {
+  font-size: 2.8rem; font-weight: 900; color: var(--text-bright);
+  margin-bottom: 16px; letter-spacing: -1px;
+}
+.page-subtitle {
+  font-size: 1.1rem; color: var(--muted);
+  margin-bottom: 40px; line-height: 1.7;
+}
+
+.roadmap-section { margin-bottom: 40px; }
+
+.roadmap-section h2 {
+  font-size: 1.25rem; font-weight: 800; color: var(--text-bright);
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.status-pill {
+  font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 100px;
+  border: 1px solid var(--border-mid);
+}
+.status-shipped  { color: var(--green); border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.08); }
+.status-progress { color: var(--amber); border-color: rgba(244,184,74,0.3); background: rgba(244,184,74,0.08); }
+.status-planned  { color: var(--accent); border-color: rgba(74,143,222,0.3); background: rgba(74,143,222,0.08); }
+
+.feature-list { list-style: none; padding: 0; margin: 0; }
+.feature-list li {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin-bottom: 12px;
+}
+.feature-list li strong {
+  display: block;
+  color: var(--text-bright);
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+.feature-list li span {
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.disclaimer {
+  margin-top: 32px;
+  padding: 20px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+footer {
+  padding: 32px 40px;
+  border-top: 1px solid var(--border);
+  background: rgba(5,6,17,0.9);
+  margin-top: auto;
+}
+.footer-inner {
+  max-width: 1000px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 20px; flex-wrap: wrap;
+}
+.footer-brand {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.88rem; font-weight: 700; color: var(--dim);
+}
+.footer-links { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.footer-links a {
+  color: var(--dim); font-size: 0.82rem; text-decoration: none;
+  padding: 3px 6px; border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+.footer-links a:hover { color: var(--muted); background: rgba(255,255,255,0.04); }
+.footer-links .fdot { color: var(--dim); font-size: 0.65rem; }
+.footer-note {
+  font-size: 0.8rem; color: var(--dim); text-align: center;
+  width: 100%; padding-top: 12px; border-top: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .topbar { padding: 0 20px; }
+  .topbar-links { display: none; }
+  .main-content { padding: 40px 20px; }
+  .page-title { font-size: 2rem; }
+  footer { padding: 24px 20px; }
+  .footer-inner { flex-direction: column; align-items: flex-start; }
+}
+
+.footer-links .ft-cookie-prefs{background:none;border:0;color:var(--dim);font:inherit;font-size:.82rem;padding:3px 6px;border-radius:6px;cursor:pointer;text-decoration:underline;text-underline-offset:2px;font-family:inherit;}
+.footer-links .ft-cookie-prefs:hover{color:var(--muted);background:rgba(255,255,255,.04);}
+
+
+.footer-links .ft-cookie-prefs{background:none;border:0;color:var(--dim);font:inherit;font-size:.82rem;padding:3px 6px;border-radius:6px;cursor:pointer;text-decoration:underline;text-underline-offset:2px;font-family:inherit;}
+.footer-links .ft-cookie-prefs:hover{color:var(--muted);background:rgba(255,255,255,.04);}
+
+
+.footer-links .ft-cookie-prefs{background:none;border:0;color:var(--dim);font:inherit;font-size:.82rem;padding:3px 6px;border-radius:6px;cursor:pointer;text-decoration:underline;text-underline-offset:2px;font-family:inherit;}
+.footer-links .ft-cookie-prefs:hover{color:var(--muted);background:rgba(255,255,255,.04);}
+
+
+/* --- PART 12: A11y baseline --- */
+.skip-link{position:absolute;left:-9999px;top:0;z-index:99999;background:#ffd166;color:#050611;padding:10px 16px;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;}
+.skip-link:focus{left:0;outline:3px solid #ffd166;outline-offset:2px;}
+:focus-visible{outline:3px solid #ffd166;outline-offset:2px;border-radius:4px;}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[tabindex]:focus-visible,summary:focus-visible{outline:3px solid #ffd166;outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:0.001ms!important;animation-iteration-count:1!important;transition-duration:0.001ms!important;scroll-behavior:auto!important;}}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<div class="page-wrap">
+
+  <header class="topbar">
+    <a href="index.html" class="topbar-brand">
+      <span class="brand-infinity">&#8734;</span>
+      <span class="brand-name">FreeTimeline</span>
+    </a>
+    <nav class="topbar-links">
+      <a href="index.html">Home</a>
+      <a href="guides.html">Guides</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="privacy.html">Privacy</a>
+    </nav>
+  </header>
+
+  <main class="main-content" id="main" tabindex="-1">
+    <h1 class="page-title">Roadmap</h1>
+    <p class="page-subtitle">An honest, public list of what we're building. We ship slowly and deliberately — no breaking changes, no surprise paywalls. Got a request? <a href="contact.html" style="color: var(--accent);">Tell us</a>.</p>
+
+    <section class="roadmap-section">
+      <h2>Recently shipped <span class="status-pill status-shipped">Done</span></h2>
+      <ul class="feature-list">
+        <li>
+          <strong>Local-first storage for both Universe and Biography</strong>
+          <span>Everything stays in your browser — no accounts, no servers.</span>
+        </li>
+        <li>
+          <strong>JSON export &amp; import</strong>
+          <span>Take your data with you, back it up, move between devices.</span>
+        </li>
+        <li>
+          <strong>Guides section</strong>
+          <span>Articles for novelists, GMs, journalers, and world-builders.</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="roadmap-section">
+      <h2>In progress <span class="status-pill status-progress">Building</span></h2>
+      <ul class="feature-list">
+        <li>
+          <strong>Improved mobile timeline view</strong>
+          <span>A smoother, touch-first experience for phones and tablets.</span>
+        </li>
+        <li>
+          <strong>Richer event editor</strong>
+          <span>Markdown notes, image attachments stored locally, better tagging.</span>
+        </li>
+        <li>
+          <strong>Refreshed Contact &amp; About pages</strong>
+          <span>Direct email, clearer expectations, public roadmap (this page).</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="roadmap-section">
+      <h2>Planned <span class="status-pill status-planned">Next</span></h2>
+      <ul class="feature-list">
+        <li>
+          <strong>Multi-timeline workspace</strong>
+          <span>Switch between several Universes or Biographies without exporting.</span>
+        </li>
+        <li>
+          <strong>Character &amp; relationship graph view</strong>
+          <span>See how people, factions, and arcs connect across time.</span>
+        </li>
+        <li>
+          <strong>Encrypted local backup files</strong>
+          <span>Optional password-protected exports for sensitive journals.</span>
+        </li>
+        <li>
+          <strong>Print &amp; PDF export</strong>
+          <span>Beautiful, shareable printouts of any timeline range.</span>
+        </li>
+        <li>
+          <strong>Community templates</strong>
+          <span>Starter packs for popular fictional universes and journaling formats.</span>
+        </li>
+        <li>
+          <strong>Optional Discord community</strong>
+          <span>A place for writers, GMs, and memory keepers to swap tips.</span>
+        </li>
+        <li>
+          <strong>Accessibility pass</strong>
+          <span>Full keyboard navigation, screen-reader labels, reduced-motion mode.</span>
+        </li>
+        <li>
+          <strong>Localised UI</strong>
+          <span>Portuguese first, then Spanish, French, and German.</span>
+        </li>
+      </ul>
+    </section>
+
+    <p class="disclaimer">
+      This roadmap is a direction, not a promise. Priorities may shift based on what we learn from you. If a feature here matters to you, <a href="contact.html" style="color: var(--accent);">let us know</a> — it really does move things up the list.
+    </p>
+  </main>
+
+        <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="brand-infinity">&#8734;</span>
+        <span>FreeTimeline</span>
+      </div>
+      <nav class="footer-links">
+        <a href="about.html">About</a>
+        <span class="fdot">&#8226;</span>
+        <a href="contact.html">Contact</a>
+        <span class="fdot">&#8226;</span>
+        <a href="guides.html">Guides</a>
+        <span class="fdot">&#8226;</span>
+        <a href="terms.html">Terms</a>
+        <span class="fdot">&#8226;</span>
+        <a href="privacy.html">Privacy</a>
+        <span class="fdot">&#8226;</span>
+        <a href="cookies.html">Cookies</a>
+        <span class="fdot">&#8226;</span>
+        <button type="button" class="ft-cookie-prefs" id="ft-cookie-prefs-footer">Manage cookie preferences</button>
+      </nav>
+      <p class="footer-note">&copy; <span id="footer-year">2026</span> FreeTimeline &mdash; All data is saved locally in your browser.</p>
+    </div>
+  </footer>
+
+</div>
+
+
+
+<script>(function(){var y=document.getElementById('footer-year');if(y)y.textContent=new Date().getFullYear();var b=document.getElementById('ft-cookie-prefs-footer');if(b)b.addEventListener('click',function(e){e.preventDefault();alert('The cookie consent banner is delivered by our IAB TCF v2.2 CMP (planned in Part 15). Until it is wired in, no personalised ads are loaded.');});})();</script>
+</body>
+</html>

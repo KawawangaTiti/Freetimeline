@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing & FAQ — FreeTimeline</title>
+<meta name="description" content="FreeTimeline is free to use. Read our FAQ to learn why, how the project is funded, and what is planned for the future.">
+<link rel="canonical" href="https://freetimeline.pt/pricing.html">
+<link rel="alternate" type="application/rss+xml" href="/feed.xml" title="FreeTimeline Guides">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#050611; --surface:#0d0f20; --border:rgba(255,255,255,0.06);
+  --border-mid:rgba(255,255,255,0.1); --text:#e4e8f5; --text-bright:#fff;
+  --muted: #aab3cc; --dim:#434760; --gold:#d4af37; --accent:#4a8fde;
+}
+html { scroll-behavior:smooth; font-size:16px; }
+body { font-family:-apple-system,'Segoe UI',system-ui,Arial,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; line-height:1.7; }
+.page-wrap { display:flex; flex-direction:column; min-height:100vh; }
+.topbar { display:flex; align-items:center; justify-content:space-between; padding:0 40px; height:60px; border-bottom:1px solid var(--border); background:rgba(5,6,17,.95); backdrop-filter:blur(16px); position:sticky; top:0; z-index:100; }
+.topbar-brand { font-size:1rem; font-weight:800; color:#fff; text-decoration:none; display:flex; align-items:center; gap:6px; }
+.brand-infinity { font-size:1.4em; background:linear-gradient(135deg,#5a80ff,#40c8ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.brand-name { background:linear-gradient(135deg,#c8d4ff,#90d8ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.topbar-links { display:flex; align-items:center; gap:28px; }
+.topbar-links a { color:var(--muted); text-decoration:none; font-size:.85rem; font-weight:500; transition:color .2s; }
+.topbar-links a:hover { color:var(--text-bright); }
+.main-content { flex:1; padding:80px 40px; max-width:820px; margin:0 auto; width:100%; }
+.eyebrow { display:inline-block; padding:4px 12px; border:1px solid var(--border-mid); border-radius:999px; color:var(--muted); font-size:.72rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:18px; }
+.page-title { font-size:2.8rem; font-weight:900; color:var(--text-bright); margin-bottom:14px; letter-spacing:-1px; }
+.lede { font-size:1.1rem; color:var(--muted); margin-bottom:36px; line-height:1.7; max-width:680px; }
+.tier-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:18px; margin:0 0 56px; }
+.tier { background:var(--surface); border:1px solid var(--border-mid); border-radius:16px; padding:24px; }
+.tier h3 { font-size:1.05rem; color:var(--text-bright); margin-bottom:6px; }
+.tier .price { font-size:2rem; font-weight:900; color:#fff; margin:6px 0 12px; letter-spacing:-.5px; }
+.tier .price small { font-size:.85rem; color:var(--muted); font-weight:500; margin-left:4px; }
+.tier ul { padding-left:20px; color:var(--muted); font-size:.92rem; }
+.tier li { margin-bottom:6px; }
+.tier.featured { border-color:rgba(74,143,222,.5); box-shadow:0 0 0 1px rgba(74,143,222,.2); }
+.tier .badge { display:inline-block; font-size:.65rem; letter-spacing:1.5px; text-transform:uppercase; font-weight:800; color:var(--accent); margin-bottom:8px; }
+.faq-section h2 { font-size:1.4rem; font-weight:800; color:var(--text-bright); margin:0 0 18px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+details.faq { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:0 22px; margin-bottom:12px; transition:border-color .15s; }
+details.faq[open] { border-color:var(--border-mid); }
+details.faq > summary { list-style:none; cursor:pointer; padding:18px 0; font-weight:700; color:var(--text-bright); font-size:1.02rem; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+details.faq > summary::-webkit-details-marker { display:none; }
+details.faq > summary::after { content:'+'; color:var(--accent); font-size:1.4rem; font-weight:400; line-height:1; transition:transform .2s; }
+details.faq[open] > summary::after { content:'\2212'; }
+details.faq .faq-body { padding:0 0 20px; color:var(--muted); font-size:.96rem; line-height:1.75; }
+details.faq .faq-body p { margin-bottom:10px; }
+details.faq .faq-body p:last-child { margin-bottom:0; }
+.cta-card { margin-top:48px; background:linear-gradient(135deg,rgba(74,143,222,.1),rgba(0,204,170,.06)); border:1px solid var(--border-mid); border-radius:16px; padding:28px; text-align:center; }
+.cta-card h3 { color:var(--text-bright); margin-bottom:8px; font-size:1.2rem; }
+.cta-card p { color:var(--muted); margin-bottom:18px; }
+.cta-card a { display:inline-block; padding:12px 24px; background:linear-gradient(135deg,#4a8fde,#5aa0ee); color:#fff; text-decoration:none; border-radius:10px; font-weight:700; }
+footer { padding:32px 40px; border-top:1px solid var(--border); background:rgba(5,6,17,.9); margin-top:auto; }
+.footer-inner { max-width:1000px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+.footer-brand { display:flex; align-items:center; gap:6px; font-size:.88rem; font-weight:700; color:var(--dim); }
+.footer-links { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.footer-links a, .footer-links button { color:var(--dim); font-size:.82rem; text-decoration:none; padding:3px 6px; border-radius:6px; background:none; border:0; font-family:inherit; cursor:pointer; }
+.footer-links a:hover, .footer-links button:hover { color:var(--muted); background:rgba(255,255,255,.04); }
+.footer-links .fdot { color:var(--dim); font-size:.65rem; }
+.footer-note { font-size:.8rem; color:var(--dim); text-align:center; width:100%; padding-top:12px; border-top:1px solid var(--border); }
+@media (max-width:768px) {
+  .topbar { padding:0 20px; } .topbar-links { display:none; }
+  .main-content { padding:40px 20px; } .page-title { font-size:2rem; }
+  footer { padding:24px 20px; } .footer-inner { flex-direction:column; align-items:flex-start; }
+}
+
+.footer-links .ft-cookie-prefs{background:none;border:0;color:var(--dim);font:inherit;font-size:.82rem;padding:3px 6px;border-radius:6px;cursor:pointer;text-decoration:underline;text-underline-offset:2px;font-family:inherit;}
+.footer-links .ft-cookie-prefs:hover{color:var(--muted);background:rgba(255,255,255,.04);}
+
+
+/* --- PART 12: A11y baseline --- */
+.skip-link{position:absolute;left:-9999px;top:0;z-index:99999;background:#ffd166;color:#050611;padding:10px 16px;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;}
+.skip-link:focus{left:0;outline:3px solid #ffd166;outline-offset:2px;}
+:focus-visible{outline:3px solid #ffd166;outline-offset:2px;border-radius:4px;}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[tabindex]:focus-visible,summary:focus-visible{outline:3px solid #ffd166;outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:0.001ms!important;animation-iteration-count:1!important;transition-duration:0.001ms!important;scroll-behavior:auto!important;}}
+
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"Will FreeTimeline always be free?","acceptedAnswer":{"@type":"Answer","text":"Yes \u2014 the Universe Timeline and Biography Timeline tools are committed to remaining free for personal use. The site is funded by unobtrusive advertising, not subscriptions."}},
+ {"@type":"Question","name":"Why are there ads on a privacy-first site?","acceptedAnswer":{"@type":"Answer","text":"Ads pay for the domain, hosting, and ongoing development so we can keep the tools free and account-free. Because your timeline data lives in your browser's localStorage and never reaches our servers, advertisers cannot target you based on the content of your timelines."}},
+ {"@type":"Question","name":"Are any paid features planned?","acceptedAnswer":{"@type":"Answer","text":"Possibly. We are exploring an optional Pro tier covering encrypted cloud sync, a Chrono Ledger module, and an ad-free experience. Nothing has been launched yet, and the current free tools will remain free."}},
+ {"@type":"Question","name":"Do you accept donations?","acceptedAnswer":{"@type":"Answer","text":"Not yet. If you would like to support the project, the most helpful thing is to share FreeTimeline with other writers, journal-keepers, and tabletop game masters."}},
+ {"@type":"Question","name":"Can businesses or schools use FreeTimeline?","acceptedAnswer":{"@type":"Answer","text":"Yes, within the Terms of Service. For larger deployments or custom requirements, write to support@freetimeline.pt and we will see what we can do."}}
+]}
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<div class="page-wrap">
+
+  <header class="topbar">
+    <a href="index.html" class="topbar-brand">
+      <span class="brand-infinity">&#8734;</span>
+      <span class="brand-name">FreeTimeline</span>
+    </a>
+    <nav class="topbar-links">
+      <a href="index.html">Home</a>
+      <a href="guides.html">Guides</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="privacy.html">Privacy</a>
+    </nav>
+  </header>
+
+  <main class="main-content" id="main" tabindex="-1">
+    <span class="eyebrow">Pricing</span>
+    <h1 class="page-title">FreeTimeline is free to use.</h1>
+    <p class="lede">No accounts, no trials, no credit card. The tools run in your browser, your data stays on your device, and the project is supported by advertising. Here is how it all fits together.</p>
+
+    <section class="tier-grid" aria-label="Plans">
+      <div class="tier featured">
+        <span class="badge">Available now</span>
+        <h3>Free</h3>
+        <div class="price">€0<small>/forever</small></div>
+        <ul>
+          <li>Universe Timeline</li>
+          <li>Biography Timeline</li>
+          <li>Unlimited entries &amp; export</li>
+          <li>Local-only storage</li>
+          <li>Supported by light advertising</li>
+        </ul>
+      </div>
+      <div class="tier">
+        <span class="badge" style="color:var(--gold)">Exploring</span>
+        <h3>Pro <span style="font-size:.7rem;color:var(--muted);font-weight:600">(planned)</span></h3>
+        <div class="price">TBA</div>
+        <ul>
+          <li>Optional encrypted cloud sync</li>
+          <li>Chrono Ledger module</li>
+          <li>Ad-free experience</li>
+          <li>Priority support</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="faq-section" aria-label="Frequently asked questions">
+      <h2>Frequently asked questions</h2>
+
+      <details class="faq" open>
+        <summary>Will FreeTimeline always be free?</summary>
+        <div class="faq-body">
+          <p>Yes. The Universe Timeline and Biography Timeline you use today are committed to remaining free for personal use. We will not move existing functionality behind a paywall.</p>
+          <p>If we ever add a paid tier (see below), it will cover <em>new</em> capabilities. The core, local-storage tools will keep working exactly as they do now.</p>
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>Why are there ads on a privacy-first site?</summary>
+        <div class="faq-body">
+          <p>Ads pay for the domain, hosting, and continued development &mdash; without them we would have to charge subscriptions or shut down. We chose advertising precisely so that everyone can use FreeTimeline without an account or a payment method.</p>
+          <p>Because your timeline data lives only in your browser's localStorage and never reaches our servers, advertisers cannot target you based on the contents of your timelines. EU/EEA/UK visitors must consent before personalised ads are shown &mdash; see our <a href="cookies.html">Cookie Policy</a> for details.</p>
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>Are any paid features planned for the future?</summary>
+        <div class="faq-body">
+          <p>We are exploring an optional <strong>Pro tier</strong> that would add:</p>
+          <ul style="padding-left:22px;color:var(--muted);margin:10px 0">
+            <li>End-to-end encrypted cloud sync between devices</li>
+            <li>A new <strong>Chrono Ledger</strong> module for tracking accounts and recurring events on a timeline</li>
+            <li>An ad-free experience for subscribers</li>
+            <li>Priority support and earlier access to new features</li>
+          </ul>
+          <p>Nothing has been launched yet, and pricing has not been set. We will update this page before any paid plan goes live.</p>
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>Do you accept donations or sponsorships?</summary>
+        <div class="faq-body">
+          <p>Not at the moment. The most useful thing you can do is share FreeTimeline with friends, writing communities, journal-keepers, and tabletop game masters who might enjoy it.</p>
+          <p>If you represent a publisher, RPG studio, or writing community interested in a sponsorship arrangement, write to <a href="mailto:support@freetimeline.pt">support@freetimeline.pt</a>.</p>
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>Can businesses, schools, or libraries use FreeTimeline?</summary>
+        <div class="faq-body">
+          <p>Yes &mdash; the free tools may be used in classrooms, libraries, and small teams within the limits of our <a href="terms.html">Terms of Service</a>. Because no data leaves the browser, you do not need to sign a Data Processing Agreement with us simply to use the tool.</p>
+          <p>For larger deployments, custom branding, or self-hosted variants, please contact <a href="mailto:support@freetimeline.pt">support@freetimeline.pt</a>.</p>
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>How do you make money if there is no subscription?</summary>
+        <div class="faq-body">
+          <p>Today, all revenue comes from a single source: <strong>Google AdSense</strong>. The full list of third-party processors and what they do is published in our <a href="privacy.html#third-party-processors">Privacy Policy</a>.</p>
+        </div>
+      </details>
+    </section>
+
+    <div class="cta-card">
+      <h3>Ready to start?</h3>
+      <p>Open a tool below &mdash; no signup, no email, no card.</p>
+      <a href="index.html">&larr; Back to FreeTimeline</a>
+    </div>
+  </main>
+
+    <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="brand-infinity">&#8734;</span>
+        <span>FreeTimeline</span>
+      </div>
+      <nav class="footer-links">
+        <a href="about.html">About</a>
+        <span class="fdot">&#8226;</span>
+        <a href="contact.html">Contact</a>
+        <span class="fdot">&#8226;</span>
+        <a href="guides.html">Guides</a>
+        <span class="fdot">&#8226;</span>
+        <a href="terms.html">Terms</a>
+        <span class="fdot">&#8226;</span>
+        <a href="privacy.html">Privacy</a>
+        <span class="fdot">&#8226;</span>
+        <a href="cookies.html">Cookies</a>
+        <span class="fdot">&#8226;</span>
+        <button type="button" class="ft-cookie-prefs" id="ft-cookie-prefs-footer">Manage cookie preferences</button>
+      </nav>
+      <p class="footer-note">&copy; <span id="footer-year">2026</span> FreeTimeline &mdash; All data is saved locally in your browser.</p>
+    </div>
+  </footer>
+</div>
+<script>
+(function(){
+  var y=document.getElementById('ft-year'); if(y) y.textContent=new Date().getFullYear();
+  var b=document.getElementById('ft-cookie-prefs');
+  if(b) b.addEventListener('click',function(){ window.location.href='cookies.html#ft-cookie-prefs'; });
+})();
+</script>
+<script>(function(){var y=document.getElementById('footer-year');if(y)y.textContent=new Date().getFullYear();var b=document.getElementById('ft-cookie-prefs-footer');if(b)b.addEventListener('click',function(e){e.preventDefault();alert('The cookie consent banner is delivered by our IAB TCF v2.2 CMP (planned in Part 15). Until it is wired in, no personalised ads are loaded.');});})();</script>
+</body>
+</html>

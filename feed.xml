@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+      <title>FreeTimeline Guides</title>
+      <link>https://freetimeline.pt/guides.html</link>
+      <atom:link href="https://freetimeline.pt/feed.xml" rel="self" type="application/rss+xml" />
+      <description>Tutorials and guides for building better timelines for fiction, journaling, and tabletop campaigns.</description>
+      <language>en</language>
+      <lastBuildDate>Tue, 21 Apr 2026 12:00:00 GMT</lastBuildDate>
+      <item>
+        <title>How to Build a Consistent Timeline for Your Fantasy Novel</title>
+        <link>https://freetimeline.pt/guides/how-to-build-consistent-timeline-fantasy-novel.html</link>
+        <guid isPermaLink="true">https://freetimeline.pt/guides/how-to-build-consistent-timeline-fantasy-novel.html</guid>
+        <category>World-Building</category>
+        <description>Master the art of timeline consistency in fiction. Learn techniques for tracking character ages, historical events, and avoiding plot holes in your fantasy world.</description>
+        <pubDate>Tue, 21 Apr 2026 12:00:00 GMT</pubDate>
+      </item>
+    <item>
+        <title>5 Reasons Why Local Browser Storage is Safer for Your Diary</title>
+        <link>https://freetimeline.pt/guides/why-local-browser-storage-safer-for-diary.html</link>
+        <guid isPermaLink="true">https://freetimeline.pt/guides/why-local-browser-storage-safer-for-diary.html</guid>
+        <category>Privacy</category>
+        <description>Discover why keeping your personal memories in local storage offers better privacy protection than cloud-based alternatives. Your data, your control.</description>
+        <pubDate>Tue, 21 Apr 2026 12:00:00 GMT</pubDate>
+      </item>
+    <item>
+        <title>Organizing Complex Storylines with Multiple Characters</title>
+        <link>https://freetimeline.pt/guides/organizing-complex-storylines-multiple-characters.html</link>
+        <guid isPermaLink="true">https://freetimeline.pt/guides/organizing-complex-storylines-multiple-characters.html</guid>
+        <category>Storytelling</category>
+        <description>Managing an ensemble cast across multiple plot threads can be overwhelming. Learn practical techniques for keeping track of who did what, when, and why.</description>
+        <pubDate>Tue, 21 Apr 2026 12:00:00 GMT</pubDate>
+      </item>
+    <item>
+        <title>Creating a Personal Memory Journal: Tips for Meaningful Entries</title>
+        <link>https://freetimeline.pt/guides/creating-personal-memory-journal-tips.html</link>
+        <guid isPermaLink="true">https://freetimeline.pt/guides/creating-personal-memory-journal-tips.html</guid>
+        <category>Personal</category>
+        <description>Transform your Biography Timeline into a meaningful record of your life. Practical tips for what to record, how often, and ways to make entries more valuable.</description>
+        <pubDate>Tue, 21 Apr 2026 12:00:00 GMT</pubDate>
+      </item>
+    <item>
+        <title>Timeline Mapping for Tabletop RPG Campaigns</title>
+        <link>https://freetimeline.pt/guides/timeline-mapping-tabletop-rpg-campaigns.html</link>
+        <guid isPermaLink="true">https://freetimeline.pt/guides/timeline-mapping-tabletop-rpg-campaigns.html</guid>
+        <category>RPG &amp; Gaming</category>
+        <description>Game Masters rejoice! Learn how to use timeline tools to track campaign history, faction movements, player choices, and world events for immersive RPG storytelling.</description>
+        <pubDate>Tue, 21 Apr 2026 12:00:00 GMT</pubDate>
+      </item>
+    </channel>
+  </rss>
+  

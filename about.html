@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Us — FreeTimeline | Our Story</title>
+<meta name="description" content="Learn about FreeTimeline - the privacy-first timeline tool built for storytellers, world-builders, and memory keepers. No accounts, no tracking, just your stories.">
+<link rel="canonical" href="https://freetimeline.pt/about.html">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #050611;
+  --bg2: #080a18;
+  --surface: #0d0f20;
+  --surface2: #111328;
+  --border: rgba(255,255,255,0.06);
+  --border-mid: rgba(255,255,255,0.1);
+  --text: #e4e8f5;
+  --text-bright: #ffffff;
+  --muted: #aab3cc;
+  --dim: #434760;
+  --gold: #d4af37;
+  --gold-glow: rgba(212,175,55,0.3);
+  --accent: #4a8fde;
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: -apple-system, 'Segoe UI', system-ui, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.7;
+}
+
+.page-wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* TOPBAR */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 60px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(5,6,17,0.95);
+  backdrop-filter: blur(16px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-brand {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.brand-infinity {
+  font-size: 1.4em;
+  background: linear-gradient(135deg, #5a80ff, #40c8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.brand-name {
+  background: linear-gradient(135deg, #c8d4ff, #90d8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.topbar-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+.topbar-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.topbar-links a:hover { color: var(--text-bright); }
+
+/* MAIN CONTENT */
+.main-content {
+  flex: 1;
+  padding: 80px 40px;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.page-title {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: var(--text-bright);
+  margin-bottom: 20px;
+  letter-spacing: -1px;
+}
+
+.page-subtitle {
+  font-size: 1.2rem;
+  color: var(--gold);
+  margin-bottom: 40px;
+  font-weight: 600;
+}
+
+.content-section {
+  margin-bottom: 48px;
+}
+
+.content-section h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 16px;
+}
+
+.content-section h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-top: 24px;
+  margin-bottom: 12px;
+}
+
+.content-section p {
+  font-size: 1.05rem;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+.content-section strong {
+  color: var(--text);
+}
+
+.highlight-box {
+  background: var(--surface);
+  border: 1px solid var(--border-mid);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 32px 0;
+}
+
+.highlight-box h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.value-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+}
+
+.value-icon {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+
+.value-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 8px;
+}
+
+.value-desc {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+/* TEAM PHOTO PLACEHOLDER */
+.team-photo {
+  margin: 24px 0 32px;
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  background:
+    linear-gradient(135deg, rgba(74,143,222,0.08), rgba(212,175,55,0.06)),
+    var(--surface);
+  border: 1px dashed var(--border-mid);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dim);
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* ROADMAP CTA */
+.roadmap-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 12px 22px;
+  background: linear-gradient(135deg, #3a60d0, #5a80ff);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  transition: filter 0.15s, transform 0.15s;
+}
+.roadmap-cta:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+.built-line {
+  margin-top: 32px;
+  font-size: 0.95rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* FOOTER */
+footer {
+  padding: 32px 40px;
+  border-top: 1px solid var(--border);
+  background: rgba(5,6,17,0.9);
+  margin-top: auto;
+}
+.footer-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--dim);
+}
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.footer-links a {
+  color: var(--dim);
+  font-size: 0.82rem;
+  text-decoration: none;
+  padding: 3px 6px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+.footer-links a:hover {
+  color: var(--muted);
+  background: rgba(255,255,255,0.04);
+}
+.footer-links .fdot {
+  color: var(--dim);
+  font-size: 0.65rem;
+}
+.footer-note {
+  font-size: 0.8rem;
+  color: var(--dim);
+  text-align: center;
+  width: 100%;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .topbar { padding: 0 20px; }
+  .topbar-links { display: none; }
+  .main-content { padding: 40px 20px; }
+  .page-title { font-size: 2rem; }
+  footer { padding: 24px 20px; }
+  .footer-inner { flex-direction: column; align-items: flex-start; }
+}
+
+.footer-links .ft-cookie-prefs{background:none;border:0;color:var(--dim);font:inherit;font-size:.82rem;padding:3px 6px;border-radius:6px;cursor:pointer;text-decoration:underline;text-underline-offset:2px;font-family:inherit;}
+.footer-links .ft-cookie-prefs:hover{color:var(--muted);background:rgba(255,255,255,.04);}
+
+
+.footer-links .ft-cookie-prefs{background:none;border:0;color:var(--dim);font:inherit;font-size:.82rem;padding:3px 6px;border-radius:6px;cursor:pointer;text-decoration:underline;text-underline-offset:2px;font-family:inherit;}
+.footer-links .ft-cookie-prefs:hover{color:var(--muted);background:rgba(255,255,255,.04);}
+
+
+.footer-links .ft-cookie-prefs{background:none;border:0;color:var(--dim);font:inherit;font-size:.82rem;padding:3px 6px;border-radius:6px;cursor:pointer;text-decoration:underline;text-underline-offset:2px;font-family:inherit;}
+.footer-links .ft-cookie-prefs:hover{color:var(--muted);background:rgba(255,255,255,.04);}
+
+
+/* --- PART 12: A11y baseline --- */
+.skip-link{position:absolute;left:-9999px;top:0;z-index:99999;background:#ffd166;color:#050611;padding:10px 16px;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;}
+.skip-link:focus{left:0;outline:3px solid #ffd166;outline-offset:2px;}
+:focus-visible{outline:3px solid #ffd166;outline-offset:2px;border-radius:4px;}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[tabindex]:focus-visible,summary:focus-visible{outline:3px solid #ffd166;outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:0.001ms!important;animation-iteration-count:1!important;transition-duration:0.001ms!important;scroll-behavior:auto!important;}}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<div class="page-wrap">
+
+  <header class="topbar">
+    <a href="index.html" class="topbar-brand">
+      <span class="brand-infinity">&#8734;</span>
+      <span class="brand-name">FreeTimeline</span>
+    </a>
+    <nav class="topbar-links">
+      <a href="index.html">Home</a>
+      <a href="guides.html">Guides</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="privacy.html">Privacy</a>
+    </nav>
+  </header>
+
+  <main class="main-content" id="main" tabindex="-1">
+    <h1 class="page-title">About FreeTimeline</h1>
+    <p class="page-subtitle">The Timeline Tool That Respects You</p>
+
+    <section class="content-section">
+      <h2>Our Story</h2>
+      <p>FreeTimeline was born from frustration. We were writers, game masters, and memory keepers who needed a simple way to map events across time — whether for a novel, a D&D campaign, a family history project, or just our own lives.</p>
+      <p>Every tool we found either wanted our email, our credit card, or worse — our data. Cloud storage sounds convenient until you realize a company you've never met now holds your personal stories, your creative work, your memories.</p>
+      <p><strong>We decided to build something different.</strong></p>
+    </section>
+
+    <section class="content-section">
+      <h2>Why We Built This</h2>
+      <p>The internet has trained us to accept surveillance as the cost of convenience. Sign up for this, agree to that, let us track you everywhere so we can "improve your experience." We think that's backwards.</p>
+      <p>Your stories are yours. Your memories are yours. Your creative work is yours. You shouldn't need to hand them over to a corporation just to organize them on a timeline.</p>
+      <p>FreeTimeline stores everything in your browser's local storage. We never see your data. We can't see your data. There's no server receiving your timelines, no database holding your memories, no algorithm analyzing your stories.</p>
+    </section>
+
+    <div class="highlight-box">
+      <h3>What Makes Us Different</h3>
+      <p style="color: var(--muted); margin-bottom: 0;">We don't have a business model that depends on your data. We don't show you ads. We don't sell your information. We don't even know who you are — and we prefer it that way. FreeTimeline is a tool, not a platform. Use it, close the tab, and take your stories with you.</p>
+    </div>
+
+    <section class="content-section">
+      <h2>Two Tools, Two Worlds</h2>
+      <p><strong>Universe Timeline</strong> is for fiction. Map the history of your fantasy world, track Marvel storylines, organize your novel's plot across centuries. Characters, factions, events, arcs — all visualized on a timeline you control.</p>
+      <p><strong>Biography Timeline</strong> is for real life. Record your own milestones, relationships, and personal chapters. Keep a private record of your journey through time. Your memories, your museum.</p>
+      <p>Both tools work entirely offline once loaded. Both save to your browser. Both let you export your data as JSON so you always have a backup.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Our Values</h2>
+      <div class="values-grid">
+        <div class="value-item">
+          <div class="value-icon">&#128274;</div>
+          <div class="value-title">Privacy First</div>
+          <div class="value-desc">Your data stays on your device. Period.</div>
+        </div>
+        <div class="value-item">
+          <div class="value-icon">&#128176;</div>
+          <div class="value-title">Truly Free</div>
+          <div class="value-desc">No subscriptions, no premium tiers, no hidden costs.</div>
+        </div>
+        <div class="value-item">
+          <div class="value-icon">&#128640;</div>
+          <div class="value-title">Simple &amp; Fast</div>
+          <div class="value-desc">No bloat. Just the features you need.</div>
+        </div>
+        <div class="value-item">
+          <div class="value-icon">&#127760;</div>
+          <div class="value-title">Works Offline</div>
+          <div class="value-desc">No internet? No problem.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>The Team</h2>
+      <div class="team-photo" role="img" aria-label="Team photo placeholder">
+        Team photo coming soon
+      </div>
+      <p>FreeTimeline is built by a small team of developers and writers who believe the web can be better. We're not venture-backed. We're not trying to become a billion-dollar company. We just wanted a good timeline tool that respects its users — so we made one.</p>
+      <p>If you have questions, suggestions, or just want to say hello, reach out at <a href="mailto:support@freetimeline.pt" style="color: var(--accent);">support@freetimeline.pt</a>.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Roadmap</h2>
+      <p>We share what we're working on openly. See the planned features, what's in progress, and what's shipped on our public roadmap.</p>
+      <a href="roadmap.html" class="roadmap-cta">Open roadmap <span aria-hidden="true">&#8594;</span></a>
+      <p class="built-line">Built in (Portugal) by a small independent team.</p>
+    </section>
+  </main>
+
+        <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="brand-infinity">&#8734;</span>
+        <span>FreeTimeline</span>
+      </div>
+      <nav class="footer-links">
+        <a href="about.html">About</a>
+        <span class="fdot">&#8226;</span>
+        <a href="contact.html">Contact</a>
+        <span class="fdot">&#8226;</span>
+        <a href="guides.html">Guides</a>
+        <span class="fdot">&#8226;</span>
+        <a href="terms.html">Terms</a>
+        <span class="fdot">&#8226;</span>
+        <a href="privacy.html">Privacy</a>
+        <span class="fdot">&#8226;</span>
+        <a href="cookies.html">Cookies</a>
+        <span class="fdot">&#8226;</span>
+        <button type="button" class="ft-cookie-prefs" id="ft-cookie-prefs-footer">Manage cookie preferences</button>
+      </nav>
+      <p class="footer-note">&copy; <span id="footer-year">2026</span> FreeTimeline &mdash; All data is saved locally in your browser.</p>
+    </div>
+  </footer>
+
+</div>
+
+
+
+<script>(function(){var y=document.getElementById('footer-year');if(y)y.textContent=new Date().getFullYear();var b=document.getElementById('ft-cookie-prefs-footer');if(b)b.addEventListener('click',function(e){e.preventDefault();alert('The cookie consent banner is delivered by our IAB TCF v2.2 CMP (planned in Part 15). Until it is wired in, no personalised ads are loaded.');});})();</script>
+</body>
+</html>
