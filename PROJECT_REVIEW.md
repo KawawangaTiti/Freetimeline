@@ -482,7 +482,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #022 — Mobile filter strip in Biography says "Loading…" forever if no Life Tracks exist
+### #022 — Mobile filter strip in Biography says "Loading…" forever if no Life Tracks exist  ✅ Done 2026-05-11
 
 - **Category:** Functional · UX
 - **Severity:** 🟡 Medium

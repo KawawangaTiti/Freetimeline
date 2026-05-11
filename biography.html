@@ -6150,5 +6150,25 @@ button[disabled], [aria-disabled="true"] {
   }
 })();
 </script>
+<script>
+/* #022: Loading… fallback watchdog. If the engine has not replaced the
+   "Loading…" placeholders in the filter chips after 5 seconds, swap them
+   for a polite empty-state message so users do not see a frozen UI. */
+(function () {
+  setTimeout(function () {
+    var IDS = ['uni-toggle-hint','cat-filter-chips','status-filter-chips',
+               'cat-filter-chips-mobile','status-filter-chips-mobile'];
+    IDS.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      var txt = (el.textContent || '').trim();
+      if (txt === 'Loading…' || txt === 'Loading…' || txt === 'Loading...') {
+        el.textContent = 'Nothing yet — use + Life Track or + Event to begin.';
+        el.style.opacity = '0.7';
+      }
+    });
+  }, 5000);
+})();
+</script>
 </body>
   </html>
