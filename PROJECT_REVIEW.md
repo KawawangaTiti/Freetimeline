@@ -97,7 +97,7 @@ Severity legend: 🔴 Critical · 🟠 High · 🟡 Medium · 🟢 Low · ⚪ Co
 
 ## 🔴 Critical / blocks deployment
 
-### #001 — "Manage cookie preferences" is fake on every page
+### #001 — "Manage cookie preferences" is fake on every page  ✅ Done 2026-05-11
 
 - **Category:** Critical / blocks deployment · Legal compliance · AdSense
 - **Severity:** 🔴 Critical

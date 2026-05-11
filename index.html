@@ -5,33 +5,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-   <script>
-   /* Load AdSense only on http/https — skip when opened locally via file://
-      to avoid the page hanging ("Page not responding") on local previews. */
-   (function(){
-     if(location.protocol === 'file:') return;
-     var loaded=false;
-     function loadAds(){
-       if(loaded)return;loaded=true;
-       var s=document.createElement('script');
-       s.async=true;
-       s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4135034633295293';
-       s.crossOrigin='anonymous';
-       document.head.appendChild(s);
-       ['scroll','touchstart','mousedown','keydown','pointerdown'].forEach(function(ev){
-         window.removeEventListener(ev,loadAds,{passive:true});
-       });
-     }
-     ['scroll','touchstart','mousedown','keydown','pointerdown'].forEach(function(ev){
-       window.addEventListener(ev,loadAds,{passive:true});
-     });
-     if('requestIdleCallback' in window){
-       requestIdleCallback(function(){setTimeout(loadAds,5000);},{timeout:6000});
-     } else {
-       setTimeout(loadAds,5000);
-     }
-   })();
-   </script>
+<script src="js/ft-consent.js" defer></script>
+   <!-- AdSense library is loaded by js/ft-consent.js only after the user
+        accepts cookies. Do not add another loader here. -->
 <title>Free Timeline — Map Your Time</title>
 <meta name="description" content="A free, private timeline tool for mapping fictional universes, biographies, memories, and stories. All data stored locally in your browser.">
 <link rel="canonical" href="https://freetimeline.pt/">
@@ -576,6 +552,6 @@ if ('requestIdleCallback' in window) {
   });
 })();
 </script>
-<script>(function(){var y=document.getElementById('footer-year');if(y)y.textContent=new Date().getFullYear();var b=document.getElementById('ft-cookie-prefs-footer');if(b)b.addEventListener('click',function(e){e.preventDefault();alert('The cookie consent banner is delivered by our IAB TCF v2.2 CMP (planned in Part 15). Until it is wired in, no personalised ads are loaded.');});})();</script>
+<script>(function(){var y=document.getElementById('footer-year');if(y)y.textContent=new Date().getFullYear();})();</script>
 </body>
 </html>
