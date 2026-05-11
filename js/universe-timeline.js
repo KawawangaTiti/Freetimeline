@@ -3192,7 +3192,7 @@ function handleClick(mx, my) {
           const msg = evCnt > 0
             ? `Delete "${u ? u.name : 'universe'}" and its ${evCnt} event${evCnt !== 1 ? 's' : ''}?`
             : `Delete "${u ? u.name : 'universe'}"?`;
-          if (confirm(msg)) delUni(t.id);
+          delUni(t.id); // ftConfirmGate is invoked inside delUni — no outer confirm needed
         }
         return;
       }
@@ -5317,13 +5317,14 @@ function saveChar(charId) {
 
 function delChar(charId) {
   const ch = S.characters.find(c => c.id === charId);
-  if (!confirm('Delete "' + (ch?ch.name:'this character') + '"? This will also remove all links to events.')) return;
+  ftConfirmGate('Delete "' + (ch?ch.name:'this character') + '"? This will also remove all links to events.', function () {
   S.characters = S.characters.filter(c => c.id !== charId);
   // remove from all events
   S.events.forEach(e => { if (e.characterIds) e.characterIds = e.characterIds.filter(id => id !== charId); });
   // remove from counterpartIds of other chars
   S.characters.forEach(c => { if (c.counterpartIds) c.counterpartIds = c.counterpartIds.filter(id => id !== charId); });
   Store.autosave(); M.close(); notify('Character deleted.', 'warning');
+  }, { title: 'Delete character?', confirmLabel: 'Delete', danger: true });
 }
 
 function linkCharToEvent(evId) {
@@ -5457,10 +5458,11 @@ function saveEv(evId) {
 }
 
 function delEvent(evId) {
-  if (!confirm('Delete this event? This cannot be undone.')) return;
+  ftConfirmGate('Delete this event? This cannot be undone.', function () {
   S.events      = S.events.filter(e => e.id !== evId);
   S.connections = S.connections.filter(c => c.fromEventId !== evId && c.toEventId !== evId);
   Store.autosave(); render(); updateTagFilterBar(); updateToneFilterBar(); M.close(); notify('Event deleted.', 'warning');
+  }, { title: 'Delete event?', confirmLabel: 'Delete', danger: true });
 }
 
 function submitAddSE(evId, path) {
@@ -5496,13 +5498,14 @@ function saveSE(evId, path) {
 }
 
 function delSE(evId, path) {
-  if (!confirm('Delete this sub-event and all its children? This cannot be undone.')) return;
+  ftConfirmGate('Delete this sub-event and all its children? This cannot be undone.', function () {
   const ev = S.events.find(e => e.id === evId); if (!ev) return;
   let parent = ev;
   for (const i of path.slice(0, -1)) { if (!parent.subEvents) return; parent = parent.subEvents[i]; if (!parent) return; }
   if (!parent.subEvents) return;
   parent.subEvents.splice(path[path.length - 1], 1);
   Store.autosave(); MS.pop(); M.render(); notify('Deleted.', 'warning');
+  }, { title: 'Delete sub-event?', confirmLabel: 'Delete', danger: true });
 }
 
 function addConn(fromId) {
@@ -5725,11 +5728,12 @@ function saveUni(uId) {
 function delUni(uId) {
   const u = getU(uId);
   const cnt = S.events.filter(e => e.universeId === uId).length;
-  if (!confirm('Delete "' + (u ? u.name : 'this universe') + '"?' +
-    (cnt ? ' This will also delete ' + cnt + ' event(s).' : ''))) return;
+  ftConfirmGate('Delete "' + (u ? u.name : 'this universe') + '"?' +
+    (cnt ? ' This will also delete ' + cnt + ' event(s).' : ''), function () {
   S.events      = S.events.filter(e => e.universeId !== uId);
   S.universes   = S.universes.filter(u2 => u2.id !== uId);
   Store.autosave(); clampPanY(); render(); M.close(); notify('Universe deleted.', 'warning');
+  }, { title: 'Delete universe?', confirmLabel: 'Delete', danger: true });
 }
 
 /* =====================================================
@@ -5806,7 +5810,7 @@ function catEditorSave() {
 }
 
 function catEditorResetDefaults() {
-  if (!confirm('Reset all categories to defaults? Custom categories will be lost. Events using removed categories will become uncategorized.')) return;
+  ftConfirmGate('Reset all categories to defaults? Custom categories will be lost. Events using removed categories will become uncategorized.', function () {
   const defaultNames = Object.keys(DEFAULT_CATEGORIES);
   S.events.forEach(ev => {
     if (ev.category && !DEFAULT_CATEGORIES[ev.category]) {
@@ -5819,6 +5823,7 @@ function catEditorResetDefaults() {
   Store.autosave();
   M.render();
   notify('Categories reset to defaults.', 'warning');
+  }, { title: 'Reset categories to defaults?', confirmLabel: 'Reset', danger: true });
 }
 
 /* =====================================================
@@ -5842,12 +5847,22 @@ function affiliationEditorRemove(idx) {
   const name = S.affiliations[idx];
   if (name === undefined) return;
   const charCount = S.characters.filter(c => c.affiliation === name).length;
-  if (charCount > 0 && !confirm('Remove "' + name + '"? ' + charCount + ' character(s) use this organization — their organization field will be cleared.')) return;
-  S.characters.forEach(c => { if (c.affiliation === name) c.affiliation = ''; });
-  S.affiliations.splice(idx, 1);
-  Store.autosave();
-  M.render();
-  notify('Organization "' + name + '" removed.', 'warning');
+  function _go() {
+    S.characters.forEach(c => { if (c.affiliation === name) c.affiliation = ''; });
+    S.affiliations.splice(idx, 1);
+    Store.autosave();
+    M.render();
+    notify('Organization "' + name + '" removed.', 'warning');
+  }
+  if (charCount > 0) {
+    ftConfirmGate(
+      'Remove "' + name + '"? ' + charCount + ' character(s) use this organization — their organization field will be cleared.',
+      _go,
+      { title: 'Remove organization?', confirmLabel: 'Remove', danger: true }
+    );
+    return;
+  }
+  _go();
 }
 
 function affiliationEditorSave() {
@@ -6204,17 +6219,18 @@ const Store = {
         } else {
           d = JSON.parse(ev.target.result);
         }
-        if (!confirm('Loading will replace ALL current data. Continue?')) return;
-        S.universes    = d.universes   || [];
-        S.events       = d.events      || [];
-        S.connections  = d.connections || [];
-        S.characters   = d.characters  || [];
-        S.categories   = d.categories  || {};
-        S.affiliations = d.affiliations || [];
-        syncCategoriesFromState();
-        Store.autosave(); clampPanY(); render();
-        updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updateToneFilterBar(); updateCharFilterSelect(); updateUniToggleBar(); updateStatsPanel();
-        notify('Timeline loaded \u2713', 'success');
+        ftConfirmGate('Loading will replace ALL current data. Continue?', function () {
+          S.universes    = d.universes   || [];
+          S.events       = d.events      || [];
+          S.connections  = d.connections || [];
+          S.characters   = d.characters  || [];
+          S.categories   = d.categories  || {};
+          S.affiliations = d.affiliations || [];
+          syncCategoriesFromState();
+          Store.autosave(); clampPanY(); render();
+          updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updateToneFilterBar(); updateCharFilterSelect(); updateUniToggleBar(); updateStatsPanel();
+          notify('Timeline loaded \u2713', 'success');
+        }, { title: 'Replace all data?', confirmLabel: 'Replace', danger: true });
       } catch (err) { notify('Could not read file: ' + err.message, 'error'); }
     };
     r.readAsText(f); e.target.value = '';

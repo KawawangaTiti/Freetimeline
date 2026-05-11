@@ -413,7 +413,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #018 — Universe uses native `confirm()` for destructive actions; Biography has a custom mobile-safe dialog — feature parity break  ⏳ Part 1 ✅ Done 2026-05-11 — `js/ft-confirm.js` shared module created, included on both apps, wired into Universe `Store.blankTimeline()`. Part 2 (remaining `confirm()` call sites) deferred.
+### #018 — Universe uses native `confirm()` for destructive actions; Biography has a custom mobile-safe dialog — feature parity break  ✅ Done 2026-05-11 — Part 1 (Day 1): `js/ft-confirm.js` shared module + Universe `blankTimeline`. Part 2 (Day 2): `ftConfirmGate` helper added; delEvent/delChar/delSE/delUni/catEditorResetDefaults migrated in both engines; affiliationEditorRemove + catEditorRemove conditional confirms migrated in both engines; Biography blankTimeline migrated; load-replace import flow migrated in both engines; context-menu single-line confirms delegated to delUni's internal gate. Remaining native `confirm()` lines are fallback paths inside `if (typeof ftConfirm !== 'function')` guards.
 
 - **Category:** Functional · UX · Inconsistency
 - **Severity:** 🟠 High

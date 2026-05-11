@@ -2857,7 +2857,7 @@ function handleClick(mx, my) {
           const msg = evCnt > 0
             ? `Delete "${u ? u.name : 'life track'}" and its ${evCnt} event${evCnt !== 1 ? 's' : ''}?`
             : `Delete "${u ? u.name : 'life track'}"?`;
-          if (confirm(msg)) delUni(t.id);
+          delUni(t.id); // ftConfirmGate is invoked inside delUni — no outer confirm needed
         }
         return;
       }
@@ -4738,10 +4738,11 @@ function saveChar(charId) {
 
 function delChar(charId) {
   const ch = S.people.find(c => c.id === charId);
-  if (!confirm('Delete "' + (ch?ch.name:'this person') + '"? This will also remove all links to events.')) return;
+  ftConfirmGate('Delete "' + (ch?ch.name:'this person') + '"? This will also remove all links to events.', function () {
   S.people = S.people.filter(c => c.id !== charId);
   S.events.forEach(e => { if (e.characterIds) e.characterIds = e.characterIds.filter(id => id !== charId); });
   Store.autosave(); M.close(); notify('Person deleted.', 'warning');
+  }, { title: 'Delete person?', confirmLabel: 'Delete', danger: true });
 }
 
 function linkCharToEvent(evId) {
@@ -4863,10 +4864,11 @@ function saveEv(evId) {
 }
 
 function delEvent(evId) {
-  if (!confirm('Delete this event? This cannot be undone.')) return;
+  ftConfirmGate('Delete this event? This cannot be undone.', function () {
   S.events      = S.events.filter(e => e.id !== evId);
   S.connections = S.connections.filter(c => c.fromEventId !== evId && c.toEventId !== evId);
   Store.autosave(); render(); updateTagFilterBar(); M.close(); notify('Event deleted.', 'warning');
+  }, { title: 'Delete event?', confirmLabel: 'Delete', danger: true });
 }
 
 function submitAddSE(evId, path) {
@@ -4902,13 +4904,14 @@ function saveSE(evId, path) {
 }
 
 function delSE(evId, path) {
-  if (!confirm('Delete this sub-event and all its children? This cannot be undone.')) return;
+  ftConfirmGate('Delete this sub-event and all its children? This cannot be undone.', function () {
   const ev = S.events.find(e => e.id === evId); if (!ev) return;
   let parent = ev;
   for (const i of path.slice(0, -1)) { if (!parent.subEvents) return; parent = parent.subEvents[i]; if (!parent) return; }
   if (!parent.subEvents) return;
   parent.subEvents.splice(path[path.length - 1], 1);
   Store.autosave(); MS.pop(); M.render(); notify('Deleted.', 'warning');
+  }, { title: 'Delete sub-event?', confirmLabel: 'Delete', danger: true });
 }
 
 function addConn(fromId) {
@@ -4965,11 +4968,12 @@ function saveUni(uId) {
 function delUni(uId) {
   const u = getU(uId);
   const cnt = S.events.filter(e => e.universeId === uId).length;
-  if (!confirm('Delete "' + (u ? u.name : 'this life track') + '"?' +
-    (cnt ? ' This will also delete ' + cnt + ' event(s).' : ''))) return;
+  ftConfirmGate('Delete "' + (u ? u.name : 'this life track') + '"?' +
+    (cnt ? ' This will also delete ' + cnt + ' event(s).' : ''), function () {
   S.events      = S.events.filter(e => e.universeId !== uId);
   S.lifeTracks   = S.lifeTracks.filter(u2 => u2.id !== uId);
   Store.autosave(); clampPanY(); render(); M.close(); notify('Life Track deleted.', 'warning');
+  }, { title: 'Delete life track?', confirmLabel: 'Delete', danger: true });
 }
 
 /* =====================================================
@@ -4980,13 +4984,23 @@ function catEditorRemove(idx) {
   if (idx < 0 || idx >= cats.length) return;
   const catName = cats[idx];
   const evCount = S.events.filter(e => e.category === catName).length;
-  if (evCount > 0 && !confirm('Delete "' + catName + '"? ' + evCount + ' event(s) use this category — they will become uncategorized.')) return;
-  S.events.forEach(e => { if (e.category === catName) e.category = null; });
-  delete CATEGORIES[catName];
-  syncCategoriesToState();
-  Store.autosave();
-  M.render();
-  notify('Category "' + catName + '" removed.', 'warning');
+  function _go() {
+    S.events.forEach(e => { if (e.category === catName) e.category = null; });
+    delete CATEGORIES[catName];
+    syncCategoriesToState();
+    Store.autosave();
+    M.render();
+    notify('Category "' + catName + '" removed.', 'warning');
+  }
+  if (evCount > 0) {
+    ftConfirmGate(
+      'Delete "' + catName + '"? ' + evCount + ' event(s) use this category — they will become uncategorized.',
+      _go,
+      { title: 'Delete category?', confirmLabel: 'Delete', danger: true }
+    );
+    return;
+  }
+  _go();
 }
 
 function catEditorAdd() {
@@ -5046,7 +5060,7 @@ function catEditorSave() {
 }
 
 function catEditorResetDefaults() {
-  if (!confirm('Reset all categories to defaults? Custom categories will be lost. Events using removed categories will become uncategorized.')) return;
+  ftConfirmGate('Reset all categories to defaults? Custom categories will be lost. Events using removed categories will become uncategorized.', function () {
   const defaultNames = Object.keys(DEFAULT_CATEGORIES);
   S.events.forEach(ev => {
     if (ev.category && !DEFAULT_CATEGORIES[ev.category]) {
@@ -5059,6 +5073,7 @@ function catEditorResetDefaults() {
   Store.autosave();
   M.render();
   notify('Categories reset to defaults.', 'warning');
+  }, { title: 'Reset categories to defaults?', confirmLabel: 'Reset', danger: true });
 }
 
 /* =====================================================
@@ -5082,12 +5097,22 @@ function affiliationEditorRemove(idx) {
   const name = S.affiliations[idx];
   if (name === undefined) return;
   const charCount = S.people.filter(c => c.affiliation === name).length;
-  if (charCount > 0 && !confirm('Remove "' + name + '"? ' + charCount + ' person/people use this organization — their field will be cleared.')) return;
-  S.people.forEach(c => { if (c.affiliation === name) c.affiliation = ''; });
-  S.affiliations.splice(idx, 1);
-  Store.autosave();
-  M.render();
-  notify('Organization "' + name + '" removed.', 'warning');
+  function _go() {
+    S.people.forEach(c => { if (c.affiliation === name) c.affiliation = ''; });
+    S.affiliations.splice(idx, 1);
+    Store.autosave();
+    M.render();
+    notify('Organization "' + name + '" removed.', 'warning');
+  }
+  if (charCount > 0) {
+    ftConfirmGate(
+      'Remove "' + name + '"? ' + charCount + ' person/people use this organization — their field will be cleared.',
+      _go,
+      { title: 'Remove organization?', confirmLabel: 'Remove', danger: true }
+    );
+    return;
+  }
+  _go();
 }
 
 function affiliationEditorSave() {
@@ -5295,8 +5320,34 @@ const Store = {
   },
 
   blankTimeline() {
+    /* #018 part 2: mobile-safe two-step confirm with backup prompt. */
+    if (typeof ftConfirm === 'function') {
+      ftConfirm({
+        title: 'Clear and start a blank timeline?',
+        message: 'This will clear all life tracks, events, people, and connections from your browser. You can save a JSON backup first.',
+        confirmLabel: 'Continue',
+        cancelLabel: 'Cancel',
+        danger: true
+      }).then(function (ok) {
+        if (!ok) return;
+        ftConfirm({
+          title: 'Save a backup first?',
+          message: 'Recommended: export a JSON file so you can restore your work later.',
+          confirmLabel: 'Save backup, then clear',
+          cancelLabel: 'Clear without saving'
+        }).then(function (save) {
+          if (save) Store.saveJSON();
+          Store._doBlank();
+        });
+      });
+      return;
+    }
     if (!confirm('Are you sure you want a blank template?')) return;
     if (confirm('Do you want to save your work before making a blank template?')) Store.saveJSON();
+    Store._doBlank();
+  },
+
+  _doBlank() {
     _blankTemplateMode = true;
     S.lifeTracks = [{ id: uid(), name: 'Untitled', color: PALETTE[0], visible: true, description: '', notes: '', birthDate: null }];
     S.events = [];
@@ -5336,22 +5387,23 @@ const Store = {
         } else {
           d = JSON.parse(ev.target.result);
         }
-        if (!confirm('Loading will replace ALL current data. Continue?')) return;
-        const wasLegacy = !!(d.universes || d.characters);
-        S.lifeTracks    = d.lifeTracks || d.universes || [];
-        S.events       = d.events      || [];
-        S.connections  = d.connections || [];
-        S.people       = d.characters  || d.people || [];
-        S.categories   = d.categories  || {};
-        S.affiliations = d.affiliations || [];
-        syncCategoriesFromState();
-        Store.autosave(); clampPanY(); render();
-        updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updateUniToggleBar(); updateStatsPanel();
-        if (wasLegacy) {
-          setTimeout(() => notify('File loaded \u2713 — your Universes are now Life Tracks. All data is intact. Rename them at your own pace.', 'success'), 400);
-        } else {
-          notify('Timeline loaded \u2713', 'success');
-        }
+        ftConfirmGate('Loading will replace ALL current data. Continue?', function () {
+          const wasLegacy = !!(d.universes || d.characters);
+          S.lifeTracks    = d.lifeTracks || d.universes || [];
+          S.events       = d.events      || [];
+          S.connections  = d.connections || [];
+          S.people       = d.characters  || d.people || [];
+          S.categories   = d.categories  || {};
+          S.affiliations = d.affiliations || [];
+          syncCategoriesFromState();
+          Store.autosave(); clampPanY(); render();
+          updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updateUniToggleBar(); updateStatsPanel();
+          if (wasLegacy) {
+            setTimeout(() => notify('File loaded \u2713 — your Universes are now Life Tracks. All data is intact. Rename them at your own pace.', 'success'), 400);
+          } else {
+            notify('Timeline loaded \u2713', 'success');
+          }
+        }, { title: 'Replace all data?', confirmLabel: 'Replace', danger: true });
       } catch (err) { notify('Could not read file: ' + err.message, 'error'); }
     };
     r.readAsText(f); e.target.value = '';

@@ -120,4 +120,33 @@
   }
 
   window.ftConfirm = ftConfirm;
+
+  /* ftConfirmGate — callback-style helper.
+
+     Use to migrate `if (!confirm(msg)) return; <body>` to the mobile-safe
+     dialog without making the caller async. Wrap the rest of the function
+     body in a closure:
+
+       function delEvent(id) {
+         ftConfirmGate('Delete this event? This cannot be undone.', function () {
+           // original body here
+         });
+       }
+
+     If ft-confirm.js failed to load, falls back to the native confirm() so
+     the action still works (it just looks uglier on mobile). */
+  window.ftConfirmGate = function (msg, onConfirm, opts) {
+    opts = opts || {};
+    var title = opts.title || 'Are you sure?';
+    var confirmLabel = opts.confirmLabel || 'Continue';
+    var cancelLabel  = opts.cancelLabel  || 'Cancel';
+    var danger = (opts.danger !== false); // default to danger for destructive flows
+    ftConfirm({
+      title: title,
+      message: msg,
+      confirmLabel: confirmLabel,
+      cancelLabel: cancelLabel,
+      danger: danger
+    }).then(function (ok) { if (ok) onConfirm(); });
+  };
 })();
