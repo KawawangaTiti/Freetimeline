@@ -942,7 +942,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ## 🟢 SEO & metadata
 
-### #057 — Guides' BreadcrumbList JSON-LD truncates the article name with ellipsis ("How to Build a Consistent Timeline for Y…")
+### #057 — Guides' BreadcrumbList JSON-LD truncates the article name with ellipsis ("How to Build a Consistent Timeline for Y…")  ✅ Done 2026-05-11 — all 5 guide articles' BreadcrumbList JSON-LD position-3 name now uses the full article title.
 
 - **Category:** SEO
 - **Severity:** 🟢 Low
