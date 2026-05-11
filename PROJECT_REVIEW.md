@@ -117,7 +117,7 @@ Severity legend: 🔴 Critical · 🟠 High · 🟡 Medium · 🟢 Low · ⚪ Co
 
 ---
 
-### #002 — About page directly contradicts running AdSense
+### #002 — About page directly contradicts running AdSense  ✅ Done 2026-05-11
 
 - **Category:** Critical / blocks deployment · AdSense · Content auditor
 - **Severity:** 🔴 Critical
