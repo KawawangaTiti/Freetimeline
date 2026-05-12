@@ -15,13 +15,6 @@ _None outstanding._
 - **Estimate:** Half a day.
 - **Full detail:** see `PROJECT_REVIEW.md` issue #043.
 
-### #052 — `.innerHTML = ` is used in ~160 places across both JS engines
-- **What it is:** Each `.innerHTML = ` is a potential XSS injection point if user-controlled text reaches it without escaping. The good news: Biography defines an `esc()` helper at line 102 and an `escapeHTML()` at lines 481 and 730, and uses them. The bad news: 160 call sites is a lot to audit manually, and I did not verify each one.
-- **Where it lives:** Both `js/universe-timeline.js` and `js/biography-timeline.js`.
-- **Difficulty:** Medium-Hard
-- **Estimate:** Half a day for spot check; 1-2 days for full audit.
-- **Full detail:** see `PROJECT_REVIEW.md` issue #052.
-
 ## 🟡 Medium priority
 ### #012 — Privacy Policy says "no analytics today" but Cookie Policy implies there is none
 - **What it is:** These are accurate today, but they need to stay accurate as soon as you add any analytics (Plausible, Matomo, Google Analytics, AdSense's own analytics, etc.). Make a mental note. No action required *now*, but flag in your roadmap.

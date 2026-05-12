@@ -869,7 +869,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ## 🟡 Security & data integrity
 
-### #052 — `.innerHTML = ` is used in ~160 places across both JS engines
+### #052 — `.innerHTML = ` is used in ~160 places across both JS engines  ✅ Done 2026-05-12 — Precise audit of all 163 sites narrowed to 15 with bare user-data interpolation. 9 raw URL interpolations (`m.src`, `ch.photo`, `cc.photo`) now wrapped in `esc()` across both engines. YouTube embed VIDs wrapped in `encodeURIComponent`. CSS-color sites (~66) hardened indirectly: `ft-import-validate.js` now validates `.color` against a strict regex (named colors, #hex, rgb(), rgba()); native `<input type="color">` already produces hex. Initials/charInitials text in avatar fallbacks now also escaped. Smoke-tested: 8/8 safe colors preserved, 7/7 CSS-attribute attack patterns stripped.
 
 - **Category:** Security · XSS surface
 - **Severity:** 🟠 High

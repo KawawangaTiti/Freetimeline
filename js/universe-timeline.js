@@ -3899,13 +3899,13 @@ function buildMediaDisplay(media) {
     if (m.type === 'image') {
       html += '<div class="media-img-item">' +
         (m.name ? '<div class="media-img-name">\uD83D\uDDBC ' + esc(m.name) + '</div>' : '') +
-        '<img src="' + m.src + '" alt="' + esc(m.name || 'image') + '" onclick="openLightbox(this.src)" title="Click to enlarge"></div>';
+        '<img src="' + esc(m.src) + '" alt="' + esc(m.name || 'image') + '" onclick="openLightbox(this.src)" title="Click to enlarge"></div>';
     } else if (m.type === 'youtube') {
       const vid = getYTVideoId(m.src);
       if (vid) {
         html += '<div>' +
           (m.name && m.name !== m.src ? '<div style="font-size:11px;color:#aaa;margin-bottom:4px">\u25B6\uFE0F ' + esc(m.name) + '</div>' : '') +
-          '<div class="media-yt-wrap"><iframe src="https://www.youtube.com/embed/' + vid +
+          '<div class="media-yt-wrap"><iframe src="https://www.youtube.com/embed/' + encodeURIComponent(vid) +
           '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>';
       } else {
         html += '<div class="media-link-item"><span>\uD83D\uDD17</span><a href="' + esc(m.src) + '" target="_blank" rel="noopener">' + esc(m.name || m.src) + '</a></div>';
@@ -4559,7 +4559,7 @@ const M = {
     const sCol = statusColors[ch.status] || '#95a5a6';
 
     const photoHTML = ch.photo
-      ? '<img class="char-profile-photo" src="' + ch.photo + '" onclick="openLightbox(this.src)" title="Click to enlarge">'
+      ? '<img class="char-profile-photo" src="' + esc(ch.photo) + '" onclick="openLightbox(this.src)" title="Click to enlarge">'
       : '<div class="char-photo-placeholder">\u{1F464}</div>';
 
     const counterpartsHTML = (ch.counterpartIds || []).map(cid => {
@@ -4569,8 +4569,8 @@ const M = {
       const relCol = relationshipColors[cpRel] || '#95a5a6';
       const ccUnis = getCharUniverseIds(cc).map(uid => { const u = getU(uid); return u ? '<span class="char-uni-tag" style="background:' + u.color + '">' + esc(u.name) + '</span>' : ''; }).join('');
       const ccAvatarHTML = cc.photo
-        ? '<img style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #eee" src="' + cc.photo + '">'
-        : '<div class="char-avatar" style="width:32px;height:32px;font-size:14px;flex-shrink:0">' + charInitials(cc.name) + '</div>';
+        ? '<img style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #eee" src="' + esc(cc.photo) + '">'
+        : '<div class="char-avatar" style="width:32px;height:32px;font-size:14px;flex-shrink:0">' + esc(charInitials(cc.name)) + '</div>';
       return '<div class="char-counterpart" data-cid="' + cid + '" onclick="_openCharDetail(this.dataset.cid)">' +
         ccAvatarHTML + '<div><div style="font-size:12px;font-weight:600;color:#222">' + esc(cc.name) + '</div>' +
         '<div style="display:flex;gap:3px;flex-wrap:wrap;margin-top:2px;align-items:center">' + ccUnis + '<span style="display:inline-block;padding:1px 6px;border-radius:8px;font-size:9px;background:' + relCol + ';color:#fff;font-weight:700">' + esc(cpRel) + '</span></div></div></div>';
@@ -4768,7 +4768,7 @@ const M = {
       ? '<div style="color:#ccc;font-size:12px;padding:4px 0 6px">No characters linked yet.</div>'
       : linked.map(ch => {
           const av = ch.photo
-            ? '<img style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #eee" src="' + ch.photo + '">'
+            ? '<img style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #eee" src="' + esc(ch.photo) + '">'
             : '<div class="char-avatar" style="width:28px;height:28px;font-size:13px;flex-shrink:0">' + charInitials(ch.name) + '</div>';
           return '<div class="conn-item">' + av +
             '<span style="flex:1">' + esc(ch.name) +
@@ -5097,7 +5097,7 @@ function buildCharCard(ch) {
   const statusColors = { 'Alive':'#2ecc71','Deceased':'#e74c3c','Unknown':'#95a5a6','Other':'#f39c12' };
   const evCount = S.events.filter(e => (e.characterIds||[]).includes(ch.id)).length;
   const avatarHTML = ch.photo
-    ? '<div class="char-avatar"><img src="' + ch.photo + '" alt="' + esc(ch.name) + '"></div>'
+    ? '<div class="char-avatar"><img src="' + esc(ch.photo) + '" alt="' + esc(ch.name) + '"></div>'
     : '<div class="char-avatar">' + charInitials(ch.name) + '</div>';
   return '<div class="char-card" data-id="' + ch.id + '" onclick="_openCharDetail(this.dataset.id)">' +
     avatarHTML +
@@ -5164,7 +5164,7 @@ function buildEventCharsSection(ev) {
   if (chars.length === 0) return '';
   const chips = chars.map(ch => {
     const av = ch.photo
-      ? '<img class="char-in-event-photo" src="' + ch.photo + '">'
+      ? '<img class="char-in-event-photo" src="' + esc(ch.photo) + '">'
       : '<span>' + charInitials(ch.name) + '</span>';
     return '<span class="char-in-event" data-id="' + ch.id + '" onclick="_openCharDetail(this.dataset.id)">' + av + esc(ch.name) + '</span>';
   }).join('');
@@ -6638,8 +6638,8 @@ function renderCharsView() {
     }
 
     var avatarInner = ch.photo
-      ? '<img src="' + ch.photo + '" alt="' + esc(ch.name) + '">'
-      : ch.name.split(' ').map(function(w){return w[0]||''}).join('').slice(0,2).toUpperCase();
+      ? '<img src="' + esc(ch.photo) + '" alt="' + esc(ch.name) + '">'
+      : esc(ch.name.split(' ').map(function(w){return w[0]||''}).join('').slice(0,2).toUpperCase());
 
     var statusColors = { 'Alive': '#2ecc71', 'Deceased': '#e74c3c', 'Missing': '#f39c12', 'Unknown': '#95a5a6', 'Retired': '#3498db', 'Active': '#2ecc71', 'Other': '#f39c12' };
     var sCol = statusColors[ch.status] || '#95a5a6';
@@ -7313,7 +7313,7 @@ function updateFilterBar() {
     if (!ch) return '';
     const col = ch.color || charHashColor(cid);
     return '<span class="cf-chip" style="background:' + col + '22;color:' + col + ';border-color:' + col + '55" onclick="toggleCharFilter(\'' + cid + '\')">' +
-      (ch.photo ? '<img src="' + ch.photo + '" style="width:13px;height:13px;border-radius:50%;object-fit:cover">' : '') +
+      (ch.photo ? '<img src="' + esc(ch.photo) + '" style="width:13px;height:13px;border-radius:50%;object-fit:cover">' : '') +
       esc(ch.name) + ' <span class="cf-x">\u00d7</span></span>';
   }).join('');
 
