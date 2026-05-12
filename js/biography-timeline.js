@@ -5901,6 +5901,7 @@ function renderStatsFullView() {
 window.addEventListener('DOMContentLoaded', () => {
   Store.clearSavedBlank();
   const loadedSavedWork = Store.load();
+  const _hadSavedWork = loadedSavedWork;
   if (!loadedSavedWork && isBlankTemplateState(S)) {
     S.lifeTracks = [];
     S.events = [];
@@ -5923,6 +5924,23 @@ window.addEventListener('DOMContentLoaded', () => {
   updateTagFilterBar();
   document.getElementById('zoom-pct').textContent = '100%';
   render();
+
+  /* #043: first-run onboarding for new visitors. Shown only when there was
+     no saved work in localStorage and the user has not dismissed it before. */
+  if (!_hadSavedWork && typeof ftOnboarding !== 'undefined') {
+    ftOnboarding.maybeShow({
+      flagKey: 'ft_bio_onboarded',
+      glyph: '📖',
+      title: 'Welcome to Biography Timeline',
+      lines: [
+        'These are example life-tracks and events — feel free to delete them and replace with your own story.',
+        'Click "+ Event" in the toolbar to add the first event in your timeline.',
+        'Your data is saved automatically in this browser. Export a JSON backup regularly using ↓ JSON.'
+      ],
+      actionLabel: '+ Add my first event',
+      actionCallback: function () { if (typeof UI !== 'undefined' && UI.addEvent) UI.addEvent(); }
+    });
+  }
 
   // Close modal only on clean backdrop click — not when drag-selecting text spills outside
   let _modalDownOnBg = false;

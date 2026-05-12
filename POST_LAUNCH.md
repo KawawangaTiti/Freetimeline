@@ -8,13 +8,6 @@
 ## 🔴 Critical (re-check before deploy if any appear here)
 _None outstanding._
 ## 🟠 High priority (do first)
-### #043 — App onboarding is non-existent
-- **What it is:** A new user opens Universe → sees pre-populated Marvel data (#005) and four pre-named universes (#003). They have no idea what's *their* data vs the sample. There's no "Welcome — here's how to add your first event" overlay.
-- **Where it lives:** Both apps. No first-run tutorial, no contextual hints, no empty state when there are zero events.
-- **Difficulty:** Medium
-- **Estimate:** Half a day.
-- **Full detail:** see `PROJECT_REVIEW.md` issue #043.
-
 ## 🟡 Medium priority
 ### #012 — Privacy Policy says "no analytics today" but Cookie Policy implies there is none
 - **What it is:** These are accurate today, but they need to stay accurate as soon as you add any analytics (Plausible, Matomo, Google Analytics, AdSense's own analytics, etc.). Make a mental note. No action required *now*, but flag in your roadmap.

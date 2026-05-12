@@ -760,7 +760,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #043 — App onboarding is non-existent
+### #043 — App onboarding is non-existent  ✅ Done 2026-05-12 — Added `js/ft-onboarding.js`: a small bottom-right card shown ONCE per device when a brand-new visitor opens Universe or Biography with no saved work in localStorage. Three explanatory lines + "+ Add my first event" CTA + "Got it" dismiss. Persistent flags `ft_uni_onboarded` / `ft_bio_onboarded`. Smoke-tested: shows when flag absent, suppressed when flag set, reset() restores. Wired into both engines' DOMContentLoaded init, only fires if `Store.load()` returned false.
 
 - **Category:** Usability
 - **Severity:** 🟠 High

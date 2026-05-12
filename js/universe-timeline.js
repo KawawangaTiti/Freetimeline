@@ -6882,7 +6882,8 @@ function renderStatsFullView() {
 window.addEventListener('DOMContentLoaded', () => {
   /* B-2: drop a stale blank-template save before we decide whether to load samples. */
   Store.clearSavedBlank();
-  if (!Store.load()) loadSample();
+  const _hadSavedWork = Store.load();
+  if (!_hadSavedWork) loadSample();
   Store.normalize();
   Store.autosave();
   if (!S.categories || Object.keys(S.categories).length === 0) {
@@ -6901,6 +6902,23 @@ window.addEventListener('DOMContentLoaded', () => {
   fitFullTimeline();
   render();
   updateUniverseScrollbar();
+
+  /* #043: first-run onboarding. Shown only when there was no saved work
+     (sample data is now visible) and the user has not dismissed it before. */
+  if (!_hadSavedWork && typeof ftOnboarding !== 'undefined') {
+    ftOnboarding.maybeShow({
+      flagKey: 'ft_uni_onboarded',
+      glyph: '✦',
+      title: 'Welcome to Universe Timeline',
+      lines: [
+        'These are example universes and events — feel free to delete them and add your own.',
+        'Click "+ Event" in the toolbar to add the first event in your timeline.',
+        'Your data is saved automatically in this browser. Export a JSON backup regularly using ↓ JSON.'
+      ],
+      actionLabel: '+ Add my first event',
+      actionCallback: function () { if (typeof UI !== 'undefined' && UI.addEvent) UI.addEvent(); }
+    });
+  }
 
   // Close modal only on clean backdrop click — not when drag-selecting text spills outside
   let _modalDownOnBg = false;
