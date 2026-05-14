@@ -3947,6 +3947,7 @@ input[type="color"]:focus-visible {
     <button class="btn tb-secondary" onclick="UI.toggleStats()" title="Toggle timeline statistics panel" id="stats-btn">&#128202; Stats</button>
     <button class="btn tb-secondary" onclick="MemoryTour.start()" title="Start a read-only guided Memory Tour through your events">&#127909; Memory Tour</button>
     <button class="btn tb-secondary" onclick="UI.toggleKbd()" title="Keyboard shortcuts reference">&#9875; Keys</button>
+    <button class="btn tb-secondary" id="reading-toggle-btn" onclick="toggleReadingMode()" title="Toggle Reading Mode — dimmed sepia palette for long journaling sessions">&#128214; Read</button>
     <div class="sep tb-secondary"></div>
     <label class="tb-secondary" style="font-size:10px;color:rgba(196,149,106,0.75);white-space:nowrap;display:flex;align-items:center;gap:5px;letter-spacing:0.03em;" title="Adjust track row height">
       &#8597;
@@ -4036,6 +4037,7 @@ input[type="color"]:focus-visible {
       <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();History.redo()">↷ Redo</button>
       <button class="bio-mobile-action warning" type="button" onclick="bioMobileCloseMore();openRangeConfig()">📅 Range</button>
       <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();UI.toggleKbd()">⌨ Keys</button>
+      <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();toggleReadingMode()">📖 Reading Mode</button>
       <button class="bio-mobile-action warning" type="button" onclick="bioMobileCloseMore();bioOpenStoryGuide()">📖 Story Guide</button>
       <button class="bio-mobile-action warning" type="button" onclick="bioMobileCloseMore();UI.help()">❓ Help</button>
       <label class="bio-mobile-action full">
@@ -6162,6 +6164,182 @@ button[disabled], [aria-disabled="true"] {
   }
 })();
 </script>
+<style>
+/* =====================================================
+   #019: READING MODE — dimmed sepia palette for long
+   journaling sessions. Biography's default is already
+   warm parchment; this overlay lowers the brightness
+   and softens contrast (candlelit-study feel).
+   Toggle is wired to #reading-toggle-btn in the toolbar
+   and persisted to localStorage('bio-reading-mode').
+   ===================================================== */
+:root {
+  --rmb-bg:           #e8dcc4;
+  --rmb-bg-soft:      #f0e3cb;
+  --rmb-surface:      #efe2c9;
+  --rmb-canvas:       #ede0c8;
+  --rmb-text:         #3a2818;
+  --rmb-text-soft:    #5a3a18;
+  --rmb-accent-line:  rgba(176,121,66,0.30);
+  --rmb-accent:       #b07942;
+}
+
+body.reading-mode {
+  background: var(--rmb-bg) !important;
+  color: var(--rmb-text) !important;
+}
+body.reading-mode #canvas-wrap {
+  background: var(--rmb-canvas) !important;
+}
+body.reading-mode #filter-panel,
+body.reading-mode #fp-mobile-bar {
+  background: var(--rmb-bg-soft) !important;
+  border-color: var(--rmb-accent-line) !important;
+  color: var(--rmb-text) !important;
+}
+body.reading-mode .fp-drop-btn {
+  background: var(--rmb-surface) !important;
+  color: var(--rmb-text-soft) !important;
+  border-color: var(--rmb-accent-line) !important;
+}
+body.reading-mode .fp-drop-btn:hover,
+body.reading-mode .fp-drop-btn.active {
+  background: rgba(176,121,66,0.18) !important;
+  border-color: var(--rmb-accent) !important;
+  color: var(--rmb-text) !important;
+}
+body.reading-mode .fp-drop-panel {
+  background: var(--rmb-surface) !important;
+  border-color: var(--rmb-accent-line) !important;
+  color: var(--rmb-text) !important;
+}
+body.reading-mode .fp-drop-panel select {
+  background: var(--rmb-bg-soft) !important;
+  color: var(--rmb-text) !important;
+  border-color: var(--rmb-accent-line) !important;
+}
+body.reading-mode #minimap {
+  background: rgba(232, 220, 196, 0.95) !important;
+  border-color: var(--rmb-accent-line) !important;
+}
+body.reading-mode #bio-mobile-more-drawer,
+body.reading-mode #bio-mobile-header {
+  background: var(--rmb-bg-soft) !important;
+  color: var(--rmb-text) !important;
+}
+body.reading-mode #reading-toggle-btn {
+  background: var(--rmb-accent) !important;
+  color: #fff !important;
+  border-color: #8a5a30 !important;
+}
+</style>
+
+<script>
+/* #019: Reading Mode toggle (dimmed sepia palette).
+   The canvas paints its own bg + gridlines with hardcoded bright tones,
+   so CSS on #canvas-wrap cannot dim the interior. We patch the 2D context
+   to remap those specific colors when body.reading-mode is active, and
+   re-render() on toggle so the change is immediate. */
+(function(){
+  var KEY = 'bio-reading-mode';
+
+  /* Color remap — only applied while body.reading-mode is on.
+     Keys are the exact hardcoded strings used by the render engine. */
+  var RM_MAP = {
+    '#f8f9fa':                  '#e0d3b8',
+    '#ffffff':                  '#ede0c8',
+    'rgba(215,205,188,0.6)':    'rgba(140,110,75,0.22)',
+    '#c4b89e':                  '#a89478',
+    'rgba(210,200,180,0.5)':    'rgba(140,110,75,0.20)',
+    '#a8987e':                  '#8a7860',
+    '#f0ede7':                  '#dccbb0',
+    '#f6f3ee':                  '#e3d4ba',
+    '#ccc0ae':                  '#a89478'
+  };
+  function isRM(){ return document.body.classList.contains('reading-mode'); }
+  function norm(s){ return String(s).toLowerCase().replace(/\s+/g,''); }
+  var RM_NORM = {};
+  for (var k in RM_MAP) RM_NORM[norm(k)] = RM_MAP[k];
+  function remap(v){
+    if (!isRM() || typeof v !== 'string') return v;
+    var hit = RM_NORM[norm(v)];
+    return hit || v;
+  }
+
+  function patchCanvas(){
+    var c = document.getElementById('tl-canvas');
+    if (!c || c.__rmPatched) return !!c;
+    c.__rmPatched = true;
+    var ctx = c.getContext('2d');
+    var proto = Object.getPrototypeOf(ctx);
+
+    ['fillStyle','strokeStyle'].forEach(function(prop){
+      var desc = Object.getOwnPropertyDescriptor(proto, prop);
+      if (!desc || !desc.set) return;
+      Object.defineProperty(ctx, prop, {
+        configurable: true,
+        get: function(){ return desc.get.call(this); },
+        set: function(v){ desc.set.call(this, remap(v)); }
+      });
+    });
+
+    function wrapGradient(g){
+      var origStop = g.addColorStop.bind(g);
+      g.addColorStop = function(off, col){ return origStop(off, remap(col)); };
+      return g;
+    }
+    var origLin = ctx.createLinearGradient.bind(ctx);
+    ctx.createLinearGradient = function(){ return wrapGradient(origLin.apply(ctx, arguments)); };
+    var origRad = ctx.createRadialGradient.bind(ctx);
+    ctx.createRadialGradient = function(){ return wrapGradient(origRad.apply(ctx, arguments)); };
+    return true;
+  }
+
+  function rerender(){
+    if (typeof window.render === 'function') {
+      try { window.render(); } catch(_){}
+    }
+  }
+
+  function apply(on){
+    document.body.classList.toggle('reading-mode', !!on);
+    var btn = document.getElementById('reading-toggle-btn');
+    if (btn){
+      btn.innerHTML = on ? '☀ Bright' : '\u{1F4D6} Read';
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      btn.title = on
+        ? 'Switch back to the default bright parchment palette'
+        : 'Toggle Reading Mode — dimmed sepia palette for long journaling sessions';
+    }
+    rerender();
+  }
+  window.toggleReadingMode = function(){
+    var on = !document.body.classList.contains('reading-mode');
+    try { localStorage.setItem(KEY, on ? '1' : '0'); } catch(_){}
+    apply(on);
+  };
+  function init(){
+    /* Canvas may not exist yet — engine loads with defer. Poll briefly. */
+    if (!patchCanvas()){
+      var tries = 0;
+      var iv = setInterval(function(){
+        tries++;
+        if (patchCanvas() || tries > 40) {
+          clearInterval(iv);
+          /* Re-render once patched so the saved state takes effect on first paint. */
+          if (isRM()) rerender();
+        }
+      }, 100);
+    }
+    var on = false;
+    try { on = localStorage.getItem(KEY) === '1'; } catch(_){}
+    apply(on);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+
 <script>
 /* #022: Loading… fallback watchdog. If the engine has not replaced the
    "Loading…" placeholders in the filter chips after 5 seconds, swap them

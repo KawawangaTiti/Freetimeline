@@ -15,13 +15,6 @@ _None outstanding._
 - **Difficulty:** N/A (informational)
 - **Full detail:** see `PROJECT_REVIEW.md` issue #012.
 
-### #019 — "Reading Mode" exists in Universe, missing in Biography
-- **What it is:** Reading Mode (a softer warm-parchment palette for long sessions) was added to Universe but never ported to Biography. Biography users — who are exactly the long-session journalers Reading Mode was designed for — don't get it.
-- **Where it lives:** - Universe: button at `universe.html` line 3903 (`id="reading-toggle-btn"`), handler defined inline at line 6075 (`window.toggleReadingMode = …`).
-- **Difficulty:** Medium
-- **Estimate:** 2 hours.
-- **Full detail:** see `PROJECT_REVIEW.md` issue #019.
-
 ### #020 — "Continuity Tour" exists in Universe, missing in Biography
 - **What it is:** Universe ships with two guided walkthroughs (Continuity Tour + Memory Tour). Biography only has Memory Tour.
 - **Where it lives:** - Universe: button at `universe.html` line 3922 (`onclick="ContinuityTour.start()"`). Handler defined in `js/universe-timeline.js` (search for `ContinuityTour`).

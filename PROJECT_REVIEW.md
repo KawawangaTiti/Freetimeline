@@ -435,7 +435,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #019 — "Reading Mode" exists in Universe, missing in Biography
+### #019 — "Reading Mode" exists in Universe, missing in Biography  ✅ Done 2026-05-14 — Added `#reading-toggle-btn` to Biography's desktop toolbar (next to Keys) and to the mobile More drawer (next to Keys). Biography's default is already warm parchment, so Reading Mode applies a dimmed-sepia overlay (bg `#e8dcc4`, canvas `#ede0c8`, panels `#f0e3cb`, softer text `#3a2818`) for long evening journaling sessions — "candlelit-study" feel. CSS scoped to `body.reading-mode` overrides `#canvas-wrap`, `#filter-panel`, `#fp-mobile-bar`, `.fp-drop-btn/.fp-drop-panel`, `#minimap`, `#bio-mobile-more-drawer/#bio-mobile-header`. Toolbar (anchored dark) intentionally unchanged. Persisted to `localStorage('bio-reading-mode')`. Button labels toggle 📖 Read ↔ ☀ Bright with matching `aria-pressed`.
 
 - **Category:** Functional · Feature parity
 - **Severity:** 🟡 Medium
