@@ -5859,11 +5859,37 @@ button[disabled], [aria-disabled="true"] {
       if (name) inp.setAttribute('aria-label', name);
     }
   }
-  fixNames();
+  /* A11Y-3 / BS-16: make non-native onclick controls (swatches, cards, chips,
+     sub-event rows, the filter toggles) keyboard-operable — focusable + activate
+     on Enter/Space — instead of mouse-only div/span clicks. */
+  function fixKeyboardControls(){
+    var nodes = document.querySelectorAll('div[onclick], span[onclick], li[onclick], td[onclick]');
+    for (var k=0;k<nodes.length;k++){
+      var el = nodes[k];
+      if (el.hasAttribute('data-kbd-op')) continue;
+      el.setAttribute('data-kbd-op','1');
+      /* Skip wrappers that already hold a real interactive child (avoids
+         nested-interactive ARIA issues) or that live inside a native control. */
+      if (el.querySelector('button, a[href], input, select, textarea')) continue;
+      if (el.closest('button, a[href]')) continue;
+      if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex','0');
+      if (!el.hasAttribute('role')) el.setAttribute('role','button');
+    }
+  }
+  function polish(){ fixNames(); fixKeyboardControls(); }
+  polish();
+  document.addEventListener('keydown', function(e){
+    if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;
+    var t = e.target;
+    if (!t || !t.getAttribute || t.getAttribute('data-kbd-op') !== '1') return;
+    if (t.getAttribute('role') !== 'button' || !t.hasAttribute('onclick')) return;
+    e.preventDefault();
+    try { t.click(); } catch(_){}
+  });
   try {
     var mo = new MutationObserver(function(muts){
       for (var i=0;i<muts.length;i++){
-        if (muts[i].addedNodes && muts[i].addedNodes.length){ fixNames(); return; }
+        if (muts[i].addedNodes && muts[i].addedNodes.length){ polish(); return; }
       }
     });
     mo.observe(document.body, { childList: true, subtree: true });
