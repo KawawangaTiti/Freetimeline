@@ -9062,6 +9062,11 @@ if (typeof window !== 'undefined') {
     if (!bandsCx) return;
     var w = bandsCv.clientWidth, h = bandsCv.clientHeight;
     bandsCx.clearRect(0, 0, w, h);
+    // On the vertical (mobile) layout the timeline runs top-to-bottom, but these
+    // bands map time to the X axis only (VC.dateToX) — painting them would draw
+    // year stripes and a dashed 'Today' line rotated 90° straight across the middle
+    // of the screen. Skip the overlay entirely in that mode. (Fix MOB-2)
+    if (typeof isVerticalTimelineLayout === 'function' && isVerticalTimelineLayout()) return;
     if (typeof VC === 'undefined' || !VC.dateToX) return;
     /* visible year range from screen edges */
     var msL = VC.xToDate(0);
@@ -9111,6 +9116,9 @@ if (typeof window !== 'undefined') {
     if (!dustCx) return;
     var w = dustCv.clientWidth, h = dustCv.clientHeight;
     dustCx.clearRect(0, 0, w, h);
+    // Hide the ambient dust on the vertical (mobile) layout too, so the overlay
+    // pair is fully blank there (paired with the band skip above). (Fix MOB-2)
+    if (typeof isVerticalTimelineLayout === 'function' && isVerticalTimelineLayout()) return;
     var grad;
     for (var i = 0; i < dustParticles.length; i++) {
       var p = dustParticles[i];
