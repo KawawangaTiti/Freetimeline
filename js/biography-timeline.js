@@ -994,8 +994,13 @@ function isInPlotArea(mx, my) {
       const sub = e.target.closest && e.target.closest('.muf-sub-card');
       if (sub) {
         const pid = sub.getAttribute('data-parent-evid');
-        if (pid && typeof M === 'object' && M && typeof M.openEvDetail === 'function') {
-          M.openEvDetail(pid);
+        const sidx = parseInt(sub.getAttribute('data-sub-idx'), 10);
+        if (pid && isFinite(sidx) && typeof M === 'object' && M && typeof M.push === 'function') {
+          // Open the tapped SUB-event (mirroring the desktop seDetail drill-in),
+          // not its parent — sub-events were previously unreachable here. (Fix BE-7)
+          M.push({ t: 'seDetail', evId: pid, path: [sidx] });
+        } else if (pid && typeof M === 'object' && M && typeof M.openEvDetail === 'function') {
+          M.openEvDetail(pid); // fallback to parent if the sub index is missing
         }
         e.stopPropagation();
         return;
