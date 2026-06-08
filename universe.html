@@ -21,10 +21,11 @@ body {
   color: #e0e4ef;
   overflow: hidden;
   height: 100vh;
+  height: 100dvh; /* dynamic viewport — fills the visible area on mobile (MOB-4) */
   user-select: none;
   -webkit-user-select: none;
 }
-#app { display: flex; flex-direction: column; height: 100vh; }
+#app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
 
 /* =====================================================
    TOOLBAR
