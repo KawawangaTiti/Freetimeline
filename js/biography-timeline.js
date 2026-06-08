@@ -9090,26 +9090,10 @@ if (typeof window !== 'undefined') {
         bandsCx.fillText(String(y), x0 + 6, 6);
       }
     }
-    /* Today marker */
-    var nowX = VC.dateToX(Date.now());
-    if (nowX >= -2 && nowX <= w + 2) {
-      bandsCx.save();
-      bandsCx.strokeStyle = 'rgba(220,90,60,0.85)';
-      bandsCx.lineWidth = 1.5;
-      bandsCx.setLineDash([5, 4]);
-      bandsCx.beginPath(); bandsCx.moveTo(nowX, 0); bandsCx.lineTo(nowX, h); bandsCx.stroke();
-      bandsCx.setLineDash([]);
-      var label = 'Today';
-      bandsCx.font = '700 11px ui-sans-serif,system-ui,sans-serif';
-      var tw = bandsCx.measureText(label).width + 12;
-      bandsCx.fillStyle = 'rgba(220,90,60,0.92)';
-      bandsCx.fillRect(nowX - tw/2, 4, tw, 18);
-      bandsCx.fillStyle = '#fff';
-      bandsCx.textBaseline = 'middle';
-      bandsCx.textAlign = 'center';
-      bandsCx.fillText(label, nowX, 13);
-      bandsCx.restore();
-    }
+    // The 'Today' marker is intentionally NOT drawn on this overlay: drawRuler()
+    // (horizontal) and drawRulerVertical() already paint the authoritative dashed
+    // TODAY line + badge across the full canvas. Drawing it again here produced a
+    // second, slightly-offset Today line over the timeline. (Fix BE-9 — de-duplicate)
   }
 
   function drawDust() {

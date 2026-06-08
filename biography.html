@@ -6241,6 +6241,17 @@ body.reading-mode #minimap {
   background: rgba(232, 220, 196, 0.95) !important;
   border-color: var(--rmb-accent-line) !important;
 }
+/* Part-7 ambient overlays paint on their own canvas contexts that the Reading
+   Mode colour patch never touches, so they glowed bright over the dimmed sepia
+   surface. Dust is pure decoration -> hide it; the year bands keep a faint,
+   desaturated hint of year context. (Fix BE-9) */
+body.reading-mode #ft-bands-cv {
+  opacity: 0.3 !important;
+  filter: sepia(0.6) brightness(0.82) !important;
+}
+body.reading-mode #ft-dust-cv {
+  opacity: 0 !important;
+}
 body.reading-mode #bio-mobile-more-drawer,
 body.reading-mode #bio-mobile-header {
   background: var(--rmb-bg-soft) !important;
