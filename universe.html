@@ -157,15 +157,15 @@ body.mm-collapsed #minimap-show { display: inline-flex; }
 }
 #minimap-jump label { color: #aab; font-size: 11px; white-space: nowrap; }
 #minimap-jump input {
-  flex: 1; min-width: 0; padding: 6px 8px;
+  flex: 1; min-width: 0; padding: 8px 10px; min-height: 44px;
   background: #0a0c18; color: #cde;
   border: 1px solid #25304a; border-radius: 6px;
-  font: inherit;
+  font: inherit; font-size: 16px; /* 44px target + 16px stops iOS zoom-on-focus (MOB-10) */
 }
 #minimap-jump button {
-  padding: 6px 12px; background: #1d2c4a; color: #cde;
+  padding: 8px 14px; min-height: 44px; background: #1d2c4a; color: #cde;
   border: 1px solid #2c3d5e; border-radius: 6px; cursor: pointer;
-  font: inherit;
+  font: inherit; font-size: 16px;
 }
 @media (max-width: 599px) {
   #minimap { display: none; }
@@ -493,6 +493,8 @@ input[type="color"] {
 #uni-scrollbar.dragging {
   opacity: 1;
 }
+/* Touch devices have no hover — show the scrollbar whenever it's flagged visible (MOB-12) */
+@media (pointer: coarse) { #uni-scrollbar.visible { opacity: 1; } }
 #uni-scrollbar-thumb {
   position: absolute;
   top: 0;
@@ -1083,7 +1085,7 @@ input[type="color"] {
   transform: translateX(-50%);
   background: rgba(18,20,38,0.97); color: #e0e8ff;
   border-radius: 14px; padding: 18px 24px; font-size: 13px;
-  z-index: 200; min-width: 340px; max-width: 560px;
+  z-index: 200; min-width: 280px; max-width: min(560px, calc(100vw - 24px));
   border: 1px solid rgba(100,120,200,0.25);
   box-shadow: 0 12px 48px rgba(0,0,0,0.6);
   display: none; animation: kbdPop .15s ease;

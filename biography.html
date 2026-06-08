@@ -127,15 +127,15 @@ body.modal-open { overflow: hidden; overscroll-behavior: none; }
 }
 #minimap-jump label { color: #8b6e4e; font-size: 11px; white-space: nowrap; }
 #minimap-jump input {
-  flex: 1; min-width: 0; padding: 6px 8px;
+  flex: 1; min-width: 0; padding: 8px 10px; min-height: 44px;
   background: #fff; color: #2d1f12;
   border: 1px solid #d4c8b0; border-radius: 6px;
-  font: inherit;
+  font: inherit; font-size: 16px; /* 44px target + 16px stops iOS zoom-on-focus (MOB-10) */
 }
 #minimap-jump button {
-  padding: 6px 12px; background: #b07942; color: #fff;
+  padding: 8px 14px; min-height: 44px; background: #b07942; color: #fff;
   border: 1px solid #c48a52; border-radius: 6px; cursor: pointer;
-  font: inherit;
+  font: inherit; font-size: 16px;
 }
 @media (max-width: 599px) {
   #minimap { display: none; }
@@ -197,6 +197,8 @@ body.modal-open { overflow: hidden; overscroll-behavior: none; }
 #track-scrollbar.dragging {
   opacity: 1;
 }
+/* Touch devices have no hover — show the track scrollbar whenever it's flagged visible (MOB-12) */
+@media (pointer: coarse) { #track-scrollbar.visible { opacity: 1; } }
 #track-scrollbar-thumb {
   position: absolute;
   top: 0;
@@ -1901,7 +1903,7 @@ input[type="color"] {
   transform: translateX(-50%);
   background: rgba(61,43,31,0.97); color: #f0e4d4;
   border-radius: 14px; padding: 18px 24px; font-size: 12px;
-  z-index: 200; min-width: 340px; max-width: 560px;
+  z-index: 200; min-width: 280px; max-width: min(560px, calc(100vw - 24px));
   border: 1px solid rgba(176,121,66,0.3);
   box-shadow: 0 12px 48px rgba(40,28,16,0.5);
   display: none; animation: kbdPop .15s ease;
@@ -4188,7 +4190,7 @@ input[type="color"]:focus-visible {
         <button class="fp-drop-btn" onclick="ftToggle('fp-drop-people',event)">
           👤 People <span class="fp-arrow">▾</span>
         </button>
-        <div class="fp-drop-panel" style="min-width:320px">
+        <div class="fp-drop-panel" style="min-width:280px;max-width:calc(100vw - 24px)">
           <div class="fp-drop-panel-title">Key People</div>
           <div id="char-filter-bar" class="fp-drop-panel-inner">
             <span id="cf-chips"><span style="color:rgba(200,175,140,0.4);font-size:11px">Open a person's profile → click 📍 Pin</span></span>
