@@ -9315,6 +9315,29 @@ try {
       new ResizeObserver(resize).observe(cnv);
     }
     window.addEventListener('resize', resize);
+
+    /* === Collapse / expand (UE-2): default collapsed so the minimap stops
+       covering the bottom of the live canvas; opt-in via the Map pill, remembered. === */
+    (function setupCollapse(){
+      const MM_KEY = 'uni_minimap_collapsed_v1';
+      const showBtn   = document.getElementById('minimap-show');
+      const toggleBtn = document.getElementById('minimap-toggle');
+      function apply(collapsed){
+        document.body.classList.toggle('mm-collapsed', collapsed);
+        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', String(!collapsed));
+        if (!collapsed) { try { resize(); draw(); } catch(_){} }
+      }
+      apply(document.body.classList.contains('mm-collapsed'));
+      if (toggleBtn) toggleBtn.addEventListener('click', function(){
+        try { localStorage.setItem(MM_KEY, '1'); } catch(_){}
+        apply(true);
+      });
+      if (showBtn) showBtn.addEventListener('click', function(){
+        try { localStorage.setItem(MM_KEY, '0'); } catch(_){}
+        apply(false);
+      });
+    })();
+
     resize();
     draw();
     window.__minimapDraw = draw;

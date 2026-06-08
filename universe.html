@@ -120,6 +120,29 @@ select:focus-visible,
 #minimap.mm-grabbing #minimap-canvas { cursor: grabbing; }
 #minimap.mm-resize-w  #minimap-canvas { cursor: ew-resize; }
 
+/* Collapse/expand control — the minimap defaults collapsed so it stops
+   covering the bottom strip of the live canvas (Fix UE-2). */
+#minimap-toggle {
+  position: absolute; top: 4px; right: 4px; z-index: 6;
+  width: 22px; height: 18px; padding: 0;
+  background: rgba(20, 26, 46, 0.92); color: #cde;
+  border: 1px solid #2c3d5e; border-radius: 5px;
+  font-size: 11px; line-height: 16px; text-align: center; cursor: pointer;
+}
+#minimap-toggle:hover { background: #1d2c4a; }
+#minimap-show {
+  position: absolute; right: 12px; bottom: 12px; z-index: 5;
+  display: none; align-items: center; gap: 6px;
+  padding: 6px 12px;
+  background: rgba(10, 12, 24, 0.88); color: #cde;
+  border: 1px solid #25304a; border-radius: 8px;
+  font: inherit; font-size: 12px; cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+#minimap-show:hover { background: #142036; }
+body.mm-collapsed #minimap { display: none; }
+body.mm-collapsed #minimap-show { display: inline-flex; }
+
 #minimap-jump {
   display: none;
   position: absolute; left: 8px; right: 8px; bottom: 8px;
@@ -143,6 +166,7 @@ select:focus-visible,
 @media (max-width: 599px) {
   #minimap { display: none; }
   #minimap-jump { display: flex; }
+  #minimap-show { display: none !important; }
 }
 #tl-canvas { display: block; cursor: grab; }
 #tl-canvas.dragging { cursor: grabbing; }
@@ -4120,7 +4144,16 @@ input[type="color"]:focus-visible {
     <!-- Minimap (desktop/tablet) — replaced by jump-to-year input on <600px viewports -->
     <div id="minimap" role="region" aria-label="Timeline minimap. Drag to pan, drag the edges to zoom.">
       <canvas id="minimap-canvas"></canvas>
+      <button id="minimap-toggle" type="button" title="Hide minimap" aria-label="Hide minimap" aria-expanded="true">&#9662;</button>
     </div>
+    <button id="minimap-show" type="button" title="Show timeline minimap" aria-label="Show timeline minimap">&#128506; Map</button>
+    <script>
+      /* Minimap starts collapsed unless the user previously chose to expand it. (Fix UE-2) */
+      (function(){ try {
+        if (localStorage.getItem('uni_minimap_collapsed_v1') !== '0') document.body.classList.add('mm-collapsed');
+        else document.body.classList.remove('mm-collapsed');
+      } catch(_) { document.body.classList.add('mm-collapsed'); } })();
+    </script>
     <div id="minimap-jump" role="group" aria-label="Jump to year">
       <label for="jump-year-input">Jump to year</label>
       <input id="jump-year-input" type="number" inputmode="numeric" placeholder="e.g. 1985" />
