@@ -4078,7 +4078,7 @@ input[type="color"]:focus-visible {
   </div>
 
   <!-- ==================== CANVAS ==================== -->
-  <div id="canvas-wrap" tabindex="0" role="region" aria-label="Universe timeline canvas. Use toolbar buttons to add content. Use arrow keys to pan, plus and minus to zoom, and Escape to close dialogs.">
+  <div id="canvas-wrap" tabindex="0" role="main" aria-label="Universe timeline canvas. Pan with arrow keys, zoom with plus and minus, and open the menu for tools. Press Escape to close dialogs.">
     <canvas id="tl-canvas" style="cursor: grab; display: block;"></canvas>
 
     <div id="zoom-ctrl">
@@ -5807,7 +5807,6 @@ body.reading-mode #reading-toggle-btn {
 }
 </style>
 
-<a href="#canvas-wrap" class="a11y-skip" id="a11y-skip-link">Skip to main content</a>
 <div id="a11y-live-status" class="a11y-sr-only" aria-live="polite" aria-atomic="true"></div>
 <div id="a11y-live-alert" class="a11y-sr-only" aria-live="assertive" aria-atomic="true"></div>
 
@@ -6118,7 +6117,7 @@ body.reading-mode #reading-toggle-btn {
 </style>
 <div id="ft-list-view" role="region" aria-label="Universe events as an accessible list">
   <button type="button" class="ft-list-close" onclick="ftListView.close()">Close list view</button>
-  <h1>All events</h1>
+  <h2>All events</h2>
   <p class="ft-list-sub">A read-only, screen-reader-friendly view of every event on your Universe Timeline, grouped by year.</p>
   <div id="ft-list-body" aria-live="polite"></div>
 </div>
