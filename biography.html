@@ -4302,69 +4302,6 @@ input[type="color"]:focus-visible {
   </div>
 
   <!-- ==================== CANVAS ==================== -->
-  <!-- Phase 3: Mobile bottom action bar + hamburger drawer -->
-  <style>
-    #bot-bar { display: none; }
-    #bot-drawer-bg { display: none; }
-    @media (max-width: 720px) {
-      #toolbar { display: none !important; }
-      #bot-bar {
-        display: flex; position: fixed; left: 0; right: 0;
-        bottom: 0; z-index: 950; gap: 6px;
-        padding: 8px max(8px, env(safe-area-inset-right, 0px))
-                 calc(8px + env(safe-area-inset-bottom, 0px))
-                 max(8px, env(safe-area-inset-left, 0px));
-        background: rgba(245, 240, 232, 0.96);
-        border-top: 1px solid rgba(176, 121, 66, 0.25);
-        box-shadow: 0 -4px 18px rgba(60, 40, 20, 0.18);
-        backdrop-filter: blur(6px);
-      }
-      #bot-bar > button {
-        flex: 1; min-height: 48px; min-width: 48px;
-        border: 1px solid rgba(176, 121, 66, 0.35);
-        background: #fff; color: #5a3a18;
-        border-radius: 12px; font-weight: 600; font-size: 14px;
-        cursor: pointer; touch-action: manipulation;
-        font-family: inherit;
-      }
-      #bot-bar > button.bb-accent { background: #b07942; color: #fff; border-color: #8a5a30; }
-      #bot-bar > button:active { transform: scale(0.97); }
-      #canvas-wrap { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
-      #bot-drawer-bg {
-        display: none; position: fixed; inset: 0; z-index: 1010;
-        background: rgba(20, 14, 8, 0.55); backdrop-filter: blur(3px);
-      }
-      #bot-drawer-bg.open { display: block; }
-      #bot-drawer {
-        position: fixed; left: 0; right: 0; bottom: 0; z-index: 1011;
-        max-height: 70vh; overflow-y: auto;
-        padding: 14px 14px calc(14px + env(safe-area-inset-bottom, 0px));
-        background: #fff; border-top-left-radius: 18px; border-top-right-radius: 18px;
-        box-shadow: 0 -8px 30px rgba(0,0,0,0.32);
-        transform: translateY(100%); transition: transform 0.22s ease;
-      }
-      #bot-drawer-bg.open #bot-drawer { transform: translateY(0); }
-      #bot-drawer h4 { margin: 4px 0 12px; font-size: 13px; color: #8a5a30; text-transform: uppercase; letter-spacing: 0.6px; }
-      #bot-drawer .bd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-      #bot-drawer .bd-grid > * {
-        min-height: 48px; padding: 0 12px;
-        border: 1px solid rgba(176, 121, 66, 0.3); background: #faf6ef;
-        color: #4a2e10; border-radius: 10px; font-weight: 600; font-size: 13px;
-        cursor: pointer; font-family: inherit; text-align: center;
-      }
-      #bot-drawer .bd-handle { width: 44px; height: 4px; background: #c8b89a; border-radius: 2px; margin: 0 auto 10px; }
-    }
-  </style>
-  <div id="bot-bar" role="toolbar" aria-label="Mobile actions">
-    <button class="bb-accent" onclick="UI.addEvent()" aria-label="Add event">＋ Event</button>
-    <button onclick="if(window.UI&&UI.toggleFilters)UI.toggleFilters();else document.getElementById('filter-panel')&&document.getElementById('filter-panel').classList.toggle('visible');" aria-label="Filter">⚲ Filter</button>
-    <button id="bb-zoom" onclick="doZoom(1.25,null)" aria-label="Zoom"><span id="bb-zoom-pct">100%</span></button>
-    <button onclick="document.getElementById('bot-drawer-bg').classList.add('open');var d=document.getElementById('bot-drawer');d.innerHTML='';var handle=document.createElement('div');handle.className='bd-handle';d.appendChild(handle);var h=document.createElement('h4');h.textContent='All actions';d.appendChild(h);var g=document.createElement('div');g.className='bd-grid';document.querySelectorAll('#toolbar .btn').forEach(function(b){var c=b.cloneNode(true);c.removeAttribute('id');c.style.opacity='1';c.disabled=false;c.addEventListener('click',function(){document.getElementById('bot-drawer-bg').classList.remove('open');setTimeout(function(){b.click();},120);});g.appendChild(c);});d.appendChild(g);" aria-label="Open menu">☰ Menu</button>
-  </div>
-  <div id="bot-drawer-bg" onclick="if(event.target===this)this.classList.remove('open');">
-    <div id="bot-drawer"></div>
-  </div>
-
   <div id="canvas-wrap" tabindex="0" role="region" aria-label="Biography timeline canvas. Use toolbar buttons to add content. Use arrow keys to pan, plus and minus to zoom, and Escape to close dialogs.">
     <canvas id="tl-canvas"></canvas>
 
@@ -5330,6 +5267,24 @@ window.addEventListener('resize', repositionOpenDrops);
     if (!toolbar || !sheet) return;
     var body = sheet.querySelector('.tlb-sheet-body');
     body.innerHTML = '';
+    // Filters live in #fp-mobile-bar, not #toolbar. Add an explicit entry — this
+    // becomes the working mobile Filters trigger (mobile filters were previously
+    // unreachable) now that #bot-bar has been removed.
+    if (typeof bioMobileToggleFilters === 'function') {
+      var fSec = document.createElement('div');
+      fSec.className = 'tlb-sheet-section';
+      var fBtn = document.createElement('button');
+      fBtn.type = 'button';
+      fBtn.className = 'btn';
+      fBtn.textContent = '🔎 Filters';
+      fBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        closeSheet();
+        setTimeout(function(){ try { bioMobileToggleFilters(); } catch (err) {} }, 60);
+      });
+      fSec.appendChild(fBtn);
+      body.appendChild(fSec);
+    }
     var section = document.createElement('div');
     section.className = 'tlb-sheet-section';
     function flushSection() {

@@ -4078,71 +4078,6 @@ input[type="color"]:focus-visible {
   </div>
 
   <!-- ==================== CANVAS ==================== -->
-  <!-- ===== B-6: Mobile persistent bottom action bar (ported from Biography) =====
-       Always-visible 4-button bar on small screens (≤ 720px). Wired to
-       Universe's existing handlers: UI.addEvent, mobToggleFilters, doZoom,
-       mobOpenDrawer. Re-skinned in Universe's dark blue palette. -->
-  <style id="bot-bar-style">
-    #bot-bar { display: none; }
-    #bot-drawer-bg { display: none; }
-    @media (max-width: 720px) {
-      #bot-bar {
-        display: flex; position: fixed; left: 0; right: 0;
-        bottom: 0; z-index: 950; gap: 6px;
-        padding: 8px max(8px, env(safe-area-inset-right, 0px))
-                 calc(8px + env(safe-area-inset-bottom, 0px))
-                 max(8px, env(safe-area-inset-left, 0px));
-        background: rgba(7, 9, 22, 0.94);
-        border-top: 1px solid rgba(0, 210, 255, 0.22);
-        box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.55);
-        backdrop-filter: blur(8px);
-      }
-      #bot-bar > button {
-        flex: 1; min-height: 48px; min-width: 48px;
-        border: 1px solid rgba(0, 180, 220, 0.35);
-        background: rgba(12, 16, 32, 0.85); color: #d0e8ff;
-        border-radius: 12px; font-weight: 600; font-size: 14px;
-        cursor: pointer; touch-action: manipulation;
-        font-family: inherit;
-        display: inline-flex; align-items: center; justify-content: center; gap: 5px;
-      }
-      #bot-bar > button.bb-accent {
-        background: linear-gradient(180deg, #00b4dc, #0090b8);
-        color: #02121a; border-color: #00d2ff; font-weight: 700;
-      }
-      #bot-bar > button:active { transform: scale(0.97); }
-      #bot-bar #bb-zoom-pct { font-variant-numeric: tabular-nums; }
-      #canvas-wrap { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
-    }
-  </style>
-  <div id="bot-bar" role="toolbar" aria-label="Mobile actions">
-    <button class="bb-accent" onclick="if(window.UI&&UI.addEvent)UI.addEvent()" aria-label="Add event">＋ Event</button>
-    <button onclick="if(typeof mobToggleFilters==='function')mobToggleFilters()" aria-label="Filters">⚲ Filter</button>
-    <button id="bb-zoom" onclick="if(typeof doZoom==='function')doZoom(1.25,null)" aria-label="Zoom in">
-      <span id="bb-zoom-pct">100%</span>
-    </button>
-    <button onclick="if(typeof mobOpenDrawer==='function')mobOpenDrawer()" aria-label="Open menu">☰ Menu</button>
-  </div>
-  <script>
-    /* Keep #bb-zoom-pct in sync with #zoom-pct (the canonical zoom display). */
-    (function() {
-      function syncBB() {
-        var src = document.getElementById('zoom-pct');
-        var dst = document.getElementById('bb-zoom-pct');
-        if (src && dst && dst.textContent !== src.textContent) {
-          dst.textContent = src.textContent;
-        }
-      }
-      document.addEventListener('DOMContentLoaded', function() {
-        var src = document.getElementById('zoom-pct');
-        if (src && 'MutationObserver' in window) {
-          new MutationObserver(syncBB).observe(src, { childList: true, characterData: true, subtree: true });
-        }
-        syncBB();
-      });
-    })();
-  </script>
-
   <div id="canvas-wrap" tabindex="0" role="region" aria-label="Universe timeline canvas. Use toolbar buttons to add content. Use arrow keys to pan, plus and minus to zoom, and Escape to close dialogs.">
     <canvas id="tl-canvas" style="cursor: grab; display: block;"></canvas>
 
@@ -5228,6 +5163,24 @@ input[type="color"]:focus-visible {
     if (!toolbar || !sheet) return;
     var body = sheet.querySelector('.tlb-sheet-body');
     body.innerHTML = '';
+    // Filters live in #filter-panel, not #toolbar, so the cloned-toolbar sheet
+    // never exposed them. Add an explicit entry — this is the mobile Filters
+    // trigger now that #bot-bar (its old home) has been removed.
+    if (typeof mobToggleFilters === 'function') {
+      var fSec = document.createElement('div');
+      fSec.className = 'tlb-sheet-section';
+      var fBtn = document.createElement('button');
+      fBtn.type = 'button';
+      fBtn.className = 'btn';
+      fBtn.textContent = '⦾ Search & Filters';
+      fBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        closeSheet();
+        setTimeout(function(){ try { mobToggleFilters(); } catch (err) {} }, 60);
+      });
+      fSec.appendChild(fBtn);
+      body.appendChild(fSec);
+    }
     var section = document.createElement('div');
     section.className = 'tlb-sheet-section';
     function flushSection() {
