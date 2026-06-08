@@ -454,7 +454,7 @@ If picking placements feels overwhelming, AdSense **Auto Ads** is one-click: you
 
 ---
 
-### #020 — "Continuity Tour" exists in Universe, missing in Biography
+### #020 — "Continuity Tour" exists in Universe, missing in Biography  ✅ Done 2026-05-14 — Decision: ported as a fast sibling to Memory Tour (closes Universe↔Biography parity). Added `ContinuityTour` object in `js/biography-timeline.js` (right after `MemoryTour`), mirroring Universe's logic — tighter zoom floor `1.12` vs Memory's `1.08`, snappier advance `4400ms` vs Memory's `4600ms`, 950ms ease vs 850ms. Mutual stops wired: each tour stops the other on `start()`, `M.push()` stops both before opening a modal, `switchView()` stops both when leaving timeline. Added `#continuity-tour-overlay` HTML block (reuses shared `.tour-*` CSS — no new styles needed). Toolbar entries: desktop "🎬 Continuity Tour" button next to Memory Tour; mobile More drawer entry next to Memory Tour. Escape exits and restores prior view.
 
 - **Category:** Functional · Feature parity
 - **Severity:** 🟡 Medium

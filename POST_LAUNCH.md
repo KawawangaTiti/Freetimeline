@@ -15,13 +15,6 @@ _None outstanding._
 - **Difficulty:** N/A (informational)
 - **Full detail:** see `PROJECT_REVIEW.md` issue #012.
 
-### #020 — "Continuity Tour" exists in Universe, missing in Biography
-- **What it is:** Universe ships with two guided walkthroughs (Continuity Tour + Memory Tour). Biography only has Memory Tour.
-- **Where it lives:** - Universe: button at `universe.html` line 3922 (`onclick="ContinuityTour.start()"`). Handler defined in `js/universe-timeline.js` (search for `ContinuityTour`).
-- **Difficulty:** Medium-Hard (the Continuity Tour code is non-trivial).
-- **Estimate:** Half a day.
-- **Full detail:** see `PROJECT_REVIEW.md` issue #020.
-
 ### #030 — `biography.html` mobile drawer references functions that *are* defined inline (verified) but the architecture is fragile
 - **What it is:** Mobile UI handlers are split across `js/biography-timeline.js` and `biography.html`'s inline scripts. Same in `universe.html`. Hard to maintain — when you move/rename a function, you may not know if it's the JS file or the HTML to edit.
 - **Where it lives:** `biography.html` lines 4842-4974 — `bioMobile*` and `bioMobBlank*` helpers all defined inline at the bottom of the HTML file.

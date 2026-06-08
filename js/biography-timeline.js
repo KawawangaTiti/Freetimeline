@@ -2954,6 +2954,7 @@ const MemoryTour = {
       notify('Add at least one dated or ordered event before starting Memory Tour.', 'info');
       return;
     }
+    if (typeof ContinuityTour !== 'undefined' && ContinuityTour.active) ContinuityTour.stop(false);
     if (this.active) {
       this.idx = 0;
       this.paused = false;
@@ -3139,6 +3140,218 @@ document.addEventListener('keydown', function(e) {
 window.addEventListener('resize', function() {
   if (MemoryTour.active) {
     setTimeout(function() { MemoryTour.focusCurrent(true); }, 80);
+  }
+});
+
+/* =====================================================
+   #020: CONTINUITY TOUR (ported from Universe)
+   Faster, tighter-zoom sibling to MemoryTour — both walk
+   the timeline chronologically; Continuity is the brisk
+   "highlight reel" pass. Reuses the shared .tour-* CSS.
+   ===================================================== */
+const ContinuityTour = {
+  active: false,
+  paused: false,
+  items: [],
+  idx: 0,
+  snapshot: null,
+  reducedMotion: false,
+  _timer: null,
+  _raf: null,
+
+  start() {
+    const switched = _currentView !== 'timeline';
+    if (switched) switchView('timeline');
+    this.items = this._buildItems();
+    if (!this.items.length) {
+      notify('Add at least one visible event before starting Continuity Tour.', 'info');
+      return;
+    }
+    if (MemoryTour.active) MemoryTour.stop(false);
+    if (this.active) {
+      this.idx = 0;
+      this.paused = false;
+      this.focusCurrent(true);
+      return;
+    }
+    this.snapshot = { panX: V.panX, panY: V.panY, scale: V.scale };
+    this.active = true;
+    this.paused = false;
+    this.idx = 0;
+    this.reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    this._overlay().classList.add('active');
+    this._overlay().setAttribute('aria-hidden', 'false');
+    this.focusCurrent(true);
+    if (switched) setTimeout(() => { if (this.active) this.focusCurrent(true); }, 80);
+  },
+
+  stop(restoreView) {
+    this._clearTimers();
+    if (!this.active && !restoreView) return;
+    const shouldRestore = restoreView && this.snapshot;
+    this.active = false;
+    this.paused = false;
+    this.items = [];
+    this.idx = 0;
+    this._overlay().classList.remove('active');
+    this._overlay().setAttribute('aria-hidden', 'true');
+    if (shouldRestore) this._applyView(this.snapshot, this.reducedMotion);
+    this.snapshot = null;
+  },
+
+  next() {
+    if (!this.active || !this.items.length) return;
+    this.idx = (this.idx + 1) % this.items.length;
+    this.focusCurrent();
+  },
+
+  prev() {
+    if (!this.active || !this.items.length) return;
+    this.idx = (this.idx - 1 + this.items.length) % this.items.length;
+    this.focusCurrent();
+  },
+
+  togglePause() {
+    if (!this.active) return;
+    this.paused = !this.paused;
+    this._pauseBtn().textContent = this.paused ? 'Resume' : 'Pause';
+    if (this.paused) this._clearTimerOnly();
+    else this._scheduleAdvance();
+  },
+
+  focusCurrent(instant) {
+    if (!this.active || !this.items.length) return;
+    const item = this.items[this.idx];
+    this._renderCard(item);
+    this._renderSpotlight(item);
+    this._applyView(this._targetFor(item), !!instant || this.reducedMotion);
+    this._pauseBtn().textContent = this.paused ? 'Resume' : 'Pause';
+    this._progress().textContent = (this.idx + 1) + ' / ' + this.items.length;
+    if (!this.paused) this._scheduleAdvance();
+  },
+
+  _buildItems() {
+    const all = S.events.map((ev, index) => {
+      const parsed = parseDate(ev.date, ev.time);
+      return { ev, index, parsed };
+    }).filter(item => getVisIdx(item.ev.universeId) !== -1);
+    if (!all.length) return [];
+    const withDates = all.filter(item => item.parsed !== null).sort((a, b) => a.parsed - b.parsed || a.index - b.index);
+    const withoutDates = all.filter(item => item.parsed === null).sort((a, b) => a.index - b.index);
+    const currentYear = sy2yr(CV().width * 0.5);
+    let lastKnownYear = withDates.length ? withDates[0].parsed : currentYear;
+    return withDates.concat(withoutDates).map(item => {
+      const focusYear = item.parsed != null ? item.parsed : lastKnownYear;
+      if (item.parsed != null) lastKnownYear = item.parsed;
+      return {
+        ev: item.ev,
+        focusYear,
+        dateLabel: item.ev.date || 'Date not set',
+        desc: ((item.ev.description || item.ev.notes || '').trim() || 'No summary has been written for this event yet.').slice(0, 220)
+      };
+    });
+  },
+
+  _targetFor(item) {
+    const c = CV();
+    const vi = Math.max(0, getVisIdx(item.ev.universeId));
+    const desiredScale = clamp(Math.max(this.snapshot ? this.snapshot.scale : V.scale, 1.12), MIN_SC, MAX_SC);
+    const targetX = Math.max(LEFT_W + 150, c.width * 0.62);
+    const targetY = Math.min(c.height - 120, Math.max(RULER_H + 100, c.height * 0.52));
+    const panX = targetX - centerX() - yw(item.focusYear) * desiredScale;
+    const panY = targetY - (RULER_H + vi * TRACK_H + TRACK_H / 2);
+    return { panX, panY, scale: desiredScale };
+  },
+
+  _applyView(target, instant) {
+    this._clearAnimOnly();
+    if (instant) {
+      V.panX = target.panX;
+      V.panY = target.panY;
+      V.scale = target.scale;
+      clampPanX();
+      clampPanY();
+      render();
+      this._renderSpotlight(this.items[this.idx]);
+      return;
+    }
+    const start = { panX: V.panX, panY: V.panY, scale: V.scale };
+    const startTime = performance.now();
+    const duration = 950;
+    const ease = t => 1 - Math.pow(1 - t, 3);
+    const tick = now => {
+      const t = Math.min(1, (now - startTime) / duration);
+      const k = ease(t);
+      V.panX = start.panX + (target.panX - start.panX) * k;
+      V.panY = start.panY + (target.panY - start.panY) * k;
+      V.scale = start.scale + (target.scale - start.scale) * k;
+      clampPanX();
+      clampPanY();
+      render();
+      this._renderSpotlight(this.items[this.idx]);
+      if (t < 1 && this.active) this._raf = requestAnimationFrame(tick);
+    };
+    this._raf = requestAnimationFrame(tick);
+  },
+
+  _renderCard(item) {
+    const title = document.getElementById('continuity-tour-title');
+    const meta = document.getElementById('continuity-tour-meta');
+    const desc = document.getElementById('continuity-tour-desc');
+    const track = getU(item.ev.universeId);
+    if (title) title.textContent = item.ev.title || 'Untitled event';
+    if (meta) meta.textContent = (item.dateLabel || 'Date not set') + (track ? '  •  ' + track.name : '');
+    if (desc) desc.textContent = item.desc;
+  },
+
+  _renderSpotlight(item) {
+    const spot = document.getElementById('continuity-tour-spotlight');
+    if (!spot || !item) return;
+    const vi = Math.max(0, getVisIdx(item.ev.universeId));
+    spot.style.left = ws(yw(item.focusYear)) + 'px';
+    spot.style.top = trackY(vi) + 'px';
+    spot.style.opacity = this.active ? '1' : '0';
+  },
+
+  _scheduleAdvance() {
+    this._clearTimerOnly();
+    this._timer = setTimeout(() => {
+      if (!this.active || this.paused) return;
+      this.next();
+    }, this.reducedMotion ? 5400 : 4400);
+  },
+
+  _clearTimerOnly() {
+    if (this._timer) clearTimeout(this._timer);
+    this._timer = null;
+  },
+
+  _clearAnimOnly() {
+    if (this._raf) cancelAnimationFrame(this._raf);
+    this._raf = null;
+  },
+
+  _clearTimers() {
+    this._clearTimerOnly();
+    this._clearAnimOnly();
+  },
+
+  _overlay() { return document.getElementById('continuity-tour-overlay'); },
+  _pauseBtn() { return document.getElementById('continuity-tour-pause'); },
+  _progress() { return document.getElementById('continuity-tour-progress'); }
+};
+
+document.addEventListener('keydown', function(e) {
+  if (ContinuityTour.active && e.key === 'Escape') {
+    e.preventDefault();
+    e.stopPropagation();
+    ContinuityTour.stop(true);
+  }
+}, true);
+
+window.addEventListener('resize', function() {
+  if (ContinuityTour.active) {
+    setTimeout(function() { ContinuityTour.focusCurrent(true); }, 80);
   }
 });
 
@@ -3379,7 +3592,7 @@ const M = {
   },
 
   /* -- push helper -- */
-  push(frame) { if (typeof MemoryTour !== 'undefined' && MemoryTour.active) MemoryTour.stop(false); MS.push(frame); this.open(); this.render(); },
+  push(frame) { if (typeof MemoryTour !== 'undefined' && MemoryTour.active) MemoryTour.stop(false); if (typeof ContinuityTour !== 'undefined' && ContinuityTour.active) ContinuityTour.stop(false); MS.push(frame); this.open(); this.render(); },
   openEvDetail(id) { MS = [{ t: 'evDetail', evId: id }]; this.open(); this.render(); },
   openEditUni(id)  { MS = [{ t: 'editUni',  uId:  id }]; this.open(); this.render(); },
   openUniInfo(id)  { MS = [{ t: 'uniInfo',  uId:  id }]; this.open(); this.render(); },
@@ -5559,6 +5772,7 @@ function loadSample() {
 let _currentView = 'timeline';
 function switchView(view) {
   if (typeof MemoryTour !== 'undefined' && MemoryTour.active && view !== 'timeline') MemoryTour.stop(false);
+  if (typeof ContinuityTour !== 'undefined' && ContinuityTour.active && view !== 'timeline') ContinuityTour.stop(false);
   _currentView = view;
   const canvasWrap = document.getElementById('canvas-wrap');
   const filterPanel = document.getElementById('filter-panel');

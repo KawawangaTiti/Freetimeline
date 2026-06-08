@@ -3946,6 +3946,7 @@ input[type="color"]:focus-visible {
     <div class="sep tb-secondary"></div>
     <button class="btn tb-secondary" onclick="UI.toggleStats()" title="Toggle timeline statistics panel" id="stats-btn">&#128202; Stats</button>
     <button class="btn tb-secondary" onclick="MemoryTour.start()" title="Start a read-only guided Memory Tour through your events">&#127909; Memory Tour</button>
+    <button class="btn tb-secondary" onclick="ContinuityTour.start()" title="Start a read-only Continuity Tour — a brisker chronological pass with tighter zoom">&#127916; Continuity Tour</button>
     <button class="btn tb-secondary" onclick="UI.toggleKbd()" title="Keyboard shortcuts reference">&#9875; Keys</button>
     <button class="btn tb-secondary" id="reading-toggle-btn" onclick="toggleReadingMode()" title="Toggle Reading Mode — dimmed sepia palette for long journaling sessions">&#128214; Read</button>
     <div class="sep tb-secondary"></div>
@@ -4031,6 +4032,7 @@ input[type="color"]:focus-visible {
       <div class="bio-drawer-section-head" style="grid-column:1/-1">Navigate</div>
       <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();UI.toggleStats()">📈 Stats Panel</button>
       <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();MemoryTour.start()">🎞 Memory Tour</button>
+      <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();ContinuityTour.start()">🎬 Continuity Tour</button>
       <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();goToToday()">🕘 Today</button>
       <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();resetView()">⌂ Reset</button>
       <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();History.undo()">↶ Undo</button>
@@ -4404,6 +4406,23 @@ input[type="color"]:focus-visible {
         <button class="tour-btn" type="button" onclick="MemoryTour.next()">Next ▶</button>
         <span class="tour-progress" id="memory-tour-progress">0 / 0</span>
         <button class="tour-btn exit" type="button" onclick="MemoryTour.stop(true)">Exit ✕</button>
+      </div>
+    </div>
+    <div class="tour-overlay" id="continuity-tour-overlay" aria-hidden="true">
+      <div class="tour-wash"></div>
+      <div class="tour-spotlight" id="continuity-tour-spotlight"></div>
+      <div class="tour-card">
+        <div class="tour-kicker">Continuity Tour</div>
+        <div class="tour-title" id="continuity-tour-title">A brisk pass through your timeline beats</div>
+        <div class="tour-meta" id="continuity-tour-meta">Read-only guided view</div>
+        <div class="tour-desc" id="continuity-tour-desc">Start the tour to move chronologically through every visible event without changing a single piece of data.</div>
+      </div>
+      <div class="tour-controls" role="group" aria-label="Continuity Tour controls">
+        <button class="tour-btn" type="button" onclick="ContinuityTour.prev()">◀ Previous</button>
+        <button class="tour-btn" type="button" id="continuity-tour-pause" onclick="ContinuityTour.togglePause()">Pause</button>
+        <button class="tour-btn" type="button" onclick="ContinuityTour.next()">Next ▶</button>
+        <span class="tour-progress" id="continuity-tour-progress">0 / 0</span>
+        <button class="tour-btn exit" type="button" onclick="ContinuityTour.stop(true)">Exit ✕</button>
       </div>
     </div>
   </div>
