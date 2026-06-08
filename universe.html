@@ -222,7 +222,12 @@ body.mm-collapsed #minimap-show { display: inline-flex; }
    ===================================================== */
 #kbd-hint {
   position: absolute; bottom: 10px; left: 170px;
-  font-size: 11px; color: rgba(160,180,220,0.5); pointer-events: none; z-index: 4;
+  max-width: calc(100% - 196px);
+  font-size: 11px; color: rgba(176,196,230,0.66); pointer-events: none; z-index: 4;
+  padding: 4px 12px; border-radius: 999px;
+  background: rgba(10,12,24,0.58);
+  border: 1px solid rgba(60,76,110,0.4);
+  backdrop-filter: blur(2px);
 }
 
 /* =====================================================
@@ -4207,7 +4212,7 @@ input[type="color"]:focus-visible {
     </div>
 
     <!-- Universe vertical scrollbar -->
-    <div id="uni-scrollbar">
+    <div id="uni-scrollbar" aria-hidden="true">
       <div id="uni-scrollbar-thumb"></div>
     </div>
   </div>
