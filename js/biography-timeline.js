@@ -3513,6 +3513,7 @@ const M = {
       _modalReturnFocus = active && typeof active.focus === 'function' ? active : null;
     }
     this.bg().classList.add('open');
+    document.body.classList.add('modal-open');
   },
   /* Hardened close: idempotent, never throws, runs registered cleanups.
      Fixes Help-modal crash when clicking Got it / Cancel / X / Esc / outside. */
@@ -3533,6 +3534,7 @@ const M = {
       queue.forEach(fn => { try { fn(); } catch(_){} });
       /* 2. Drop open class + clear stack */
       try { bg.classList.remove('open'); } catch(_){}
+      try { document.body.classList.remove('modal-open'); } catch(_){}
       try { bg.setAttribute('aria-hidden','true'); } catch(_){}
       MS = [];
       /* 3. Restore focus safely */

@@ -26,6 +26,9 @@ body {
   -webkit-user-select: none;
 }
 #app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+/* Scroll/overscroll lock while a modal or sheet is open — stops the canvas
+   behind a dialog from panning and iOS from rubber-banding (MOB-8) */
+body.modal-open { overflow: hidden; overscroll-behavior: none; }
 
 /* =====================================================
    TOOLBAR

@@ -3936,8 +3936,8 @@ const M = {
   body: () => document.getElementById('m-body'),
   foot: () => document.getElementById('m-foot'),
 
-  open()  { this.bg().classList.add('open'); },
-  close() { this.bg().classList.remove('open'); MS = []; },
+  open()  { this.bg().classList.add('open'); document.body.classList.add('modal-open'); },
+  close() { this.bg().classList.remove('open'); document.body.classList.remove('modal-open'); MS = []; },
   back()  {
     MS.pop();
     if (MS.length === 0) this.close(); else this.render();
