@@ -1728,9 +1728,14 @@ function drawTracks(c, g) {
     g.fillRect(LEFT_W - 14, top, 9, TRACK_H);
     g.restore();
 
-    // Track bottom separator
-    g.strokeStyle = 'rgba(190,175,148,0.6)'; g.lineWidth = 1;
-    g.beginPath(); g.moveTo(0, bot); g.lineTo(c.width, bot); g.stroke();
+    // Track bottom separator — faint guide confined to the content strip (starts at
+    // LEFT_W, not x=0). Skipped on a blank timeline (one default track, no memories)
+    // so a lone centred track no longer paints a stray full-width line across the
+    // middle of the screen. (Fix BS-1)
+    if (!(vc === 1 && S.events.length === 0)) {
+      g.strokeStyle = 'rgba(190,175,148,0.35)'; g.lineWidth = 1;
+      g.beginPath(); g.moveTo(LEFT_W, bot); g.lineTo(c.width, bot); g.stroke();
+    }
 
     // Left panel right border
     g.strokeStyle = 'rgba(185,165,135,0.5)'; g.lineWidth = 1;
