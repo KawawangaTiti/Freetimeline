@@ -5885,7 +5885,12 @@ body.reading-mode #reading-toggle-btn {
       if (!el.hasAttribute('role')) el.setAttribute('role','button');
     }
   }
-  function polish(){ fixNames(); fixKeyboardControls(); }
+  function polish(){ fixNames(); fixKeyboardControls();
+    /* A11Y-5: silence alt-less images so screen readers don't read out the
+       filename/URL (most are thumbnails; the lightbox sets its own alt). */
+    var _im = document.querySelectorAll('img:not([alt])');
+    for (var _z=0; _z<_im.length; _z++) _im[_z].setAttribute('alt','');
+  }
   polish();
   document.addEventListener('keydown', function(e){
     if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;

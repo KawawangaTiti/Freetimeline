@@ -80,7 +80,9 @@
     injectStyle();
     var root = document.createElement('div');
     root.id = ROOT_ID;
-    root.setAttribute('role', 'dialog');
+    /* This is a non-blocking corner toast, not a modal — use a labelled region
+       so screen readers don't demand modal focus management. (A11Y-6 / SUP-06) */
+    root.setAttribute('role', 'region');
     root.setAttribute('aria-label', opts.title || 'Welcome');
     root.style.position = 'fixed';
 

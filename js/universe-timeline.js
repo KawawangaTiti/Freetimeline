@@ -3804,7 +3804,9 @@ function toggleVis(id) {
    ===================================================== */
 function openLightbox(src) {
   const lb = document.getElementById('lightbox');
-  document.getElementById('lb-img').src = src;
+  var _lbi = document.getElementById('lb-img');
+  _lbi.src = src;
+  _lbi.alt = 'Enlarged image'; // announce a photo is shown rather than empty/decorative (BS-9)
   lb.style.display = 'flex';
 }
 function closeLightbox() {

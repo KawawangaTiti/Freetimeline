@@ -63,11 +63,13 @@
     root.id = ROOT_ID;
     root.setAttribute('role', 'dialog');
     root.setAttribute('aria-modal', 'true');
+    root.setAttribute('aria-labelledby', 'ftc-title');
+    root.setAttribute('aria-describedby', 'ftc-msg');
     root.innerHTML =
       '<div class="ftc-box">' +
         '<div class="ftc-icon" aria-hidden="true"></div>' +
-        '<div class="ftc-title"></div>' +
-        '<div class="ftc-msg"></div>' +
+        '<div class="ftc-title" id="ftc-title"></div>' +
+        '<div class="ftc-msg" id="ftc-msg"></div>' +
         '<div class="ftc-actions">' +
           '<button type="button" class="ftc-btn ftc-ok"></button>' +
           '<button type="button" class="ftc-btn ftc-cancel"></button>' +
@@ -102,8 +104,15 @@
     cancBtn.textContent = opts.cancelLabel  || 'Cancel';
     okBtn.classList.toggle('danger', !!opts.danger);
 
+    var prevFocus = document.activeElement;
     return new Promise(function (resolve) {
-      function done(result) { close(root, resolve, result); }
+      function done(result) {
+        close(root, resolve, result);
+        // Restore focus to whatever triggered the dialog (SUP-05).
+        if (prevFocus && typeof prevFocus.focus === 'function') {
+          setTimeout(function () { try { prevFocus.focus(); } catch (_) {} }, 0);
+        }
+      }
       okBtn.onclick   = function () { done(true);  };
       cancBtn.onclick = function () { done(false); };
 
