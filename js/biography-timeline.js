@@ -2222,6 +2222,14 @@ function drawSingleEvent(c, g, ev) {
     }
 
     if (_tagFilter && !(ev.tags||[]).includes(_tagFilter)) {
+      /* BE-11: draw the same faint ghost dot as the cat/tone/status filters
+         above, so all four filter chips respond identically (was a bare
+         return, making tag-filtered events vanish while the others dimmed). */
+      g.save(); g.globalAlpha = _uDimmed ? 0.08 : 0.12;
+      g.beginPath(); g.arc(sx, sy, EV_R, 0, Math.PI * 2);
+      g.fillStyle = u.color; g.fill();
+      g.restore();
+      if (_uDimmed) g.restore();
       return;
     }
 
