@@ -5846,6 +5846,12 @@ function loadSample() {
    MULTI-VIEW SYSTEM
    ===================================================== */
 let _currentView = 'timeline';
+/* DOC-004: label <-> internal-key mapping differs across the two apps (and is
+   cross-wired). Here in Biography the connection-map's USER LABEL is
+   'Relationships' but its internal view key is 'map' (id tab-map). In Universe
+   it's the inverse: label 'Map' but key 'connections'. So Biography 'map' ===
+   Universe 'connections'. Do NOT rename these keys — saved view-state hashes
+   depend on them; just keep this mapping in mind when porting a bugfix. */
 function switchView(view) {
   if (typeof MemoryTour !== 'undefined' && MemoryTour.active && view !== 'timeline') MemoryTour.stop(false);
   if (typeof ContinuityTour !== 'undefined' && ContinuityTour.active && view !== 'timeline') ContinuityTour.stop(false);
