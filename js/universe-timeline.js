@@ -7347,6 +7347,7 @@ function toggleUniverse(uid2) {
   const u = S.universes.find(x => x.id === uid2);
   if (!u) return;
   u.visible = u.visible === false ? true : false;
+  Store.autosave();   /* UE-3: persist the visibility flip (was lost on refresh) and capture it in undo history */
   updateUniToggleBar();
   render();
   notify((u.visible === false ? 'Hidden universe: ' : 'Showing universe: ') + u.name, 'info');
