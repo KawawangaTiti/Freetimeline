@@ -321,12 +321,26 @@ function addRecurrenceStep(parts, freq) {
   return null;
 }
 
+/* UE-9: memoise recurrence expansion. This is called inside the render hot path
+   (drawEvents / drawStoryLine), so without a cache every pan/zoom frame re-ran up
+   to 500 date-step iterations per recurring event. Key the cache on a signature
+   of the recurring events — every field that ends up in a phantom, minus the
+   heavy media/subEvents the phantoms drop — plus the year bound. Any edit/import
+   that changes a recurring event changes the signature and rebuilds the cache. */
+var _recCache = { sig: null, out: [] };
 function expandRecurringEvents() {
-  const phantoms = [];
   const LIMIT = 500;
   const maxYear = new Date().getFullYear() + 2;
-  S.events.forEach(function(ev) {
-    if (!ev.recurring || !ev.recurring.frequency) return;
+  const recurring = S.events.filter(function(ev) {
+    return ev.recurring && ev.recurring.frequency;
+  });
+  const sig = maxYear + '~' + JSON.stringify(recurring.map(function(ev) {
+    return Object.assign({}, ev, { media: 0, subEvents: 0 });
+  }));
+  if (sig === _recCache.sig) return _recCache.out;
+
+  const phantoms = [];
+  recurring.forEach(function(ev) {
     let cur = parseDateParts(ev.date);
     if (!cur) return;
     const freq = ev.recurring.frequency;
@@ -344,6 +358,8 @@ function expandRecurringEvents() {
       cur = addRecurrenceStep(cur, freq);
     }
   });
+  _recCache.sig = sig;
+  _recCache.out = phantoms;
   return phantoms;
 }
 
