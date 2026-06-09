@@ -1190,8 +1190,8 @@ Biography has a more thoughtfully designed mobile experience:
 | Mobile drawer action-search | ❌ | ✅ |
 | Star-canvas background | (homepage only) | (no) |
 | Connection map | ✅ "Map" | ✅ "Relationships" |
-| Filter dropdown for Status | ✅ | ❌ (only Cat / Tone / People) |
-| Filter dropdown for Tags | ✅ | ❌ |
+| Filter dropdown for Status | ✅ | ✅ (DOC-007: added — biography.html `fp-drop-status`) |
+| Filter dropdown for Tags | ✅ | ✅ (DOC-007: added — biography.html `fp-drop-tags`) |
 
 ---
 
