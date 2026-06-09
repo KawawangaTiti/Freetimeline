@@ -6026,6 +6026,8 @@ const UI = {
                    (tracks ? '&tracks=' + encodeURIComponent(tracks) : '');
       const url = location.origin + location.pathname + hash;
       const after = (ok) => {
+        /* UE-5: be honest that this is a view link (camera position), not data. */
+        if (ok) notify('View link copied — it restores this view on this device, not your data. Use Save HTML / Export to share the timeline itself.', 'info');
         const btn = document.getElementById('share-btn');
         if (!btn) return;
         const orig = btn.textContent;
@@ -9583,10 +9585,18 @@ try {
 
     if (p.tracks != null) {
       const ids = new Set(p.tracks.split(',').filter(Boolean));
-      (S.universes || []).forEach(u => {
-        const want = ids.size === 0 ? true : ids.has(u.id);
-        if (u.visible !== want) { u.visible = want; touched = true; }
-      });
+      /* UE-5: a #tracks list from a link shared by ANOTHER device names track
+         ids this timeline doesn't have. Applying it blindly sets want=false for
+         every local universe and blanks the recipient's whole timeline. Only
+         honour the list when it actually overlaps local tracks (or is empty,
+         which means "show all"); otherwise leave visibility untouched. */
+      const overlaps = (S.universes || []).some(u => ids.has(u.id));
+      if (ids.size === 0 || overlaps) {
+        (S.universes || []).forEach(u => {
+          const want = ids.size === 0 ? true : ids.has(u.id);
+          if (u.visible !== want) { u.visible = want; touched = true; }
+        });
+      }
     }
     if (p.zoom != null && isFinite(parseFloat(p.zoom))) {
       const z = clamp(parseFloat(p.zoom), getMinScale(), MAX_SC);
