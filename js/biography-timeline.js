@@ -45,9 +45,11 @@ function getMinScale() {
   return Math.max(0.00001, visibleW / totalWorldW);
 }
 const MIN_SC  = 0.00012;
+/* Vintage-modern palette: muted retro tones (teal, ochre, terracotta, dusty
+   blue, sage, plum, …) instead of the old all-brown set. */
 const PALETTE = [
-  '#b07942','#8b6e4e','#c4956a','#a67b5b','#d4a574',
-  '#7a6652','#c08552','#9e7c5a','#b5916c','#8c7060'
+  '#3f8c84','#c99b3c','#b5623f','#5a7a9c','#7f8c5a',
+  '#8c5a72','#4f9d94','#d0a84a','#a8553a','#6a86a8'
 ];
 const MONTHS  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -1319,23 +1321,23 @@ function drawRuler(c, g) {
   if (tx >= LEFT_W && tx <= W) {
     g.save();
     // Warm glow underlay
-    g.strokeStyle = 'rgba(175,88,55,0.16)'; g.lineWidth = 5;
+    g.strokeStyle = 'rgba(194,85,60,0.16)'; g.lineWidth = 5;
     g.beginPath(); g.moveTo(tx, RULER_H); g.lineTo(tx, c.height); g.stroke();
     // Refined dashed line
-    g.strokeStyle = '#b86040'; g.lineWidth = 1.5;
+    g.strokeStyle = '#c2553c'; g.lineWidth = 1.5;
     g.setLineDash([5, 4]);
     g.beginPath(); g.moveTo(tx, 0); g.lineTo(tx, c.height); g.stroke();
     g.setLineDash([]);
     // Badge label pill
     const badgeW = 44, badgeH = 16;
     rRect(g, tx - badgeW / 2, 2, badgeW, badgeH, 5);
-    g.fillStyle = '#b86040'; g.fill();
+    g.fillStyle = '#c2553c'; g.fill();
     g.fillStyle = '#fff8f0';
     g.font = 'bold 9px Georgia, "Cambria", serif';
     g.textAlign = 'center';
     g.fillText('TODAY', tx, 14);
     // Tick mark at ruler bottom
-    g.strokeStyle = '#b86040'; g.lineWidth = 2;
+    g.strokeStyle = '#c2553c'; g.lineWidth = 2;
     g.beginPath(); g.moveTo(tx, RULER_H - 10); g.lineTo(tx, RULER_H); g.stroke();
     g.restore();
   }
@@ -1452,14 +1454,14 @@ function drawRulerVertical(c, g) {
   const ty = ws(yw(todayDec));
   if (ty >= LEFT_W && ty <= H) {
     g.save();
-    g.strokeStyle = 'rgba(175,88,55,0.16)'; g.lineWidth = 5;
+    g.strokeStyle = 'rgba(194,85,60,0.16)'; g.lineWidth = 5;
     g.beginPath(); g.moveTo(RULER_H, ty); g.lineTo(c.width, ty); g.stroke();
-    g.strokeStyle = '#b86040'; g.lineWidth = 1.5;
+    g.strokeStyle = '#c2553c'; g.lineWidth = 1.5;
     g.setLineDash([5, 4]);
     g.beginPath(); g.moveTo(0, ty); g.lineTo(c.width, ty); g.stroke();
     g.setLineDash([]);
     rRect(g, 6, ty - 10, 44, 16, 5);
-    g.fillStyle = '#b86040'; g.fill();
+    g.fillStyle = '#c2553c'; g.fill();
     g.fillStyle = '#fff8f0';
     g.font = 'bold 9px Georgia, "Cambria", serif';
     g.textAlign = 'center';
@@ -5808,9 +5810,9 @@ function loadSample() {
      Replace with your own content by clicking + Event / + Life Track / + Person.
      (Real user data lives in localStorage and is never touched by this fallback.) */
   S.lifeTracks = [
-    { id: 'u1', name: 'Sample Track A — Personal',  color: '#9b59b6', visible: true, description: 'Example life-track. Replace with your own.' },
-    { id: 'u2', name: 'Sample Track B — Career',    color: '#3498db', visible: true, description: 'Another example track. Use these to group events by theme.' },
-    { id: 'u3', name: 'Sample Track C — Relationships', color: '#e91e63', visible: true, description: 'Tracks are just labels — give them any meaning you like.' }
+    { id: 'u1', name: 'Sample Track A — Personal',  color: '#3f8c84', visible: true, description: 'Example life-track. Replace with your own.' },
+    { id: 'u2', name: 'Sample Track B — Career',    color: '#c99b3c', visible: true, description: 'Another example track. Use these to group events by theme.' },
+    { id: 'u3', name: 'Sample Track C — Relationships', color: '#b5623f', visible: true, description: 'Tracks are just labels — give them any meaning you like.' }
   ];
   S.events = [
     { id: 'e01', universeId: 'u1', date: 'xx/xx/2000', title: 'Sample Event 1',
