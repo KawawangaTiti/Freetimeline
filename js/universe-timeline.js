@@ -6276,80 +6276,16 @@ const Store = {
   /* =====================================================
      UNDO / REDO HISTORY
      ===================================================== */
-  const History = (() => {
-    const _undo = [];
-    const _redo = [];
-    const MAX   = 60;
-    let   _busy = false;
-
-    const _origSave = Store.autosave.bind(Store);
-    Store.autosave = function () {
-      if (!_busy) {
-        const snap = localStorage.getItem(SKEY);
-        if (snap) {
-          _undo.push(snap);
-          if (_undo.length > MAX) _undo.shift();
-          _redo.length = 0;
-          _updateUI();
-        }
-      }
-      _origSave();
-    };
-
-    function _restore(json) {
-      try {
-        const d = JSON.parse(json);
-        S.universes    = d.universes    || [];
-        S.events       = d.events       || [];
-        S.connections  = d.connections  || [];
-        S.characters   = d.characters   || [];
-        S.categories   = d.categories   || {};
-        S.affiliations = d.affiliations || [];
-        syncCategoriesFromState();
-        clampPanY();
-        render();
-        updateUniToggleBar();
-        updateCatFilterBar();
-        updateToneFilterBar();
-        if (typeof updateStatsPanel === 'function') updateStatsPanel();
-        M.close();
-      } catch (e) { notify('Could not restore state.', 'error'); }
-    }
-
-    function _saveBypass() {
-      _busy = true;
-      _origSave();
-      _busy = false;
-    }
-
-    function _updateUI() {
-      const ub = document.getElementById('undo-btn');
-      const rb = document.getElementById('redo-btn');
-      if (ub) { ub.disabled = _undo.length === 0; ub.style.opacity = _undo.length === 0 ? '0.5' : '1'; }
-      if (rb) { rb.disabled = _redo.length === 0; rb.style.opacity = _redo.length === 0 ? '0.5' : '1'; }
-    }
-
-    return {
-      undo() {
-        if (_undo.length === 0) { notify('Nothing to undo.', 'info'); return; }
-        const cur = localStorage.getItem(SKEY);
-        if (cur) { _redo.push(cur); if (_redo.length > MAX) _redo.shift(); }
-        _restore(_undo.pop());
-        _saveBypass();
-        _updateUI();
-        notify('Undone ↩', 'info');
-      },
-      redo() {
-        if (_redo.length === 0) { notify('Nothing to redo.', 'info'); return; }
-        const cur = localStorage.getItem(SKEY);
-        if (cur) { _undo.push(cur); if (_undo.length > MAX) _undo.shift(); }
-        _restore(_redo.pop());
-        _saveBypass();
-        _updateUI();
-        notify('Redone ↪', 'info');
-      }
-    };
-  })();
+  /* UE-1 — REMOVED: the second, conflicting undo/redo stack.
+     Universe previously had TWO uncoordinated undo systems: this block-scoped
+     `const History` (a localStorage-string stack, wired to Ctrl+Z/Ctrl+Y) and
+     the deep-snapshot `window.History` defined in PART 6 below (wired to the
+     toolbar/drawer buttons). Both were fed by Store.autosave but consumed
+     independently, so clicking Undo and then pressing Ctrl+Z rewound two
+     different stacks and produced a state the user never had — silent world
+     corruption. We now keep ONLY the deep-snapshot window.History; the
+     Ctrl+Z/Ctrl+Y handler below calls it too, and Store.autosave is wrapped
+     exactly once (in PART 6). This also restores parity with Biography. */
     
 
 /* =====================================================
@@ -7025,8 +6961,8 @@ window.addEventListener('DOMContentLoaded', () => {
         _startKeyAnim();
       }
     }
-    if (e.ctrlKey && e.key === 'z' && !e.shiftKey) { e.preventDefault(); History.undo(); }
-    if (e.ctrlKey && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) { e.preventDefault(); History.redo(); }
+    if (e.ctrlKey && e.key === 'z' && !e.shiftKey) { e.preventDefault(); window.History.undo(); }                 /* UE-1: unified on window.History */
+    if (e.ctrlKey && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) { e.preventDefault(); window.History.redo(); }
     if (e.key === 's' || e.key === 'S')  UI.toggleStats();
     if (e.key === '?' || e.key === '/') UI.toggleKbd();
   });
