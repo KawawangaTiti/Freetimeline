@@ -8994,6 +8994,14 @@ try {
     },
     restore: function() {
       try {
+        /* UE-11: pick ONE viewport authority. When the URL hash carries the view
+           (#date=/&zoom=), setupHashState.applyHash() already restored it during
+           init; this deferred setTimeout(0) restore must NOT run, or it would
+           overwrite the hash-restored view from localStorage — leaving the
+           address bar out of sync and clobbering a shared link. The hash wins
+           when present; localStorage only restores the last view when there is
+           no hash (e.g. first visit of the session). */
+        if (/[#&](date|zoom)=/.test(location.hash || '')) return false;
         var raw = localStorage.getItem(_VC_KEY);
         if (!raw) return false;
         var data = JSON.parse(raw);
