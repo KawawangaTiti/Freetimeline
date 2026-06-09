@@ -2337,6 +2337,10 @@ input:focus, select:focus, textarea:focus, button:focus-visible {
   border-color: transparent !important; color: #2a1b0e !important; font-weight: 700 !important; text-shadow: none;
 }
 
+/* Help + Keys pinned bottom-right; Help in a soft orange so it stands out and is easy to find */
+#toolbar .tb-help-group { margin-left: auto !important; }
+#toolbar #help-btn { color: #ea9d3c !important; font-weight: 700; }
+#toolbar #help-btn:hover { background: rgba(234,157,60,0.16) !important; color: #ffba52 !important; }
 /* V1b ICONS START — line icons via CSS masks (currentColor); targeted by onclick, no markup change */
 #toolbar .btn::before, #toolbar .view-tab::before { content:''; display:none; width:15px; height:15px; vertical-align:-2px; margin-right:6px; background-color:currentColor; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; -webkit-mask-position:center; mask-position:center; -webkit-mask-size:contain; mask-size:contain; }
 #toolbar [onclick*="goBackToMenu"]::before { display:inline-block; -webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M19%2012H5%27%2F%3E%3Cpath%20d%3D%27M12%2019l-7-7%207-7%27%2F%3E%3C%2Fsvg%3E"); mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M19%2012H5%27%2F%3E%3Cpath%20d%3D%27M12%2019l-7-7%207-7%27%2F%3E%3C%2Fsvg%3E"); }
@@ -4031,7 +4035,6 @@ input[type="color"]:focus-visible {
     <button class="btn tb-secondary" id="jump-btn" onclick="UI.jumpToYear()" title="Jump to a specific year">Jump</button>
     <button class="btn tb-secondary" id="story-line-btn" onclick="toggleStoryLine()" title="Reveal a connected story path through all chronological events">Story</button>
     <button class="btn tb-secondary" id="fit-btn" onclick="UI.fitToData()" title="Fit all events to view (0)">Fit</button>
-    <button class="btn tb-secondary" id="share-btn" onclick="UI.shareView()" title="Copy a link to the current view">Share</button>
     <button class="btn tb-secondary" onclick="resetView()" title="Reset pan and zoom">Reset</button>
     <div class="sep tb-secondary"></div>
     <span class="tb-label tb-secondary">History</span>
@@ -4039,10 +4042,7 @@ input[type="color"]:focus-visible {
       <button class="btn tb-secondary" id="redo-btn" onclick="History.redo()" title="Redo (Ctrl+Y)" aria-label="Redo last action (Ctrl+Y)" aria-keyshortcuts="Control+Y" style="opacity:0.4" disabled><span aria-hidden="true">&#8618;</span></button>
     <div class="sep tb-secondary"></div>
     <button class="btn tb-secondary" onclick="UI.toggleStats()" title="Toggle timeline statistics panel" id="stats-btn">Stats</button>
-    <button class="btn tb-secondary" onclick="MemoryTour.start()" title="Start a read-only guided Memory Tour through your events">Memory Tour</button>
-    <button class="btn tb-secondary" onclick="ContinuityTour.start()" title="Start a read-only Continuity Tour — a brisker chronological pass with tighter zoom">Continuity Tour</button>
-    <button class="btn tb-secondary" onclick="UI.toggleKbd()" title="Keyboard shortcuts reference">Keys</button>
-    <button class="btn tb-secondary" id="reading-toggle-btn" onclick="toggleReadingMode()" title="Toggle Reading Mode — dimmed sepia palette for long journaling sessions">Read</button>
+    <button class="btn tb-secondary" onclick="ContinuityTour.start()" title="Start a read-only guided tour through your timeline, one moment at a time">Tour</button>
     <div class="sep tb-secondary"></div>
     <label class="tb-secondary" style="font-size:10px;color:rgba(196,149,106,0.75);white-space:nowrap;display:flex;align-items:center;gap:5px;letter-spacing:0.03em;" title="Adjust track row height">
       
@@ -4053,7 +4053,10 @@ input[type="color"]:focus-visible {
     </label>
     <div class="sep tb-secondary"></div>
     <button class="btn tb-secondary" style="background:rgba(200,180,148,0.12);border-color:rgba(200,180,148,0.25);color:#c8b488;font-weight:700;font-size:11.5px;" onclick="openRangeConfig()" title="Configure Timeline Range">Range</button>
-    <button class="btn tb-secondary" style="background:linear-gradient(135deg,rgba(196,149,106,0.25),rgba(176,121,66,0.18));border-color:rgba(196,149,106,0.4);color:#f0ce8a;font-weight:700;" onclick="UI.help()" title="Help &amp; Guide">Help</button>
+    <div class="tb-group tb-secondary tb-help-group">
+      <button class="btn tb-secondary" onclick="UI.toggleKbd()" title="Keyboard shortcuts reference">Keys</button>
+      <button class="btn tb-secondary" id="help-btn" onclick="UI.help()" title="Help &amp; Guide">Help</button>
+    </div>
   </div>
 
   <!-- ==================== MOBILE HEADER / ACTIONS ==================== -->
