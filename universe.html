@@ -1380,6 +1380,10 @@ body { background: #07081a; }
   border-color: transparent; color: #fff; font-weight: 700; box-shadow: 0 2px 8px rgba(47,124,246,0.3);
 }
 
+/* Help + Keys pinned bottom-right; Help in a soft orange so it stands out and is easy to find */
+#toolbar .tb-help-group { margin-left: auto; }
+#toolbar #help-btn { color: #ea9d3c; font-weight: 700; }
+#toolbar #help-btn:hover { background: rgba(234,157,60,0.16); color: #ffba52; }
 /* V1b ICONS START — line icons via CSS masks (currentColor); targeted by onclick, no markup change */
 #toolbar .btn::before, #toolbar .view-tab::before { content:''; display:none; width:15px; height:15px; vertical-align:-2px; margin-right:6px; background-color:currentColor; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; -webkit-mask-position:center; mask-position:center; -webkit-mask-size:contain; mask-size:contain; }
 #toolbar [onclick*="goBackToMenu"]::before { display:inline-block; -webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M19%2012H5%27%2F%3E%3Cpath%20d%3D%27M12%2019l-7-7%207-7%27%2F%3E%3C%2Fsvg%3E"); mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M19%2012H5%27%2F%3E%3Cpath%20d%3D%27M12%2019l-7-7%207-7%27%2F%3E%3C%2Fsvg%3E"); }
@@ -4070,12 +4074,8 @@ input[type="color"]:focus-visible {
       <button class="btn" onclick="resetView()"      title="Reset pan and zoom to fit the full chronicle — nothing is deleted">Reset</button>
       <button class="btn" id="undo-btn" onclick="History.undo()" title="Undo last action  (Ctrl+Z)" style="opacity:0.4" disabled>Undo</button>
       <button class="btn" id="redo-btn" onclick="History.redo()" title="Redo last undone action  (Ctrl+Y / Ctrl+Shift+Z)" style="opacity:0.4" disabled>Redo</button>
-      <button class="btn" onclick="UI.toggleKbd()"   title="Keyboard shortcuts reference  (?)">Keys</button>
-      <button class="btn" onclick="UI.help()"        title="Open the full codex help guide — navigation, events, backups, connections">Help</button>
-      <button class="btn" id="reading-toggle-btn" onclick="toggleReadingMode()" title="Toggle Reading Mode — soft warm parchment palette for long sessions">Read</button>
       <button class="btn" id="fit-btn"   onclick="UI.fitToData()"   title="Fit all events to view (0)">Fit</button>
       <button class="btn" id="jump-btn"  onclick="UI.jumpToYear()"  title="Jump to a specific year">Jump</button>
-      <button class="btn" id="share-btn" onclick="UI.shareView()"   title="Copy a link that restores this view (camera position) on THIS device — it does not share your data. To send your timeline, use Save HTML or Export.">Share view</button>
     </div>
 
     <div class="sep tb-secondary"></div>
@@ -4090,15 +4090,19 @@ input[type="color"]:focus-visible {
       <!-- Tools (Stats / Story / Continuity Tour / Range) merged inline after Archive -->
       <button class="btn" onclick="UI.toggleStats()"    title="Toggle the live stats overlay panel  (S)"    id="stats-btn">Stats</button>
       <button class="btn" id="story-line-btn" onclick="toggleStoryLine()" title="Reveal a connected story path through all chronological events">Story</button>
-      <button class="btn" onclick="ContinuityTour.start()" title="Start a read-only Continuity Tour through the timeline">Continuity Tour</button>
-      <!-- B-1: Chronicle Tour (gentle chronological playback, ported from Biography). -->
-      <button class="btn" onclick="MemoryTour.start()" title="Start a read-only guided Chronicle Tour through your events one moment at a time">Chronicle Tour</button>
+      <button class="btn" onclick="ContinuityTour.start()" title="Start a read-only guided tour through your timeline, one moment at a time">Tour</button>
       <button class="btn" onclick="openRangeConfig()"   title="Configure the visible year range and epoch of the timeline">Range</button>
     </div>
     <input type="file" id="file-in" accept=".html,.json" onchange="Store.importFile(event)" style="display:none" aria-label="Load universe timeline file">
 
     <!-- Saved locally status indicator -->
     <span class="tb-save-status tb-secondary" title="Your chronicle is saved automatically in this browser — export regularly for permanent backup">✦ Saved locally</span>
+
+    <!-- Keys + Help pinned to the bottom-right of the toolbar -->
+    <div class="tb-group tb-secondary tb-help-group">
+      <button class="btn" onclick="UI.toggleKbd()" title="Keyboard shortcuts reference  (?)">Keys</button>
+      <button class="btn" id="help-btn" onclick="UI.help()" title="Open the full help guide — navigation, events, backups, connections">Help</button>
+    </div>
 
   </div>
 
