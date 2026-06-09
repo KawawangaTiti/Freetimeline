@@ -1180,12 +1180,24 @@ function render() {
   const W = c.width, H = c.height;
   g.clearRect(0, 0, W, H);
 
-  // --- background ---
-  g.fillStyle = '#f8f9fa';
+  // --- background: light, but a toned off-white with a subtle gradient for a
+  //     cinematic depth (the owner wanted the canvas slightly darker than pure
+  //     white, not dark). A faint vignette deepens the edges. ---
+  g.fillStyle = '#e4e7f0';
   g.fillRect(0, 0, W, H);
-  g.fillStyle = '#ffffff';
-  if (isVerticalTimelineLayout()) g.fillRect(RULER_H, LEFT_W, W - RULER_H, H - LEFT_W);
-  else g.fillRect(LEFT_W, 0, W - LEFT_W, H);
+  {
+    const vert = isVerticalTimelineLayout();
+    const px = vert ? RULER_H : LEFT_W, py = vert ? LEFT_W : 0;
+    const pw = W - px, ph = H - py;
+    const pg = vert ? g.createLinearGradient(px, 0, W, 0) : g.createLinearGradient(0, py, 0, H);
+    pg.addColorStop(0, '#eef1f8'); pg.addColorStop(0.55, '#e7eaf3'); pg.addColorStop(1, '#dfe3ee');
+    g.fillStyle = pg; g.fillRect(px, py, pw, ph);
+    /* subtle vignette */
+    const vg = g.createRadialGradient(px + pw * 0.5, py + ph * 0.42, Math.min(pw, ph) * 0.15,
+                                      px + pw * 0.5, py + ph * 0.5, Math.max(pw, ph) * 0.72);
+    vg.addColorStop(0, 'rgba(40,55,105,0)'); vg.addColorStop(1, 'rgba(40,55,105,0.10)');
+    g.fillStyle = vg; g.fillRect(px, py, pw, ph);
+  }
 
   // --- clip to content zone (excludes sticky header panels) ---
   g.save();
@@ -1737,13 +1749,12 @@ function drawTracks(c, g) {
     const isDimmed = !!u.dimmed;
     if (isDimmed) g.save(), g.globalAlpha = 0.25;
 
-    // Track background — subtle horizontal gradient band
-    const trackGrad = g.createLinearGradient(LEFT_W, top, LEFT_W, bot);
-    trackGrad.addColorStop(0, vi % 2 === 0 ? 'rgba(0,0,0,0.008)' : 'rgba(0,0,0,0.018)');
-    trackGrad.addColorStop(0.5, vi % 2 === 0 ? 'rgba(0,0,0,0.018)' : 'rgba(0,0,0,0.032)');
-    trackGrad.addColorStop(1, vi % 2 === 0 ? 'rgba(0,0,0,0.008)' : 'rgba(0,0,0,0.018)');
-    g.fillStyle = trackGrad;
-    g.fillRect(LEFT_W, top, c.width - LEFT_W, TRACK_H);
+    // Track background — alternating soft-white lane panels on the toned canvas,
+    // giving the lanes gentle structure/depth (V-light-cinematic).
+    if (vi % 2 === 1) {
+      g.fillStyle = 'rgba(255,255,255,0.42)';
+      g.fillRect(LEFT_W, top, c.width - LEFT_W, TRACK_H);
+    }
 
     // Left panel background — color-tinted with gradient
     const panelGrad = g.createLinearGradient(0, top, LEFT_W, top);
