@@ -4198,7 +4198,7 @@ const M = {
   /* ---- Organizations & Groups ---- */
   _affiliationEditor(top) {
     this.crumb().textContent = '';
-    this.ttl().textContent   = '\uD83C\uDFE2 Organization Editor';
+    this.ttl().textContent   = '\uD83C\uDFE2 Groups';
     const affs = S.affiliations || [];
     const affRows = affs.map((aff, idx) =>
       '<div style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid #ebebeb;border-radius:8px;margin-bottom:7px;background:#fafbfd">' +
@@ -4211,9 +4211,9 @@ const M = {
     ).join('');
     this.body().innerHTML =
       '<div style="margin-bottom:14px;font-size:13px;color:#666;line-height:1.6">' +
-        'Manage the list of organizations and groups that can be selected on a person. Add, rename, or remove entries here.' +
+        'Manage the list of groups that can be selected on a person. Add, rename, or remove entries here.' +
       '</div>' +
-      '<div id="aff-list">' + (affRows || '<div style="color:#ccc;font-size:13px;padding:12px 0">No organizations yet. Add one below.</div>') + '</div>' +
+      '<div id="aff-list">' + (affRows || '<div style="color:#ccc;font-size:13px;padding:12px 0">No groups yet. Add one below.</div>') + '</div>' +
       '<div style="border-top:1px solid #eee;padding-top:14px;margin-top:8px">' +
         '<div style="display:flex;gap:8px;align-items:center">' +
           '<input id="aff-new-name" placeholder="New affiliation name..." style="flex:1;padding:5px 9px;border:1px solid #d6d6d6;border-radius:5px;font-size:13px;font-family:inherit">' +
@@ -4329,7 +4329,7 @@ const M = {
           '</div>' +
           (ch.birthDate ? '<div style="font-size:12px;color:#666;margin-bottom:4px"><strong style="color:#333">Born:</strong> ' + esc(ch.birthDate) + '</div>' : '') +
           (ch.occupation ? '<div style="font-size:12px;color:#666;margin-bottom:4px"><strong style="color:#333">Occupation:</strong> ' + esc(ch.occupation) + '</div>' : '') +
-          (ch.affiliation ? '<div style="font-size:12px;color:#666;margin-bottom:4px"><strong style="color:#333">Organization:</strong> ' + esc(ch.affiliation) + '</div>' : '') +
+          (ch.affiliation ? '<div style="font-size:12px;color:#666;margin-bottom:4px"><strong style="color:#333">Group:</strong> ' + esc(ch.affiliation) + '</div>' : '') +
           (uniTagsHTML ? '<div style="display:flex;flex-wrap:wrap;gap:4px">' + uniTagsHTML + '</div>' : '') +
         '</div>' +
       '</div>' +
@@ -4389,7 +4389,7 @@ const M = {
       '</div>' +
       '<div class="fg" style="display:flex;gap:10px">' +
         '<div style="flex:1"><label>Birth Date</label><input id="ac-birthdate" placeholder="e.g. 03/15/1965"></div>' +
-        '<div style="flex:1"><label>Organization / Group</label><select id="ac-affiliation"><option value="">— None —</option>' + (S.affiliations||[]).map(a => '<option value="' + esc(a) + '">' + esc(a) + '</option>').join('') + '</select></div>' +
+        '<div style="flex:1"><label>Group</label><select id="ac-affiliation"><option value="">— None —</option>' + (S.affiliations||[]).map(a => '<option value="' + esc(a) + '">' + esc(a) + '</option>').join('') + '</select></div>' +
       '</div>' +
       '<div class="fg" style="display:flex;gap:10px">' +
         '<div style="flex:1"><label>Years Known</label><input id="ac-yearsknown" type="number" min="0" placeholder="0"></div>' +
@@ -4446,7 +4446,7 @@ const M = {
       '</div>' +
       '<div class="fg" style="display:flex;gap:10px">' +
         '<div style="flex:1"><label>Birth Date</label><input id="ec-birthdate" value="' + esc(ch.birthDate || '') + '"></div>' +
-        '<div style="flex:1"><label>Organization / Group</label><select id="ec-affiliation"><option value="">— None —</option>' + (S.affiliations||[]).map(a => '<option value="' + esc(a) + '"' + (ch.affiliation === a ? ' selected' : '') + '>' + esc(a) + '</option>').join('') + '</select></div>' +
+        '<div style="flex:1"><label>Group</label><select id="ec-affiliation"><option value="">— None —</option>' + (S.affiliations||[]).map(a => '<option value="' + esc(a) + '"' + (ch.affiliation === a ? ' selected' : '') + '>' + esc(a) + '</option>').join('') + '</select></div>' +
       '</div>' +
       '<div class="fg" style="display:flex;gap:10px">' +
         '<div style="flex:1"><label>Years Known</label><input id="ec-yearsknown" type="number" min="0" value="' + (ch.yearsKnown || 0) + '"></div>' +
@@ -5356,7 +5356,7 @@ function affiliationEditorAdd() {
   Store.autosave();
   if (nameEl) nameEl.value = '';
   M.render();
-  notify('Organization "' + name + '" added!', 'success');
+  notify('Group "' + name + '" added!', 'success');
 }
 
 function affiliationEditorRemove(idx) {
@@ -5369,13 +5369,13 @@ function affiliationEditorRemove(idx) {
     S.affiliations.splice(idx, 1);
     Store.autosave();
     M.render();
-    notify('Organization "' + name + '" removed.', 'warning');
+    notify('Group "' + name + '" removed.', 'warning');
   }
   if (charCount > 0) {
     ftConfirmGate(
-      'Remove "' + name + '"? ' + charCount + ' person/people use this organization — their field will be cleared.',
+      'Remove "' + name + '"? ' + charCount + ' person/people use this group — their field will be cleared.',
       _go,
-      { title: 'Remove organization?', confirmLabel: 'Remove', danger: true }
+      { title: 'Remove group?', confirmLabel: 'Remove', danger: true }
     );
     return;
   }
@@ -5408,7 +5408,7 @@ function affiliationEditorSave() {
   S.affiliations = newAffs;
   Store.autosave();
   M.close();
-  notify('Organizations updated!', 'success');
+  notify('Groups updated!', 'success');
 }
 
 /* =====================================================
