@@ -1986,7 +1986,7 @@ function buildEventClusters(events, c) {
       if (dec === null) return;
       const sx = ws(yw(dec));
       const last = clusters[clusters.length - 1];
-      if (last && Math.abs(sx - last.x) < CLUSTER_PX_THRESHOLD) {
+      if (last && Math.abs(sx - last.timeCoord) < CLUSTER_PX_THRESHOLD) {   /* UE-8: clusters carry timeCoord, not x — last.x was undefined so the merge never fired */
         last.events.push(ev);
         last.timeCoord = (last.timeCoord * (last.events.length - 1) + sx) / last.events.length;
       } else {
