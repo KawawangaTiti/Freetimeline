@@ -6001,11 +6001,11 @@ function renderStatsFullView() {
 
   var turningPoints = S.events.filter(function(e) {
     var c = (e.category || '').toLowerCase();
-    return c === 'milestone' || c === 'achievement' || c === 'turning point';
+    return c.includes('turning point') || c.includes('milestone') || c.includes('achievement');  /* BE-2: match Biography's "Challenges & Turning Points" / "Career & Achievement" (and legacy Universe categories) */
   }).length;
 
   var tonesCounts = {};
-  S.events.forEach(function(ev) { if (ev.tone) { tonesCounts[ev.tone] = (tonesCounts[ev.tone]||0)+1; } });
+  S.events.forEach(function(ev) { var t = ev.emotionalTone || ev.tone; if (t) { tonesCounts[t] = (tonesCounts[t]||0)+1; } });  /* BE-1: Biography stores ev.emotionalTone (ev.tone only survives on imported Universe data) */
   var toneEntries = Object.entries(tonesCounts).sort(function(a,b) { return b[1]-a[1]; });
   var maxTone = toneEntries.length > 0 ? toneEntries[0][1] : 1;
   var totalToneEvents = toneEntries.reduce(function(s,e) { return s + e[1]; }, 0);
@@ -6059,7 +6059,7 @@ function renderStatsFullView() {
       '<td><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:' + info.color + ';margin-right:5px;vertical-align:middle"></span>' + esc(ev.title) + '</td>' +
       '<td>' + esc(ev.date) + '</td>' +
       '<td>' + (track ? esc(track.name) : '\u2014') + '</td>' +
-      '<td>' + (ev.tone || '\u2014') + '</td></tr>';
+      '<td>' + (ev.emotionalTone || ev.tone || '\u2014') + '</td></tr>';
   }).join('');
 
   var lifeScore = Math.min(100, Math.round(
@@ -6517,7 +6517,7 @@ function updateStatsPanel() {
 
   var turningPoints = S.events.filter(function(e) {
     var c = (e.category || '').toLowerCase();
-    return c === 'milestone' || c === 'achievement' || c === 'turning point';
+    return c.includes('turning point') || c.includes('milestone') || c.includes('achievement');  /* BE-2: match Biography's "Challenges & Turning Points" / "Career & Achievement" (and legacy Universe categories) */
   }).length;
 
   panel.innerHTML =
