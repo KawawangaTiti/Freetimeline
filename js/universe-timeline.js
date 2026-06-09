@@ -5758,13 +5758,23 @@ function catEditorRemove(idx) {
   if (idx < 0 || idx >= cats.length) return;
   const catName = cats[idx];
   const evCount = S.events.filter(e => e.category === catName).length;
-  if (evCount > 0 && !confirm('Delete "' + catName + '"? ' + evCount + ' event(s) use this category — they will become uncategorized.')) return;
-  S.events.forEach(e => { if (e.category === catName) e.category = null; });
-  delete CATEGORIES[catName];
-  syncCategoriesToState();
-  Store.autosave();
-  M.render();
-  notify('Category "' + catName + '" removed.', 'warning');
+  function _go() {
+    S.events.forEach(e => { if (e.category === catName) e.category = null; });
+    delete CATEGORIES[catName];
+    syncCategoriesToState();
+    Store.autosave();
+    M.render();
+    notify('Category "' + catName + '" removed.', 'warning');
+  }
+  if (evCount > 0) {
+    ftConfirmGate(
+      'Delete "' + catName + '"? ' + evCount + ' event(s) use this category — they will become uncategorized.',
+      _go,
+      { title: 'Delete category?', confirmLabel: 'Delete', danger: true }
+    );
+    return;
+  }
+  _go();
 }
 
 function catEditorAdd() {
