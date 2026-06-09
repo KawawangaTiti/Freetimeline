@@ -5597,6 +5597,7 @@ const Store = {
     V.panX = 0; V.panY = 0; V.scale = 1;
     const zoom = document.getElementById('zoom-pct'); if (zoom) zoom.textContent = '100%';
     Store.autosave();
+    History.clear();  /* BE-13: blank is a hard boundary — clear undo */
     MS = [];
     M.close();
     clampPanY();
@@ -5644,7 +5645,9 @@ const Store = {
           S.categories   = d.categories  || {};
           S.affiliations = d.affiliations || [];
           syncCategoriesFromState();
-          Store.autosave(); clampPanY(); render();
+          Store.autosave();
+          History.clear();  /* BE-13: undo must not cross the import boundary */
+          clampPanY(); render();
           updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updateUniToggleBar(); updateStatsPanel();
           if (wasLegacy) {
             setTimeout(() => notify('File loaded \u2713 — your Universes are now Life Tracks. All data is intact. Rename them at your own pace.', 'success'), 400);
@@ -5731,6 +5734,11 @@ const Store = {
         _saveBypass();
         _updateUI();
         notify('Redone ↪', 'info');
+      },
+      clear() {
+        /* BE-13: wipe both stacks at a full-data-replacement boundary
+           (import / blank) so undo can never restore data from across it. */
+        _undo.length = 0; _redo.length = 0; _updateUI();
       }
     };
   })();

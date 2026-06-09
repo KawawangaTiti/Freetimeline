@@ -6211,6 +6211,7 @@ const Store = {
     V.panX = 0; V.panY = 0; V.scale = getMinScale();
     const zoom = document.getElementById('zoom-pct'); if (zoom) zoom.textContent = formatZoomPercent();
     Store.autosave();
+    if (window.History && window.History.clear) window.History.clear();  /* BE-13/UE-18: blank is a hard boundary — undo greys out, no cross-boundary restore */
     MS = [];
     M.close();
     clampPanY();
@@ -6263,7 +6264,9 @@ const Store = {
           S.categories   = d.categories  || {};
           S.affiliations = d.affiliations || [];
           syncCategoriesFromState();
-          Store.autosave(); clampPanY(); render();
+          Store.autosave();
+          if (window.History && window.History.clear) window.History.clear();  /* BE-13/UE-18: undo must not cross the import boundary */
+          clampPanY(); render();
           updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updateToneFilterBar(); updateCharFilterSelect(); updateUniToggleBar(); updateStatsPanel();
           notify('Timeline loaded \u2713', 'success');
         }, { title: 'Replace all data?', confirmLabel: 'Replace', danger: true });
@@ -9773,6 +9776,10 @@ try {
       restore(next);
       try { notify('Redid change \u21AA', 'info'); } catch (_) {}
     },
+    /* BE-13/UE-18: wipe both stacks at a full-data-replacement boundary
+       (import / blank) so undo can never restore data from across it; the
+       buttons then correctly grey out. */
+    clear: function () { undoStack.length = 0; redoStack.length = 0; refreshUndoRedoButtons(); },
     size: function () { return { undo: undoStack.length, redo: redoStack.length }; }
   };
 
