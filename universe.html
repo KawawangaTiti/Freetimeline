@@ -4480,6 +4480,11 @@ input[type="color"]:focus-visible {
           '<button class="mob-drw-btn" onclick="mobDrawerView(\'connections\')">🔗 Connections</button>' +
           '<button class="mob-drw-btn" onclick="mobDrawerView(\'stats\')">📊 Stats</button>' +
         '</div>' +
+        /* DOC-002: Reading Mode was reachable only on Universe's desktop toolbar;
+           add it to the mobile drawer too, matching Biography's mobile More menu. */
+        '<div class="mob-drawer-row">' +
+          '<button class="mob-drw-btn" onclick="mobDrawerAction(toggleReadingMode)">📖 Reading Mode</button>' +
+        '</div>' +
       '</div>' +
 
       '<div class="mob-drawer-section">' +
