@@ -1254,8 +1254,9 @@ function drawRuler(c, g) {
     for (let y = ms; y <= ryear + minor; y += minor) {
       const sx = ws(yw(y));
       if (sx < LEFT_W || sx > W) continue;
-      g.strokeStyle = 'rgba(220,224,232,0.65)'; g.lineWidth = 1;
-      g.beginPath(); g.moveTo(sx, RULER_H); g.lineTo(sx, c.height); g.stroke();
+      /* V2 (subtle adaptive grid): minor ticks live on the ruler only — the
+         full-height minor gridline was removed (it was the dense "quadriculada"
+         look the owner disliked). Only the major guides cross the canvas, faintly. */
       g.strokeStyle = '#bec4d0'; g.lineWidth = 1;
       g.beginPath(); g.moveTo(sx, RULER_H - 6); g.lineTo(sx, RULER_H); g.stroke();
     }
@@ -1279,7 +1280,7 @@ function drawRuler(c, g) {
       if (sx < LEFT_W - 80 || sx > W + 80) { _idx++; continue; }
       g.strokeStyle = '#9aa2b4'; g.lineWidth = 1;
       g.beginPath(); g.moveTo(sx, RULER_H - 16); g.lineTo(sx, RULER_H); g.stroke();
-      g.strokeStyle = 'rgba(210,215,228,0.55)'; g.lineWidth = 1;
+      g.strokeStyle = 'rgba(150,160,185,0.15)'; g.lineWidth = 1;   /* V2: subtle major-only canvas guide */
       g.beginPath(); g.moveTo(sx, RULER_H); g.lineTo(sx, c.height); g.stroke();
       if (sx > LEFT_W + 4 && _idx % _labelN === 0) {
         let lbl;
@@ -1394,8 +1395,8 @@ function drawRulerVertical(c, g) {
   for (let y = ms; y <= bottomYear + minor; y += minor) {
     const sy = ws(yw(y));
     if (sy < LEFT_W || sy > H) continue;
-    g.strokeStyle = 'rgba(220,224,232,0.65)';
-    g.beginPath(); g.moveTo(RULER_H, sy); g.lineTo(c.width, sy); g.stroke();
+    /* V2 (subtle adaptive grid): minor ticks on the ruler only — removed the
+       dense full-width minor gridline. */
     g.strokeStyle = '#bec4d0';
     g.beginPath(); g.moveTo(RULER_H - 6, sy); g.lineTo(RULER_H, sy); g.stroke();
   }
@@ -1418,6 +1419,8 @@ function drawRulerVertical(c, g) {
       if (sy < LEFT_W - 20 || sy > H + 20) { _idx++; continue; }
       g.strokeStyle = '#9aa2b4';
       g.beginPath(); g.moveTo(RULER_H - 16, sy); g.lineTo(RULER_H, sy); g.stroke();
+      g.strokeStyle = 'rgba(150,160,185,0.15)';   /* V2: subtle major-only canvas guide */
+      g.beginPath(); g.moveTo(RULER_H, sy); g.lineTo(c.width, sy); g.stroke();
       if (_idx % _labelN === 0) {
         let lbl;
         if (isDay) {
