@@ -6831,7 +6831,7 @@ const ConnectionMap = {
       const p = pos[ch.id]; if (!p) return;
       const col = ch.color || charHashColor(ch.id);
       const evCnt = S.events.filter(ev => (ev.characterIds||[]).includes(ch.id)).length;
-      const nr = 20 + Math.min(evCnt * 1.8, 15);
+      const nr = 13 + Math.min(evCnt * 1.2, 9);   /* V3: smaller, more compact map nodes */
       const initials = ch.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
       const isFiltered = _charFilterIds.includes(ch.id);
       /* Soft warm halo around every node */
@@ -6849,7 +6849,7 @@ const ConnectionMap = {
           + ' clip-path="url(#ccp-' + ch.id + ')" preserveAspectRatio="xMidYMid slice"'
           + ' class="cm-node" data-cid="' + ch.id + '" style="cursor:pointer"/>';
       } else {
-        s += '<text x="' + p.x + '" y="' + (p.y+5) + '" text-anchor="middle" font-size="13" font-weight="700" fill="white"'
+        s += '<text x="' + p.x + '" y="' + (p.y+4) + '" text-anchor="middle" font-size="11" font-weight="700" fill="white"'
           + ' font-family="-apple-system,sans-serif" letter-spacing="0.5" style="pointer-events:none;text-shadow:0 1px 2px rgba(80,50,20,0.4)">' + initials + '</text>';
       }
       // Name label — warm, readable on cream bg
