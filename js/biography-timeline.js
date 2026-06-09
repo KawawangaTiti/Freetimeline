@@ -2910,8 +2910,16 @@ function doZoom(factor, mouseX) {
 }
 
 function resetView() {
-  V.panX = 0; V.panY = 0; V.scale = 1;
-  document.getElementById('zoom-pct').textContent = '100%';
+  V.panX = 0; V.panY = 0;
+  /* BE-18: clamp the reset scale to the same floor/ceiling doZoom uses. A
+     hardcoded 1 can be below getMinScale() for very wide year ranges (or above
+     it on a tiny canvas), so the next doZoom would re-clamp and snap the view.
+     Report the real zoom via formatZoomPercent() instead of a literal '100%'. */
+  const minSc = (typeof getMinScale === 'function') ? getMinScale() : 1;
+  V.scale = clamp(1, minSc, MAX_SC);
+  const z = document.getElementById('zoom-pct');
+  if (z) z.textContent = (typeof formatZoomPercent === 'function')
+    ? formatZoomPercent() : Math.round(V.scale * 100) + '%';
   render();
 }
 
