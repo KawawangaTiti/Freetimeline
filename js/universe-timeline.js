@@ -6108,8 +6108,13 @@ const Store = {
     fetch(location.href)
       .then(r => r.text())
       .then(src => {
-        /* Replace state between markers with current data */
-        const stateJSON = JSON.stringify(S);
+        // Replace state between markers with current data.
+        // UE-17/BE-16: make the embedded state marker- and script-safe. Escape
+        // '<' and '>' so a note containing a closing script tag cannot break out
+        // of the script element, and escape '/' so user text can never forge the
+        // STATE_START / STATE_END comment markers. JSON.parse on import restores
+        // every original character, so the round-trip stays lossless.
+        const stateJSON = JSON.stringify(S).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/\//g, '\\/');
         const newSrc = src.replace(
           /\/\*STATE_START\*\/[\s\S]*?\/\*STATE_END\*\//,
           '/*STATE_START*/let S = ' + stateJSON + ';/*STATE_END*/'
@@ -6134,7 +6139,8 @@ const Store = {
 
   /* Fallback for when fetch(location.href) is blocked (e.g. file:// protocol) */
   _saveHTMLFallback() {
-    const stateJSON = JSON.stringify(S);
+    // UE-17/BE-16: marker- and script-safe embed (see saveHTML above).
+    const stateJSON = JSON.stringify(S).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/\//g, '\\/');
     /* Inject state into the page's own script by reading the document */
     const clone = document.documentElement.outerHTML;
     const newSrc = clone.replace(
