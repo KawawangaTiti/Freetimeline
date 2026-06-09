@@ -81,8 +81,11 @@
 
   function close(root, resolve, result) {
     root.classList.remove('open');
-    document.removeEventListener('keydown', root._ftcKey);
-    root._ftcKey = null;
+    if (root._ftcKey) {
+      document.removeEventListener('keydown', root._ftcKey);
+      root._ftcKey = null;
+    }
+    root._ftcCancel = null; // SUP-02: re-entry teardown hook is now consumed
     resolve(result);
   }
 
@@ -90,6 +93,14 @@
     opts = opts || {};
     injectStyle();
     var root = ensureRoot();
+
+    // SUP-02: the dialog reuses a single shared #ft-confirm-root singleton. If a
+    // previous ftConfirm() is still open and unresolved when a new one opens, its
+    // button handlers and keydown listener get clobbered — orphaning the old
+    // Promise (it never resolves) and leaking its listener (close() would later
+    // remove the NEW _ftcKey, not the old). Tear the prior one down first:
+    // resolve it false and remove its listener before reusing the node.
+    if (root._ftcCancel) root._ftcCancel();
 
     var iconEl   = root.querySelector('.ftc-icon');
     var titleEl  = root.querySelector('.ftc-title');
@@ -113,6 +124,10 @@
           setTimeout(function () { try { prevFocus.focus(); } catch (_) {} }, 0);
         }
       }
+      // SUP-02: expose a teardown hook so a later re-entry can resolve THIS
+      // Promise (false) and clear its listener instead of orphaning it.
+      root._ftcCancel = function () { done(false); };
+
       okBtn.onclick   = function () { done(true);  };
       cancBtn.onclick = function () { done(false); };
 
