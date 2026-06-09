@@ -118,6 +118,18 @@ function esc(s) {
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+/* BE-15: make a label safe inside onclick="fn('...')". The browser HTML-decodes
+   the attribute first, then runs it as JS, so escape for the JS single-quoted
+   string FIRST (\ and ') then for the double-quoted HTML attribute (& " < >).
+   '\'' survives HTML-decode and the JS parser turns it back into a literal
+   apostrophe — so a tag/category named O'Brien or He said "hi" no longer breaks
+   the chip. (Titles/labels still go through esc().) */
+function chipArg(v) {
+  return String(v == null ? '' : v)
+    .replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/[\r\n]/g, ' ')
+    .replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
 function isBlankTemplateState(d) {
@@ -6417,8 +6429,8 @@ function updateStatusFilterBar() {
     const cnt = S.events.filter(ev => ev.status === st).length;
     return '<span class="cat-filter-chip' + (isActive ? '' : ' inactive') + '" ' +
       'style="background:' + col + ';border-color:' + col + ';" ' +
-      'onclick="setStatusFilter(\'' + st + '\')" title="' + st + ' (' + cnt + ' events)">' +
-      st + (cnt > 0 ? ' <span style="opacity:0.8;font-size:10px">(' + cnt + ')</span>' : '') +
+      'onclick="setStatusFilter(\'' + chipArg(st) + '\')" title="' + esc(st) + ' (' + cnt + ' events)">' +
+      esc(st) + (cnt > 0 ? ' <span style="opacity:0.8;font-size:10px">(' + cnt + ')</span>' : '') +
       '</span>';
   }).join('');
   chips.innerHTML = statusHtml;
@@ -6465,7 +6477,7 @@ function updateTagFilterBar() {
     var cnt = allTags[tag];
     var isActive = (_tagFilter === null || _tagFilter === tag);
     return '<span class="tag-filter-chip' + (isActive ? '' : ' inactive') + '" ' +
-      'onclick="setTagFilter(\'' + tag.replace(/'/g, "\\'") + '\')" title="' + tag + ' (' + cnt + ' events)">' +
+      'onclick="setTagFilter(\'' + chipArg(tag) + '\')" title="' + esc(tag) + ' (' + cnt + ' events)">' +
       esc(tag) + (cnt > 0 ? ' <span style="opacity:0.8;font-size:10px">(' + cnt + ')</span>' : '') +
       '</span>';
   }).join('');
@@ -6495,8 +6507,8 @@ function updateCatFilterBar() {
     const isActive = (_catFilter === null || _catFilter === cat);
     return '<span class="cat-filter-chip' + (isActive ? '' : ' inactive') + '" ' +
       'style="background:' + info.color + ';border-color:' + info.color + ';" ' +
-      'onclick="setCatFilter(\'' + cat + '\')" title="' + cat + ' (' + cnt + ' events)">' +
-      info.icon + ' ' + cat +
+      'onclick="setCatFilter(\'' + chipArg(cat) + '\')" title="' + esc(cat) + ' (' + cnt + ' events)">' +
+      info.icon + ' ' + esc(cat) +
       (cnt > 0 ? ' <span style="opacity:0.8;font-size:10px">(' + cnt + ')</span>' : '') +
       '</span>';
   }).join('');
