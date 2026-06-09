@@ -17,6 +17,18 @@ const RULER_H = 54;    // time ruler height (px)
    ===================================================== */
 window.FT_BIO = window.FT_BIO || {};
 
+/* SUP-01 — failsafe gate for destructive actions.
+   Every delete/import call site uses the bare global ftConfirmGate(), defined
+   in js/ft-confirm.js. If that support file fails to load (network blip, blocked
+   script, cache miss) the symbol is undefined and EVERY delete/import throws a
+   ReferenceError and silently no-ops — the app looks frozen. ft-confirm.js is a
+   `defer` script loaded before this engine (also `defer`), so when present it has
+   already installed the real dialog and the `||` keeps it; only when it is missing
+   does this native-confirm fallback take over (uglier on mobile, but functional). */
+window.ftConfirmGate = window.ftConfirmGate || function (msg, onConfirm) {
+  if (window.confirm(msg)) onConfirm();
+};
+
 /* === TIMELINE ENGINE STATE START === */
 let   TRACK_H = 100;   // height per life track (px) — user-configurable
 const EV_R    = 13;    // event circle radius (px)
