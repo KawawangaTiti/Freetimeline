@@ -6376,20 +6376,25 @@ body.reading-mode #reading-toggle-btn {
 </script>
 
 <script>
-/* #022: Loading… fallback watchdog. If the engine has not replaced the
-   "Loading…" placeholders in the filter chips after 5 seconds, swap them
-   for a polite empty-state message so users do not see a frozen UI. */
+/* #022 / BE-17: failsafe for a stuck UI. On the happy path the engine replaces
+   these "Loading…" placeholders well before 5s, so this no-ops. If any still
+   reads "Loading…" after 5s, distinguish the two failure modes instead of
+   always showing a neutral empty-state line: FT_BIO._loaded is set true at the
+   end of the engine's init, so if it is still unset the engine never finished
+   booting (script blocked / threw) — show a real recovery message. */
 (function () {
   setTimeout(function () {
-    var IDS = ['uni-toggle-hint','cat-filter-chips','status-filter-chips',
-               'cat-filter-chips-mobile','status-filter-chips-mobile'];
-    IDS.forEach(function (id) {
+    var engineUp = !!(window.FT_BIO && window.FT_BIO._loaded);
+    var msg = engineUp
+      ? 'Nothing yet — use + Life Track or + Event to begin.'
+      : 'Could not load the timeline — please refresh the page. Your saved data is safe in this browser.';
+    ['uni-toggle-hint','cat-filter-chips','status-filter-chips',
+     'cat-filter-chips-mobile','status-filter-chips-mobile'].forEach(function (id) {
       var el = document.getElementById(id);
       if (!el) return;
-      var txt = (el.textContent || '').trim();
-      if (txt === 'Loading…' || txt === 'Loading…' || txt === 'Loading...') {
-        el.textContent = 'Nothing yet — use + Life Track or + Event to begin.';
-        el.style.opacity = '0.7';
+      if ((el.textContent || '').trim().indexOf('Loading') === 0) {
+        el.textContent = msg;
+        el.style.opacity = '0.75';
       }
     });
   }, 5000);
