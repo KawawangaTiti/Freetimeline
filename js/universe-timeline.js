@@ -4080,9 +4080,9 @@ const M = {
   _seDetail(top) {
     const ev = S.events.find(e => e.id === top.evId); if (!ev) return;
     let node = ev; const crumbs = [ev.title];
-    for (const i of top.path) {
+    for (const segId of top.path) {   /* UE-12: id path, not index */
       if (!node.subEvents) return;
-      node = node.subEvents[i]; if (!node) return;
+      node = node.subEvents.find(s => s && s.id === segId); if (!node) return;
       crumbs.push(node.title);
     }
     const se = node;
@@ -4238,7 +4238,7 @@ const M = {
   _editSE(top) {
     const ev = S.events.find(e => e.id === top.evId); if (!ev) return;
     let node = ev;
-    for (const i of top.path) { if (!node.subEvents) return; node = node.subEvents[i]; if (!node) return; }
+    for (const segId of top.path) { if (!node.subEvents) return; node = node.subEvents.find(s => s && s.id === segId); if (!node) return; }  /* UE-12: id path */
     const se = node;
     _editMediaList = se.media ? se.media.map(m => Object.assign({}, m)) : [];
     const pathJson = JSON.stringify(top.path);
@@ -5054,8 +5054,9 @@ function buildSESection(evId, ses, parentPath) {
     '<button class="btn accent sm" onclick="M.push({t:\'addSE\',evId:\'' + evId + '\',path:' + pathJson + '})">&#65291; Add</button></div>' +
     (ses.length === 0
       ? '<div style="color:#ccc;font-size:12px;padding:4px 0 8px">No ' + depthLabel.toLowerCase() + ' yet. Click <strong>+ Add</strong> to create one.</div>'
-      : ses.map((se, i) => {
-          const newPath = JSON.stringify([...parentPath, i]);
+      : ses.map((se) => {
+          if (!se.id) se.id = uid();   /* UE-12: backfill an id for legacy/id-less sub-events so the id path resolves */
+          const newPath = JSON.stringify([...parentPath, se.id]);
           const subCount  = (se.subEvents && se.subEvents.length) || 0;
           const mediaCount = (se.media && se.media.length) || 0;
           const hasMeta = subCount > 0 || mediaCount > 0;
@@ -5076,9 +5077,13 @@ function getNodeAtPath(evId, path) {
   const ev = S.events.find(e => e.id === evId);
   if (!ev) return null;
   let node = ev;
-  for (const i of path) {
+  /* UE-12: resolve by stable sub-event ids, not array indices. An index path
+     captured when a modal opened goes stale if a sibling is added/removed/
+     reordered before the action, silently hitting the wrong sub-event. An id
+     path resolves the right node or fails cleanly (null) when it's gone. */
+  for (const segId of path) {
     if (!node.subEvents) return null;
-    node = node.subEvents[i];
+    node = node.subEvents.find(s => s && s.id === segId);
     if (!node) return null;
   }
   return node;
@@ -5504,9 +5509,10 @@ function submitAddSE(evId, path) {
   if (!title) { notify('Title is required.', 'error'); return; }
   const ev = S.events.find(e => e.id === evId); if (!ev) return;
   let node = ev;
-  for (const i of path) {
-    if (!node.subEvents) node.subEvents = [];
-    node = node.subEvents[i]; if (!node) return;
+  for (const segId of path) {   /* UE-12: walk by id, not index */
+    if (!node.subEvents) { notify('That sub-event no longer exists.', 'error'); return; }
+    node = node.subEvents.find(s => s && s.id === segId);
+    if (!node) { notify('That sub-event no longer exists.', 'error'); return; }
   }
   if (!node.subEvents) node.subEvents = [];
   node.subEvents.push({ id: uid(), title, date, time: time || null, description: desc,
@@ -5515,9 +5521,9 @@ function submitAddSE(evId, path) {
 }
 
 function saveSE(evId, path) {
-  const ev = S.events.find(e => e.id === evId); if (!ev) return;
-  let node = ev;
-  for (const i of path) { if (!node.subEvents) return; node = node.subEvents[i]; if (!node) return; }
+  /* UE-12: resolve by id path; abort cleanly if the sub-event moved or was deleted. */
+  const node = getNodeAtPath(evId, path);
+  if (!node) { notify('This sub-event no longer exists — it may have been moved or deleted.', 'error'); MS.pop(); M.render(); return; }
   node.title       = document.getElementById('es-t').value.trim() || node.title;
   node.date        = document.getElementById('es-d').value.trim();
   node.time        = (document.getElementById('es-time')||{value:''}).value.trim() || null;
@@ -5529,11 +5535,13 @@ function saveSE(evId, path) {
 
 function delSE(evId, path) {
   ftConfirmGate('Delete this sub-event and all its children? This cannot be undone.', function () {
-  const ev = S.events.find(e => e.id === evId); if (!ev) return;
-  let parent = ev;
-  for (const i of path.slice(0, -1)) { if (!parent.subEvents) return; parent = parent.subEvents[i]; if (!parent) return; }
-  if (!parent.subEvents) return;
-  parent.subEvents.splice(path[path.length - 1], 1);
+  /* UE-12: resolve the parent by id path and splice the child by id, so a stale
+     path deletes the RIGHT sub-event (or nothing) — never a wrong sibling. */
+  const parent = getNodeAtPath(evId, path.slice(0, -1));
+  const targetId = path[path.length - 1];
+  const idx = (parent && parent.subEvents) ? parent.subEvents.findIndex(s => s && s.id === targetId) : -1;
+  if (idx < 0) { notify('This sub-event no longer exists — it may have already been deleted.', 'error'); MS.pop(); M.render(); return; }
+  parent.subEvents.splice(idx, 1);
   Store.autosave(); MS.pop(); M.render(); notify('Deleted.', 'warning');
   }, { title: 'Delete sub-event?', confirmLabel: 'Delete', danger: true });
 }
