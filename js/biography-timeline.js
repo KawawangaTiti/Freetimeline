@@ -5742,6 +5742,14 @@ const Store = {
       }
     };
   })();
+
+  /* Parity fix (same class as Universe UE-1): expose the single History on
+     window so the toolbar + mobile-drawer Undo/Redo buttons reach it. They are
+     wired in biography.html as onclick="History.undo()/redo()", which evaluates
+     in GLOBAL scope; a top-level `const` is not a window property, so without
+     this they bound to the built-in DOM window.History (which has no .undo) and
+     silently did nothing — only the engine-scoped Ctrl+Z/Ctrl+Y path worked. */
+  window.History = History;
     
 
 /* =====================================================
