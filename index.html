@@ -378,17 +378,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 
 </div><!-- /page-wrap -->
 
-<!-- COOKIE CONSENT BAR -->
-<div id="consent-bar" role="dialog" aria-label="Cookie notice" aria-live="polite">
-  <p class="consent-text">
-    FreeTimeline uses browser storage to save your timeline data on this device.
-    We use Google AdSense for advertising.
-    <a href="privacy.html">Privacy Policy</a> · <a href="cookies.html">Cookie Policy</a>
-  </p>
-  <div class="consent-actions">
-    <button id="consent-ok" type="button">I Understand</button>
-  </div>
-</div>
+<!-- MK-1/MK-2: legacy inline consent bar removed. js/ft-consent.js (loaded in
+     <head>) is now the single, GDPR-compliant consent UI site-wide — Accept all /
+     Reject all, key 'ft_cookie_consent' — so the home page no longer stacks two
+     banners or offers only an acknowledge-without-reject button. -->
 
 <script>
 /* FOOTER YEAR */
@@ -503,21 +496,8 @@ if ('requestIdleCallback' in window) {
   });
 })();
 
-/* COOKIE / CONSENT NOTICE */
-(function() {
-  var bar = document.getElementById('consent-bar');
-  var btn = document.getElementById('consent-ok');
-  if (!bar || !btn) return;
-  try {
-    if (localStorage.getItem('ft_consent_acknowledged') === 'true') {
-      bar.classList.add('hidden');
-    }
-  } catch(e) { bar.classList.add('hidden'); }
-  btn.addEventListener('click', function() {
-    bar.classList.add('hidden');
-    try { localStorage.setItem('ft_consent_acknowledged', 'true'); } catch(e) {}
-  });
-})();
+/* MK-1/MK-2: legacy inline consent handler removed — js/ft-consent.js owns
+   consent now (single banner, Accept/Reject, key 'ft_cookie_consent'). */
 
 /* EVENT COUNT BADGES */
 (function() {
