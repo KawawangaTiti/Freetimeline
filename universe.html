@@ -3999,8 +3999,8 @@ input[type="color"]:focus-visible {
       <button class="btn" onclick="UI.toggleStats()"    title="Toggle the live stats overlay panel  (S)"    id="stats-btn">📊 Stats</button>
       <button class="btn" id="story-line-btn" onclick="toggleStoryLine()" title="Reveal a connected story path through all chronological events">🔗 Story</button>
       <button class="btn" onclick="ContinuityTour.start()" title="Start a read-only Continuity Tour through the timeline">🎬 Continuity Tour</button>
-      <!-- B-1: Memory Tour (gentle chronological playback, ported from Biography). -->
-      <button class="btn" onclick="MemoryTour.start()" title="Start a read-only guided Memory Tour through your events one moment at a time">🎞 Memory Tour</button>
+      <!-- B-1: Chronicle Tour (gentle chronological playback, ported from Biography). -->
+      <button class="btn" onclick="MemoryTour.start()" title="Start a read-only guided Chronicle Tour through your events one moment at a time">🎞 Chronicle Tour</button>
       <button class="btn" onclick="openRangeConfig()"   title="Configure the visible year range and epoch of the timeline">📅 Range</button>
     </div>
     <input type="file" id="file-in" accept=".html,.json" onchange="Store.importFile(event)" style="display:none" aria-label="Load universe timeline file">
@@ -4173,17 +4173,17 @@ input[type="color"]:focus-visible {
       </div>
     </div>
 
-    <!-- B-1: Memory Tour overlay (ported from Biography) — reuses .tour-* CSS shared with Continuity Tour. -->
+    <!-- B-1: Chronicle Tour overlay (ported from Biography) — reuses .tour-* CSS shared with Continuity Tour. -->
     <div class="tour-overlay" id="memory-tour-overlay" aria-hidden="true">
       <div class="tour-wash"></div>
       <div class="tour-spotlight" id="memory-tour-spotlight"></div>
       <div class="tour-card">
-        <div class="tour-kicker">Memory Tour</div>
+        <div class="tour-kicker">Chronicle Tour</div>
         <div class="tour-title" id="memory-tour-title">Your story, one moment at a time</div>
         <div class="tour-meta" id="memory-tour-meta">Read-only guided view</div>
         <div class="tour-desc" id="memory-tour-desc">Start the tour to move gently through your events in chronological order.</div>
       </div>
-      <div class="tour-controls" role="group" aria-label="Memory Tour controls">
+      <div class="tour-controls" role="group" aria-label="Chronicle Tour controls">
         <button class="tour-btn" type="button" onclick="MemoryTour.prev()">◀ Previous</button>
         <button class="tour-btn" type="button" id="memory-tour-pause" onclick="MemoryTour.togglePause()">Pause</button>
         <button class="tour-btn" type="button" onclick="MemoryTour.next()">Next ▶</button>
