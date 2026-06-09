@@ -90,7 +90,10 @@ function syncCategoriesToState() {
 let V = { panX: 0, panY: 0, scale: 1 };
 
 // Interaction
-let drag   = { on: false, sx: 0, sy: 0, px: 0, py: 0, moved: false };
+/* BE-10: removed the dead module-level `drag` object. Its `.on` flag was never
+   set true (the live pan state is the inner `drag` inside the Pointer Events
+   IIFE), so the only reader — updateTip's cursor guard — was always-true dead
+   code. See the simplified cursor assignment in updateTip. */
 let hits   = [];   // hit targets rebuilt every render
 let _lblSuppressedIds = new Set(); // 2.4.D: label ids hidden by de-collision sweep
 
@@ -2861,7 +2864,7 @@ function updateTip(mx, my) {
   }
   if (!found) {
     tip.style.display = 'none';
-    if (!drag.on) CV().style.cursor = 'grab';
+    CV().style.cursor = 'grab';   /* BE-10: was `if (!drag.on)` — drag.on was permanently false (dead guard) */
   }
 }
 
