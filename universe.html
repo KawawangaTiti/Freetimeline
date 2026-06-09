@@ -1322,6 +1322,64 @@ body { background: #07081a; }
   background: rgba(0,210,255,0.12);
 }
 
+/* =====================================================
+   V0 — VISUAL REDESIGN: design tokens + toolbar (2026-06-09)
+   Scoped to #toolbar so modals/forms (which already look fine) are
+   untouched. Goal: hierarchy (one confident primary, everything else
+   quiet), a real segmented control for the view tabs, and less chrome
+   noise (drop the per-group bordered boxes + glowing labels).
+   ===================================================== */
+:root {
+  --v-accent:   #3d82ff;
+  --v-accent-2: #6aa6ff;
+  --v-bd:       rgba(255,255,255,0.10);
+  --v-ink:      #eaf0ff;
+  --v-ink-dim:  #b6c0e0;   /* brighter than before — the dim ghost read as "tired"/washed */
+  --v-r:        9px;
+  --v-r-sm:     7px;
+}
+#toolbar { gap: 4px; padding: 8px 16px; min-height: 52px; }
+/* Groups: no more bordered boxes or uppercase glowing labels — just spacing,
+   with the existing .sep elements acting as quiet dividers. */
+#toolbar .tb-group { background: transparent; border: 0; padding: 0 2px; gap: 3px; }
+#toolbar .tb-group-label { display: none; }
+#toolbar .sep { height: 22px; background: rgba(255,255,255,0.08); margin: 0 5px; }
+#toolbar .logo { font-size: 14px; letter-spacing: 0.5px; margin: 0 6px 0 2px; }
+/* Default toolbar button = quiet ghost; reads as a calm row of actions. */
+#toolbar .btn {
+  background: transparent; border: 1px solid transparent; color: var(--v-ink-dim);
+  font-size: 13px; font-weight: 600; letter-spacing: 0.2px;
+  padding: 8px 11px; border-radius: var(--v-r-sm); min-height: 38px; box-shadow: none;
+}
+#toolbar .btn:hover {
+  background: rgba(255,255,255,0.06); border-color: transparent; color: var(--v-ink);
+  transform: none; box-shadow: none;
+}
+/* The one confident primary action. */
+#toolbar .btn.accent {
+  background: linear-gradient(135deg, var(--v-accent), var(--v-accent-2));
+  border-color: transparent; color: #fff; font-weight: 700; padding: 8px 15px;
+  box-shadow: 0 2px 10px rgba(47,124,246,0.35);
+}
+#toolbar .btn.accent:hover { filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(47,124,246,0.45); }
+/* Back-to-menu: subtly bordered so it reads as "leave", not a primary. */
+#toolbar .btn.menu-btn { background: rgba(255,255,255,0.05); border-color: var(--v-bd); color: var(--v-ink); font-weight: 600; }
+#toolbar .btn.menu-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.18); box-shadow: none; }
+/* Destructive: invisible until hovered, so it can't be mistaken for a primary. */
+#toolbar .btn.danger { background: transparent; border-color: transparent; color: #e28b8b; box-shadow: none; }
+#toolbar .btn.danger:hover { background: rgba(210,70,70,0.16); border-color: transparent; color: #ffb6b6; }
+/* View tabs → a single segmented control. */
+#toolbar .view-tabs { background: rgba(255,255,255,0.05); border: 1px solid var(--v-bd); border-radius: 10px; padding: 3px; gap: 2px; }
+#toolbar .view-tab {
+  background: transparent; border: 1px solid transparent; color: var(--v-ink-dim);
+  font-size: 13px; font-weight: 600; padding: 6px 13px; border-radius: var(--v-r-sm); min-height: 34px;
+}
+#toolbar .view-tab:hover { background: rgba(255,255,255,0.06); color: var(--v-ink); }
+#toolbar .view-tab.active {
+  background: linear-gradient(135deg, var(--v-accent), var(--v-accent-2));
+  border-color: transparent; color: #fff; font-weight: 700; box-shadow: 0 2px 8px rgba(47,124,246,0.3);
+}
+
 /* ---- Filter panel — cosmic glass ---- */
 #filter-panel {
   background: rgba(7,8,26,0.94);
@@ -3958,10 +4016,10 @@ input[type="color"]:focus-visible {
     <!-- ── Group 4: Organise (Tags + Row slider) ── -->
     <div class="tb-group tb-secondary">
       <span class="tb-group-label">◈ Tags</span>
-      <button class="btn" onclick="UI.catEditor()"         title="Manage continuity tags — rename, recolour, add and remove event categories">🏷 Categories</button>
-      <button class="btn" onclick="UI.affiliationEditor()" title="Manage organizations and groups for character dossiers">🏢 Organizations</button>
+      <button class="btn" onclick="UI.catEditor()"         title="Manage continuity tags — rename, recolour, add and remove event categories">Categories</button>
+      <button class="btn" onclick="UI.affiliationEditor()" title="Manage organizations and groups for character dossiers">Organizations</button>
       <label style="font-size:11px;color:rgba(0,210,255,0.55);white-space:nowrap;display:inline-flex;align-items:center;gap:6px;margin-left:6px;" title="Adjust the height of each universe track row">
-        ↕ Row
+        Row
         <input type="range" id="track-h-slider" min="60" max="200" step="10" value="100" aria-label="Adjust universe row height"
           style="width:68px;cursor:pointer;accent-color:#00d4ff;"
           oninput="TRACK_H=+this.value;document.getElementById('track-h-val').textContent=this.value;clampPanY();render()">
@@ -3974,16 +4032,16 @@ input[type="color"]:focus-visible {
     <!-- ── Group 5: Navigate / History (now includes Keys + Help) ── -->
     <div class="tb-group tb-secondary">
       <span class="tb-group-label">◎ Navigate</span>
-      <button class="btn" onclick="goToToday()"      title="Jump to today's date on the timeline (preserves zoom level)">⏱ Today</button>
-      <button class="btn" onclick="resetView()"      title="Reset pan and zoom to fit the full chronicle — nothing is deleted">⌂ Reset</button>
-      <button class="btn" id="undo-btn" onclick="History.undo()" title="Undo last action  (Ctrl+Z)" style="opacity:0.4" disabled>↩ Undo</button>
-      <button class="btn" id="redo-btn" onclick="History.redo()" title="Redo last undone action  (Ctrl+Y / Ctrl+Shift+Z)" style="opacity:0.4" disabled>↪ Redo</button>
-      <button class="btn" onclick="UI.toggleKbd()"   title="Keyboard shortcuts reference  (?)">⌨ Keys</button>
-      <button class="btn" onclick="UI.help()"        title="Open the full codex help guide — navigation, events, backups, connections">✦ Help</button>
-      <button class="btn" id="reading-toggle-btn" onclick="toggleReadingMode()" title="Toggle Reading Mode — soft warm parchment palette for long sessions">📖 Read</button>
-      <button class="btn" id="fit-btn"   onclick="UI.fitToData()"   title="Fit all events to view (0)">⛶ Fit</button>
-      <button class="btn" id="jump-btn"  onclick="UI.jumpToYear()"  title="Jump to a specific year">⇥ Jump</button>
-      <button class="btn" id="share-btn" onclick="UI.shareView()"   title="Copy a link that restores this view (camera position) on THIS device — it does not share your data. To send your timeline, use Save HTML or Export.">⇪ Share view</button>
+      <button class="btn" onclick="goToToday()"      title="Jump to today's date on the timeline (preserves zoom level)">Today</button>
+      <button class="btn" onclick="resetView()"      title="Reset pan and zoom to fit the full chronicle — nothing is deleted">Reset</button>
+      <button class="btn" id="undo-btn" onclick="History.undo()" title="Undo last action  (Ctrl+Z)" style="opacity:0.4" disabled>Undo</button>
+      <button class="btn" id="redo-btn" onclick="History.redo()" title="Redo last undone action  (Ctrl+Y / Ctrl+Shift+Z)" style="opacity:0.4" disabled>Redo</button>
+      <button class="btn" onclick="UI.toggleKbd()"   title="Keyboard shortcuts reference  (?)">Keys</button>
+      <button class="btn" onclick="UI.help()"        title="Open the full codex help guide — navigation, events, backups, connections">Help</button>
+      <button class="btn" id="reading-toggle-btn" onclick="toggleReadingMode()" title="Toggle Reading Mode — soft warm parchment palette for long sessions">Read</button>
+      <button class="btn" id="fit-btn"   onclick="UI.fitToData()"   title="Fit all events to view (0)">Fit</button>
+      <button class="btn" id="jump-btn"  onclick="UI.jumpToYear()"  title="Jump to a specific year">Jump</button>
+      <button class="btn" id="share-btn" onclick="UI.shareView()"   title="Copy a link that restores this view (camera position) on THIS device — it does not share your data. To send your timeline, use Save HTML or Export.">Share view</button>
     </div>
 
     <div class="sep tb-secondary"></div>
@@ -3991,17 +4049,17 @@ input[type="color"]:focus-visible {
     <!-- ── Group 6: Archive / Data ── -->
     <div class="tb-group tb-secondary">
       <span class="tb-group-label">⬡ Data</span>
-      <button class="btn accent" onclick="Store.saveHTML()"    title="Export your entire universe as a self-contained HTML file — open it anywhere offline">💾 Save HTML</button>
-      <button class="btn"        onclick="Store.saveJSON()"    title="Export a lightweight JSON backup of all timeline data">↓ JSON</button>
-      <button class="btn"        onclick="Store.importClick()" title="Load a previously saved HTML or JSON timeline archive">↑ Load</button>
-      <button class="btn danger" onclick="Store.blankTimeline()" title="Clear all universes, events, characters, and connections — a JSON backup is offered first">⚠ Blank</button>
+      <button class="btn accent" onclick="Store.saveHTML()"    title="Export your entire universe as a self-contained HTML file — open it anywhere offline">Save HTML</button>
+      <button class="btn"        onclick="Store.saveJSON()"    title="Export a lightweight JSON backup of all timeline data">JSON</button>
+      <button class="btn"        onclick="Store.importClick()" title="Load a previously saved HTML or JSON timeline archive">Load</button>
+      <button class="btn danger" onclick="Store.blankTimeline()" title="Clear all universes, events, characters, and connections — a JSON backup is offered first">Blank</button>
       <!-- Tools (Stats / Story / Continuity Tour / Range) merged inline after Archive -->
-      <button class="btn" onclick="UI.toggleStats()"    title="Toggle the live stats overlay panel  (S)"    id="stats-btn">📊 Stats</button>
-      <button class="btn" id="story-line-btn" onclick="toggleStoryLine()" title="Reveal a connected story path through all chronological events">🔗 Story</button>
-      <button class="btn" onclick="ContinuityTour.start()" title="Start a read-only Continuity Tour through the timeline">🎬 Continuity Tour</button>
+      <button class="btn" onclick="UI.toggleStats()"    title="Toggle the live stats overlay panel  (S)"    id="stats-btn">Stats</button>
+      <button class="btn" id="story-line-btn" onclick="toggleStoryLine()" title="Reveal a connected story path through all chronological events">Story</button>
+      <button class="btn" onclick="ContinuityTour.start()" title="Start a read-only Continuity Tour through the timeline">Continuity Tour</button>
       <!-- B-1: Chronicle Tour (gentle chronological playback, ported from Biography). -->
-      <button class="btn" onclick="MemoryTour.start()" title="Start a read-only guided Chronicle Tour through your events one moment at a time">🎞 Chronicle Tour</button>
-      <button class="btn" onclick="openRangeConfig()"   title="Configure the visible year range and epoch of the timeline">📅 Range</button>
+      <button class="btn" onclick="MemoryTour.start()" title="Start a read-only guided Chronicle Tour through your events one moment at a time">Chronicle Tour</button>
+      <button class="btn" onclick="openRangeConfig()"   title="Configure the visible year range and epoch of the timeline">Range</button>
     </div>
     <input type="file" id="file-in" accept=".html,.json" onchange="Store.importFile(event)" style="display:none" aria-label="Load universe timeline file">
 
@@ -6174,7 +6232,7 @@ body.reading-mode #reading-toggle-btn {
     document.body.classList.toggle('reading-mode', !!on);
     var btn = document.getElementById('reading-toggle-btn');
     if (btn){
-      btn.textContent = on ? '🌌 Cosmos' : '📖 Read';
+      btn.textContent = on ? 'Cosmos' : 'Read';
       btn.setAttribute('aria-pressed', on ? 'true' : 'false');
       btn.title = on
         ? 'Switch back to the default cosmic dark palette'
