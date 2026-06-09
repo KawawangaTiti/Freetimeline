@@ -1178,12 +1178,22 @@ function render() {
   const W = c.width, H = c.height;
   g.clearRect(0, 0, W, H);
 
-  // --- background ---
-  g.fillStyle = '#f8f9fa';
+  // --- background: warm toned off-white (parchment) with a subtle gradient +
+  //     vignette for cinematic depth — light, just a touch darker than white. ---
+  g.fillStyle = '#ece4d6';
   g.fillRect(0, 0, W, H);
-  g.fillStyle = '#ffffff';
-  if (isVerticalTimelineLayout()) g.fillRect(RULER_H, LEFT_W, W - RULER_H, H - LEFT_W);
-  else g.fillRect(LEFT_W, 0, W - LEFT_W, H);
+  {
+    const vert = isVerticalTimelineLayout();
+    const px = vert ? RULER_H : LEFT_W, py = vert ? LEFT_W : 0;
+    const pw = W - px, ph = H - py;
+    const pg = vert ? g.createLinearGradient(px, 0, W, 0) : g.createLinearGradient(0, py, 0, H);
+    pg.addColorStop(0, '#f6f1e7'); pg.addColorStop(0.55, '#efe8da'); pg.addColorStop(1, '#e7decd');
+    g.fillStyle = pg; g.fillRect(px, py, pw, ph);
+    const vg = g.createRadialGradient(px + pw * 0.5, py + ph * 0.42, Math.min(pw, ph) * 0.15,
+                                      px + pw * 0.5, py + ph * 0.5, Math.max(pw, ph) * 0.72);
+    vg.addColorStop(0, 'rgba(90,60,25,0)'); vg.addColorStop(1, 'rgba(90,60,25,0.10)');
+    g.fillStyle = vg; g.fillRect(px, py, pw, ph);
+  }
 
   // --- clip to content zone (excludes sticky header panels) ---
   g.save();
@@ -1735,13 +1745,12 @@ function drawTracks(c, g) {
     const isDimmed = !!u.dimmed;
     if (isDimmed) g.save(), g.globalAlpha = 0.25;
 
-    // Track background — warm parchment band
-    const trackGrad = g.createLinearGradient(LEFT_W, top, LEFT_W, bot);
-    trackGrad.addColorStop(0, vi % 2 === 0 ? 'rgba(120,80,30,0.012)' : 'rgba(120,80,30,0.024)');
-    trackGrad.addColorStop(0.5, vi % 2 === 0 ? 'rgba(120,80,30,0.022)' : 'rgba(120,80,30,0.038)');
-    trackGrad.addColorStop(1, vi % 2 === 0 ? 'rgba(120,80,30,0.012)' : 'rgba(120,80,30,0.024)');
-    g.fillStyle = trackGrad;
-    g.fillRect(LEFT_W, top, c.width - LEFT_W, TRACK_H);
+    // Track background — alternating warm-white lane panels on the toned
+    // parchment canvas, giving the lanes gentle structure (V-light-cinematic).
+    if (vi % 2 === 1) {
+      g.fillStyle = 'rgba(255,250,240,0.5)';
+      g.fillRect(LEFT_W, top, c.width - LEFT_W, TRACK_H);
+    }
 
     // Left panel background — warm tinted with gradient
     const panelGrad = g.createLinearGradient(0, top, LEFT_W, top);
