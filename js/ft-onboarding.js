@@ -27,11 +27,23 @@
   var STYLE_ID = 'ft-onboarding-style';
   var ROOT_ID = 'ft-onboarding-root';
 
+  /* SUP-04: persist the "seen" flag with graceful degradation. localStorage is
+     the primary store; when it is unavailable (Safari private mode, blocked
+     storage) the dismiss never stuck and the card re-showed on EVERY reload.
+     Fall back to sessionStorage (survives reloads within the tab session) and
+     an in-memory flag (covers a single page load when even that is blocked).
+     Cross-reload suppression with ALL storage blocked is impossible — accepted. */
+  var memFlags = {};
   function getFlag(key) {
-    try { return localStorage.getItem(key); } catch (e) { return null; }
+    if (memFlags[key]) return '1';
+    try { var v = localStorage.getItem(key); if (v != null) return v; } catch (e) {}
+    try { var sv = sessionStorage.getItem(key); if (sv != null) return sv; } catch (e) {}
+    return null;
   }
   function setFlag(key, val) {
+    memFlags[key] = (val === '1');
     try { localStorage.setItem(key, val); } catch (e) {}
+    try { sessionStorage.setItem(key, val); } catch (e) {}
   }
 
   function injectStyle() {
@@ -133,8 +145,27 @@
       var t = e.target.closest('[data-ftob-action], .ftob-close');
       if (!t) return;
       var action = t.getAttribute('data-ftob-action');
-      if (action === 'primary' && typeof opts.actionCallback === 'function') {
-        try { opts.actionCallback(); } catch (err) { /* swallow */ }
+      if (action === 'primary') {
+        /* SUP-07: don't silently swallow a failed primary action and then
+           dismiss permanently — that left the user with no event, no card and
+           no error. Only dismiss for good if the action actually ran; otherwise
+           surface it and keep the flag unset so the card returns next load. */
+        var ok = false;
+        if (typeof opts.actionCallback === 'function') {
+          try { opts.actionCallback(); ok = true; }
+          catch (err) {
+            if (window.console && console.warn) console.warn('ft-onboarding: primary action failed', err);
+          }
+        }
+        if (ok) {
+          dismiss(root, opts.flagKey);
+        } else {
+          if (typeof window.notify === 'function') {
+            try { window.notify('Could not add an event automatically — use the + button to add one.', 'error'); } catch (_) {}
+          }
+          if (root && root.parentNode) root.parentNode.removeChild(root); // hide now, leave flag unset so it returns next load
+        }
+        return;
       }
       dismiss(root, opts.flagKey);
     });
@@ -151,6 +182,10 @@
     /* Force-show. Used by a future "Show welcome again" debug hook. */
     show: show,
     /* Reset for testing. */
-    reset: function (flagKey) { try { localStorage.removeItem(flagKey); } catch (e) {} }
+    reset: function (flagKey) {
+      delete memFlags[flagKey];
+      try { localStorage.removeItem(flagKey); } catch (e) {}
+      try { sessionStorage.removeItem(flagKey); } catch (e) {}
+    }
   };
 })();
