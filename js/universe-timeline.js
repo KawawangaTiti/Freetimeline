@@ -100,6 +100,13 @@ let uniDrag = { on: false, id: null, sy: 0, moved: false };
 let hits   = [];   // hit targets rebuilt every render
 let _lblSuppressedIds = new Set(); // 2.4.D: label ids hidden by de-collision sweep
 
+// V-life: canvas hover emphasis (event-driven; redraws only when the target
+// changes or while the short ease-in/out runs — no idle animation loop).
+let _hoverEventId  = null; // event currently drawn with hover emphasis
+let _hoverTargetId = null; // event the cursor is over right now (goal)
+let _hoverAnim     = 0;    // 0..1 eased emphasis for _hoverEventId
+let _hoverRAF      = 0;    // rAF handle for the transition
+
 // Modal stack — each entry describes what to show
 let MS = [];
 /* === TIMELINE ENGINE STATE END === */
@@ -2534,6 +2541,20 @@ function drawSingleEvent(c, g, ev) {
 
     hits.push({ type: 'event', id: ev.id, x: sx, y: sy, r: EV_R + 5 });
 
+    // V-life: hover emphasis (eased 0..1). Drawn behind the node.
+    const _hov = (ev.id === _hoverEventId) ? _hoverAnim : 0;
+    if (_hov > 0.01) {
+      g.save();
+      g.strokeStyle = u.color;
+      g.globalAlpha = _hov * 0.55; g.lineWidth = 1.5; g.setLineDash([4, 4]);
+      g.beginPath();
+      if (isVerticalTimelineLayout()) { g.moveTo(RULER_H, sy); g.lineTo(sx - EV_R, sy); }
+      else { g.moveTo(sx, RULER_H); g.lineTo(sx, sy - EV_R); }
+      g.stroke();
+      g.setLineDash([]);
+      g.restore();
+    }
+
     // Outer glow aura — soft halo emanating from the artifact dot
     g.beginPath(); g.arc(sx, sy, EV_R + 8, 0, Math.PI * 2);
     const auraGrad = g.createRadialGradient(sx, sy, EV_R - 1, sx, sy, EV_R + 8);
@@ -2560,6 +2581,21 @@ function drawSingleEvent(c, g, ev) {
     // Inner highlight gleam
     g.beginPath(); g.arc(sx - 3, sy - 3, EV_R * 0.28, 0, Math.PI * 2);
     g.fillStyle = 'rgba(255,255,255,0.5)'; g.fill();
+
+    // V-life: expanding hover ring + soft halo around the node
+    if (_hov > 0.01) {
+      g.save();
+      const ringR = EV_R + 5 + _hov * 7;
+      const halo = g.createRadialGradient(sx, sy, ringR, sx, sy, ringR + 11);
+      halo.addColorStop(0, u.color + '33'); halo.addColorStop(1, u.color + '00');
+      g.globalAlpha = _hov;
+      g.beginPath(); g.arc(sx, sy, ringR + 11, 0, Math.PI * 2);
+      g.fillStyle = halo; g.fill();
+      g.globalAlpha = _hov * 0.6; g.lineWidth = 2;
+      g.strokeStyle = u.color;
+      g.beginPath(); g.arc(sx, sy, ringR, 0, Math.PI * 2); g.stroke();
+      g.restore();
+    }
 
     if (ev.category && CATEGORIES[ev.category]) {
       g.save();
@@ -2919,6 +2955,7 @@ function initCanvas() {
       // Mouse: only the primary button starts a gesture. Touch/pen: always.
       if (e.pointerType === 'mouse' && e.button !== 0) return;
       cancelMomentum();
+      if (_hoverTargetId) setHoverEvent(null);   // V-life: don't let the highlight stick through a drag
       const r = c.getBoundingClientRect();
       pointers.set(e.pointerId, {
         cx: e.clientX - r.left, cy: e.clientY - r.top,
@@ -3145,10 +3182,37 @@ function initCanvas() {
   });
 }
 
+/* ---- V-life: hover emphasis driver ---- */
+function setHoverEvent(id) {
+  if (id === _hoverTargetId) return;
+  _hoverTargetId = id;
+  if (id) _hoverEventId = id;          // show the new target immediately, grow in
+  startHoverAnim();
+}
+function startHoverAnim() {
+  if (_hoverRAF) return;               // a transition is already running
+  const step = () => {
+    _hoverRAF = 0;
+    const goal = _hoverTargetId ? 1 : 0;
+    const d = goal - _hoverAnim;
+    if (Math.abs(d) < 0.04) {
+      _hoverAnim = goal;
+      if (goal === 0) _hoverEventId = null;
+      render();
+      return;                          // settled — no further frames (no idle loop)
+    }
+    _hoverAnim += d * 0.28;            // ease toward the goal (~150ms)
+    render();
+    _hoverRAF = requestAnimationFrame(step);
+  };
+  _hoverRAF = requestAnimationFrame(step);
+}
+
 /* ---- Tooltip ---- */
 function updateTip(mx, my) {
   const tip = document.getElementById('tip');
   let found = false;
+  let hoverId = null;
   for (const t of [...hits].reverse()) {
     if (t.type === 'lbl_cluster') {
       if (!isInPlotArea(mx, my)) continue;
@@ -3189,6 +3253,7 @@ function updateTip(mx, my) {
           tip.innerHTML     = '<strong>' + esc(ev.title) + '</strong><br>' +
             (ev.date || '?') + (u ? ' &middot; <span style="color:' + u.color + '">' + esc(u.name) + '</span>' : '');
           CV().style.cursor = 'pointer';
+          hoverId = ev.id;
           found = true; break;
         }
       }
@@ -3198,6 +3263,7 @@ function updateTip(mx, my) {
     tip.style.display = 'none';
     if (!drag.on) CV().style.cursor = 'grab';
   }
+  setHoverEvent(hoverId);   // null clears (over a cluster / empty space)
 }
 
 /* ---- Click handler ---- */
