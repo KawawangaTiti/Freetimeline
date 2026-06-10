@@ -141,22 +141,29 @@ body.mm-collapsed #minimap-show { display: inline-flex; }
   display: none;
   position: absolute; left: 8px; right: 8px; bottom: 8px;
   padding: 8px 10px; gap: 8px; align-items: center;
-  background: rgba(255, 248, 235, 0.96);
-  border: 1px solid #d4c8b0; border-radius: 8px;
+  background: rgba(255, 248, 235, 0.97);
+  border: 1px solid #d4c8b0; border-radius: 12px;
+  box-shadow: 0 8px 26px rgba(60,30,10,0.28);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   z-index: 5;
 }
-#minimap-jump label { color: #8b6e4e; font-size: 11px; white-space: nowrap; }
+#minimap-jump label { color: #8b6e4e; font-size: 11px; font-weight: 600; white-space: nowrap; }
 #minimap-jump input {
-  flex: 1; min-width: 0; padding: 8px 10px; min-height: 44px;
+  flex: 1; min-width: 0; padding: 8px 12px; min-height: 44px;
   background: #fff; color: #2d1f12;
-  border: 1px solid #d4c8b0; border-radius: 6px;
+  border: 1px solid #d4c8b0; border-radius: 9px;
   font: inherit; font-size: 16px; /* 44px target + 16px stops iOS zoom-on-focus (MOB-10) */
+  transition: border-color 0.15s;
 }
+#minimap-jump input:focus { outline: none; border-color: var(--v-accent, #c4956a); }
 #minimap-jump button {
-  padding: 8px 14px; min-height: 44px; background: #b07942; color: #fff;
-  border: 1px solid #c48a52; border-radius: 6px; cursor: pointer;
-  font: inherit; font-size: 16px;
+  padding: 8px 18px; min-height: 44px;
+  background: linear-gradient(135deg, var(--v-accent, #c4956a), var(--v-accent-2, #d8ad7e));
+  color: #fff; border: none; border-radius: 9px; cursor: pointer;
+  font: inherit; font-size: 16px; font-weight: 700; letter-spacing: 0.3px;
+  box-shadow: 0 2px 12px rgba(60,30,10,0.25);
 }
+#minimap-jump button:active { transform: scale(0.97); }
 @media (max-width: 599px) {
   #minimap { display: none; }
   #minimap-jump { display: flex; }

@@ -151,22 +151,29 @@ body.mm-collapsed #minimap-show { display: inline-flex; }
   display: none;
   position: absolute; left: 8px; right: 8px; bottom: 8px;
   padding: 8px 10px; gap: 8px; align-items: center;
-  background: rgba(10, 12, 24, 0.88);
-  border: 1px solid #25304a; border-radius: 8px;
+  background: rgba(10, 12, 24, 0.92);
+  border: 1px solid var(--v-bd, #25304a); border-radius: 12px;
+  box-shadow: 0 8px 26px rgba(0,0,0,0.45);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   z-index: 5;
 }
-#minimap-jump label { color: #aab; font-size: 11px; white-space: nowrap; }
+#minimap-jump label { color: var(--v-ink-dim, #aab); font-size: 11px; font-weight: 600; white-space: nowrap; }
 #minimap-jump input {
-  flex: 1; min-width: 0; padding: 8px 10px; min-height: 44px;
-  background: #0a0c18; color: #cde;
-  border: 1px solid #25304a; border-radius: 6px;
+  flex: 1; min-width: 0; padding: 8px 12px; min-height: 44px;
+  background: rgba(0,0,0,0.35); color: var(--v-ink, #cde);
+  border: 1px solid var(--v-bd, #25304a); border-radius: 9px;
   font: inherit; font-size: 16px; /* 44px target + 16px stops iOS zoom-on-focus (MOB-10) */
+  transition: border-color 0.15s;
 }
+#minimap-jump input:focus { outline: none; border-color: var(--v-accent, #3d82ff); }
 #minimap-jump button {
-  padding: 8px 14px; min-height: 44px; background: #1d2c4a; color: #cde;
-  border: 1px solid #2c3d5e; border-radius: 6px; cursor: pointer;
-  font: inherit; font-size: 16px;
+  padding: 8px 18px; min-height: 44px;
+  background: linear-gradient(135deg, var(--v-accent, #3d82ff), var(--v-accent-2, #6aa6ff));
+  color: #fff; border: none; border-radius: 9px; cursor: pointer;
+  font: inherit; font-size: 16px; font-weight: 700; letter-spacing: 0.3px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.30);
 }
+#minimap-jump button:active { transform: scale(0.97); }
 @media (max-width: 599px) {
   #minimap { display: none; }
   #minimap-jump { display: flex; }
