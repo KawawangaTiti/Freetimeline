@@ -1337,8 +1337,8 @@ body { background: #07081a; }
    noise (drop the per-group bordered boxes + glowing labels).
    ===================================================== */
 :root {
-  --v-accent:   #3d82ff;
-  --v-accent-2: #6aa6ff;
+  --v-accent:   #4a8fde;   /* brand blue (matches landing portal + logo) */
+  --v-accent-2: #40c8ff;   /* brand cyan — blue→cyan gradient, on-brand vibrancy */
   --v-bd:       rgba(255,255,255,0.10);
   --v-ink:      #eaf0ff;
   --v-ink-dim:  #b6c0e0;   /* brighter than before — the dim ghost read as "tired"/washed */
@@ -6149,11 +6149,19 @@ body.reading-mode #reading-toggle-btn {
     if (e.key !== 'Escape') return;
     var bg = document.getElementById('modal-bg');
     if (bg && isModalOpen(bg)) {
-      try { if (window.M && typeof window.M.close === 'function') { window.M.close(); return; } } catch(_){}
+      /* FIX (stuck-modal bug): M is a `const` in the engine's script scope, NOT a
+         window property — `window.M` was always undefined, so this safety net never
+         delegated to the real hardened close. It fell through to the crude fallback,
+         which set inline display:none (which then beats the .open class on the NEXT
+         open → modal invisible, "no button works, must hard-refresh") and left
+         body.modal-open stuck. Reference the bare const instead, and make the
+         fallback non-destructive (clear inline display + drop modal-open). */
+      try { if (typeof M !== 'undefined' && M && typeof M.close === 'function') { M.close(); return; } } catch(_){}
       try { if (window.UI && typeof window.UI.closeModal === 'function') { window.UI.closeModal(); return; } } catch(_){}
       bg.classList.remove('open');
-      bg.style.display = 'none';
+      bg.style.display = '';
       bg.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
     }
   });
 
