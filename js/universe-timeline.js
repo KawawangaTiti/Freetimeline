@@ -7558,6 +7558,8 @@ const ConnectionMap = {
       + '.cm-sel-ring{animation:cmSelPulse 2s ease-in-out infinite}'
       + '@keyframes cmSelPulse{0%,100%{opacity:.9;transform:scale(1);transform-origin:center}50%{opacity:.55;transform:scale(1.06);transform-origin:center}}'
       + '.cm-edge{filter:url(#edgeGlow)}'
+      + '.cm-node{outline:none}'
+      + '.cm-node:focus-visible{stroke:#ffd700;stroke-width:3.5}'
       + '</style>';
     s += '</defs>';
     /* Background rect uses radial gradient for subtle center warmth */
@@ -7622,9 +7624,10 @@ const ConnectionMap = {
         /* Pulsing selected ring */
         s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="' + (nr + 11) + '" fill="none" stroke="#ffd27a" stroke-width="2.5" stroke-dasharray="5,3" opacity="0.92" class="cm-sel-ring" style="pointer-events:none;transform-origin:' + p.x + 'px ' + p.y + 'px"/>';
       }
-      /* Main node disc */
+      /* Main node disc \u2014 keyboard-accessible (tab + Enter/Space opens the profile) */
+      const _nodeLbl = esc(ch.name) + (evCnt ? ', ' + evCnt + ' event' + (evCnt !== 1 ? 's' : '') : '') + '. Open profile.';
       s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="' + nr + '" fill="' + col + 'dd" stroke="rgba(255,255,255,0.72)" stroke-width="1.6"'
-        + ' class="cm-node" data-cid="' + ch.id + '" style="cursor:pointer">'
+        + ' class="cm-node" data-cid="' + ch.id + '" tabindex="0" role="button" aria-label="' + _nodeLbl + '" style="cursor:pointer">'
         + '<title>' + esc(ch.name) + (evCnt ? ' \u2014 ' + evCnt + ' event' + (evCnt !== 1 ? 's' : '') : '') + '</title></circle>';
       if (ch.photo) {
         s += '<defs><clipPath id="ccp-' + ch.id + '"><circle cx="' + p.x + '" cy="' + p.y + '" r="' + (nr - 1.5) + '"/></clipPath></defs>';
@@ -7668,14 +7671,14 @@ const ConnectionMap = {
       + '<span style="font-size:10px;color:#6070a0;font-weight:700;flex-shrink:0">UNIVERSE:</span>'
       + '<div class="cm-uni-filter">' + uniBtns + '</div>'
       + '<div class="cm-sep"></div>'
-      + '<input class="map-search" id="cm-search" placeholder="\uD83D\uDD0D Search\u2026" oninput="ConnectionMap._search(this.value)" style="width:130px">'
+      + '<input class="map-search" id="cm-search" placeholder="\uD83D\uDD0D Search\u2026" aria-label="Search characters on the map" oninput="ConnectionMap._search(this.value)" style="width:130px">'
       + '<div class="cm-sep"></div>'
-      + '<button class="mz-btn" onclick="ConnectionMap._zoom(1.2)" title="Zoom In">+</button>'
-      + '<span id="cm-pct">100%</span>'
-      + '<button class="mz-btn" onclick="ConnectionMap._zoom(0.83)" title="Zoom Out">\u2212</button>'
-      + '<button class="mz-btn" onclick="ConnectionMap._fitAll()" title="Fit All" style="font-size:13px">\u26F6</button>'
-      + '<button class="mz-btn" onclick="ConnectionMap._resetView()" title="Reset Map" style="font-size:13px">\u2302</button>'
-      + '<button class="mz-btn" id="cm-legend-btn" onclick="ConnectionMap._toggleLegend()" title="Legend" style="font-size:13px">\u24C1</button>'
+      + '<button class="mz-btn" onclick="ConnectionMap._zoom(1.2)" title="Zoom In" aria-label="Zoom in">+</button>'
+      + '<span id="cm-pct" aria-hidden="true">100%</span>'
+      + '<button class="mz-btn" onclick="ConnectionMap._zoom(0.83)" title="Zoom Out" aria-label="Zoom out">\u2212</button>'
+      + '<button class="mz-btn" onclick="ConnectionMap._fitAll()" title="Fit All" aria-label="Fit all to view" style="font-size:13px">\u26F6</button>'
+      + '<button class="mz-btn" onclick="ConnectionMap._resetView()" title="Reset Map" aria-label="Reset map view" style="font-size:13px">\u2302</button>'
+      + '<button class="mz-btn" id="cm-legend-btn" onclick="ConnectionMap._toggleLegend()" title="Legend" aria-label="Toggle legend" style="font-size:13px">\u24C1</button>'
       + '<span class="cm-hint">Drag to pan \u00B7 Scroll to zoom \u00B7 Click node = profile \u00B7 Click teal line = shared scenes</span>'
       + '</div>'
       /* Map area — fills remaining height */
@@ -7826,6 +7829,14 @@ const ConnectionMap = {
     wrap.querySelectorAll('.cm-node').forEach(el => {
       el.addEventListener('click', () => {
         const cid = el.dataset.cid; if (cid) _openCharDetail(cid);
+      });
+
+      /* Keyboard parity: Enter / Space opens the character profile */
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+          e.preventDefault();
+          const cid = el.dataset.cid; if (cid) _openCharDetail(cid);
+        }
       });
 
       el.addEventListener('mouseenter', () => {

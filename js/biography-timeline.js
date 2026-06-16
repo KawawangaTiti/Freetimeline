@@ -6859,6 +6859,8 @@ const ConnectionMap = {
       + '.cm-sel-ring{animation:cmSelPulse 2s ease-in-out infinite}'
       + '@keyframes cmSelPulse{0%,100%{opacity:.9}50%{opacity:.5}}'
       + '.cm-edge{filter:url(#edgeGlow)}'
+      + '.cm-node{outline:none}'
+      + '.cm-node:focus-visible{stroke:#c77c21;stroke-width:3.5}'
       + '</style>';
     s += '</defs>';
     s += '<rect width="' + W + '" height="' + H + '" fill="url(#cmBg)" rx="10"/>';
@@ -6917,8 +6919,9 @@ const ConnectionMap = {
         s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="' + (nr + 11) + '" fill="none" stroke="#c77c21" stroke-width="2.5" stroke-dasharray="5,3" opacity="0.95" class="cm-sel-ring" style="pointer-events:none"/>';
       }
       /* Main node disc — warm cream ring */
+      const _nodeLbl = esc(ch.name) + (evCnt ? ', ' + evCnt + ' event' + (evCnt !== 1 ? 's' : '') : '') + '. Open profile.';
       s += '<circle cx="' + p.x + '" cy="' + p.y + '" r="' + nr + '" fill="' + col + 'e6" stroke="#fff8e4" stroke-width="2.2"'
-        + ' class="cm-node" data-cid="' + ch.id + '" style="cursor:pointer;filter:drop-shadow(0 2px 4px rgba(120,86,40,0.22))">'
+        + ' class="cm-node" data-cid="' + ch.id + '" tabindex="0" role="button" aria-label="' + _nodeLbl + '" style="cursor:pointer;filter:drop-shadow(0 2px 4px rgba(120,86,40,0.22))">'
         + '<title>' + esc(ch.name) + (evCnt ? ' \u2014 ' + evCnt + ' event' + (evCnt !== 1 ? 's' : '') : '') + '</title></circle>';
       if (ch.photo) {
         s += '<defs><clipPath id="ccp-' + ch.id + '"><circle cx="' + p.x + '" cy="' + p.y + '" r="' + (nr - 2) + '"/></clipPath></defs>';
@@ -6958,18 +6961,18 @@ const ConnectionMap = {
 
     container.innerHTML =
       '<div class="rel-controls">'
-      + '<input class="map-search" id="cm-search" placeholder="\uD83D\uDD0D Search people\u2026" oninput="ConnectionMap._search(this.value)">'
+      + '<input class="map-search" id="cm-search" placeholder="\uD83D\uDD0D Search people\u2026" aria-label="Search people on the map" oninput="ConnectionMap._search(this.value)">'
       + '<div class="rel-ctrl-filters">'
       + '<span style="font-size:11px;color:#6080b0;flex-shrink:0">Filter:</span>'
       + uniBtns
       + '</div>'
       + '<div class="rel-ctrl-btns">'
-      + '<button class="mz-btn" onclick="ConnectionMap._zoom(1.2)" title="Zoom In">+</button>'
-      + '<span id="cm-pct">100%</span>'
-      + '<button class="mz-btn" onclick="ConnectionMap._zoom(0.83)" title="Zoom Out">\u2212</button>'
-      + '<button class="mz-btn" onclick="ConnectionMap._fitAll()" title="Fit All" style="font-size:13px">\u26F6</button>'
-      + '<button class="mz-btn" onclick="ConnectionMap._resetView()" title="Reset Map">\u2302</button>'
-      + '<button class="mz-btn" id="cm-legend-btn" onclick="ConnectionMap._toggleLegend()" title="Legend" style="font-weight:700;font-size:12px">?</button>'
+      + '<button class="mz-btn" onclick="ConnectionMap._zoom(1.2)" title="Zoom In" aria-label="Zoom in">+</button>'
+      + '<span id="cm-pct" aria-hidden="true">100%</span>'
+      + '<button class="mz-btn" onclick="ConnectionMap._zoom(0.83)" title="Zoom Out" aria-label="Zoom out">\u2212</button>'
+      + '<button class="mz-btn" onclick="ConnectionMap._fitAll()" title="Fit All" aria-label="Fit all to view" style="font-size:13px">\u26F6</button>'
+      + '<button class="mz-btn" onclick="ConnectionMap._resetView()" title="Reset Map" aria-label="Reset map view">\u2302</button>'
+      + '<button class="mz-btn" id="cm-legend-btn" onclick="ConnectionMap._toggleLegend()" title="Legend" aria-label="Toggle legend" style="font-weight:700;font-size:12px">?</button>'
       + '</div>'
       + '</div>'
       + '<div class="rel-hint">Drag to pan \u00B7 Mouse wheel or +/\u2212 to zoom \u00B7 Click node to open profile \u00B7 Click line for shared events</div>'
@@ -7130,6 +7133,14 @@ const ConnectionMap = {
     wrap.querySelectorAll('.cm-node').forEach(el => {
       el.addEventListener('click', () => {
         const cid = el.dataset.cid; if (cid) _openCharDetail(cid);
+      });
+
+      /* Keyboard parity: Enter / Space opens the person's profile */
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+          e.preventDefault();
+          const cid = el.dataset.cid; if (cid) _openCharDetail(cid);
+        }
       });
 
       el.addEventListener('mouseenter', () => {
