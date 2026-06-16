@@ -7560,6 +7560,8 @@ const ConnectionMap = {
       + '.cm-edge{filter:url(#edgeGlow)}'
       + '.cm-node{outline:none}'
       + '.cm-node:focus-visible{stroke:#ffd700;stroke-width:3.5}'
+      + '.cm-edge{outline:none}'
+      + '.cm-edge:focus-visible{stroke:#ffd700;opacity:1}'
       + '</style>';
     s += '</defs>';
     /* Background rect uses radial gradient for subtle center warmth */
@@ -7602,9 +7604,12 @@ const ConnectionMap = {
           + ' class="cm-edge" data-type="counterpart" data-a="' + e.a + '" data-b="' + e.b + '" style="cursor:pointer"/>';
       } else {
         const thick = Math.min(1.4 + e.sharedEvs.length * 0.85, 6);
+        const _ea = (S.characters.find(c => c.id === e.a) || {}).name || 'a character';
+        const _eb = (S.characters.find(c => c.id === e.b) || {}).name || 'a character';
+        const _eLbl = esc(_ea) + ' and ' + esc(_eb) + ' share ' + e.sharedEvs.length + ' scene' + (e.sharedEvs.length !== 1 ? 's' : '') + '. View shared scenes.';
         s += '<path d="M' + pa.x + ',' + pa.y + ' Q' + mx2 + ',' + my2 + ' ' + pb.x + ',' + pb.y + '"'
           + ' stroke="#6fd3c8" stroke-width="' + thick + '" fill="none" opacity="0.48"'
-          + ' stroke-linecap="round"'
+          + ' stroke-linecap="round" tabindex="0" role="button" aria-label="' + _eLbl + '"'
           + ' class="cm-edge" data-type="shared" data-a="' + e.a + '" data-b="' + e.b
           + '" data-cnt="' + e.sharedEvs.length + '" data-evids="' + e.sharedEvs.join(',') + '" style="cursor:pointer"/>';
       }
@@ -7886,6 +7891,15 @@ const ConnectionMap = {
 
     /* --- Edge: click to open shared-scene panel --- */
     wrap.querySelectorAll('.cm-edge').forEach(el => {
+      /* Keyboard parity for shared edges: Enter/Space opens the shared-scenes
+         panel, anchored to the edge midpoint (the click handler reads clientX/Y). */
+      el.addEventListener('keydown', (e) => {
+        if (el.dataset.type === 'shared' && (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar')) {
+          e.preventDefault();
+          const r = el.getBoundingClientRect();
+          el.dispatchEvent(new MouseEvent('click', { clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, bubbles: true }));
+        }
+      });
       el.addEventListener('click', e => {
         if (el.dataset.type !== 'shared') return;
         const ca = S.characters.find(c => c.id === el.dataset.a);
