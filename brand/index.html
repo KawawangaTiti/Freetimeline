@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FreeTimeline — Brand Kit</title>
+<style>
+  :root{
+    --bg:#050611;--surface:#0d0f20;--border:rgba(255,255,255,0.08);
+    --text:#e4e8f5;--muted:#aab3cc;--dim:#8a93b0;--gold:#d4af37;
+    --uni:#4a8fde;--cyan:#40c8ff;--teal:#60e8d0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding:48px 24px 80px}
+  .wrap{max-width:1000px;margin:0 auto}
+  h1{font-size:1.6rem;font-weight:800;margin-bottom:6px}
+  .sub{color:var(--muted);font-size:0.95rem;margin-bottom:8px}
+  .note{color:var(--dim);font-size:0.85rem;margin-bottom:40px;padding:14px 16px;border:1px solid var(--border);border-radius:12px;background:var(--surface)}
+  .note b{color:var(--gold)}
+  h2{font-size:0.78rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--dim);margin:40px 0 16px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+  .card{border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--surface)}
+  .stage{display:flex;align-items:center;justify-content:center;padding:36px;min-height:180px}
+  .stage.dark{background:#050611}
+  .stage.light{background:#f4f6fc}
+  .stage.transp{background:
+    repeating-conic-gradient(#1a1d2e 0% 25%, #12141f 0% 50%) 50% / 22px 22px}
+  .stage img{max-width:100%;height:auto}
+  .cap{padding:12px 16px;border-top:1px solid var(--border);font-size:0.8rem;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+  .cap a{color:var(--cyan);text-decoration:none;font-weight:600}
+  .swatches{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+  .sw{border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  .sw .chip{height:64px}
+  .sw .lbl{padding:8px 12px;font-size:0.78rem;background:var(--surface)}
+  .sw .lbl b{display:block;color:var(--text)}
+  .sw .lbl span{color:var(--dim);font-family:monospace}
+  .type-demo{border:1px solid var(--border);border-radius:16px;padding:28px;background:var(--surface)}
+  .type-demo .free{font-size:3rem;font-weight:900;letter-spacing:-2px;background:linear-gradient(135deg,#fff,#c8d4ff 50%,#90b8ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .type-demo .time{font-size:3rem;font-weight:900;letter-spacing:-2px;background:linear-gradient(135deg,#6090ff,#40c8ff 60%,#60e8d0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>FreeTimeline — Brand Kit</h1>
+  <p class="sub">Logo isolado, lockups e tokens de marca para anúncios e materiais.</p>
+  <p class="note">
+    <b>Como exportar para JPG / PNG:</b> os logos são <b>SVG vetoriais</b> (escalam para qualquer tamanho sem perder qualidade).
+    Para um JPG/PNG rápido: clica com o botão direito numa imagem &rarr; <i>Abrir imagem em novo separador</i>, ou abre o ficheiro <code>.svg</code> da pasta <code>brand/</code> e usa <i>Exportar / Print &rarr; PDF</i>.
+    Para tamanho exato (ex.: 1080×1080 para Instagram), abre o <code>.svg</code> e ajusta <code>width</code>/<code>height</code>, ou importa no Figma/Canva/Illustrator.
+  </p>
+
+  <h2>1 · Símbolo (mark)</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="stage dark"><img src="logo-mark.svg" alt="" style="width:128px"></div>
+      <div class="cap"><span>App icon / favicon / avatar</span><a href="logo-mark.svg" download>SVG ↓</a></div>
+    </div>
+  </div>
+
+  <h2>2 · Lockup horizontal</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="stage transp"><img src="logo-horizontal-transparent.svg" alt="" style="width:380px"></div>
+      <div class="cap"><span>Fundo transparente</span><a href="logo-horizontal-transparent.svg" download>SVG ↓</a></div>
+    </div>
+    <div class="card">
+      <div class="stage dark"><img src="logo-horizontal-dark.svg" alt="" style="width:400px"></div>
+      <div class="cap"><span>Cartão escuro + tagline</span><a href="logo-horizontal-dark.svg" download>SVG ↓</a></div>
+    </div>
+  </div>
+
+  <h2>3 · Lockup empilhado (hero / quadrado)</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="stage dark"><img src="logo-stacked-dark.svg" alt="" style="width:420px"></div>
+      <div class="cap"><span>Posts / capas / anúncios</span><a href="logo-stacked-dark.svg" download>SVG ↓</a></div>
+    </div>
+  </div>
+
+  <h2>4 · Tipografia</h2>
+  <div class="type-demo">
+    <div class="free">Free</div>
+    <div class="time">Timeline</div>
+    <p style="color:var(--dim);margin-top:14px;font-size:0.85rem">
+      Fonte: <b style="color:var(--text)">system-ui</b> (-apple-system, Segoe UI, Arial) · pesos 800–900 · letter-spacing −2px.
+      Tagline em <b style="color:var(--gold)">dourado</b>, maiúsculas, letter-spacing largo.
+    </p>
+  </div>
+
+  <h2>5 · Cores da marca</h2>
+  <div class="swatches">
+    <div class="sw"><div class="chip" style="background:#050611"></div><div class="lbl"><b>Fundo</b><span>#050611</span></div></div>
+    <div class="sw"><div class="chip" style="background:#5a80ff"></div><div class="lbl"><b>Azul</b><span>#5a80ff</span></div></div>
+    <div class="sw"><div class="chip" style="background:#40c8ff"></div><div class="lbl"><b>Ciano</b><span>#40c8ff</span></div></div>
+    <div class="sw"><div class="chip" style="background:#60e8d0"></div><div class="lbl"><b>Teal</b><span>#60e8d0</span></div></div>
+    <div class="sw"><div class="chip" style="background:#d4af37"></div><div class="lbl"><b>Dourado</b><span>#d4af37</span></div></div>
+    <div class="sw"><div class="chip" style="background:#c08040"></div><div class="lbl"><b>Biography</b><span>#c08040</span></div></div>
+  </div>
+</div>
+</body>
+</html>

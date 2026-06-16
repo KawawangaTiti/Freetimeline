@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="FreeTimeline mark">
+  <defs>
+    <linearGradient id="ftStroke" x1="0" y1="0.2" x2="1" y2="0.8">
+      <stop offset="0%" stop-color="#5a80ff"/>
+      <stop offset="55%" stop-color="#40c8ff"/>
+      <stop offset="100%" stop-color="#60e8d0"/>
+    </linearGradient>
+    <radialGradient id="ftNode" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#bfe6ff"/>
+    </radialGradient>
+    <filter id="ftSoft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="2.2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="128" height="128" rx="30" fill="#070A18"/>
+  <rect x="1.5" y="1.5" width="125" height="125" rx="28.5" fill="none" stroke="rgba(120,160,255,0.14)" stroke-width="1.5"/>
+  <!-- infinity drawn as one continuous flowing timeline -->
+  <g filter="url(#ftSoft)">
+    <path d="M64 64
+             C 54 42, 26 42, 26 64
+             C 26 86, 54 86, 64 64
+             C 74 42, 102 42, 102 64
+             C 102 86, 74 86, 64 64 Z"
+          fill="none" stroke="url(#ftStroke)" stroke-width="6.5"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <!-- timeline event nodes riding the curve -->
+  <circle cx="26" cy="64" r="5.2" fill="url(#ftNode)"/>
+  <circle cx="102" cy="64" r="5.2" fill="url(#ftNode)"/>
+  <circle cx="64" cy="64" r="4" fill="#0b1530" stroke="#7fd8ff" stroke-width="2.2"/>
+  <circle cx="45" cy="49.5" r="2.6" fill="#bfe6ff"/>
+  <circle cx="83" cy="78.5" r="2.6" fill="#9af0dd"/>
+</svg>

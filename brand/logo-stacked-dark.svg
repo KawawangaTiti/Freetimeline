@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" width="640" height="380" role="img" aria-label="Free Timeline — A real free timeline">
+  <defs>
+    <linearGradient id="sFree" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#c8d4ff"/><stop offset="100%" stop-color="#90b8ff"/></linearGradient>
+    <linearGradient id="sTime" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6090ff"/><stop offset="60%" stop-color="#40c8ff"/><stop offset="100%" stop-color="#60e8d0"/></linearGradient>
+    <linearGradient id="sStroke" x1="0" y1="0.2" x2="1" y2="0.8"><stop offset="0%" stop-color="#5a80ff"/><stop offset="55%" stop-color="#40c8ff"/><stop offset="100%" stop-color="#60e8d0"/></linearGradient>
+    <radialGradient id="sNode" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#bfe6ff"/></radialGradient>
+    <radialGradient id="sGlow" cx="50%" cy="34%" r="55%"><stop offset="0%" stop-color="rgba(64,160,255,0.22)"/><stop offset="100%" stop-color="rgba(64,160,255,0)"/></radialGradient>
+  </defs>
+  <rect width="640" height="380" rx="26" fill="#070A18"/>
+  <rect width="640" height="380" rx="26" fill="url(#sGlow)"/>
+  <g transform="translate(284,40) scale(0.56)">
+    <path d="M64 64 C 54 42, 26 42, 26 64 C 26 86, 54 86, 64 64 C 74 42, 102 42, 102 64 C 102 86, 74 86, 64 64 Z"
+          fill="none" stroke="url(#sStroke)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="26" cy="64" r="5.2" fill="url(#sNode)"/><circle cx="102" cy="64" r="5.2" fill="url(#sNode)"/>
+    <circle cx="64" cy="64" r="4" fill="#0b1530" stroke="#7fd8ff" stroke-width="2.2"/>
+    <circle cx="45" cy="49.5" r="2.6" fill="#bfe6ff"/><circle cx="83" cy="78.5" r="2.6" fill="#9af0dd"/>
+  </g>
+  <text x="320" y="210" text-anchor="middle" font-family="-apple-system,'Segoe UI',system-ui,Arial,sans-serif" font-size="74" font-weight="900" letter-spacing="-2" fill="url(#sFree)">Free</text>
+  <text x="320" y="282" text-anchor="middle" font-family="-apple-system,'Segoe UI',system-ui,Arial,sans-serif" font-size="74" font-weight="900" letter-spacing="-2" fill="url(#sTime)">Timeline</text>
+  <text x="320" y="330" text-anchor="middle" font-family="-apple-system,'Segoe UI',system-ui,Arial,sans-serif" font-size="15" font-weight="700" letter-spacing="6" fill="#d4af37">A REAL FREE TIMELINE</text>
+</svg>
