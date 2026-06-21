@@ -3910,11 +3910,12 @@ function toggleVis(id) {
 /* =====================================================
    LIGHTBOX
    ===================================================== */
-function openLightbox(src) {
+function openLightbox(src, label) {
   const lb = document.getElementById('lightbox');
   var _lbi = document.getElementById('lb-img');
   _lbi.src = src;
-  _lbi.alt = 'Enlarged image'; // announce a photo is shown rather than empty/decorative (BS-9)
+  // announce the image name when known, else a generic non-empty alt (BS-9)
+  _lbi.alt = (label && label !== 'image') ? label : 'Enlarged image';
   lb.style.display = 'flex';
 }
 function closeLightbox() {
@@ -4009,7 +4010,7 @@ function buildMediaDisplay(media) {
     if (m.type === 'image') {
       html += '<div class="media-img-item">' +
         (m.name ? '<div class="media-img-name">\uD83D\uDDBC ' + esc(m.name) + '</div>' : '') +
-        '<img src="' + esc(m.src) + '" alt="' + esc(m.name || 'image') + '" onclick="openLightbox(this.src)" title="Click to enlarge"></div>';
+        '<img src="' + esc(m.src) + '" alt="' + esc(m.name || 'image') + '" onclick="openLightbox(this.src, this.alt)" title="Click to enlarge"></div>';
     } else if (m.type === 'youtube') {
       const vid = getYTVideoId(m.src);
       if (vid) {
@@ -4669,7 +4670,7 @@ const M = {
     const sCol = statusColors[ch.status] || '#95a5a6';
 
     const photoHTML = ch.photo
-      ? '<img class="char-profile-photo" src="' + esc(ch.photo) + '" onclick="openLightbox(this.src)" title="Click to enlarge">'
+      ? '<img class="char-profile-photo" src="' + esc(ch.photo) + '" alt="' + esc(ch.name || 'Character photo') + '" onclick="openLightbox(this.src, this.alt)" title="Click to enlarge">'
       : '<div class="char-photo-placeholder">\u{1F464}</div>';
 
     const counterpartsHTML = (ch.counterpartIds || []).map(cid => {
@@ -6658,7 +6659,11 @@ function switchView(view) {
 
   ['timeline','characters','connections','stats'].forEach(function(v) {
     var tab = document.getElementById('tab-' + v);
-    if (tab) tab.classList.toggle('active', v === view);
+    if (tab) {
+      var on = v === view;
+      tab.classList.toggle('active', on);
+      tab.setAttribute('aria-pressed', on ? 'true' : 'false'); // announce active view to screen readers
+    }
   });
 
   if (view === 'characters') renderCharsView();

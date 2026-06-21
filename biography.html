@@ -4045,11 +4045,11 @@ input[type="color"]:focus-visible {
     <input type="file" id="file-in" accept=".html,.json" onchange="Store.importFile(event)" style="display:none" aria-label="Load biography timeline file">
     <div class="sep"></div>
     <span class="tb-label">View</span>
-    <div class="view-tabs">
-      <button class="view-tab active" id="tab-timeline" onclick="switchView('timeline')" title="Canvas timeline view">Timeline</button>
-      <button class="view-tab tb-secondary" id="tab-people" onclick="switchView('people')" title="People & key persons directory">People</button>
-      <button class="view-tab tb-secondary" id="tab-map" onclick="switchView('map')" title="Relationship connection map">Relationships</button>
-      <button class="view-tab tb-secondary" id="tab-stats" onclick="switchView('stats')" title="Biography analytics & statistics">Stats</button>
+    <div class="view-tabs" role="group" aria-label="Switch view">
+      <button class="view-tab active" id="tab-timeline" onclick="switchView('timeline')" title="Canvas timeline view" aria-pressed="true">Timeline</button>
+      <button class="view-tab tb-secondary" id="tab-people" onclick="switchView('people')" title="People & key persons directory" aria-pressed="false">People</button>
+      <button class="view-tab tb-secondary" id="tab-map" onclick="switchView('map')" title="Relationship connection map" aria-pressed="false">Relationships</button>
+      <button class="view-tab tb-secondary" id="tab-stats" onclick="switchView('stats')" title="Biography analytics & statistics" aria-pressed="false">Stats</button>
       <button class="view-tab tb-secondary" id="tab-list" onclick="ftListView.toggle()" title="Accessible list view of all events grouped by year" aria-pressed="false">List</button>
     </div>
     <div class="sep tb-secondary"></div>
