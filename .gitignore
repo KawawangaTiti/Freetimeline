@@ -7,3 +7,7 @@ node_modules/
 .env
 .env.*
 .shots/
+# one-off client preview build + local verification tooling (never deploy these)
+freetimeline-home-preview.html
+package.json
+package-lock.json
