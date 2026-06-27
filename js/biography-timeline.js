@@ -6307,6 +6307,28 @@ window.addEventListener('DOMContentLoaded', () => {
   updateStatusFilterBar();
   updateTagFilterBar();
   document.getElementById('zoom-pct').textContent = '100%';
+
+  /* Frame the timeline on the actual data. The default range is geological
+     (200,000 BC – 20,000 AD), leaving life events as lost specks with nothing to
+     scroll. Shrink it to the data + a generous margin (room to scroll into empty time). */
+  (function fitRangeToData() {
+    try {
+      var ys = (S.events || []).map(function (e) { return parseDate(e.date); })
+                               .filter(function (y) { return typeof y === 'number' && isFinite(y); });
+      if (!ys.length) return;
+      var yMin = Math.min.apply(null, ys), yMax = Math.max.apply(null, ys);
+      var span = Math.max(1, yMax - yMin), pad = Math.max(30, span);
+      var lo = Math.floor(yMin - pad), hi = Math.ceil(yMax + pad);
+      if ((YEAR_MAX - YEAR_MIN) > 4 * (hi - lo)) {        // only when it's still the vast default
+        YEAR_MIN = lo; YEAR_MAX = hi;
+        if (typeof getMinScale === 'function') {
+          V.scale = getMinScale(); V.panX = 0;
+          if (typeof clampPanX === 'function') clampPanX();
+        }
+      }
+    } catch (e) {}
+  })();
+
   render();
 
   /* #043: first-run onboarding for new visitors. Shown only when there was

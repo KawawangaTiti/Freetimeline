@@ -32,3 +32,6 @@
     cw.addEventListener('wheel', hide, { capture: true, passive: true });
   }
 })();
+/* NB: the timeline now auto-frames on the data from inside each engine's load handler
+   (fitRangeToData), where YEAR_MIN/MAX can actually be mutated — external assignment can't. */
+
