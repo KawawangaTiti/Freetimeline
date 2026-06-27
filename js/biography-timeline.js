@@ -1273,10 +1273,9 @@ function drawRuler(c, g) {
     for (let y = ms; y <= ryear + minor; y += minor) {
       const sx = ws(yw(y));
       if (sx < LEFT_W || sx > W) continue;
-      /* V2 (subtle adaptive grid): minor ticks on the ruler only — removed the
-         dense full-height minor gridline. */
-      g.strokeStyle = '#c4b89e'; g.lineWidth = 1;
-      g.beginPath(); g.moveTo(sx, RULER_H - 6); g.lineTo(sx, RULER_H); g.stroke();
+      /* Calm minor ticks: short + low-contrast so they don't read as a harsh comb on parchment. */
+      g.strokeStyle = 'rgba(150,122,82,0.22)'; g.lineWidth = 1;
+      g.beginPath(); g.moveTo(sx, RULER_H - 4); g.lineTo(sx, RULER_H); g.stroke();
     }
   }
 
@@ -1296,9 +1295,9 @@ function drawRuler(c, g) {
     for (let y = majs; y <= ryear + maj; y += maj) {
       const sx = ws(yw(y));
       if (sx < LEFT_W - 80 || sx > W + 80) { _idx++; continue; }
-      g.strokeStyle = '#a8987e'; g.lineWidth = 1;
-      g.beginPath(); g.moveTo(sx, RULER_H - 16); g.lineTo(sx, RULER_H); g.stroke();
-      g.strokeStyle = 'rgba(168,152,126,0.15)'; g.lineWidth = 1;   /* V2: subtle major-only canvas guide */
+      g.strokeStyle = 'rgba(120,92,56,0.55)'; g.lineWidth = 1;     /* major ruler tick — clear but not harsh */
+      g.beginPath(); g.moveTo(sx, RULER_H - 15); g.lineTo(sx, RULER_H); g.stroke();
+      g.strokeStyle = 'rgba(150,122,82,0.06)'; g.lineWidth = 1;    /* barely-there canvas guide (no "graph paper") */
       g.beginPath(); g.moveTo(sx, RULER_H); g.lineTo(sx, c.height); g.stroke();
       if (sx > LEFT_W + 4 && _idx % _labelN === 0) {
         let lbl;
@@ -9292,12 +9291,17 @@ if (typeof window !== 'undefined') {
       var x0 = VC.dateToX(new Date(y, 0, 1).getTime());
       var x1 = VC.dateToX(new Date(y + 1, 0, 1).getTime());
       if (x1 < 0 || x0 > w) continue;
-      /* alternating warm bands */
-      bandsCx.fillStyle = (y % 2 === 0) ? 'rgba(245,239,230,0.55)' : 'rgba(250,246,239,0.0)';
-      bandsCx.fillRect(x0, 0, x1 - x0, h);
+      /* Subtle alternating year bands — only once years are wide enough to read as a calendar.
+         At the default (zoomed-out) scale this draws nothing, so the canvas stays clean parchment
+         like the Universe app instead of a harsh "graph-paper" comb that strains the eyes. */
+      var bw = x1 - x0;
+      if (bw >= 22 && y % 2 === 0) {
+        bandsCx.fillStyle = 'rgba(245,239,230,0.4)';
+        bandsCx.fillRect(x0, 0, bw, h);
+      }
       /* year label */
-      if (x1 - x0 > 28) {
-        bandsCx.fillStyle = 'rgba(120,100,70,0.45)';
+      if (bw > 30) {
+        bandsCx.fillStyle = 'rgba(120,100,70,0.4)';
         bandsCx.fillText(String(y), x0 + 6, 6);
       }
     }
