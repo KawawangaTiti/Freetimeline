@@ -10,6 +10,11 @@
 <script src="js/ft-confirm.js" defer></script>
 <script src="js/ft-onboarding.js" defer></script>
 <script src="js/universe-timeline.js" defer></script>
+<script src="js/vendor/gsap.min.js" defer></script>
+<script src="js/ft-motion.js" defer></script>
+<script src="js/ft-stats.js" defer></script>
+<script src="js/ft-toolbar.js" defer></script>
+<script src="js/ft-canvas.js" defer></script>
 <style>
 /* =====================================================
    RESET & BASE
@@ -6338,9 +6343,12 @@ body.reading-mode #reading-toggle-btn {
       if(window.S && Array.isArray(window.S.events)) out=window.S.events.slice();
       if(!out.length && typeof S!=='undefined' && S && Array.isArray(S.events)) out=S.events.slice();
       if(!out.length){
+        try{ var raw=localStorage.getItem('inf_universe_v4'); if(raw){ var d=JSON.parse(raw); if(d&&Array.isArray(d.events)) out=d.events.slice(); } }catch(_){}
+      }
+      if(!out.length){
         for(var i=0;i<localStorage.length;i++){
           var k=localStorage.key(i);
-          if(!/^ft_uni_|^uni_state|^universe/i.test(k)) continue;
+          if(!/^ft_uni_|^uni_state|^universe|^inf_universe/i.test(k)) continue;
           try{
             var v=JSON.parse(localStorage.getItem(k));
             if(v && Array.isArray(v.events)) v.events.forEach(function(e){out.push(e);});

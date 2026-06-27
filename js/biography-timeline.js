@@ -1198,8 +1198,10 @@ function render() {
     const pg = vert ? g.createLinearGradient(px, 0, W, 0) : g.createLinearGradient(0, py, 0, H);
     pg.addColorStop(0, '#f6f1e7'); pg.addColorStop(0.55, '#efe8da'); pg.addColorStop(1, '#e7decd');
     g.fillStyle = pg; g.fillRect(px, py, pw, ph);
-    const vg = g.createRadialGradient(px + pw * 0.5, py + ph * 0.42, Math.min(pw, ph) * 0.15,
-                                      px + pw * 0.5, py + ph * 0.5, Math.max(pw, ph) * 0.72);
+    // Clamp radii to >=0: on the first mobile (vertical) draw, ph = H - LEFT_W can be
+    // negative before the canvas is sized, which made createRadialGradient throw (r0 < 0).
+    const vg = g.createRadialGradient(px + pw * 0.5, py + ph * 0.42, Math.max(0, Math.min(pw, ph) * 0.15),
+                                      px + pw * 0.5, py + ph * 0.5, Math.max(0, Math.max(pw, ph) * 0.72));
     vg.addColorStop(0, 'rgba(90,60,25,0)'); vg.addColorStop(1, 'rgba(90,60,25,0.10)');
     g.fillStyle = vg; g.fillRect(px, py, pw, ph);
   }

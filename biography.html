@@ -10,6 +10,11 @@
 <script src="js/ft-confirm.js" defer></script>
 <script src="js/ft-onboarding.js" defer></script>
 <script src="js/biography-timeline.js" defer></script>
+<script src="js/vendor/gsap.min.js" defer></script>
+<script src="js/ft-motion.js" defer></script>
+<script src="js/ft-stats.js" defer></script>
+<script src="js/ft-toolbar.js" defer></script>
+<script src="js/ft-canvas.js" defer></script>
 <style>
 /* =====================================================
    RESET & BASE
@@ -6223,21 +6228,18 @@ button[disabled], [aria-disabled="true"] {
   function readEvents(){
     var out=[];
     try{
-      for(var i=0;i<localStorage.length;i++){
-        var k=localStorage.key(i);
-        if(!/^ft_bio_/.test(k)) continue;
-        try{
-          var v=JSON.parse(localStorage.getItem(k));
-          if(v && Array.isArray(v.events)) v.events.forEach(function(e){out.push(e);});
-          if(v && Array.isArray(v)) v.forEach(function(e){if(e&&e.title)out.push(e);});
-        }catch(_){}
+      // 1) Live in-memory app state is the source of truth.
+      if(typeof S!=='undefined' && S && Array.isArray(S.events)) out=S.events.slice();
+      // 2) Fall back to the real persisted save key.
+      if(!out.length){
+        try{ var raw=localStorage.getItem('inf_biography_v1'); if(raw){ var d=JSON.parse(raw); if(d&&Array.isArray(d.events)) out=d.events.slice(); } }catch(_){}
       }
-      // Fallback: ask the running app if it exposes a model
-      if(!out.length && window.Store && typeof window.Store.exportData==='function'){
-        try{ var d=window.Store.exportData(); if(d&&Array.isArray(d.events)) out=d.events.slice(); }catch(_){}
-      }
-      if(!out.length && window.Model && Array.isArray(window.Model.events)){
-        out=window.Model.events.slice();
+      // 3) Last resort: any saved state blob that carries an events[] array.
+      if(!out.length){
+        for(var i=0;i<localStorage.length;i++){
+          var k=localStorage.key(i);
+          try{ var v=JSON.parse(localStorage.getItem(k)); if(v && Array.isArray(v.events) && v.events.length){ out=v.events.slice(); break; } }catch(_){}
+        }
       }
     }catch(_){}
     return out;
@@ -6261,7 +6263,11 @@ button[disabled], [aria-disabled="true"] {
     // Group by year
     var groups={};
     events.forEach(function(e){
-      var y=(e.year!=null?e.year:String(e.date||'').slice(0,4))||'Undated';
+      // Extract the year: prefer e.year, else parse the yyyy segment of a dd/mm/yyyy date
+      // (the date string can be "xx/xx/2000" with placeholder day/month — slice(0,4) gave "xx/x").
+      var y='Undated';
+      if(e.year!=null){ y=e.year; }
+      else if(e.date){ var dp=String(e.date).split('/'); y=(dp.length===3?(parseInt(dp[2],10)||'Undated'):(String(e.date).slice(0,4)||'Undated')); }
       (groups[y]=groups[y]||[]).push(e);
     });
     var years=Object.keys(groups).sort();
