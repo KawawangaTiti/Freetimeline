@@ -6415,6 +6415,7 @@ window.addEventListener('DOMContentLoaded', () => {
     if (e.key === '+' || e.key === '=')  doZoom(1.25, null);
     if (e.key === '-')                   doZoom(0.8, null);
     if (e.key === '0')                   resetView();
+    if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey && !e.altKey) UI.fitToData();
     if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
       e.preventDefault();
       if (!_keysHeld[e.key]) {

@@ -78,7 +78,7 @@
   // --- collect groups (order of preference; first match wins, no dupes) ---
   var dataM = group(['saveHTML', 'saveJSON', 'importClick', 'blankTimeline']);
   var orgM = group(['catEditor', 'affiliationEditor', 'organizationEditor']);
-  var viewM = group(['goToToday', 'jumpToYear', 'toggleStoryLine', 'fitToData', 'resetView', 'toggleStats', 'ContinuityTour', 'MemoryTour', 'openRangeConfig', 'track-h', 'TRACK_H']);
+  var viewM = group(['goToToday', 'jumpToYear', 'toggleStoryLine', 'fitToData', 'resetView', 'toggleStats', 'ContinuityTour', 'MemoryTour', 'toggleReadingMode', 'openRangeConfig', 'track-h', 'TRACK_H']);
   var helpM = group(['toggleKbd', 'UI.help(', 'openSettings', 'UI.settings']);
 
   // keep-visible anchors
