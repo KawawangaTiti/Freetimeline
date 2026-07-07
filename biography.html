@@ -522,22 +522,7 @@ input[type="color"] {
 ::-webkit-scrollbar-thumb { background: #c8c8c8; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
 
-/* =====================================================
-   MOBILE BANNER
-   ===================================================== */
-#mobile-banner {
-  display: none;
-  background: linear-gradient(90deg, #1c1008, #2e1a08);
-  border-bottom: 1px solid rgba(176,121,66,0.25);
-  color: #f5e6d0;
-  font-size: 12px;
-  padding: 7px 14px;
-  text-align: center;
-  z-index: 25;
-  flex-shrink: 0;
-}
 @media (max-width: 767px) {
-  #mobile-banner { display: block; }
   .tb-secondary { display: none !important; }
   #kbd-hint { display: none; }
   #filter-panel-toggle {
@@ -1079,22 +1064,6 @@ input[type="color"] {
     touch-action: manipulation;
   }
 
-  /* Filter badge on the mobile header button */
-  #bio-mobile-filter-btn .fmbf-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: #b07942;
-    color: #fff;
-    border-radius: 10px;
-    font-size: 10px;
-    font-weight: 900;
-    min-width: 16px;
-    height: 16px;
-    padding: 0 4px;
-    margin-left: 3px;
-    line-height: 1;
-  }
 }
 #fp-mobile-toggle { display: none; }
 #fp-mobile-bar { display: none; }
@@ -2529,11 +2498,6 @@ input:focus, select:focus, textarea:focus, button:focus-visible {
   font-size: 10.5px !important;
 }
 
-/* --- Mobile banner: warmer tone --- */
-#mobile-banner {
-  background: linear-gradient(90deg, #8a5a28, #b07942) !important;
-}
-
 /* --- Range configurator panel: parchment feel --- */
 #range-cfg-panel {
   background: #fcf8f3 !important;
@@ -2544,206 +2508,13 @@ input:focus, select:focus, textarea:focus, button:focus-visible {
   color: #2d1f10 !important;
 }
 
-/* =====================================================
-   BIOGRAPHY MOBILE TOOLBAR / NAVIGATION
-   ===================================================== */
-#bio-mobile-header,
-#bio-mobile-more-drawer,
-#bio-mobile-scrim {
-  display: none;
-}
-
-/* Mobile drawer storage notice */
-.bio-drawer-storage-notice {
-  display: none;
-}
-
-/* Mobile drawer section heading */
-.bio-drawer-section-head {
-  display: none;
-}
-
-/* Mobile import label wrapper */
-.bio-mobile-action-label {
-  display: none;
-  min-width: 0;
-  min-height: 44px;
-  border: 1px solid rgba(245,230,208,0.14);
-  border-radius: 10px;
-  background: rgba(255,255,255,0.065);
-  color: #ead7bc;
-  font-family: inherit;
-  font-size: 11px;
-  font-weight: 800;
-  line-height: 1.15;
-  padding: 6px 5px;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  text-align: center;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-
-/* Mobile-only confirm dialog */
-#bio-mob-blank-confirm {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 260;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(15,5,0,0.72);
-  backdrop-filter: blur(3px);
-}
-#bio-mob-blank-confirm.open { display: flex; }
-.bio-mob-confirm-box {
-  background: linear-gradient(180deg, #2e1508 0%, #1a0b04 100%);
-  border: 1.5px solid rgba(220,80,60,0.45);
-  border-radius: 16px;
-  padding: 20px;
-  max-width: 340px;
-  width: 100%;
-  box-shadow: 0 16px 60px rgba(0,0,0,0.65);
-}
-.bio-mob-confirm-icon {
-  font-size: 32px;
-  text-align: center;
-  margin-bottom: 10px;
-}
-.bio-mob-confirm-title {
-  font-size: 15px;
-  font-weight: 900;
-  color: #ffd0c0;
-  text-align: center;
-  margin-bottom: 6px;
-}
-.bio-mob-confirm-desc {
-  font-size: 12px;
-  color: rgba(245,220,200,0.75);
-  text-align: center;
-  line-height: 1.55;
-  margin-bottom: 16px;
-}
-.bio-mob-confirm-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.bio-mob-confirm-btn {
-  min-height: 46px;
-  border-radius: 10px;
-  border: 1px solid rgba(245,230,208,0.2);
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 800;
-  cursor: pointer;
-  touch-action: manipulation;
-  color: #fff;
-}
-.bio-mob-confirm-btn.save-first {
-  background: linear-gradient(135deg,#5a8448,#406034);
-  border-color: rgba(100,160,80,0.5);
-}
-.bio-mob-confirm-btn.clear-only {
-  background: linear-gradient(135deg,#c0392b,#8a2a20);
-  border-color: rgba(220,80,60,0.45);
-}
-.bio-mob-confirm-btn.cancel {
-  background: rgba(255,255,255,0.07);
-  border-color: rgba(245,230,208,0.16);
-  color: #ead7bc;
-}
-
 @media (max-width: 767px) {
   #toolbar {
     display: none !important;
   }
 
-  #bio-mobile-header {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 5px;
-    padding: 7px max(8px, env(safe-area-inset-right, 0px)) 7px max(8px, env(safe-area-inset-left, 0px));
-    background: linear-gradient(180deg, #2c2620 0%, #201b14 100%);
-    border-bottom: 1px solid rgba(176,121,66,0.22);
-    box-shadow: 0 2px 16px rgba(0,0,0,0.42);
-    flex-shrink: 0;
-    z-index: 32;
-  }
-
-  .bio-mobile-primary {
-    min-width: 0;
-    min-height: 40px;
-    border: 1px solid rgba(245,230,208,0.16);
-    border-radius: 9px;
-    background: rgba(255,255,255,0.07);
-    color: #ead7bc;
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 800;
-    line-height: 1.15;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    padding: 4px 6px;
-    white-space: normal;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-    overflow: hidden;
-    cursor: pointer;
-    touch-action: manipulation;
-  }
-
-  .bio-mobile-primary.accent {
-    background: linear-gradient(135deg, #c4956a 0%, #9d6d42 100%);
-    border-color: rgba(220,170,110,0.55);
-    color: #fff;
-  }
-
-  .bio-mobile-primary[aria-expanded="true"] {
-    background: rgba(176,121,66,0.26);
-    border-color: rgba(220,170,110,0.5);
-    color: #ffe3b8;
-  }
-
   #fp-mobile-toggle {
     display: none !important;
-  }
-
-  /* Show storage notice and section labels inside mobile drawer */
-  .bio-drawer-storage-notice {
-    display: block;
-    margin: 0 0 10px;
-    padding: 9px 12px;
-    background: rgba(176,121,66,0.12);
-    border: 1px solid rgba(176,121,66,0.3);
-    border-radius: 8px;
-    font-size: 11px;
-    color: rgba(245,220,190,0.9);
-    line-height: 1.5;
-  }
-  .bio-drawer-storage-notice strong {
-    color: #f5d0a0;
-    font-weight: 800;
-  }
-
-  .bio-drawer-section-head {
-    display: block;
-    font-size: 9px;
-    font-weight: 900;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    color: rgba(245,210,160,0.5);
-    padding: 0 0 6px;
-    margin-top: 2px;
-  }
-
-  /* Import via label for better mobile file picker */
-  .bio-mobile-action-label {
-    display: inline-flex;
   }
 
   #fp-mobile-bar.open {
@@ -2752,135 +2523,8 @@ input:focus, select:focus, textarea:focus, button:focus-visible {
     -webkit-overflow-scrolling: touch;
   }
 
-  #bio-mobile-scrim {
-    position: fixed;
-    inset: 0;
-    background: rgba(20,10,0,0.38);
-    z-index: 210;
-  }
-
-  #bio-mobile-scrim.open {
-    display: block;
-  }
-
-  #bio-mobile-more-drawer {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    flex-direction: column;
-    max-height: min(58dvh, 430px);
-    padding: 10px max(12px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
-    background: linear-gradient(180deg, #251409 0%, #140903 100%);
-    border-top: 1px solid rgba(220,170,110,0.28);
-    box-shadow: 0 -16px 50px rgba(0,0,0,0.5);
-    transform: translateY(110%);
-    transition: transform 0.18s ease;
-    z-index: 220;
-    pointer-events: none;
-  }
-
-  #bio-mobile-more-drawer.open {
-    transform: translateY(0);
-    pointer-events: auto;
-  }
-
-  .bio-mobile-drawer-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 2px 2px 9px;
-    color: #f5e6c8;
-    font-size: 13px;
-    font-weight: 900;
-    letter-spacing: 0.03em;
-    flex-shrink: 0;
-  }
-
-  .bio-mobile-drawer-close {
-    min-height: 44px;
-    border: 1px solid rgba(245,230,208,0.18);
-    border-radius: 8px;
-    background: rgba(255,255,255,0.08);
-    color: #ead7bc;
-    font: inherit;
-    font-size: 12px;
-    font-weight: 800;
-    padding: 0 10px;
-    cursor: pointer;
-  }
-
-  .bio-mobile-actions {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 7px;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-right: 1px;
-  }
-
-  .bio-mobile-action {
-    min-width: 0;
-    min-height: 44px;
-    border: 1px solid rgba(245,230,208,0.14);
-    border-radius: 10px;
-    background: rgba(255,255,255,0.065);
-    color: #ead7bc;
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 800;
-    line-height: 1.15;
-    padding: 6px 5px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    text-align: center;
-    cursor: pointer;
-    touch-action: manipulation;
-  }
-
-  .bio-mobile-action.positive {
-    background: rgba(106,158,90,0.18);
-    border-color: rgba(106,158,90,0.4);
-    color: #dff5d8;
-  }
-
-  .bio-mobile-action.warning {
-    background: rgba(176,121,66,0.18);
-    border-color: rgba(176,121,66,0.42);
-    color: #f2d0a8;
-  }
-
-  .bio-mobile-action.danger {
-    background: rgba(192,57,43,0.2);
-    border-color: rgba(192,57,43,0.45);
-    color: #ffd6d0;
-  }
-
-  .bio-mobile-action.full {
-    grid-column: 1 / -1;
-    justify-content: space-between;
-    padding-left: 10px;
-    padding-right: 10px;
-    gap: 10px;
-  }
-
-  .bio-mobile-action input[type="range"] {
-    flex: 1;
-    min-width: 110px;
-    accent-color: #b07942;
-  }
-
   #zoom-ctrl {
     bottom: max(16px, env(safe-area-inset-bottom, 0px));
-  }
-
-  /* ── Mobile-banner is redundant alongside the compact mobile header ── */
-  #mobile-banner {
-    display: none !important;
   }
 
   /* ══════════════════════════════════════════════════════════════════════
@@ -3593,18 +3237,13 @@ input:focus, select:focus, textarea:focus, button:focus-visible {
 .cf-chip:focus-visible,
 .tag-filter-chip:focus-visible,
 .cat-filter-chip:focus-visible,
-.cf-clear:focus-visible,
-.bio-mobile-primary:focus-visible,
-.bio-mobile-action:focus-visible {
+.cf-clear:focus-visible {
   outline: 2px solid #c4915a;
   outline-offset: 2px;
 }
 .fp-drop-btn:focus-visible,
-.bio-mobile-drawer-close:focus-visible,
-.bio-mobile-action-label:focus-visible,
 .empty-state-btn:focus-visible,
-#canvas-wrap:focus-visible,
-#bio-mobile-action-search:focus-visible {
+#canvas-wrap:focus-visible {
   outline: 2px solid #c4915a;
   outline-offset: 3px;
 }
@@ -3697,11 +3336,7 @@ input[type="color"]:focus-visible {
 .zbtn,
 .view-tab,
 .fp-drop-btn,
-.bio-mobile-primary,
-.bio-mobile-action,
-.bio-mobile-action-label,
-.empty-state-btn,
-.bio-mobile-drawer-close {
+.empty-state-btn {
   min-height: 44px;
 }
 
@@ -3885,131 +3520,6 @@ input[type="color"]:focus-visible {
 }
 
 </style>
-<style>
-@media (max-width: 767px) {
-  #bio-mobile-header {
-    grid-template-columns: 1fr !important;
-    gap: 10px !important;
-    padding-top: max(10px, env(safe-area-inset-top, 0px)) !important;
-    padding-bottom: 10px !important;
-  }
-
-  .bio-mobile-topline {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  .bio-mobile-brand {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .bio-mobile-brand-title {
-    color: #f7e7c8;
-    font-family: 'Georgia', 'Cambria', 'Times New Roman', serif;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 1.15;
-  }
-
-  .bio-mobile-brand-subtitle {
-    color: rgba(245,220,190,0.72);
-    font-size: 11px;
-    line-height: 1.45;
-  }
-
-  .bio-mobile-primary-row {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 8px;
-  }
-
-  .bio-mobile-primary {
-    min-height: 50px !important;
-    padding: 10px 8px !important;
-    border-radius: 14px !important;
-    font-size: 11px !important;
-    gap: 5px !important;
-  }
-
-  .bio-mobile-touch-note {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 42px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    background: rgba(176,121,66,0.12);
-    border: 1px solid rgba(176,121,66,0.24);
-    color: rgba(245,224,196,0.9);
-    font-size: 11px;
-    line-height: 1.45;
-  }
-
-  .bio-mobile-touch-note strong {
-    color: #fff;
-    white-space: nowrap;
-  }
-
-  #bio-mobile-more-drawer {
-    max-height: min(84dvh, 680px) !important;
-    border-radius: 20px 20px 0 0 !important;
-  }
-
-  .bio-mobile-drawer-search {
-    padding-bottom: 10px;
-  }
-
-  #bio-mobile-action-search {
-    width: 100%;
-    min-height: 46px;
-    padding: 12px 14px;
-    border-radius: 12px;
-    border: 1px solid rgba(245,230,208,0.14);
-    background: rgba(255,255,255,0.06);
-    color: #f4e1c4;
-    font: inherit;
-    font-size: 16px;
-  }
-
-  #bio-mobile-action-search::placeholder {
-    color: rgba(234,215,188,0.46);
-  }
-
-  .bio-mobile-actions {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 8px !important;
-  }
-
-  .bio-mobile-action,
-  .bio-mobile-action-label {
-    min-height: 48px !important;
-    padding: 10px 10px !important;
-    font-size: 12px !important;
-    white-space: normal;
-    overflow-wrap: anywhere;
-  }
-}
-
-@media (max-width: 420px) {
-  .bio-mobile-primary-row {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-
-  .bio-mobile-touch-note {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .bio-mobile-actions {
-    grid-template-columns: 1fr !important;
-  }
-}
-</style>
   <link rel="alternate" type="application/rss+xml" href="/feed.xml" title="FreeTimeline Guides">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://freetimeline.pt/biography.html">
@@ -4028,9 +3538,6 @@ input[type="color"]:focus-visible {
 
 <div id="app">
   <h1 class="sr-only" id="page-title">Free Timeline Biography</h1>
-
-  <!-- ==================== MOBILE BANNER ==================== -->
-  <div id="mobile-banner">&#128241; Touch to pan &nbsp;&middot;&nbsp; Pinch to zoom &nbsp;&middot;&nbsp; Limited editing on mobile</div>
 
   <!-- ==================== TOOLBAR ==================== -->
   <div id="toolbar" role="banner" aria-label="Biography timeline controls">
@@ -4093,109 +3600,8 @@ input[type="color"]:focus-visible {
     </div>
   </div>
 
-  <!-- ==================== MOBILE HEADER / ACTIONS ==================== -->
-  <div id="bio-mobile-header" aria-label="Biography mobile navigation">
-    <div class="bio-mobile-topline">
-      <div class="bio-mobile-brand">
-        <span class="bio-mobile-brand-title">Free Timeline Biography</span>
-        <span class="bio-mobile-brand-subtitle">Capture memories, people, and chapters with touch-friendly editing and backups.</span>
-      </div>
-      <button class="bio-mobile-primary" type="button" onclick="goBackToMenu()">← Menu</button>
-    </div>
-    <div class="bio-mobile-primary-row">
-      <button class="bio-mobile-primary accent" type="button" onclick="UI.addEvent()">＋ Add Event</button>
-      <button class="bio-mobile-primary" id="bio-mobile-filter-btn" type="button" aria-expanded="false" onclick="bioMobileToggleFilters()">🔎 Filters</button>
-      <button class="bio-mobile-primary" type="button" onclick="bioOpenStoryGuide()">📖 Story</button>
-      <button class="bio-mobile-primary" id="bio-mobile-more-btn" type="button" aria-expanded="false" onclick="bioMobileToggleMore()">☰ More</button>
-    </div>
-    <div class="bio-mobile-touch-note" role="note">
-      <strong>Touch:</strong>
-      Swipe to pan, pinch to zoom, and use More for import, export, help, and timeline tools.
-    </div>
-  </div>
-
   <!-- Filter sheet overlay backdrop (mobile only) -->
   <div id="bio-fp-overlay" onclick="bioMobileToggleFilters()" aria-hidden="true"></div>
-
-  <div id="bio-mobile-scrim" onclick="bioMobileCloseMore()" aria-hidden="true"></div>
-  <div id="bio-mobile-more-drawer" role="dialog" aria-modal="true" aria-label="Biography secondary actions">
-    <div class="bio-mobile-drawer-head">
-      <span>More biography actions</span>
-      <button class="bio-mobile-drawer-close" type="button" onclick="bioMobileCloseMore()">Close</button>
-    </div>
-    <div class="bio-mobile-drawer-search">
-      <input id="bio-mobile-action-search" type="search" placeholder="Quick action: export, story, people, help..." oninput="bioMobileFilterActions(this.value)" aria-label="Search biography mobile actions">
-    </div>
-    <div class="bio-mobile-actions">
-
-      <!-- Storage / Backup notice (mobile only) -->
-      <div class="bio-drawer-storage-notice" style="grid-column:1/-1" role="note">
-        <strong>💾 Your data is saved in this browser only.</strong><br>
-        Export a backup regularly — clearing browser data or switching browsers will delete your timeline.
-      </div>
-
-      <!-- Data & Backup section -->
-      <div class="bio-drawer-section-head" style="grid-column:1/-1">Data &amp; Backup</div>
-      <button class="bio-mobile-action positive" type="button" onclick="bioMobileCloseMore();Store.saveHTML()" title="Save your timeline as a self-contained HTML file you can reopen anywhere">💾 Save HTML</button>
-      <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();Store.saveJSON()" title="Export a plain JSON backup of all your data">⬇ Export JSON</button>
-      <!-- Import: use a label wrapping the file input for best mobile browser compatibility -->
-      <label class="bio-mobile-action-label" for="bio-mob-file-in" title="Load a previously saved HTML or JSON timeline file">⬆ Load / Import</label>
-      <input type="file" id="bio-mob-file-in" accept=".html,.json" style="display:none" onchange="bioMobileImportFile(event)" aria-label="Load biography timeline file">
-      <button class="bio-mobile-action danger" type="button" onclick="bioMobileCloseMore();bioMobBlankConfirm()" title="Delete all data and start fresh — you will be asked to save a backup first">⬜ Clear / Blank</button>
-
-      <!-- Views section -->
-      <div class="bio-drawer-section-head" style="grid-column:1/-1">Views</div>
-      <button class="bio-mobile-action" type="button" onclick="bioMobileGoView('timeline')">▣ Timeline</button>
-      <button class="bio-mobile-action" type="button" onclick="bioMobileGoView('people')">👤 People</button>
-      <button class="bio-mobile-action" type="button" onclick="bioMobileGoView('map')">🔗 Relationships</button>
-      <button class="bio-mobile-action" type="button" onclick="bioMobileGoView('stats')">📊 Stats</button>
-
-      <!-- Create section -->
-      <div class="bio-drawer-section-head" style="grid-column:1/-1">Create</div>
-      <button class="bio-mobile-action warning" type="button" onclick="bioMobileCloseMore();UI.addUniverse()">＋ Life Track</button>
-
-      <!-- Organise section -->
-      <div class="bio-drawer-section-head" style="grid-column:1/-1">Organise</div>
-      <button class="bio-mobile-action warning" type="button" onclick="bioMobileCloseMore();UI.catEditor()">🏷 Categories</button>
-      <button class="bio-mobile-action warning" type="button" onclick="bioMobileCloseMore();UI.affiliationEditor()">🏢 Groups</button>
-
-      <!-- Navigate section -->
-      <div class="bio-drawer-section-head" style="grid-column:1/-1">Navigate</div>
-      <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();UI.toggleStats()">📈 Stats Panel</button>
-      <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();MemoryTour.start()">🎞 Memory Tour</button>
-      <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();ContinuityTour.start()">🎬 Continuity Tour</button>
-      <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();goToToday()">🕘 Today</button>
-      <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();resetView()">⌂ Reset</button>
-      <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();History.undo()">↶ Undo</button>
-      <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();History.redo()">↷ Redo</button>
-      <button class="bio-mobile-action warning" type="button" onclick="bioMobileCloseMore();openRangeConfig()">📅 Range</button>
-      <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();UI.toggleKbd()">⌨ Keys</button>
-      <button class="bio-mobile-action" type="button" onclick="bioMobileCloseMore();toggleReadingMode()">📖 Reading Mode</button>
-      <button class="bio-mobile-action warning" type="button" onclick="bioMobileCloseMore();bioOpenStoryGuide()">📖 Story Guide</button>
-      <button class="bio-mobile-action warning" type="button" onclick="bioMobileCloseMore();UI.help()">❓ Help</button>
-      <label class="bio-mobile-action full">
-        <span>↕ Row height</span>
-        <input type="range" min="60" max="200" step="10" value="100" oninput="bioMobileSetTrackHeight(this.value)">
-      </label>
-    </div>
-  </div>
-
-  <!-- Mobile-safe destructive confirmation dialog (replaces browser confirm() on mobile) -->
-  <div id="bio-mob-blank-confirm" role="dialog" aria-modal="true" aria-label="Clear timeline — are you sure?">
-    <div class="bio-mob-confirm-box">
-      <div class="bio-mob-confirm-icon">⚠️</div>
-      <div class="bio-mob-confirm-title">Clear all timeline data?</div>
-      <div class="bio-mob-confirm-desc">
-        This will permanently delete all Life Tracks, events, people, and connections.<br><br>
-        <strong>Export a backup first</strong> — your data is only stored in this browser.
-      </div>
-      <div class="bio-mob-confirm-actions">
-        <button class="bio-mob-confirm-btn save-first" type="button" onclick="bioMobBlankSaveFirst()">💾 Save JSON backup, then clear</button>
-        <button class="bio-mob-confirm-btn clear-only" type="button" onclick="bioMobBlankClearOnly()">🗑 Clear without saving</button>
-        <button class="bio-mob-confirm-btn cancel" type="button" onclick="bioMobBlankCancel()">Cancel — keep my data</button>
-      </div>
-    </div>
-  </div>
 
   <!-- ==================== FILTER & SEARCH BAR ==================== -->
   <div id="filter-panel">
@@ -4872,7 +4278,6 @@ window.addEventListener('resize', repositionOpenDrops);
   function updateMobileActiveStrip() {
     var strip = document.getElementById('fp-mobile-active-strip');
     var chipsEl = document.getElementById('fp-mobile-active-chips');
-    var filterBtn = document.getElementById('bio-mobile-filter-btn');
     if (!strip || !chipsEl) return;
 
     var activeChips = [];
@@ -4905,21 +4310,6 @@ window.addEventListener('resize', repositionOpenDrops);
     var hasFilters = activeChips.length > 0;
     strip.classList.toggle('has-filters', hasFilters);
     chipsEl.innerHTML = activeChips.join('');
-
-    /* Update badge on the filter button */
-    if (filterBtn) {
-      var badge = filterBtn.querySelector('.fmbf-badge');
-      if (hasFilters) {
-        if (!badge) {
-          badge = document.createElement('span');
-          badge.className = 'fmbf-badge';
-          filterBtn.appendChild(badge);
-        }
-        badge.textContent = activeChips.length;
-      } else {
-        if (badge) badge.remove();
-      }
-    }
 
     /* Trigger canvas resize after strip appears/disappears */
     if (typeof window._tlResize === 'function') {
@@ -4955,177 +4345,29 @@ window.addEventListener('resize', repositionOpenDrops);
   function bioMobileToggleFilters() {
     var bar = document.getElementById('fp-mobile-bar');
     var overlay = document.getElementById('bio-fp-overlay');
-    var btn = document.getElementById('bio-mobile-filter-btn');
     if (!bar) return;
     var open = !bar.classList.contains('open');
     bar.classList.toggle('open', open);
     if (overlay) overlay.classList.toggle('open', open);
-    if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-    if (open) bioMobileCloseMore();
     /* Filter sheet is now a fixed overlay — canvas is unaffected, no resize needed */
   }
 
   function bioMobileCloseFilters() {
     try {
-      var btn = document.getElementById('bio-mobile-filter-btn');
       UI.closeOverlay('fp-mobile-bar');
       UI.closeOverlay('bio-fp-overlay');
-      if (btn) { try { btn.setAttribute('aria-expanded', 'false'); } catch(_){} }
     } catch(_){}
-  }
-
-  function bioMobileToggleMore() {
-    const drawer = document.getElementById('bio-mobile-more-drawer');
-    const scrim = document.getElementById('bio-mobile-scrim');
-    const btn = document.getElementById('bio-mobile-more-btn');
-    const search = document.getElementById('bio-mobile-action-search');
-    if (!drawer) return;
-    const open = !drawer.classList.contains('open');
-    drawer.classList.toggle('open', open);
-    if (scrim) scrim.classList.toggle('open', open);
-    if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-    if (search && open) {
-      search.value = '';
-      bioMobileFilterActions('');
-    }
-    if (open) bioMobileCloseFilters();
-  }
-
-  function bioMobileCloseMore() {
-    try {
-      const btn = document.getElementById('bio-mobile-more-btn');
-      UI.closeOverlay('bio-mobile-more-drawer');
-      UI.closeOverlay('bio-mobile-scrim');
-      if (btn) { try { btn.setAttribute('aria-expanded', 'false'); } catch(_){} }
-    } catch(_){}
-  }
-
-  function bioMobileGoView(view) {
-    bioMobileCloseMore();
-    switchView(view);
-  }
-  function bioMobileFilterActions(query) {
-    const q = (query || '').trim().toLowerCase();
-    const items = document.querySelectorAll('#bio-mobile-more-drawer .bio-mobile-action, #bio-mobile-more-drawer .bio-mobile-action-label');
-    items.forEach(function(item) {
-      const hay = ((item.textContent || '') + ' ' + (item.getAttribute('title') || '')).toLowerCase();
-      item.style.display = (!q || hay.indexOf(q) !== -1) ? '' : 'none';
-    });
-    const heads = document.querySelectorAll('#bio-mobile-more-drawer .bio-drawer-section-head');
-    heads.forEach(function(head) {
-      let node = head.nextElementSibling;
-      let hasVisible = false;
-      while (node && !node.classList.contains('bio-drawer-section-head')) {
-        if ((node.classList.contains('bio-mobile-action') || node.classList.contains('bio-mobile-action-label')) && node.style.display !== 'none') {
-          hasVisible = true;
-          break;
-        }
-        node = node.nextElementSibling;
-      }
-      head.style.display = hasVisible || !q ? '' : 'none';
-    });
-  }
-  function bioOpenStoryGuide() {
-    bioMobileCloseMore();
-    _helpState = { query: '', activeId: 'story-mode' };
-    UI.help();
-  }
-
-  function bioMobileSetTrackHeight(value) {
-    TRACK_H = +value;
-    const desktopSlider = document.getElementById('track-h-slider');
-    const desktopValue = document.getElementById('track-h-val');
-    if (desktopSlider) desktopSlider.value = value;
-    if (desktopValue) desktopValue.textContent = value;
-    if (typeof clampPanY === 'function') clampPanY();
-    if (typeof render === 'function') render();
   }
 
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-      bioMobileCloseMore();
       bioMobileCloseFilters();
-      bioMobBlankCancel();
     }
   });
-
-  /* =====================================================
-     BIOGRAPHY MOBILE DATA ACTIONS — safe import & confirm
-     ===================================================== */
-
-  /* Import via the mobile-specific file input (label-triggered) */
-  function bioMobileImportFile(e) {
-    /* Reuse the existing importFile logic via the Store */
-    Store.importFile(e);
-    /* Reset the mobile input so the same file can be re-selected */
-    e.target.value = '';
-  }
-
-  /* Open the mobile-safe blank confirmation dialog */
-  function bioMobBlankConfirm() {
-    var dlg = document.getElementById('bio-mob-blank-confirm');
-    if (dlg) dlg.classList.add('open');
-  }
-
-  /* Save JSON first, then blank */
-  function bioMobBlankSaveFirst() {
-    bioMobBlankCancel();
-    Store.saveJSON();
-    /* Small delay so the download initiates before we wipe data */
-    setTimeout(function() {
-      _doBioBlank();
-    }, 350);
-  }
-
-  /* Blank without saving */
-  function bioMobBlankClearOnly() {
-    bioMobBlankCancel();
-    _doBioBlank();
-  }
-
-  /* Cancel — close dialog, keep data */
-  function bioMobBlankCancel() {
-    try { UI.closeOverlay('bio-mob-blank-confirm'); } catch(_){}
-  }
-
-  /* Internal: perform the blank (mirrors Store.blankTimeline minus the confirm calls) */
-  function _doBioBlank() {
-    _blankTemplateMode = true;
-    S.lifeTracks = [{ id: uid(), name: 'Untitled', color: PALETTE[0], visible: true, description: '', notes: '', birthDate: null }];
-    S.events = [];
-    S.connections = [];
-    S.people = [];
-    S.affiliations = [];
-    if (!S.categories || Object.keys(S.categories).length === 0) syncCategoriesToState();
-    V.panX = 0; V.panY = 0; V.scale = 1;
-    var zoom = document.getElementById('zoom-pct'); if (zoom) zoom.textContent = '100%';
-    Store.autosave();
-    MS = [];
-    M.close();
-    clampPanY();
-    render();
-    updateUniToggleBar();
-    updateCatFilterBar();
-    updateStatusFilterBar();
-    updateTagFilterBar();
-    updateStatsPanel();
-    notify('Blank timeline ready.', 'warning');
-  }
   </script>
     <!-- ===== MOBILE COMPACT TOOLBAR / BOTTOM SHEET / ZOOM PILL / FULLSCREEN MODAL ===== -->
   <style id="tlb-mobile-compact-style">
 @media (max-width: 767px) {
-  /* Hide pre-existing alternative mobile headers/drawers if present */
-  #bio-mobile-header,
-  #bio-mobile-scrim,
-  #bio-mobile-more-drawer,
-  #bio-mob-blank-confirm,
-  #mob-header,
-  #mob-bar,
-  #mob-drawer,
-  #mob-drawer-overlay,
-  #mobile-banner { display: none !important; }
-
   /* Show #toolbar as a compact 44px-tall bar */
   #toolbar {
     display: flex !important;
@@ -5896,8 +5138,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible,
   button, [role="button"], a.btn, .btn, .zbtn, .view-tab,
   input[type="button"], input[type="submit"], input[type="reset"],
   .fp-drop-btn, .tour-btn, .empty-state-btn, .uni-toggle-chip,
-  .bio-mobile-action, .bio-mobile-primary, .mob-btn, .mob-bar-btn,
-  .mob-drw-btn, .help-tab, .help-chip-btn, .cf-clear, .cf-mode-btn,
+  .help-tab, .help-chip-btn, .cf-clear, .cf-mode-btn,
   .tag-filter-chip, .cat-filter-chip, .pv-card, .topbar-links a,
   .footer-links a, .portal-cta {
     min-height: 44px;
@@ -6429,11 +5670,6 @@ body.reading-mode #ft-bands-cv {
 }
 body.reading-mode #ft-dust-cv {
   opacity: 0 !important;
-}
-body.reading-mode #bio-mobile-more-drawer,
-body.reading-mode #bio-mobile-header {
-  background: var(--rmb-bg-soft) !important;
-  color: var(--rmb-text) !important;
 }
 body.reading-mode #reading-toggle-btn {
   background: var(--rmb-accent) !important;

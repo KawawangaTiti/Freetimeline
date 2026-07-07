@@ -78,9 +78,6 @@ body.modal-open { overflow: hidden; overscroll-behavior: none; }
 .field-error { margin-top: 6px; font-size: 12px; color: #ffd0c8; font-weight: 600; }
 [aria-invalid="true"] { border-color: #ff8f84 !important; box-shadow: 0 0 0 3px rgba(217,83,79,0.25) !important; }
 .btn:focus-visible,
-.mob-btn:focus-visible,
-.mob-drw-btn:focus-visible,
-.mob-bar-btn:focus-visible,
 .view-tab:focus-visible,
 .fp-drop-btn:focus-visible,
 .tour-btn:focus-visible,
@@ -205,9 +202,6 @@ body.mm-collapsed #minimap-show { display: inline-flex; }
   transition: background 0.15s, border-color 0.15s, transform 0.1s;
 }
 .btn,
-.mob-btn,
-.mob-drw-btn,
-.mob-bar-btn,
 .view-tab,
 .fp-drop-btn,
 .tour-btn,
@@ -586,22 +580,7 @@ input[type="color"] {
 ::-webkit-scrollbar-thumb { background: rgba(100,120,200,0.3); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(100,120,200,0.5); }
 
-/* =====================================================
-   MOBILE BANNER
-   ===================================================== */
-#mobile-banner {
-  display: none;
-  background: linear-gradient(90deg, #12142a, #1a1e40);
-  border-bottom: 1px solid rgba(74,143,222,0.45);
-  color: #c0d0ff;
-  font-size: 12px;
-  padding: 7px 14px;
-  text-align: center;
-  z-index: 25;
-  flex-shrink: 0;
-}
 @media (max-width: 767px) {
-  #mobile-banner { display: block; }
   .tb-secondary { display: none !important; }
   #kbd-hint { display: none; }
   #filter-panel-toggle { display: none !important; }
@@ -1657,11 +1636,6 @@ body { background: #07081a; }
     min-height: 0 !important;
   }
 
-  /* mob-bar must never shrink */
-  #mob-bar {
-    flex-shrink: 0;
-  }
-
   #zoom-ctrl {
     right: max(16px, env(safe-area-inset-right, 0px));
     bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + 58px);
@@ -1707,225 +1681,12 @@ body { background: #07081a; }
 }
 
 /* =====================================================
-   MOBILE HEADER & DRAWER  (≤ 767px only)
+   MOBILE (≤ 767px): hide the desktop toolbar.
+   The compact mobile toolbar (#tlb-mobile-menu / #tlb-sheet,
+   injected further down) re-shows #toolbar as a 44px bar.
    ===================================================== */
-
-/* --- Mobile compact header --- */
-#mob-header {
-  display: none;
-}
 @media (max-width: 767px) {
-  /* Hide desktop toolbar & mobile info banner */
-  #toolbar       { display: none !important; }
-  #mobile-banner { display: none !important; }
-
-  /* Show mobile header */
-  #mob-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 6px;
-    padding: 0 10px;
-    padding-top: max(8px, env(safe-area-inset-top, 0px));
-    height: calc(50px + max(0px, env(safe-area-inset-top, 0px)));
-    background: linear-gradient(180deg, #07081e 0%, #0c0e2a 100%);
-    border-bottom: 1px solid rgba(0,210,255,0.18);
-    box-shadow: 0 2px 18px rgba(0,0,0,0.7);
-    flex-shrink: 0;
-    z-index: 20;
-  }
-
-  #mob-header .mob-logo {
-    font-size: 14px;
-    font-weight: 900;
-    background: linear-gradient(135deg, #00d4ff 10%, #a855f7 90%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: 1px;
-    white-space: nowrap;
-    flex-shrink: 0;
-    margin-right: 2px;
-  }
-
-  #mob-header .mob-actions {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    flex: 1;
-    justify-content: flex-end;
-  }
-
-  /* Mobile header buttons */
-  .mob-btn {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 2px;
-    padding: 6px 10px;
-    border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(255,255,255,0.06);
-    color: #c0cde8;
-    font-size: 9px;
-    font-family: inherit;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    cursor: pointer;
-    min-height: 44px;
-    min-width: 48px;
-    touch-action: manipulation;
-    transition: background 0.15s, border-color 0.15s;
-  }
-  .mob-btn .mob-icon {
-    font-size: 17px;
-    line-height: 1;
-  }
-  .mob-btn:active {
-    background: rgba(0,210,255,0.15);
-    border-color: rgba(0,210,255,0.4);
-  }
-  .mob-btn.mob-accent {
-    background: linear-gradient(135deg, #00b8e0 0%, #0070c8 100%);
-    border-color: rgba(0,190,230,0.55);
-    color: #fff;
-    box-shadow: 0 2px 10px rgba(0,180,230,0.28);
-  }
-  .mob-btn.mob-accent:active {
-    background: linear-gradient(135deg, #00ccf5 0%, #007fd8 100%);
-  }
-  .mob-btn.mob-menu {
-    background: rgba(168,85,247,0.14);
-    border-color: rgba(168,85,247,0.32);
-    color: #cfa8ff;
-  }
-  .mob-btn.mob-menu:active {
-    background: rgba(168,85,247,0.28);
-  }
-  .mob-btn.mob-more {
-    background: rgba(0,210,255,0.07);
-    border-color: rgba(0,210,255,0.2);
-    color: #80b8e0;
-  }
-  .mob-btn.mob-more:active {
-    background: rgba(0,210,255,0.15);
-  }
-  .mob-btn.mob-filters-active {
-    background: rgba(0,210,255,0.18);
-    border-color: rgba(0,210,255,0.5);
-    color: #00d4ff;
-  }
-}
-
-/* --- Mobile bottom action bar --- */
-#mob-bar {
-  display: none;
-}
-@media (max-width: 767px) {
-  #mob-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    padding: 0 4px;
-    padding-bottom: max(6px, env(safe-area-inset-bottom, 0px));
-    height: calc(52px + max(0px, env(safe-area-inset-bottom, 0px)));
-    background: linear-gradient(180deg, #0c0e2a 0%, #07081e 100%);
-    border-top: 1px solid rgba(0,210,255,0.18);
-    box-shadow: 0 -2px 18px rgba(0,0,0,0.6);
-    flex-shrink: 0;
-    z-index: 20;
-    gap: 2px;
-  }
-
-  .mob-bar-btn {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 2px;
-    flex: 1;
-    max-width: 70px;
-    padding: 6px 4px;
-    border-radius: 9px;
-    border: none;
-    background: transparent;
-    color: rgba(160,185,220,0.65);
-    font-size: 8.5px;
-    font-family: inherit;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    cursor: pointer;
-    min-height: 44px;
-    touch-action: manipulation;
-    transition: background 0.14s, color 0.14s;
-  }
-  .mob-bar-btn .bar-icon {
-    font-size: 18px;
-    line-height: 1;
-  }
-  .mob-bar-btn:active,
-  .mob-bar-btn.bar-active {
-    background: rgba(0,210,255,0.1);
-    color: #00d4ff;
-    border-radius: 9px;
-  }
-  .mob-bar-btn.bar-view-active {
-    color: #00d4ff;
-  }
-}
-
-/* =====================================================
-   320px OVERFLOW SAFETY — mob-header
-   At 320px the 4 × min-width:48px buttons + nowrap
-   logo can hit 300px inner width. Allow the logo to
-   flex-shrink and reduce button footprint slightly.
-   ===================================================== */
-@media (max-width: 360px) {
-  #mob-header .mob-logo {
-    flex-shrink: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 88px;
-  }
-  .mob-btn {
-    min-width: 42px;
-    padding: 6px 5px;
-  }
-}
-
-/* --- Mobile drawer overlay --- */
-#mob-drawer-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(4,6,18,0.65);
-  z-index: 110;
-  backdrop-filter: blur(3px);
-  touch-action: manipulation;
-}
-#mob-drawer-overlay.open { display: block; }
-
-/* --- Mobile drawer panel --- */
-#mob-drawer {
-  position: fixed;
-  left: 0; right: 0; bottom: 0;
-  background: linear-gradient(180deg, #0e1032 0%, #080a22 100%);
-  border-top: 1.5px solid rgba(0,210,255,0.25);
-  border-radius: 18px 18px 0 0;
-  z-index: 120;
-  padding: 0 0 max(16px, env(safe-area-inset-bottom, 0px));
-  box-shadow: 0 -8px 40px rgba(0,0,0,0.7);
-  max-height: 82dvh;
-  overflow-y: auto;
-  transform: translateY(105%);
-  transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
-  visibility: hidden;
-}
-#mob-drawer.open {
-  transform: translateY(0);
-  visibility: visible;
+  #toolbar { display: none !important; }
 }
 
 .mob-drawer-handle {
@@ -1933,169 +1694,6 @@ body { background: #07081a; }
   background: rgba(0,210,255,0.25);
   border-radius: 2px;
   margin: 10px auto 4px;
-}
-
-.mob-drawer-title {
-  font-size: 11px;
-  font-weight: 800;
-  color: rgba(0,210,255,0.55);
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  text-align: center;
-  padding: 4px 0 12px;
-  border-bottom: 1px solid rgba(0,210,255,0.1);
-  margin: 0 16px 12px;
-}
-
-.mob-drawer-section {
-  padding: 4px 12px 6px;
-}
-.mob-drawer-section-label {
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: rgba(0,210,255,0.35);
-  padding: 4px 4px 6px;
-}
-.mob-drawer-row {
-  display: flex;
-  gap: 7px;
-  margin-bottom: 7px;
-  flex-wrap: wrap;
-}
-
-.mob-drw-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 9px 14px;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.11);
-  background: rgba(255,255,255,0.05);
-  color: #b8c8e8;
-  font-size: 12px;
-  font-family: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  touch-action: manipulation;
-  min-height: 44px;
-  flex: 1;
-  min-width: 120px;
-  transition: background 0.14s, border-color 0.14s;
-  white-space: nowrap;
-}
-.mob-drw-btn:active {
-  background: rgba(0,210,255,0.14);
-  border-color: rgba(0,210,255,0.35);
-}
-.mob-drw-btn.drw-accent {
-  background: linear-gradient(135deg, #00b8e0 0%, #0070c8 100%);
-  border-color: rgba(0,190,230,0.55);
-  color: #fff;
-}
-.mob-drw-btn.drw-danger {
-  background: linear-gradient(135deg, #b83030 0%, #8a1e1e 100%);
-  border-color: rgba(220,60,60,0.45);
-  color: #ffd0d0;
-}
-.mob-drw-btn.drw-save {
-  background: linear-gradient(135deg, #00b8e0 0%, #0070c8 100%);
-  border-color: rgba(0,190,230,0.5);
-  color: #fff;
-}
-.mob-drw-btn.drw-undo,
-.mob-drw-btn.drw-redo {
-  background: rgba(180,160,255,0.08);
-  border-color: rgba(168,85,247,0.22);
-  color: #c0a8f0;
-}
-
-/* Mobile drawer storage / backup notice */
-.mob-drawer-storage-notice {
-  margin: 4px 12px 8px;
-  padding: 9px 12px;
-  background: rgba(74,143,222,0.1);
-  border: 1px solid rgba(74,143,222,0.28);
-  border-radius: 9px;
-  font-size: 11px;
-  color: rgba(190,215,255,0.88);
-  line-height: 1.5;
-}
-.mob-drawer-storage-notice strong {
-  color: #90c8ff;
-  font-weight: 800;
-}
-
-/* Mobile-only confirm dialog for destructive Blank action */
-#mob-blank-confirm {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 260;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(4,6,18,0.78);
-  backdrop-filter: blur(4px);
-}
-#mob-blank-confirm.open { display: flex; }
-.mob-confirm-box {
-  background: linear-gradient(180deg, #1a1040 0%, #0e0820 100%);
-  border: 1.5px solid rgba(220,60,80,0.45);
-  border-radius: 16px;
-  padding: 22px;
-  max-width: 340px;
-  width: 100%;
-  box-shadow: 0 20px 70px rgba(0,0,0,0.75);
-}
-.mob-confirm-icon {
-  font-size: 32px;
-  text-align: center;
-  margin-bottom: 10px;
-}
-.mob-confirm-title {
-  font-size: 16px;
-  font-weight: 900;
-  color: #ffb8b8;
-  text-align: center;
-  margin-bottom: 6px;
-}
-.mob-confirm-desc {
-  font-size: 12px;
-  color: rgba(200,210,240,0.8);
-  text-align: center;
-  line-height: 1.55;
-  margin-bottom: 18px;
-}
-.mob-confirm-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-}
-.mob-confirm-btn {
-  min-height: 46px;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.15);
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 800;
-  cursor: pointer;
-  touch-action: manipulation;
-  color: #fff;
-}
-.mob-confirm-btn.save-first {
-  background: linear-gradient(135deg, #1a8050, #0f5535);
-  border-color: rgba(40,200,120,0.4);
-}
-.mob-confirm-btn.clear-only {
-  background: linear-gradient(135deg, #b83030, #7a1a1a);
-  border-color: rgba(220,60,60,0.45);
-}
-.mob-confirm-btn.cancel {
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(255,255,255,0.14);
-  color: #b8c8e8;
 }
 
 @media (hover: none), (pointer: coarse) {
@@ -2424,21 +2022,6 @@ body { background: #07081a; }
     background: rgba(220,60,60,0.3);
   }
 
-  /* Badge on the mobile Filters button */
-  #mob-filters-btn .mob-filter-badge {
-    display: inline-block;
-    background: #00d4ff;
-    color: #000c18;
-    border-radius: 8px;
-    font-size: 9px;
-    font-weight: 900;
-    padding: 0 5px;
-    min-width: 16px;
-    text-align: center;
-    line-height: 16px;
-    height: 16px;
-    margin-top: 1px;
-  }
 }
 
 /* =====================================================
@@ -3120,8 +2703,7 @@ body { background: #07081a; }
 .cf-chip:focus-visible,
 .tag-filter-chip:focus-visible,
 .uni-toggle-chip:focus-visible,
-.cf-clear:focus-visible,
-.mob-drw-btn:focus-visible {
+.cf-clear:focus-visible {
   outline: 2px solid rgba(0,210,255,0.6);
   outline-offset: 2px;
 }
@@ -3806,166 +3388,6 @@ input[type="color"]:focus-visible {
 }
 
 </style>
-<style>
-@media (max-width: 767px) {
-  #mob-header {
-    height: auto !important;
-    padding: max(10px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 10px max(12px, env(safe-area-inset-left, 0px)) !important;
-    gap: 10px !important;
-    align-items: stretch !important;
-  }
-
-  .mob-header-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  .mob-header-brand {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  #mob-header .mob-logo {
-    font-size: 15px !important;
-    line-height: 1.1;
-    margin-right: 0 !important;
-  }
-
-  .mob-subtitle {
-    color: rgba(190, 220, 255, 0.72);
-    font-size: 11px;
-    line-height: 1.35;
-  }
-
-  .mob-actions {
-    display: grid !important;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 8px !important;
-    width: 100%;
-    justify-content: stretch !important;
-  }
-
-  .mob-btn {
-    min-width: 0 !important;
-    min-height: 50px !important;
-    padding: 10px 8px !important;
-    border-radius: 14px !important;
-    gap: 6px !important;
-    font-size: 11px !important;
-    letter-spacing: 0.02em !important;
-  }
-
-  .mob-btn .mob-icon {
-    font-size: 18px !important;
-  }
-
-  .mob-btn.mob-menu {
-    min-height: 42px !important;
-    min-width: 82px !important;
-    padding-inline: 12px !important;
-  }
-
-  .mob-touch-note {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 42px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    background: rgba(0, 210, 255, 0.08);
-    border: 1px solid rgba(0, 210, 255, 0.16);
-    color: rgba(192, 220, 245, 0.9);
-    font-size: 11px;
-    line-height: 1.45;
-  }
-
-  .mob-touch-note strong {
-    color: #fff;
-    white-space: nowrap;
-  }
-
-  .mob-drawer-title {
-    margin-bottom: 8px !important;
-  }
-
-  .mob-drawer-search {
-    padding: 0 12px 10px;
-  }
-
-  #mob-drawer-search {
-    width: 100%;
-    min-height: 46px;
-    padding: 12px 14px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(255,255,255,0.06);
-    color: #dcecff;
-    font: inherit;
-    font-size: 16px;
-  }
-
-  #mob-drawer-search::placeholder {
-    color: rgba(190, 215, 240, 0.48);
-  }
-
-  /* B-7: search-match highlight inside drawer buttons */
-  .mob-drw-btn .drw-mark {
-    background: rgba(0, 210, 255, 0.32);
-    color: #ffffff;
-    border-radius: 3px;
-    padding: 0 2px;
-  }
-  .mob-drawer-noresults {
-    text-align: center;
-    color: rgba(190, 215, 240, 0.55);
-    font-size: 13px;
-    padding: 18px 14px;
-    font-style: italic;
-  }
-
-  #mob-drawer {
-    max-height: 88dvh !important;
-  }
-
-  .mob-drw-btn {
-    min-height: 48px !important;
-    padding: 11px 14px !important;
-    font-size: 12px !important;
-    white-space: normal !important;
-    overflow-wrap: anywhere;
-  }
-
-  .mob-bar-btn {
-    max-width: none !important;
-    min-height: 48px !important;
-    font-size: 9.5px !important;
-    padding: 6px 4px 8px !important;
-  }
-
-  .mob-bar-btn .bar-icon {
-    font-size: 19px !important;
-  }
-}
-
-@media (max-width: 420px) {
-  .mob-actions {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-
-  .mob-touch-note {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .mob-bar-btn {
-    font-size: 8.5px !important;
-  }
-}
-</style>
   <link rel="alternate" type="application/rss+xml" href="/feed.xml" title="FreeTimeline Guides">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://freetimeline.pt/universe.html">
@@ -3983,45 +3405,6 @@ input[type="color"]:focus-visible {
 
 <div id="app">
   <h1 class="sr-only" id="page-title">Free Timeline Universe</h1>
-
-  <!-- ==================== MOBILE BANNER (desktop fallback, hidden on mobile by CSS) ==================== -->
-  <div id="mobile-banner">&#128241; Touch to pan &nbsp;&middot;&nbsp; Pinch to zoom &nbsp;&middot;&nbsp; Limited editing on mobile</div>
-
-  <!-- ==================== MOBILE COMPACT HEADER (≤767px) ==================== -->
-  <div id="mob-header">
-    <div class="mob-header-top">
-      <div class="mob-header-brand">
-        <span class="mob-logo" title="Free Timeline Universe">✦ Free Timeline Universe</span>
-        <span class="mob-subtitle">Worldbuilding timeline with touch-safe tools, backups, filters, and story navigation.</span>
-      </div>
-      <button class="mob-btn mob-menu" onclick="goBackToMenu()" title="Back to menu">
-        <span class="mob-icon">←</span>
-        Menu
-      </button>
-    </div>
-    <div class="mob-actions">
-      <button class="mob-btn mob-accent" onclick="UI.addEvent()" title="Add new event">
-        <span class="mob-icon">＋</span>
-        Event
-      </button>
-      <button class="mob-btn" id="mob-filters-btn" onclick="mobToggleFilters()" title="Search &amp; Filters">
-        <span class="mob-icon">🔍</span>
-        Filters<span id="mob-filter-badge" class="mob-filter-badge" style="display:none"></span>
-      </button>
-      <button class="mob-btn" onclick="toggleStoryLine()" title="Toggle story line view">
-        <span class="mob-icon">🔗</span>
-        Story
-      </button>
-      <button class="mob-btn mob-more" onclick="mobOpenDrawer()" title="More actions">
-        <span class="mob-icon">⋯</span>
-        More
-      </button>
-    </div>
-    <div class="mob-touch-note" role="note">
-      <strong>Touch:</strong>
-      Drag to pan, pinch to zoom, and open More for import, export, help, and continuity tools.
-    </div>
-  </div>
 
   <!-- ==================== MOBILE ACTIVE FILTER STRIP (mobile only) ==================== -->
   <div id="mob-active-strip" aria-live="polite">
@@ -4578,295 +3961,23 @@ input[type="color"]:focus-visible {
       else if (span > 100000) notify('Showing ' + Math.round(span).toLocaleString() + ' years.', 'info');
     }
   }
-  /* ---- inject mob-bar & drawer into DOM on load ---- */
-  (function() {
-    /* === Mobile bottom action bar === */
-    var bar = document.createElement('div');
-    bar.id = 'mob-bar';
-    bar.innerHTML =
-      '<button class="mob-bar-btn bar-view-active" id="mob-tab-timeline" onclick="mobSwitchView(\'timeline\')">' +
-        '<span class="bar-icon">⏱</span>Timeline</button>' +
-      '<button class="mob-bar-btn" id="mob-tab-characters" onclick="mobSwitchView(\'characters\')">' +
-        '<span class="bar-icon">👤</span>Characters</button>' +
-      '<button class="mob-bar-btn" id="mob-tab-connections" onclick="mobSwitchView(\'connections\')">' +
-        '<span class="bar-icon">🔗</span>Connect</button>' +
-      '<button class="mob-bar-btn" id="mob-tab-stats" onclick="mobSwitchView(\'stats\')">' +
-        '<span class="bar-icon">📊</span>Stats</button>' +
-      '<button class="mob-bar-btn" onclick="mobOpenDrawer()">' +
-        '<span class="bar-icon">⋯</span>More</button>';
-    document.getElementById('app').appendChild(bar);
-
-    /* === Drawer overlay === */
-    var ov = document.createElement('div');
-    ov.id = 'mob-drawer-overlay';
-    ov.setAttribute('onclick', 'mobCloseDrawer()');
-    document.body.appendChild(ov);
-
-    /* === Drawer panel === */
-    var drw = document.createElement('div');
-    drw.id = 'mob-drawer';
-    drw.innerHTML =
-      '<div class="mob-drawer-handle"></div>' +
-      '<div class="mob-drawer-title">All Commands</div>' +
-      '<div class="mob-drawer-search">' +
-        '<input id="mob-drawer-search" type="search" placeholder="Quick action: export, story, help..." oninput="mobFilterDrawerActions(this.value)" aria-label="Search universe mobile actions">' +
-      '</div>' +
-
-      '<div class="mob-drawer-section">' +
-        '<div class="mob-drawer-section-label">Create</div>' +
-        '<div class="mob-drawer-row">' +
-          '<button class="mob-drw-btn drw-accent" onclick="mobDrawerAction(UI.addUniverse)">＋ Universe</button>' +
-          '<button class="mob-drw-btn drw-accent" onclick="mobDrawerAction(UI.addEvent)">＋ Event</button>' +
-        '</div>' +
-      '</div>' +
-
-      '<div class="mob-drawer-section">' +
-        '<div class="mob-drawer-section-label">Views</div>' +
-        '<div class="mob-drawer-row">' +
-          '<button class="mob-drw-btn" onclick="mobDrawerView(\'timeline\')">⏱ Timeline</button>' +
-          '<button class="mob-drw-btn" onclick="mobDrawerView(\'characters\')">👤 Characters</button>' +
-        '</div>' +
-        '<div class="mob-drawer-row">' +
-          '<button class="mob-drw-btn" onclick="mobDrawerView(\'connections\')">🔗 Connections</button>' +
-          '<button class="mob-drw-btn" onclick="mobDrawerView(\'stats\')">📊 Stats</button>' +
-        '</div>' +
-        /* DOC-002: Reading Mode was reachable only on Universe's desktop toolbar;
-           add it to the mobile drawer too, matching Biography's mobile More menu. */
-        '<div class="mob-drawer-row">' +
-          '<button class="mob-drw-btn" onclick="mobDrawerAction(toggleReadingMode)">📖 Reading Mode</button>' +
-        '</div>' +
-      '</div>' +
-
-      '<div class="mob-drawer-section">' +
-        '<div class="mob-drawer-section-label">Organise</div>' +
-        '<div class="mob-drawer-row">' +
-          '<button class="mob-drw-btn" onclick="mobDrawerAction(UI.catEditor)">🏷 Categories</button>' +
-          '<button class="mob-drw-btn" onclick="mobDrawerAction(UI.affiliationEditor)">🏢 Organizations</button>' +
-        '</div>' +
-      '</div>' +
-
-      '<div class="mob-drawer-section">' +
-        '<div class="mob-drawer-section-label">Navigate</div>' +
-        '<div class="mob-drawer-row">' +
-          '<button class="mob-drw-btn" onclick="mobDrawerAction(goToToday)">⏱ Today</button>' +
-          '<button class="mob-drw-btn" onclick="mobDrawerAction(resetView)">⌂ Reset</button>' +
-        '</div>' +
-        '<div class="mob-drawer-row">' +
-          '<button class="mob-drw-btn drw-undo" id="mob-undo-btn" onclick="mobDrawerAction(History.undo)">↩ Undo</button>' +
-          '<button class="mob-drw-btn drw-redo" id="mob-redo-btn" onclick="mobDrawerAction(History.redo)">↪ Redo</button>' +
-        '</div>' +
-      '</div>' +
-
-      '<div class="mob-drawer-storage-notice" role="note">' +
-        '<strong>💾 Your data lives in this browser only.</strong><br>' +
-        'Export a backup regularly — clearing browser data or switching browsers will erase your timeline.' +
-      '</div>' +
-
-      '<div class="mob-drawer-section">' +
-        '<div class="mob-drawer-section-label">Data &amp; Backup</div>' +
-        '<div class="mob-drawer-row">' +
-          '<button class="mob-drw-btn drw-save" onclick="mobDrawerAction(Store.saveHTML)" title="Save as a portable HTML file you can reopen anywhere">💾 Save HTML</button>' +
-          '<button class="mob-drw-btn" onclick="mobDrawerAction(Store.saveJSON)" title="Export a plain JSON backup of all your data">↓ Export JSON</button>' +
-        '</div>' +
-        '<div class="mob-drawer-row">' +
-          '<label class="mob-drw-btn" for="mob-file-in-label" style="cursor:pointer" title="Load a previously saved HTML or JSON file — tap to open your files">↑ Load / Import</label>' +
-          '<input type="file" id="mob-file-in-label" accept=".html,.json" style="display:none" onchange="mobImportFile(event)" aria-label="Load universe timeline file">' +
-          '<button class="mob-drw-btn drw-danger" onclick="mobDrawerBlankConfirm()" title="Delete all data and start fresh — you will be given a chance to save a backup first">🗑 Clear / Blank</button>' +
-        '</div>' +
-      '</div>' +
-
-      '<div class="mob-drawer-section">' +
-        '<div class="mob-drawer-section-label">Tools</div>' +
-        '<div class="mob-drawer-row">' +
-          '<button class="mob-drw-btn" onclick="mobDrawerAction(toggleStoryLine)">🔗 Story</button>' +
-          '<button class="mob-drw-btn" onclick="mobDrawerAction(ContinuityTour.start)">🎬 Continuity Tour</button>' +
-          '<button class="mob-drw-btn" onclick="mobDrawerAction(openRangeConfig)">📅 Range</button>' +
-        '</div>' +
-        '<div class="mob-drawer-row">' +
-          '<button class="mob-drw-btn" onclick="mobDrawerAction(UI.help)">❓ Help</button>' +
-          '<button class="mob-drw-btn" onclick="mobDrawerAction(UI.toggleKbd)">⚓ Shortcuts</button>' +
-        '</div>' +
-      '</div>';
-    document.body.appendChild(drw);
-
-    /* === Mobile blank-confirm dialog === */
-    var confirmDlg = document.createElement('div');
-    confirmDlg.id = 'mob-blank-confirm';
-    confirmDlg.setAttribute('role', 'dialog');
-    confirmDlg.setAttribute('aria-modal', 'true');
-    confirmDlg.setAttribute('aria-label', 'Clear timeline — are you sure?');
-    confirmDlg.innerHTML =
-      '<div class="mob-confirm-box">' +
-        '<div class="mob-confirm-icon">\u26a0\ufe0f</div>' +
-        '<div class="mob-confirm-title">Clear all timeline data?</div>' +
-        '<div class="mob-confirm-desc">' +
-          'This will permanently delete all universes, events, characters, and connections.<br><br>' +
-          '<strong>Export a backup first</strong> \u2014 your data is only stored in this browser.' +
-        '</div>' +
-        '<div class="mob-confirm-actions">' +
-          '<button class="mob-confirm-btn save-first" type="button" onclick="mobBlankSaveFirst()">\uD83D\uDCBE Save JSON backup, then clear</button>' +
-          '<button class="mob-confirm-btn clear-only" type="button" onclick="mobBlankClearOnly()">\uD83D\uDDD1 Clear without saving</button>' +
-          '<button class="mob-confirm-btn cancel" type="button" onclick="mobBlankCancel()">Cancel \u2014 keep my data</button>' +
-        '</div>' +
-      '</div>';
-    document.body.appendChild(confirmDlg);
-  })();
-
   /* === Mobile control functions === */
-  function mobOpenDrawer() {
-    var drw = document.getElementById('mob-drawer');
-    var ov  = document.getElementById('mob-drawer-overlay');
-    if (!drw || !ov) return;
-    ov.classList.add('open');
-    var search = document.getElementById('mob-drawer-search');
-    if (search) {
-      search.value = '';
-      mobFilterDrawerActions('');
-    }
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() { drw.classList.add('open'); });
-    });
-  }
-  function mobCloseDrawer() {
-    try {
-      UI.closeOverlay('mob-drawer');
-      UI.closeOverlay('mob-drawer-overlay');
-    } catch(_){}
-  }
-  function mobDrawerAction(fn) {
-    mobCloseDrawer();
-    setTimeout(function() { if (typeof fn === 'function') fn(); }, 80);
-  }
-  function mobDrawerView(view) {
-    mobCloseDrawer();
-    setTimeout(function() { mobSwitchView(view); }, 80);
-  }
-  /* B-7 (ported from Biography, enriched): filter the More drawer with
-     match highlighting, label-aware matching, and a "no results" state.
-     Each .mob-drw-btn caches its original innerHTML in data-orig the
-     first time it's filtered so we can losslessly restore it. */
-  function _mobEscapeRegex(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-  function _mobEscapeHtml(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-  function _mobHighlight(html, q) {
-    if (!q) return html;
-    /* Walk text nodes only, leave any nested tags alone (icons etc.) */
-    var tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    var rx = new RegExp('(' + _mobEscapeRegex(q) + ')', 'gi');
-    (function walk(node) {
-      for (var i = 0; i < node.childNodes.length; i++) {
-        var c = node.childNodes[i];
-        if (c.nodeType === 3) {
-          if (rx.test(c.nodeValue)) {
-            var span = document.createElement('span');
-            span.innerHTML = _mobEscapeHtml(c.nodeValue).replace(rx, '<mark class="drw-mark">$1</mark>');
-            c.parentNode.replaceChild(span, c);
-            i += span.childNodes.length - 1;
-          }
-        } else if (c.nodeType === 1 && c.tagName !== 'MARK') {
-          walk(c);
-        }
-      }
-    })(tmp);
-    return tmp.innerHTML;
-  }
-  function mobFilterDrawerActions(query) {
-    var q = (query || '').trim().toLowerCase();
-    var drawer = document.getElementById('mob-drawer');
-    if (!drawer) return;
-
-    /* Drop any stale "no results" placeholder from a previous query */
-    var prevNR = drawer.querySelector('.mob-drawer-noresults');
-    if (prevNR) prevNR.remove();
-
-    var sections = drawer.querySelectorAll('.mob-drawer-section');
-    var anySectionVisible = false;
-
-    sections.forEach(function(section) {
-      var label = section.querySelector('.mob-drawer-section-label');
-      var labelText = label ? (label.textContent || '').toLowerCase() : '';
-      var labelMatches = q && labelText.indexOf(q) !== -1;
-
-      var buttons = section.querySelectorAll('.mob-drw-btn');
-      var visibleCount = 0;
-
-      buttons.forEach(function(btn) {
-        /* Cache original markup once so highlighting is reversible */
-        if (!btn.hasAttribute('data-orig')) {
-          btn.setAttribute('data-orig', btn.innerHTML);
-        }
-        var orig = btn.getAttribute('data-orig');
-        var hay = ((btn.textContent || '') + ' ' + (btn.getAttribute('title') || '')).toLowerCase();
-        var match = !q || hay.indexOf(q) !== -1 || labelMatches;
-        btn.style.display = match ? '' : 'none';
-        btn.innerHTML = match ? _mobHighlight(orig, q) : orig;
-        if (match) visibleCount++;
-      });
-
-      var rows = section.querySelectorAll('.mob-drawer-row');
-      rows.forEach(function(row) {
-        var anyVisible = Array.from(row.querySelectorAll('.mob-drw-btn')).some(function(btn) {
-          return btn.style.display !== 'none';
-        });
-        row.style.display = anyVisible ? '' : 'none';
-      });
-
-      /* Restore + highlight the section label itself */
-      if (label) {
-        if (!label.hasAttribute('data-orig')) {
-          label.setAttribute('data-orig', label.innerHTML);
-        }
-        label.innerHTML = _mobHighlight(label.getAttribute('data-orig'), q);
-      }
-
-      var sectionVisible = visibleCount > 0;
-      section.style.display = sectionVisible ? '' : 'none';
-      if (sectionVisible) anySectionVisible = true;
-    });
-
-    /* Hide the "your data lives in this browser" notice while filtering */
-    var notice = drawer.querySelector('.mob-drawer-storage-notice');
-    if (notice) notice.style.display = q ? 'none' : '';
-
-    /* Surface a "no results" placeholder so the drawer never looks broken */
-    if (q && !anySectionVisible) {
-      var nr = document.createElement('div');
-      nr.className = 'mob-drawer-noresults';
-      nr.textContent = 'No actions match "' + query + '".';
-      drawer.appendChild(nr);
-    }
-  }
-  function mobSwitchView(view) {
-    if (typeof switchView === 'function') switchView(view);
-    var tabs = ['timeline', 'characters', 'connections', 'stats'];
-    tabs.forEach(function(v) {
-      var el = document.getElementById('mob-tab-' + v);
-      if (el) {
-        el.classList.toggle('bar-view-active', v === view);
-        el.style.color = v === view ? '#00d4ff' : '';
-      }
-    });
-  }
   function mobToggleFilters() {
     var fp  = document.getElementById('filter-panel');
     var fpr = document.getElementById('filter-panel-rows');
     var ov  = document.getElementById('mob-fp-overlay');
-    var btn = document.getElementById('mob-filters-btn');
     if (!fp) return;
     var isOpen = fp.classList.toggle('mob-fp-open');
     if (fpr) fpr.classList.toggle('open', isOpen);
     if (ov)  ov.classList.toggle('open', isOpen);
-    if (btn) btn.classList.toggle('mob-filters-active', isOpen);
     if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
   }
   function mobCloseFilters() {
     try {
       var fp  = document.getElementById('filter-panel');
-      var btn = document.getElementById('mob-filters-btn');
       if (fp)  { try { fp.classList.remove('mob-fp-open'); } catch(_){} }
       UI.closeOverlay('filter-panel-rows');
       UI.closeOverlay('mob-fp-overlay');
-      if (btn) { try { btn.classList.remove('mob-filters-active'); } catch(_){} }
       if (typeof updateMobileActiveStrip === 'function') {
         try { updateMobileActiveStrip(); } catch(_){}
       }
@@ -4879,7 +3990,6 @@ input[type="color"]:focus-visible {
   function updateMobileActiveStrip() {
     var strip = document.getElementById('mob-active-strip');
     var chipsEl = document.getElementById('mob-active-chips');
-    var badge = document.getElementById('mob-filter-badge');
     if (!strip || !chipsEl) return;
 
     var chips = [];
@@ -4910,13 +4020,11 @@ input[type="color"]:focus-visible {
     if (count === 0) {
       strip.classList.remove('has-filters');
       chipsEl.innerHTML = '';
-      if (badge) { badge.style.display = 'none'; badge.textContent = ''; }
     } else {
       strip.classList.add('has-filters');
       chipsEl.innerHTML = chips.map(function(c) {
         return '<span class="mob-active-chip">' + c.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>';
       }).join('');
-      if (badge) { badge.style.display = ''; badge.textContent = count; }
     }
 
     /* Reflow canvas height after strip visibility changes */
@@ -4924,73 +4032,6 @@ input[type="color"]:focus-visible {
     setTimeout(function() { if (typeof window._tlResize === 'function') window._tlResize(); }, 180);
   }
 
-  /* =====================================================
-     UNIVERSE MOBILE DATA ACTIONS — safe import & confirm
-     ===================================================== */
-
-  /* Import via the mobile file-input label (bypasses Store.importClick for label-based triggering) */
-  function mobImportFile(e) {
-    Store.importFile(e);
-    e.target.value = '';
-  }
-
-  /* Open the mobile-safe blank confirmation dialog */
-  function mobDrawerBlankConfirm() {
-    mobCloseDrawer();
-    setTimeout(function() {
-      var dlg = document.getElementById('mob-blank-confirm');
-      if (dlg) dlg.classList.add('open');
-    }, 100);
-  }
-
-  /* Save JSON backup first, then blank */
-  function mobBlankSaveFirst() {
-    mobBlankCancel();
-    Store.saveJSON();
-    setTimeout(function() { _doUniBlank(); }, 350);
-  }
-
-  /* Blank without saving */
-  function mobBlankClearOnly() {
-    mobBlankCancel();
-    _doUniBlank();
-  }
-
-  /* Cancel — keep data */
-  function mobBlankCancel() {
-    try { UI.closeOverlay('mob-blank-confirm'); } catch(_){}
-  }
-
-  /* Perform the blank (mirrors Store.blankTimeline minus browser confirm calls) */
-  function _doUniBlank() {
-    S.universes = [{ id: uid(), name: 'Untitled', color: PALETTE[0], visible: true, description: '', notes: '' }];
-    S.events = [];
-    S.connections = [];
-    S.characters = [];
-    S.affiliations = [];
-    if (!S.categories || Object.keys(S.categories).length === 0) syncCategoriesToState();
-    V.panX = 0; V.panY = 0; V.scale = getMinScale();
-    var zoom = document.getElementById('zoom-pct'); if (zoom) zoom.textContent = formatZoomPercent();
-    Store.autosave();
-    MS = [];
-    M.close();
-    clampPanY();
-    render();
-    updateUniverseScrollbar();
-    updateUniToggleBar();
-    updateCatFilterBar();
-    updateStatusFilterBar();
-    updateTagFilterBar();
-    updateToneFilterBar();
-    updateCharFilterSelect();
-    updateStatsPanel();
-    notify('Blank timeline ready.', 'warning');
-  }
-
-  /* Dismiss confirm dialog on Escape */
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { mobBlankCancel(); }
-  });
 
   /* =====================================================
      B-4: Per-filter dropdown panel toggle (ported from Biography)
@@ -5064,17 +4105,6 @@ input[type="color"]:focus-visible {
     <!-- ===== MOBILE COMPACT TOOLBAR / BOTTOM SHEET / ZOOM PILL / FULLSCREEN MODAL ===== -->
   <style id="tlb-mobile-compact-style">
 @media (max-width: 767px) {
-  /* Hide pre-existing alternative mobile headers/drawers if present */
-  #bio-mobile-header,
-  #bio-mobile-scrim,
-  #bio-mobile-more-drawer,
-  #bio-mob-blank-confirm,
-  #mob-header,
-  #mob-bar,
-  #mob-drawer,
-  #mob-drawer-overlay,
-  #mobile-banner { display: none !important; }
-
   /* Show #toolbar as a compact 44px-tall bar */
   #toolbar {
     display: flex !important;
@@ -5845,8 +4875,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible,
   button, [role="button"], a.btn, .btn, .zbtn, .view-tab,
   input[type="button"], input[type="submit"], input[type="reset"],
   .fp-drop-btn, .tour-btn, .empty-state-btn, .uni-toggle-chip,
-  .bio-mobile-action, .bio-mobile-primary, .mob-btn, .mob-bar-btn,
-  .mob-drw-btn, .help-tab, .help-chip-btn, .cf-clear, .cf-mode-btn,
+  .help-tab, .help-chip-btn, .cf-clear, .cf-mode-btn,
   .tag-filter-chip, .cat-filter-chip, .pv-card, .topbar-links a,
   .footer-links a, .portal-cta {
     min-height: 44px;
@@ -5963,7 +4992,6 @@ body.reading-mode #canvas-wrap {
 }
 body.reading-mode #filter-panel,
 body.reading-mode #fp-mobile-bar,
-body.reading-mode #mob-drawer,
 body.reading-mode #bot-bar {
   background: rgba(245, 240, 232, 0.96) !important;
   border-color: var(--rm-accent-line) !important;
@@ -6009,10 +5037,6 @@ body.reading-mode .fp-drop-panel select {
   background: #fff !important;
   color: var(--rm-text) !important;
   border-color: var(--rm-accent-line) !important;
-}
-body.reading-mode .mob-drw-btn .drw-mark {
-  background: rgba(176,121,66,0.32) !important;
-  color: #2d1f12 !important;
 }
 body.reading-mode #reading-toggle-btn {
   background: var(--rm-accent) !important;
