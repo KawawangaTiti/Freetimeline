@@ -108,11 +108,16 @@
   var ddHelp = menu('Help', helpM);
 
   // strip the old separators + mini-labels (Add / Save / Nav / History ...)
-  tb.querySelectorAll('.tb-label, .sep, .tb-help-group').forEach(function (n) { n.remove(); });
+  // (Biography uses .tb-label, Universe uses .tb-group-label)
+  tb.querySelectorAll('.tb-label, .tb-group-label, .sep, .tb-help-group').forEach(function (n) { n.remove(); });
 
-  // re-append in a clean, deliberate order (appendChild moves nodes)
+  // re-append in a clean, deliberate order (appendChild moves nodes).
+  // Unlisted children would be stranded at the toolbar start, so the save-status
+  // chip and the hidden #file-in (clicked by Store.importClick) ride along too.
   var spacer = document.createElement('div'); spacer.className = 'ft-dd-spacer';
-  [home, logo, primary, track, tabs, ddData, ddOrg, ddView, undo, redo, spacer, ddHelp].forEach(function (n) { if (n) tb.appendChild(n); });
+  var saveStatus = tb.querySelector('.tb-save-status');
+  var fileIn = tb.querySelector('#file-in');
+  [home, logo, primary, track, tabs, ddData, ddOrg, ddView, undo, redo, spacer, saveStatus, ddHelp, fileIn].forEach(function (n) { if (n) tb.appendChild(n); });
 
   tb.setAttribute('data-ft-grouped', '1');
 })();

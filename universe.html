@@ -5196,6 +5196,15 @@ input[type="color"]:focus-visible {
     flex: 1;
     accent-color: #b07942;
   }
+  .tlb-sheet-title {
+    grid-column: 1 / -1;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.55;
+    padding: 2px 2px 0;
+  }
 
   /* Floating zoom pill at bottom-center */
   #zoom-ctrl {
@@ -5356,20 +5365,19 @@ input[type="color"]:focus-visible {
       fSec.appendChild(fBtn);
       body.appendChild(fSec);
     }
-    var section = document.createElement('div');
-    section.className = 'tlb-sheet-section';
-    function flushSection() {
-      if (section.children.length) body.appendChild(section);
-      section = document.createElement('div');
-      section.className = 'tlb-sheet-section';
+    function makeSection(title) {
+      var sec = document.createElement('div');
+      sec.className = 'tlb-sheet-section';
+      if (title) {
+        var ttl = document.createElement('div');
+        ttl.className = 'tlb-sheet-title';
+        ttl.textContent = title;
+        sec.appendChild(ttl);
+      }
+      return sec;
     }
 
-    // Walk linearly, treating .sep as section boundaries.
-    var nodes = toolbar.querySelectorAll('.sep, .btn, .view-tab, input[type="range"]');
-    nodes.forEach(function(node){
-      if (node.id === 'tlb-mobile-menu') return;
-      if (node.classList.contains('sep')) { flushSection(); return; }
-
+    function appendControl(section, node) {
       if (node.matches('input[type="range"]')) {
         var lbl = node.closest('label');
         var wrap = document.createElement('div');
@@ -5389,13 +5397,6 @@ input[type="color"]:focus-visible {
         return;
       }
 
-      // Hidden inputs/buttons should be skipped
-      var cs = window.getComputedStyle(node);
-      if (cs.display === 'none' || cs.visibility === 'hidden') {
-        // still allow buttons that are visually hidden by the mobile rule
-        // because that rule is what we're working around
-      }
-
       var btn = node.cloneNode(true);
       btn.removeAttribute('id');
       btn.removeAttribute('onclick');
@@ -5409,8 +5410,44 @@ input[type="color"]:focus-visible {
         }, 60);
       });
       section.appendChild(btn);
-    });
-    flushSection();
+    }
+
+    var nodes = toolbar.querySelectorAll('.sep, .btn, .view-tab, input[type="range"]');
+
+    if (toolbar.getAttribute('data-ft-grouped')) {
+      // Toolbar was regrouped by ft-toolbar.js: mirror its dropdown sections
+      // (Timeline anchors first, then Data / Organise / View / Help). The
+      // .ft-dd-trigger menu buttons only toggle a dropdown behind the hidden
+      // toolbar, so they are meaningless here and skipped.
+      var buckets = [], byKey = {};
+      nodes.forEach(function(node){
+        if (node.id === 'tlb-mobile-menu') return;
+        if (node.classList.contains('sep')) return;
+        if (node.classList.contains('ft-dd-trigger')) return;
+        var menuEl = node.closest('.ft-dd-menu');
+        var key = 'Timeline';
+        if (menuEl) {
+          var trg = menuEl.parentElement ? menuEl.parentElement.querySelector('.ft-dd-trigger') : null;
+          key = (trg && (trg.textContent || '').replace('▾', '').trim()) || 'More';
+        }
+        if (!byKey[key]) { byKey[key] = makeSection(key); buckets.push(byKey[key]); }
+        appendControl(byKey[key], node);
+      });
+      buckets.forEach(function(sec){ if (sec.children.length > 1) body.appendChild(sec); });
+    } else {
+      // Legacy flat toolbar: walk linearly, treating .sep as section boundaries.
+      var section = makeSection('');
+      function flushSection() {
+        if (section.children.length) body.appendChild(section);
+        section = makeSection('');
+      }
+      nodes.forEach(function(node){
+        if (node.id === 'tlb-mobile-menu') return;
+        if (node.classList.contains('sep')) { flushSection(); return; }
+        appendControl(section, node);
+      });
+      flushSection();
+    }
   }
 
   function openSheet() {
