@@ -78,10 +78,10 @@
   // --- collect groups (order of preference; first match wins, no dupes) ---
   var dataM = group(['saveHTML', 'saveJSON', 'importClick', 'blankTimeline']);
   var orgM = group(['catEditor', 'affiliationEditor', 'organizationEditor']);
-  var viewM = group(['goToToday', 'jumpToYear', 'toggleStoryLine', 'fitToData', 'resetView', 'toggleStats', 'ContinuityTour', 'MemoryTour', 'toggleReadingMode', 'openRangeConfig', 'track-h', 'TRACK_H']);
+  var viewM = group(['jumpToYear', 'toggleStoryLine', 'resetView', 'toggleStats', 'ContinuityTour', 'MemoryTour', 'toggleReadingMode', 'openRangeConfig', 'track-h', 'TRACK_H']);
   var helpM = group(['toggleKbd', 'UI.help(', 'openSettings', 'UI.settings']);
 
-  // keep-visible anchors
+  // keep-visible anchors (Tier 1: Today + Fit cover most navigation, so they stay out)
   var home = tb.querySelector('[onclick*="goBackToMenu"], .back-btn, .menu-btn');
   var logo = tb.querySelector('.logo');
   var primary = tb.querySelector('[onclick*="addEvent"]');
@@ -89,7 +89,11 @@
   var tabs = tb.querySelector('.view-tabs');
   var undo = tb.querySelector('#undo-btn');
   var redo = tb.querySelector('#redo-btn');
-  var anchors = [home, logo, primary, track, tabs, undo, redo];
+  var today = tb.querySelector('[onclick*="goToToday"]');
+  var fit = tb.querySelector('[onclick*="fitToData"]');
+  if (today) picked.push(today);
+  if (fit) picked.push(fit);
+  var anchors = [home, logo, primary, track, tabs, undo, redo, today, fit];
 
   // the track-height slider label has no onclick -> attach it to View explicitly
   var thS = tb.querySelector('#track-h-slider'), thL = thS && thS.closest('label');
@@ -117,7 +121,30 @@
   var spacer = document.createElement('div'); spacer.className = 'ft-dd-spacer';
   var saveStatus = tb.querySelector('.tb-save-status');
   var fileIn = tb.querySelector('#file-in');
-  [home, logo, primary, track, tabs, ddData, ddOrg, ddView, undo, redo, spacer, saveStatus, ddHelp, fileIn].forEach(function (n) { if (n) tb.appendChild(n); });
+  [home, logo, primary, track, tabs, ddData, ddOrg, ddView, today, fit, undo, redo, spacer, saveStatus, ddHelp, fileIn].forEach(function (n) { if (n) tb.appendChild(n); });
 
   tb.setAttribute('data-ft-grouped', '1');
+
+  /* One-time coachmark so nobody hunts for their "disappeared" Save/Load buttons.
+     Dismiss persists via localStorage (sessionStorage fallback for private mode). */
+  (function coachmark() {
+    var KEY = 'ft_tb_hint_v1';
+    function seen() { try { if (localStorage.getItem(KEY)) return true; } catch (_) {} try { return !!sessionStorage.getItem(KEY); } catch (_) {} return false; }
+    function markSeen() { try { localStorage.setItem(KEY, '1'); } catch (_) {} try { sessionStorage.setItem(KEY, '1'); } catch (_) {} }
+    if (seen() || !ddData) return;
+    var trg = ddData.querySelector('.ft-dd-trigger');
+    if (!trg) return;
+    var tip = document.createElement('div');
+    tip.setAttribute('role', 'status');
+    tip.style.cssText = 'position:absolute;z-index:350;top:calc(100% + 10px);left:0;max-width:240px;' +
+      'background:' + T.panel + ';border:1px solid ' + T.line + ';border-radius:11px;padding:10px 12px;' +
+      'box-shadow:0 14px 36px rgba(0,0,0,.34);color:' + T.ink + ';font-size:12.5px;line-height:1.45';
+    tip.innerHTML = 'Your <b>Save / Load</b> buttons now live in the <b>Data ▾</b> menu. ' +
+      'Tip: press <b>Ctrl+K</b> to search every action. ' +
+      '<button type="button" style="display:block;margin-top:8px;border:1px solid ' + T.line + ';background:transparent;' +
+      'color:' + T.ink + ';border-radius:7px;padding:4px 10px;cursor:pointer;font-weight:600">Got it</button>';
+    tip.querySelector('button').addEventListener('click', function () { markSeen(); tip.remove(); });
+    ddData.appendChild(tip);
+    setTimeout(function () { markSeen(); if (tip.parentNode) tip.remove(); }, 15000);
+  })();
 })();
