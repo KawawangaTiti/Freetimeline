@@ -5516,6 +5516,9 @@ const UI = {
     _meanwhileMode = false;
     M.push({ t: 'charList', q: '' });
   },
+  addPerson() {
+    M.push({ t: 'addChar' });
+  },
   connectionMap() {
     M.push({ t: 'connectionMap' });
   },
@@ -9350,4 +9353,21 @@ if (typeof window !== 'undefined') {
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
+})();
+
+/* =====================================================
+   CANONICAL UI MERGE (root-cause fix)
+   Inline onclick handlers resolve the lexical `const UI` above, which
+   shadows the window.UI that the late IIFEs augment (jumpToYear,
+   fitToData, shareView) and the overlay helpers. Fold every window.UI
+   helper onto the const — const UI methods win on collision — then
+   alias window.UI to it so there is exactly ONE UI object from here on.
+   Must stay at the very end of this file, after every window.UI writer.
+   ===================================================== */
+(function () {
+  try {
+    var w = window.UI || {};
+    for (var k in w) { if (!(k in UI)) UI[k] = w[k]; }
+    window.UI = UI;
+  } catch (_) {}
 })();
