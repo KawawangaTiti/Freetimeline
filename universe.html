@@ -15,6 +15,7 @@
 <script src="js/ft-stats.js" defer></script>
 <script src="js/ft-toolbar.js" defer></script>
 <script src="js/ft-palette.js" defer></script>
+<script src="js/ft-places.js" defer></script>
 <script src="js/ft-canvas.js" defer></script>
 <style>
 /* =====================================================
@@ -1030,6 +1031,12 @@ input[type="color"] {
   background: #0d0f1a; position: relative;
 }
 #map-view.visible { display: flex; flex-direction: column; }
+
+#places-view {
+  display: none; flex: 1; overflow: hidden; flex-direction: column;
+  background: #0d0f1a; position: relative; min-height: 0;
+}
+#places-view.visible { display: flex; }
 
 #stats-full-view {
   display: none; flex: 1; overflow-y: auto; padding: 24px;
@@ -3439,7 +3446,8 @@ input[type="color"]:focus-visible {
     <div class="view-tabs tb-secondary" role="group" aria-label="Switch view">
       <button class="view-tab active" id="tab-timeline"    onclick="switchView('timeline')"    title="Main timeline canvas — events laid out across time" aria-pressed="true">Timeline</button>
       <button class="view-tab"        id="tab-characters"  onclick="switchView('characters')"  title="Character directory — browse and manage all character dossiers" aria-pressed="false">Characters</button>
-      <button class="view-tab"        id="tab-connections" onclick="switchView('connections')" title="Connection map — visualise links between events and arcs" aria-pressed="false">Map</button>
+      <button class="view-tab"        id="tab-connections" onclick="switchView('connections')" title="Relations graph — visualise links between events and arcs" aria-pressed="false">Relations</button>
+      <button class="view-tab"        id="tab-places"      onclick="switchView('places')"      title="World map &amp; places — upload your map, pin locations, browse events by place" aria-pressed="false">Places</button>
       <button class="view-tab"        id="tab-stats"       onclick="switchView('stats')"       title="Universe statistics and breakdowns" aria-pressed="false">Stats</button>
       <button class="view-tab" id="tab-list" onclick="ftListView.toggle()" title="Accessible list view of all events grouped by year" aria-pressed="false">List</button>
     </div>
@@ -3582,6 +3590,15 @@ input[type="color"]:focus-visible {
           </select>
         </div>
       </div>
+      <div class="fp-drop" id="fp-drop-place">
+        <button class="fp-drop-btn" type="button" onclick="ftToggle('fp-drop-place',event)">📍 Place <span class="fp-arrow">▾</span></button>
+        <div class="fp-drop-panel">
+          <div class="fp-drop-panel-title">Place</div>
+          <select id="place-filter-select" onchange="setPlaceFilter(this.value||null)">
+            <option value="">— All Places —</option>
+          </select>
+        </div>
+      </div>
       <div class="fp-drop" id="fp-drop-people">
         <button class="fp-drop-btn" type="button" onclick="ftToggle('fp-drop-people',event)">👤 Character <span class="fp-arrow">▾</span></button>
         <div class="fp-drop-panel" style="min-width:260px">
@@ -3705,6 +3722,9 @@ input[type="color"]:focus-visible {
 
   <!-- Map Full View -->
   <div id="map-view"></div>
+
+  <!-- Places / world-map view (rendered by js/ft-places.js) -->
+  <div id="places-view" role="region" aria-label="World map and places"></div>
 
   <!-- Stats Full View -->
   <div id="stats-full-view"></div>

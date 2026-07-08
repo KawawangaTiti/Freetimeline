@@ -136,7 +136,7 @@
     if (!trg) return;
     var tip = document.createElement('div');
     tip.setAttribute('role', 'status');
-    tip.style.cssText = 'position:absolute;z-index:350;top:calc(100% + 10px);left:0;max-width:240px;' +
+    tip.style.cssText = 'position:absolute;z-index:350;top:calc(100% + 10px);left:0;width:max-content;max-width:240px;' +
       'background:' + T.panel + ';border:1px solid ' + T.line + ';border-radius:11px;padding:10px 12px;' +
       'box-shadow:0 14px 36px rgba(0,0,0,.34);color:' + T.ink + ';font-size:12.5px;line-height:1.45';
     tip.innerHTML = 'Your <b>Save / Load</b> buttons now live in the <b>Data ▾</b> menu. ' +
