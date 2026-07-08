@@ -3459,6 +3459,7 @@ input[type="color"]:focus-visible {
       <span class="tb-group-label">Tags</span>
       <button class="btn" onclick="UI.catEditor()"         title="Manage continuity tags — rename, recolour, add and remove event categories">Categories</button>
       <button class="btn" onclick="UI.affiliationEditor()" title="Manage organizations and groups for character dossiers">Organizations</button>
+      <button class="btn" onclick="UI.continuityEditor()" title="Manage continuities &amp; theories — competing chronologies for the same universe (Pokémon-style theory timelines)">Continuities</button>
       <label style="font-size:11px;color:rgba(0,210,255,0.55);white-space:nowrap;display:inline-flex;align-items:center;gap:6px;margin-left:6px;" title="Adjust the height of each universe track row">
         Row
         <input type="range" id="track-h-slider" min="60" max="200" step="10" value="100" aria-label="Adjust universe row height"
@@ -3587,6 +3588,15 @@ input[type="color"]:focus-visible {
           <div class="fp-drop-panel-title">Emotional Tone</div>
           <select id="tone-filter-select" onchange="setToneFilter(this.value||null)">
             <option value="">— All Tones —</option>
+          </select>
+        </div>
+      </div>
+      <div class="fp-drop" id="fp-drop-continuity">
+        <button class="fp-drop-btn" type="button" onclick="ftToggle('fp-drop-continuity',event)">⑂ Continuity <span class="fp-arrow">▾</span></button>
+        <div class="fp-drop-panel">
+          <div class="fp-drop-panel-title">Continuity / Theory</div>
+          <select id="continuity-filter-select" onchange="setContinuityFilter(this.value||null)">
+            <option value="">— All —</option>
           </select>
         </div>
       </div>
