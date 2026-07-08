@@ -21,9 +21,9 @@
 
 1. **Grátis e sem backend.** Tudo corre no browser; os dados vivem no `localStorage` (+ IndexedDB
    para imagens de mapa) do utilizador. Sem contas, sem servidores, sem tracking dos dados.
-2. **Os dados são do utilizador.** Export a qualquer momento: JSON leve ou HTML auto-contido
-   que abre offline em qualquer lado. Import de volta sem perdas (validado por
-   `js/ft-import-validate.js`, a única fronteira de confiança).
+2. **Os dados são do utilizador.** Export a qualquer momento: JSON leve ou HTML com os dados
+   embebidos (re-importável; nota: não é uma app standalone — ver Fase 9 no roadmap). Import
+   de volta sem perdas (validado por `js/ft-import-validate.js`, a única fronteira de confiança).
 3. **Funciona offline.** Zero dependências de CDN; vendors (GSAP, ECharts) servidos localmente.
 4. **Sem polícia de cânone.** Universos com cronologia disputada (Pokémon é o caso-modelo:
    sem história oficial detalhada → dezenas de teorias de fãs) são cidadãos de primeira classe:
@@ -59,17 +59,19 @@
 | Tours: Continuity Tour + **Memory Tour (restaurado WS1)** | ✅ |
 | Story line, Reading Mode **(botão restaurado WS1)** | ✅ |
 | Range/epoch config **(fecho corrigido WS1)** | ✅ |
-| Save HTML auto-contido / JSON / Load / Blank, autosave | ✅ |
+| Save HTML / JSON / Load / Blank, autosave | ✅ (WS3 corrigiu o Save HTML, que **nunca** embebia dados — o round-trip export→import funciona agora pela primeira vez) |
 | Undo/Redo profundo | ✅ |
 | Filtros (texto, categoria, status, tags, tone, personagem, universo) | ✅ |
 | Onboarding + empty-state | ✅ |
-| **Mapas & Localizações** | 🚧 WS3 |
-| **Continuidades/Teorias** | 🚧 WS4 |
+| **Mapas & Localizações** (tab Places: mapa custom + pins + filtro 📍) | ✅ WS3 (2026-07-08) |
+| **Continuidades/Teorias** (Organise ▸ Continuities + filtro ⑂ + ⇄ Compare) | ✅ WS4 (2026-07-08) |
 
 ### Biography
 Espelho do Universe com: Life Tracks, People/Relationships, tons emocionais,
 turning points, Memory/Continuity Tours, stats ECharts. **Jump, Fit, + New Person,
 Reading Mode e Memories restaurados no WS1.** Mobile: sheet ≡ com secções (WS1).
+**Places/mapa custom portados no WS3; Continuidades no WS4** (caso de uso: leituras
+alternativas/ramos de uma história de vida, memórias disputadas na família).
 
 ### Site
 Landing + 5 guias + páginas legais; consent AdSense conforme; GitHub Pages
@@ -83,7 +85,7 @@ O dilema: botões escondidos matam a descoberta; tudo visível entulha. Resoluç
 + 1 escape hatch**, idêntico em desktop e mobile:
 
 - **Tier 1 — sempre visível (≤10 controlos):** Menu/logo · **＋Event** (accent) · +Track ·
-  view tabs · Undo/Redo. *(WS2: avaliar promover Today/Fit.)*
+  view tabs · Today · Fit · Undo/Redo.
 - **Tier 2 — menus nomeados:** **Data▾** (Save HTML/JSON/Load/Blank) · **Organise▾**
   (Categories/Groups/Row · Places… · Continuities…) · **View▾** (Stats panel/Story/Tours/
   Reading/Range/Jump/Today/Reset/Fit) · **Help▾** (Keys/Help).
@@ -122,13 +124,13 @@ O dilema: botões escondidos matam a descoberta; tudo visível entulha. Resoluç
 | Fase | Conteúdo | Estado |
 |---|---|---|
 | **WS1 — Fix pack** | Merge UI (overlays presos, Jump/Fit), regressões do declutter, Reading Mode, Memory Tour, New Person, tecla F | ✅ 2026-07-07 (38/38 smoke) |
-| **WS2 — Calibração** | Paleta Ctrl+K, coachmark, retune Tier 1/2, remoção dos sistemas mobile legacy | 🚧 |
-| **WS3 — Mapas & Localizações** | Places + mapa custom com pins + filtros + export/import | planeado |
-| **WS4 — Continuidades** | Teorias por evento + seletor + modo Compare | planeado |
+| **WS2 — Calibração** | Paleta Ctrl+K (30+ ações), coachmark, Today/Fit em Tier 1, -1750 linhas de mobile legacy | ✅ 2026-07-07 |
+| **WS3 — Mapas & Localizações** | Places + mapa custom (IndexedDB) com pins + filtro + export/import; fix do Save HTML vazio | ✅ 2026-07-08 (ambas as apps) |
+| **WS4 — Continuidades** | Teorias por evento + filtro ⑂ + modo ⇄ Compare com anéis coloridos | ✅ 2026-07-08 |
 | Fase 6 (antiga) | Performance (render scheduler, rAF gating) | backlog |
 | Fase 7 | Security (CSP, validar localStorage no load, escaping) | backlog |
 | Fase 8 | Deploy hardening (404.html, headers) | backlog |
-| Fase 9 | Polish (wording "Marvel" em about, honestidade do roadmap, CSS dup, AdSense slots únicos) | backlog |
+| Fase 9 | Polish (wording "Marvel" em about, honestidade do roadmap, CSS dup, AdSense slots únicos, e rever a claim "abre offline em qualquer lado" do Save HTML — o ficheiro exportado referencia js/ externos, por isso é um contentor de dados re-importável, não uma app standalone) | backlog |
 | V3/V5 (visual) | Redesign do grafo Relations; QA visual | backlog |
 | MOB-7 | Canvas DPR-sharp (precisa de teste em device real) | backlog |
 | v2 ideias | `ev.dateOverrides` por continuidade; popover de seleção Tier 3; print/PDF | ideias |
