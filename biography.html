@@ -15,6 +15,7 @@
 <script src="js/ft-stats.js" defer></script>
 <script src="js/ft-toolbar.js" defer></script>
 <script src="js/ft-palette.js" defer></script>
+<script src="js/ft-places.js" defer></script>
 <script src="js/ft-canvas.js" defer></script>
 <style>
 /* =====================================================
@@ -1824,6 +1825,12 @@ input[type="color"] {
 }
 #map-view.visible { display: flex; }
 
+#places-view {
+  display: none; flex: 1; overflow: hidden; flex-direction: column;
+  background: #faf6ef; position: relative; min-height: 0;
+}
+#places-view.visible { display: flex; }
+
 #stats-full-view {
   display: none; flex: 1; overflow-y: auto; padding: 24px;
   background: #faf6ef;
@@ -3561,6 +3568,7 @@ input[type="color"]:focus-visible {
       <button class="view-tab active" id="tab-timeline" onclick="switchView('timeline')" title="Canvas timeline view" aria-pressed="true">Timeline</button>
       <button class="view-tab tb-secondary" id="tab-people" onclick="switchView('people')" title="People & key persons directory" aria-pressed="false">People</button>
       <button class="view-tab tb-secondary" id="tab-map" onclick="switchView('map')" title="Relationship connection map" aria-pressed="false">Relationships</button>
+      <button class="view-tab tb-secondary" id="tab-places" onclick="switchView('places')" title="World map &amp; places — upload your map, pin locations, browse events by place" aria-pressed="false">Places</button>
       <button class="view-tab tb-secondary" id="tab-stats" onclick="switchView('stats')" title="Biography analytics & statistics" aria-pressed="false">Stats</button>
       <button class="view-tab tb-secondary" id="tab-list" onclick="ftListView.toggle()" title="Accessible list view of all events grouped by year" aria-pressed="false">List</button>
     </div>
@@ -3705,6 +3713,17 @@ input[type="color"]:focus-visible {
             <span id="tag-filter-chips"><span style="color:rgba(200,175,140,0.4);font-size:11px">No tags yet</span></span>
             <button class="cf-clear" id="tag-clear-btn" onclick="clearTagFilter()" style="display:none">&#10005; Clear</button>
           </div>
+        </div>
+      </div>
+
+      <!-- Place dropdown -->
+      <div class="fp-drop" id="fp-drop-place">
+        <button class="fp-drop-btn" type="button" onclick="ftToggle('fp-drop-place',event)">📍 Place <span class="fp-arrow">▾</span></button>
+        <div class="fp-drop-panel">
+          <div class="fp-drop-panel-title">Place</div>
+          <select id="place-filter-select" onchange="setPlaceFilter(this.value||null)">
+            <option value="">— All Places —</option>
+          </select>
         </div>
       </div>
 
@@ -3924,6 +3943,9 @@ input[type="color"]:focus-visible {
 
   <!-- Map Full View -->
   <div id="map-view"></div>
+
+  <!-- Places / world-map view (rendered by js/ft-places.js) -->
+  <div id="places-view" role="region" aria-label="World map and places"></div>
 
   <!-- Stats Full View -->
   <div id="stats-full-view"></div>
@@ -4297,6 +4319,10 @@ window.addEventListener('resize', repositionOpenDrops);
     if (_tagFilter) {
       activeChips.push('<span class="fp-active-chip">&#127991;&#65039; ' + esc(_tagFilter) + '</span>');
     }
+    if (typeof _placeFilter !== 'undefined' && _placeFilter) {
+      var plName = (typeof ftPlaces !== 'undefined' && ftPlaces.placeName) ? ftPlaces.placeName(_placeFilter) : '';
+      activeChips.push('<span class="fp-active-chip">&#128205; ' + esc(plName || _placeFilter) + '</span>');
+    }
     if (typeof _charFilterIds !== 'undefined' && _charFilterIds.length > 0) {
       var names = _charFilterIds.map(function(cid) {
         var ch = (typeof S !== 'undefined') ? S.people.find(function(c) { return c.id === cid; }) : null;
@@ -4337,6 +4363,7 @@ window.addEventListener('resize', repositionOpenDrops);
     }
     if (typeof _statusFilter !== 'undefined') { _statusFilter = null; if (typeof updateStatusFilterBar === 'function') updateStatusFilterBar(); }
     if (typeof _tagFilter !== 'undefined') { _tagFilter = null; if (typeof updateTagFilterBar === 'function') updateTagFilterBar(); }
+    if (typeof _placeFilter !== 'undefined') { _placeFilter = null; if (typeof updatePlaceFilterBar === 'function') updatePlaceFilterBar(); }
     if (typeof _charFilterIds !== 'undefined') { _charFilterIds = []; if (typeof updateFilterBar === 'function') updateFilterBar(); }
     updateMobileActiveStrip();
     if (typeof render === 'function') render();

@@ -2172,6 +2172,7 @@ function drawEvents(c, g) {
       if (_tagFilter  && !(ev.tags||[]).includes(_tagFilter)) return;
       if (_statusFilter && (ev.status||'') !== _statusFilter) return;
       if (_toneFilter && ev.emotionalTone !== _toneFilter) return;
+      if (_placeFilter && !(ev.placeIds||[]).includes(_placeFilter)) return;
       const vi = getVisIdx(ev.universeId);
       if (vi < 0) return;
       const sx = eventScreenX(dec, vi);
@@ -2269,6 +2270,15 @@ function drawSingleEvent(c, g, ev) {
     }
 
     if (_statusFilter && (ev.status || '') !== _statusFilter) {
+      g.save(); g.globalAlpha = _uDimmed ? 0.08 : 0.12;
+      g.beginPath(); g.arc(sx, sy, EV_R, 0, Math.PI * 2);
+      g.fillStyle = u.color; g.fill();
+      g.restore();
+      if (_uDimmed) g.restore();
+      return;
+    }
+
+    if (_placeFilter && !(ev.placeIds || []).includes(_placeFilter)) {
       g.save(); g.globalAlpha = _uDimmed ? 0.08 : 0.12;
       g.beginPath(); g.arc(sx, sy, EV_R, 0, Math.PI * 2);
       g.fillStyle = u.color; g.fill();
@@ -3930,6 +3940,11 @@ const M = {
       '</div>' +
       '<div class="fg"><label>Tags <span style="font-weight:400;color:#aaa">(comma separated)</span></label>' +
       '<input id="ae-tags" type="text" placeholder="e.g. milestone, turning point, family, travel"></div>' +
+      '<div class="fg"><label>📍 Places <span style="font-weight:400;color:#aaa">(optional — Ctrl-click for several)</span></label>' +
+      ((window.ftPlaces && (S.places || []).length)
+        ? '<select id="ae-places" multiple size="' + Math.min(4, S.places.length) + '">' + ftPlaces.placeOptionsHtml([]) + '</select>'
+        : '<div class="hint">No places yet — create them in the <b>Places</b> tab to tag events with locations.</div>') +
+      '</div>' +
       '<div class="fg"><label>Description</label>' +
       '<textarea id="ae-dc" placeholder="Describe this event...">' + esc(top.desc || '') + '</textarea></div>' +
       '<div class="fg"><label>\uD83D\uDCDD Notes <span style="font-weight:400;color:#aaa">(extra info, personal annotations...)</span></label>' +
@@ -4007,6 +4022,11 @@ const M = {
       '</div>' +
       '<div class="fg"><label>Tags <span style="font-weight:400;color:#aaa">(comma separated)</span></label>' +
       '<input id="ee-tags" type="text" value="' + esc((ev.tags||[]).join(', ')) + '" placeholder="e.g. milestone, turning point, family, travel"></div>' +
+      '<div class="fg"><label>📍 Places <span style="font-weight:400;color:#aaa">(optional — Ctrl-click for several)</span></label>' +
+      ((window.ftPlaces && (S.places || []).length)
+        ? '<select id="ee-places" multiple size="' + Math.min(4, S.places.length) + '">' + ftPlaces.placeOptionsHtml(ev.placeIds || []) + '</select>'
+        : '<div class="hint">No places yet — create them in the <b>Places</b> tab to tag events with locations.</div>') +
+      '</div>' +
       '<div class="fg"><label>Description</label>' +
       '<textarea id="ee-dc">' + esc(ev.description || '') + '</textarea></div>' +
       '<div class="fg"><label>\uD83D\uDCDD Notes</label>' +
@@ -5154,13 +5174,16 @@ function submitAddEv() {
   }
   const cat = document.getElementById('ae-cat').value;
   const tags = (document.getElementById('ae-tags')||{value:''}).value.split(',').map(t=>t.trim()).filter(Boolean);
+  const placeSel = document.getElementById('ae-places');
+  const placeIds = placeSel ? Array.from(placeSel.selectedOptions).map(o => o.value) : [];
   S.events.push({ id: uid(), universeId: uId, date, dateEnd: dateEnd || null, time: time || null,
     location: location || null, title, description: desc, notes,
     emotionalTone: emotionalTone || null, lifeSituation: lifeSituation || null,
     roleStatus: roleStatus || null, internalChange: internalChange || null,
     media: [..._editMediaList], subEvents: [], category: cat || null, status, tags,
+    placeIds,
     recurring: recFreq ? { frequency: recFreq } : null });
-  Store.autosave(); render(); updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updateStatsPanel(); M.close(); notify('Event created! \u2713', 'success');
+  Store.autosave(); render(); updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updatePlaceFilterBar(); updateStatsPanel(); M.close(); notify('Event created! \u2713', 'success');
 }
 
 function saveEv(evId) {
@@ -5206,10 +5229,12 @@ function saveEv(evId) {
   const recFreq     = (document.getElementById('ee-recurring')||{value:''}).value;
   ev.recurring      = recFreq ? { frequency: recFreq } : null;
   ev.tags           = (document.getElementById('ee-tags')||{value:''}).value.split(',').map(t=>t.trim()).filter(Boolean);
+  const eePlaceSel = document.getElementById('ee-places');
+  if (eePlaceSel) ev.placeIds = Array.from(eePlaceSel.selectedOptions).map(o => o.value);
   ev.description    = document.getElementById('ee-dc').value.trim();
   ev.notes          = document.getElementById('ee-notes').value.trim();
   ev.media          = [..._editMediaList];
-  Store.autosave(); render(); updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updateStatsPanel();
+  Store.autosave(); render(); updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updatePlaceFilterBar(); updateStatsPanel();
   MS.pop(); M.render(); notify('Saved \u2713', 'success');
 }
 
@@ -5574,6 +5599,8 @@ const Store = {
     S.people = Array.isArray(S.people) ? S.people : [];
     S.categories = S.categories && typeof S.categories === 'object' ? S.categories : {};
     S.affiliations = Array.isArray(S.affiliations) ? S.affiliations : [];
+    S.places = Array.isArray(S.places) ? S.places : [];
+    S.mapMeta = (S.mapMeta && typeof S.mapMeta === 'object') ? S.mapMeta : { has: false, w: 0, h: 0, name: '' };
     syncCategoriesFromState();
   },
   load() {
@@ -5591,6 +5618,9 @@ const Store = {
         S.people       = d.characters  || d.people || [];
         S.categories   = d.categories  || {};
         S.affiliations = d.affiliations || [];
+        S.places       = d.places      || [];
+        S.mapMeta      = d.mapMeta     || { has: false, w: 0, h: 0, name: '' };
+        if (typeof d._mapDataUrl === 'string') S._mapDataUrl = d._mapDataUrl;
         Store.normalize();
         return true;
       }
@@ -5604,78 +5634,92 @@ const Store = {
     } catch (_) {}
   },
 
-  /* ---- Save as portable self-contained HTML ---- */
+  /* WS3: resolve the custom map image as a dataURL for embedding in exports.
+     Resolves '' when there is no map or ft-places.js is missing. */
+  _mapExportPromise() {
+    try {
+      if (window.ftPlaces && S.mapMeta && S.mapMeta.has) {
+        return ftPlaces.getMapDataUrl().catch(function () { return ''; });
+      }
+    } catch (_) {}
+    return Promise.resolve('');
+  },
+
+  /* WS3: export payload = S plus the map image (if any). */
+  _exportPayload(mapDataUrl) {
+    const payload = Object.assign({}, S);
+    delete payload._mapDataUrl;               /* private-mode carrier \u2014 mapImage supersedes it */
+    if (mapDataUrl) payload.mapImage = mapDataUrl;
+    return payload;
+  },
+
+  /* Shared HTML-export builder. UE-17/BE-16: make the embedded state marker- and
+     script-safe. Escape '<' and '>' so a note containing a closing script tag
+     cannot break out of the script element, and escape '/' so user text can
+     never forge the STATE_START / STATE_END comment markers. JSON.parse on
+     import restores every original character, so the round-trip stays lossless. */
+  _buildHTMLExport(src, mapDataUrl) {
+    const stateJSON = JSON.stringify(Store._exportPayload(mapDataUrl))
+      .replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/\//g, '\\/');
+    const stateBlock = '/*STATE_START*/let S = ' + stateJSON + ';/*STATE_END*/';
+    let newSrc = src.replace(/\/\*STATE_START\*\/[\s\S]*?\/\*STATE_END\*\//, stateBlock);
+    if (newSrc === src) {
+      /* The page source carries no STATE markers (the engine lives in an external
+         JS file), so the marker replace was a silent no-op and the exported file
+         held NO data. Embed the state as a non-executing JSON script block that
+         importFile's marker regex finds \u2014 this is what makes Save HTML \u2192 Load
+         actually round-trip. */
+      const block = '\n<script type="application/json" id="ft-embedded-state">' + stateBlock + '<' + '/script>\n';
+      newSrc = src.replace(/<\/body>/i, block + '</body>');
+      if (newSrc === src) newSrc = src + block;
+    }
+    return newSrc;
+  },
+
+  _downloadBlob(text, mime, filename) {
+    const blob = new Blob([text], { type: mime });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  },
+
+  /* ---- Save as portable HTML (data embedded, re-importable) ---- */
   saveHTML() {
     notify('Preparing HTML file\u2026', 'info');
-    fetch(location.href)
-      .then(r => r.text())
-      .then(src => {
-        // Replace state between markers with current data.
-        // UE-17/BE-16: make the embedded state marker- and script-safe. Escape
-        // '<' and '>' so a note containing a closing script tag cannot break out
-        // of the script element, and escape '/' so user text can never forge the
-        // STATE_START / STATE_END comment markers. JSON.parse on import restores
-        // every original character, so the round-trip stays lossless.
-        const stateJSON = JSON.stringify(S).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/\//g, '\\/');
-        const newSrc = src.replace(
-          /\/\*STATE_START\*\/[\s\S]*?\/\*STATE_END\*\//,
-          '/*STATE_START*/let S = ' + stateJSON + ';/*STATE_END*/'
-        );
-        const blob = new Blob([newSrc], { type: 'text/html' });
-        const url  = URL.createObjectURL(blob);
-        const a    = document.createElement('a');
+    Promise.all([fetch(location.href).then(r => r.text()), Store._mapExportPromise()])
+      .then(([src, du]) => {
         const date = new Date().toISOString().slice(0, 10);
-        a.href = url;
-        a.download = 'free-timeline_' + date + '.html';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        Store._downloadBlob(Store._buildHTMLExport(src, du), 'text/html', 'free-timeline_' + date + '.html');
         notify('Timeline saved as HTML \u2713', 'success');
       })
       .catch(() => {
-        /* Fallback: build HTML from scratch using template */
+        /* Fallback: build HTML from the live document (e.g. file:// protocol) */
         Store._saveHTMLFallback();
       });
   },
 
-  /* Fallback for when fetch(location.href) is blocked (e.g. file:// protocol) */
+  /* Fallback for when fetch(location.href) is blocked */
   _saveHTMLFallback() {
-    // UE-17/BE-16: marker- and script-safe embed (see saveHTML above).
-    const stateJSON = JSON.stringify(S).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/\//g, '\\/');
-    /* Inject state into the page's own script by reading the document */
-    const clone = document.documentElement.outerHTML;
-    const newSrc = clone.replace(
-      /\/\*STATE_START\*\/[\s\S]*?\/\*STATE_END\*\//,
-      '/*STATE_START*/let S = ' + stateJSON + ';/*STATE_END*/'
-    );
-    const blob = new Blob([newSrc], { type: 'text/html' });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a');
-    const date = new Date().toISOString().slice(0, 10);
-    a.href = url;
-    a.download = 'free-timeline_' + date + '.html';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    notify('Timeline saved as HTML \u2713', 'success');
+    Store._mapExportPromise().then(du => {
+      const date = new Date().toISOString().slice(0, 10);
+      Store._downloadBlob(Store._buildHTMLExport(document.documentElement.outerHTML, du), 'text/html', 'free-timeline_' + date + '.html');
+      notify('Timeline saved as HTML \u2713', 'success');
+    });
   },
 
-  /* ---- Export as plain JSON backup ---- */
+  /* ---- Export as plain JSON backup (map image embedded as dataURL) ---- */
   saveJSON() {
-    const json = JSON.stringify(S, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a');
-    const date = new Date().toISOString().slice(0, 10);
-    a.href = url;
-    a.download = 'free-timeline_' + date + '.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    notify('Data exported as JSON \u2713', 'success');
+    Store._mapExportPromise().then(du => {
+      const json = JSON.stringify(Store._exportPayload(du), null, 2);
+      const date = new Date().toISOString().slice(0, 10);
+      Store._downloadBlob(json, 'application/json', 'free-timeline_' + date + '.json');
+      notify('Data exported as JSON \u2713', 'success');
+    });
   },
 
   blankTimeline() {
@@ -5713,6 +5757,10 @@ const Store = {
     S.connections = [];
     S.people = [];
     S.affiliations = [];
+    S.places = [];
+    S.mapMeta = { has: false, w: 0, h: 0, name: '' };
+    delete S._mapDataUrl;
+    if (window.ftPlaces) { try { ftPlaces.mapStore.del(SKEY); } catch (_) {} }
     if (!S.categories || Object.keys(S.categories).length === 0) syncCategoriesToState();
     V.panX = 0; V.panY = 0; V.scale = 1;
     const zoom = document.getElementById('zoom-pct'); if (zoom) zoom.textContent = '100%';
@@ -5726,6 +5774,7 @@ const Store = {
     updateCatFilterBar();
     updateStatusFilterBar();
     updateTagFilterBar();
+    updatePlaceFilterBar();
     updateStatsPanel();
     notify('Blank timeline ready.', 'warning');
   },
@@ -5764,11 +5813,26 @@ const Store = {
           S.people       = d.people      || d.characters  || [];
           S.categories   = d.categories  || {};
           S.affiliations = d.affiliations || [];
+          S.places       = d.places      || [];
+          S.mapMeta      = d.mapMeta     || { has: false, w: 0, h: 0, name: '' };
+          delete S._mapDataUrl;
+          /* WS3: restore the embedded map image into IndexedDB (async, non-blocking) */
+          if (window.ftPlaces) {
+            if (d.mapImage) {
+              S.mapMeta.has = true;
+              ftPlaces.setMapFromDataUrl(d.mapImage).then(function (ok) {
+                if (ok) { Store.autosave(); if (_currentView === 'places') switchView('places'); }
+              });
+            } else {
+              try { ftPlaces.mapStore.del(SKEY); } catch (_) {}
+              if (!d.mapImage) S.mapMeta.has = false;
+            }
+          }
           syncCategoriesFromState();
           Store.autosave();
           History.clear();  /* BE-13: undo must not cross the import boundary */
           clampPanY(); render();
-          updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updateUniToggleBar(); updateStatsPanel();
+          updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updatePlaceFilterBar(); updateUniToggleBar(); updateStatsPanel();
           if (wasLegacy) {
             setTimeout(() => notify('File loaded \u2713 — your Universes are now Life Tracks. All data is intact. Rename them at your own pace.', 'success'), 400);
           } else {
@@ -5954,9 +6018,11 @@ function switchView(view) {
 
   document.getElementById('people-view').classList.toggle('visible', view === 'people');
   document.getElementById('map-view').classList.toggle('visible', view === 'map');
+  var placesView = document.getElementById('places-view');
+  if (placesView) placesView.classList.toggle('visible', view === 'places');
   document.getElementById('stats-full-view').classList.toggle('visible', view === 'stats');
 
-  ['timeline','people','map','stats'].forEach(function(v) {
+  ['timeline','people','map','places','stats'].forEach(function(v) {
     var tab = document.getElementById('tab-' + v);
     if (tab) {
       var on = v === view;
@@ -5967,6 +6033,7 @@ function switchView(view) {
 
   if (view === 'people') renderPeopleView();
   if (view === 'map') { setTimeout(function() { ConnectionMap.build(document.getElementById('map-view')); }, 60); }
+  if (view === 'places' && window.ftPlaces && placesView) ftPlaces.renderMapView(placesView);
   if (view === 'stats') renderStatsFullView();
 
   if (isTimeline) {
@@ -6468,6 +6535,9 @@ let _statusFilter = null; // null = all, else status string
 /* Tag filter */
 let _tagFilter = null; // null = all, else tag string
 
+/* Place filter (WS3) */
+let _placeFilter = null; // null = all, else place id
+
 /* Stats panel visibility */
 let _statsVisible = false;
 
@@ -6606,6 +6676,38 @@ function updateTagFilterBar() {
 
   clearBtn.style.display = _tagFilter ? '' : 'none';
   updateMobileActiveStrip();
+}
+
+/* ---- Place filter (WS3) ---- */
+function setPlaceFilter(placeId) {
+  _placeFilter = placeId || null;
+  updatePlaceFilterBar();
+  if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
+  render();
+}
+
+function clearPlaceFilter() {
+  _placeFilter = null;
+  updatePlaceFilterBar();
+  if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
+  render();
+}
+
+function updatePlaceFilterBar() {
+  const sel = document.getElementById('place-filter-select');
+  if (!sel) return;
+  const counts = {};
+  S.events.forEach(function(ev) {
+    (ev.placeIds || []).forEach(function(pid) { counts[pid] = (counts[pid] || 0) + 1; });
+  });
+  var html = '<option value="">📍 Place</option>';
+  (S.places || []).forEach(function(p) {
+    var cnt = counts[p.id] || 0;
+    html += '<option value="' + esc(p.id) + '"' + (_placeFilter === p.id ? ' selected' : '') + '>' +
+      (p.icon ? p.icon + ' ' : '') + esc(p.name) + ' (' + cnt + ')</option>';
+  });
+  sel.innerHTML = html;
+  if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
 }
 
 function updateCatFilterBar() {
@@ -8380,6 +8482,7 @@ function drawStoryLine(c, g) {
     if (typeof _statusFilter !== 'undefined' && _statusFilter && (ev.status||'') !== _statusFilter) return;
     // Bio uses ev.emotionalTone (Universe uses ev.tone) — handle either.
     if (typeof _toneFilter   !== 'undefined' && _toneFilter   && (ev.emotionalTone || ev.tone || '') !== _toneFilter) return;
+    if (typeof _placeFilter  !== 'undefined' && _placeFilter  && !(ev.placeIds||[]).includes(_placeFilter)) return;
     const sx  = ws(yw(dec));
     const dir = (vi % 2 === 0) ? -1 : 1;   // -1 = spike UP, 1 = spike DOWN
     pts.push({ dec: dec, sx: sx, vi: vi, dir: dir, color: u.color, ev: ev });
@@ -9355,6 +9458,37 @@ if (typeof window !== 'undefined') {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
+
+/* =====================================================
+   PLACES / WORLD MAP (WS3) — wire the shared ft-places.js module.
+   ft-places.js loads AFTER this engine, so init on DOMContentLoaded
+   (all defer scripts have executed by then).
+   ===================================================== */
+document.addEventListener('DOMContentLoaded', function () {
+  if (!window.ftPlaces) return;
+  ftPlaces.init({
+    kind: 'biography',
+    storageKey: SKEY,
+    getS: function () { return S; },
+    autosave: function () {
+      Store.autosave();
+      if (typeof updatePlaceFilterBar === 'function') updatePlaceFilterBar();
+    },
+    notify: function (m) { try { notify(m, 'info'); } catch (_) {} },
+    jumpToEvent: function (ev) {
+      try {
+        switchView('timeline');
+        const y = parseDate(ev.date, ev.time);
+        if (isFinite(y)) { V.panX = -yw(y) * V.scale; if (typeof clampPanX === 'function') clampPanX(); }
+        render();
+      } catch (_) {}
+    },
+    setPlaceFilter: function (pid) { switchView('timeline'); setPlaceFilter(pid); },
+    eventDateLabel: function (ev) { return ev.date || ''; },
+    accent: '#b07942'
+  });
+  if (typeof updatePlaceFilterBar === 'function') updatePlaceFilterBar();
+});
 
 /* =====================================================
    CANONICAL UI MERGE (root-cause fix)
