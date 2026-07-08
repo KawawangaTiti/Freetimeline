@@ -2173,6 +2173,7 @@ function drawEvents(c, g) {
       if (_statusFilter && (ev.status||'') !== _statusFilter) return;
       if (_toneFilter && ev.emotionalTone !== _toneFilter) return;
       if (_placeFilter && !(ev.placeIds||[]).includes(_placeFilter)) return;
+      if (hiddenByContinuity(ev)) return;
       const vi = getVisIdx(ev.universeId);
       if (vi < 0) return;
       const sx = eventScreenX(dec, vi);
@@ -2287,6 +2288,15 @@ function drawSingleEvent(c, g, ev) {
       return;
     }
 
+    if (typeof hiddenByContinuity === 'function' && hiddenByContinuity(ev)) {
+      g.save(); g.globalAlpha = _uDimmed ? 0.08 : 0.12;
+      g.beginPath(); g.arc(sx, sy, EV_R, 0, Math.PI * 2);
+      g.fillStyle = u.color; g.fill();
+      g.restore();
+      if (_uDimmed) g.restore();
+      return;
+    }
+
     if (ev.isPhantom) {
       hits.push({ type: 'event', id: ev.parentId, x: sx, y: sy, r: EV_R });
       g.save();
@@ -2301,6 +2311,21 @@ function drawSingleEvent(c, g, ev) {
     }
 
     hits.push({ type: 'event', id: ev.id, x: sx, y: sy, r: EV_R + 5 });
+
+    /* WS4 Compare mode: events exclusive to ONE continuity get a colour ring in
+       that continuity's colour, so competing theories read side-by-side at a
+       glance. Shared/canon events stay neutral. */
+    if (_continuityFilter === 'compare' && (ev.continuityIds || []).length === 1) {
+      const _ct = (S.continuities || []).find(c => c.id === ev.continuityIds[0]);
+      if (_ct && _ct.color) {
+        g.save();
+        g.strokeStyle = _ct.color;
+        g.lineWidth = 2.5;
+        g.globalAlpha = _uDimmed ? 0.25 : 0.9;
+        g.beginPath(); g.arc(sx, sy, EV_R + 6, 0, Math.PI * 2); g.stroke();
+        g.restore();
+      }
+    }
 
     // V-life: hover emphasis (eased 0..1). Drawn behind the node.
     const _hov = (ev.id === _hoverEventId) ? _hoverAnim : 0;
@@ -3734,6 +3759,7 @@ const M = {
       case 'connectionMap': this._connectionMap(top); break;
       case 'catEditor':  this._catEditor(top);   break;
       case 'affiliationEditor': this._affiliationEditor(top); break;
+      case 'continuityEditor': this._continuityEditor(top); break;
       case 'help':       this._help();           break;
     }
   },
@@ -3945,6 +3971,12 @@ const M = {
         ? '<select id="ae-places" multiple size="' + Math.min(4, S.places.length) + '">' + ftPlaces.placeOptionsHtml([]) + '</select>'
         : '<div class="hint">No places yet — create them in the <b>Places</b> tab to tag events with locations.</div>') +
       '</div>' +
+      '<div class="fg"><label>⑂ Continuities <span style="font-weight:400;color:#aaa">(optional — Ctrl-click for several; none = shared canon)</span></label>' +
+      ((S.continuities || []).length
+        ? '<select id="ae-conts" multiple size="' + Math.min(4, S.continuities.length) + '">' +
+          S.continuities.map(ct => '<option value="' + esc(ct.id) + '">' + esc(ct.name) + '</option>').join('') + '</select>'
+        : '<div class="hint">No continuities yet — manage theories via <b>Organise ▸ Continuities</b>.</div>') +
+      '</div>' +
       '<div class="fg"><label>Description</label>' +
       '<textarea id="ae-dc" placeholder="Describe this event...">' + esc(top.desc || '') + '</textarea></div>' +
       '<div class="fg"><label>\uD83D\uDCDD Notes <span style="font-weight:400;color:#aaa">(extra info, personal annotations...)</span></label>' +
@@ -4026,6 +4058,12 @@ const M = {
       ((window.ftPlaces && (S.places || []).length)
         ? '<select id="ee-places" multiple size="' + Math.min(4, S.places.length) + '">' + ftPlaces.placeOptionsHtml(ev.placeIds || []) + '</select>'
         : '<div class="hint">No places yet — create them in the <b>Places</b> tab to tag events with locations.</div>') +
+      '</div>' +
+      '<div class="fg"><label>⑂ Continuities <span style="font-weight:400;color:#aaa">(optional — Ctrl-click for several; none = shared canon)</span></label>' +
+      ((S.continuities || []).length
+        ? '<select id="ee-conts" multiple size="' + Math.min(4, S.continuities.length) + '">' +
+          S.continuities.map(ct => '<option value="' + esc(ct.id) + '"' + ((ev.continuityIds || []).includes(ct.id) ? ' selected' : '') + '>' + esc(ct.name) + '</option>').join('') + '</select>'
+        : '<div class="hint">No continuities yet — manage theories via <b>Organise ▸ Continuities</b>.</div>') +
       '</div>' +
       '<div class="fg"><label>Description</label>' +
       '<textarea id="ee-dc">' + esc(ev.description || '') + '</textarea></div>' +
@@ -4326,6 +4364,39 @@ const M = {
     this.foot().innerHTML =
       '<button class="btn light" onclick="M.close()">Cancel</button>' +
       '<button class="btn accent" onclick="affiliationEditorSave()">Save Changes</button>';
+  },
+
+  /* ---- Continuity / theory editor (WS4) ---- */
+  _continuityEditor(top) {
+    this.crumb().textContent = '';
+    this.ttl().textContent   = '⑂ Continuities & Theories';
+    const cts = S.continuities || [];
+    const rows = cts.map((ct, idx) =>
+      '<div style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid #ebebeb;border-radius:8px;margin-bottom:7px;background:#fafbfd">' +
+        '<input type="color" id="ct-color-' + idx + '" value="' + esc(/^#[0-9a-fA-F]{6}$/.test(ct.color || '') ? ct.color : '#e0a030') + '" title="Continuity colour" style="width:34px;height:28px;padding:0;border:1px solid #d6d6d6;border-radius:5px;cursor:pointer">' +
+        '<input id="ct-name-' + idx + '" value="' + esc(ct.name) + '" style="flex:1;padding:5px 9px;border:1px solid #d6d6d6;border-radius:5px;font-size:13px;font-family:inherit" placeholder="Continuity name">' +
+        '<span style="font-size:10px;color:#aaa;white-space:nowrap;min-width:56px;text-align:right">' +
+          S.events.filter(e => (e.continuityIds || []).includes(ct.id)).length + ' event(s)' +
+        '</span>' +
+        '<button class="btn danger sm" onclick="continuityEditorRemove(' + idx + ')" title="Delete continuity">&times;</button>' +
+      '</div>'
+    ).join('');
+    this.body().innerHTML =
+      '<div style="margin-bottom:14px;font-size:13px;color:#666;line-height:1.6">' +
+        'Continuities let one life story hold <b>competing chronologies</b> — alternate readings, branching what-ifs, or fan theories about how events connect. ' +
+        'Tag events with one or more continuities in the event editor; events with none are shared canon, visible everywhere. ' +
+        'Use the ⑂ filter to view one theory, or <b>⇄ Compare</b> to overlay them (exclusive events get their continuity’s colour ring).' +
+      '</div>' +
+      '<div id="ct-list">' + (rows || '<div style="color:#ccc;font-size:13px;padding:12px 0">No continuities yet. Add your first theory below.</div>') + '</div>' +
+      '<div style="border-top:1px solid #eee;padding-top:14px;margin-top:8px">' +
+        '<div style="display:flex;gap:8px;align-items:center">' +
+          '<input id="ct-new-name" placeholder="New continuity, e.g. “Unreliable narrator” theory..." style="flex:1;padding:5px 9px;border:1px solid #d6d6d6;border-radius:5px;font-size:13px;font-family:inherit">' +
+          '<button class="btn accent sm" onclick="continuityEditorAdd()">＋ Add</button>' +
+        '</div>' +
+      '</div>';
+    this.foot().innerHTML =
+      '<button class="btn light" onclick="M.close()">Cancel</button>' +
+      '<button class="btn accent" onclick="continuityEditorSave()">Save Changes</button>';
   },
 
   /* ---- Help (searchable archive guide) ---- */
@@ -5176,14 +5247,16 @@ function submitAddEv() {
   const tags = (document.getElementById('ae-tags')||{value:''}).value.split(',').map(t=>t.trim()).filter(Boolean);
   const placeSel = document.getElementById('ae-places');
   const placeIds = placeSel ? Array.from(placeSel.selectedOptions).map(o => o.value) : [];
+  const contSel = document.getElementById('ae-conts');
+  const continuityIds = contSel ? Array.from(contSel.selectedOptions).map(o => o.value) : [];
   S.events.push({ id: uid(), universeId: uId, date, dateEnd: dateEnd || null, time: time || null,
     location: location || null, title, description: desc, notes,
     emotionalTone: emotionalTone || null, lifeSituation: lifeSituation || null,
     roleStatus: roleStatus || null, internalChange: internalChange || null,
     media: [..._editMediaList], subEvents: [], category: cat || null, status, tags,
-    placeIds,
+    placeIds, continuityIds,
     recurring: recFreq ? { frequency: recFreq } : null });
-  Store.autosave(); render(); updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updatePlaceFilterBar(); updateStatsPanel(); M.close(); notify('Event created! \u2713', 'success');
+  Store.autosave(); render(); updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updatePlaceFilterBar(); updateContinuityFilterBar(); updateStatsPanel(); M.close(); notify('Event created! \u2713', 'success');
 }
 
 function saveEv(evId) {
@@ -5231,10 +5304,12 @@ function saveEv(evId) {
   ev.tags           = (document.getElementById('ee-tags')||{value:''}).value.split(',').map(t=>t.trim()).filter(Boolean);
   const eePlaceSel = document.getElementById('ee-places');
   if (eePlaceSel) ev.placeIds = Array.from(eePlaceSel.selectedOptions).map(o => o.value);
+  const eeContSel = document.getElementById('ee-conts');
+  if (eeContSel) ev.continuityIds = Array.from(eeContSel.selectedOptions).map(o => o.value);
   ev.description    = document.getElementById('ee-dc').value.trim();
   ev.notes          = document.getElementById('ee-notes').value.trim();
   ev.media          = [..._editMediaList];
-  Store.autosave(); render(); updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updatePlaceFilterBar(); updateStatsPanel();
+  Store.autosave(); render(); updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updatePlaceFilterBar(); updateContinuityFilterBar(); updateStatsPanel();
   MS.pop(); M.render(); notify('Saved \u2713', 'success');
 }
 
@@ -5520,6 +5595,68 @@ function affiliationEditorSave() {
 }
 
 /* =====================================================
+   CONTINUITY EDITOR FUNCTIONS (WS4)
+   ===================================================== */
+const CT_PALETTE = ['#e0a030', '#8e6ade', '#3fa7a0', '#d05a78', '#5a80ff', '#6a9e5a'];
+function continuityEditorAdd() {
+  const nameEl = document.getElementById('ct-new-name');
+  const name = (nameEl ? nameEl.value : '').trim();
+  if (!name) { notify('Please enter a continuity name.', 'error'); return; }
+  if (!S.continuities) S.continuities = [];
+  if (S.continuities.some(c => c.name === name)) { notify('"' + name + '" already exists.', 'error'); return; }
+  S.continuities.push({ id: 'ct_' + Math.random().toString(36).slice(2, 10), name: name,
+    color: CT_PALETTE[S.continuities.length % CT_PALETTE.length], notes: '' });
+  Store.autosave();
+  if (nameEl) nameEl.value = '';
+  M.render();
+  updateContinuityFilterBar();
+  notify('Continuity "' + name + '" added!', 'success');
+}
+
+function continuityEditorRemove(idx) {
+  if (!S.continuities) return;
+  const ct = S.continuities[idx];
+  if (!ct) return;
+  const evCount = S.events.filter(e => (e.continuityIds || []).includes(ct.id)).length;
+  function _go() {
+    S.events.forEach(e => {
+      if (Array.isArray(e.continuityIds)) e.continuityIds = e.continuityIds.filter(x => x !== ct.id);
+    });
+    S.continuities.splice(idx, 1);
+    if (_continuityFilter === ct.id) _continuityFilter = null;
+    Store.autosave();
+    M.render();
+    updateContinuityFilterBar();
+    render();
+    notify('Continuity "' + ct.name + '" removed.', 'warning');
+  }
+  if (evCount > 0) {
+    ftConfirmGate(
+      'Remove "' + ct.name + '"? ' + evCount + ' event(s) are tagged with it — the tag is removed, the events stay.',
+      _go,
+      { title: 'Remove continuity?', confirmLabel: 'Remove', danger: true }
+    );
+    return;
+  }
+  _go();
+}
+
+function continuityEditorSave() {
+  if (!S.continuities) S.continuities = [];
+  S.continuities.forEach(function (ct, i) {
+    const nameEl = document.getElementById('ct-name-' + i);
+    const colorEl = document.getElementById('ct-color-' + i);
+    if (nameEl && nameEl.value.trim()) ct.name = nameEl.value.trim().slice(0, 200);
+    if (colorEl && colorEl.value) ct.color = colorEl.value;
+  });
+  Store.autosave();
+  updateContinuityFilterBar();
+  render();
+  M.close();
+  notify('Continuities saved ✓', 'success');
+}
+
+/* =====================================================
    UI ACTIONS (called from toolbar)
    ===================================================== */
 const UI = {
@@ -5552,6 +5689,9 @@ const UI = {
   },
   affiliationEditor() {
     M.push({ t: 'affiliationEditor' });
+  },
+  continuityEditor() {
+    M.push({ t: 'continuityEditor' });
   },
   charEvLink(evId) {
     M.push({ t: 'charEvLink', evId });
@@ -5601,6 +5741,7 @@ const Store = {
     S.affiliations = Array.isArray(S.affiliations) ? S.affiliations : [];
     S.places = Array.isArray(S.places) ? S.places : [];
     S.mapMeta = (S.mapMeta && typeof S.mapMeta === 'object') ? S.mapMeta : { has: false, w: 0, h: 0, name: '' };
+    S.continuities = Array.isArray(S.continuities) ? S.continuities : [];
     syncCategoriesFromState();
   },
   load() {
@@ -5620,6 +5761,7 @@ const Store = {
         S.affiliations = d.affiliations || [];
         S.places       = d.places      || [];
         S.mapMeta      = d.mapMeta     || { has: false, w: 0, h: 0, name: '' };
+        S.continuities = d.continuities || [];
         if (typeof d._mapDataUrl === 'string') S._mapDataUrl = d._mapDataUrl;
         Store.normalize();
         return true;
@@ -5759,6 +5901,8 @@ const Store = {
     S.affiliations = [];
     S.places = [];
     S.mapMeta = { has: false, w: 0, h: 0, name: '' };
+    S.continuities = [];
+    _continuityFilter = null;
     delete S._mapDataUrl;
     if (window.ftPlaces) { try { ftPlaces.mapStore.del(SKEY); } catch (_) {} }
     if (!S.categories || Object.keys(S.categories).length === 0) syncCategoriesToState();
@@ -5775,6 +5919,7 @@ const Store = {
     updateStatusFilterBar();
     updateTagFilterBar();
     updatePlaceFilterBar();
+    updateContinuityFilterBar();
     updateStatsPanel();
     notify('Blank timeline ready.', 'warning');
   },
@@ -5815,6 +5960,8 @@ const Store = {
           S.affiliations = d.affiliations || [];
           S.places       = d.places      || [];
           S.mapMeta      = d.mapMeta     || { has: false, w: 0, h: 0, name: '' };
+          S.continuities = d.continuities || [];
+          _continuityFilter = null;
           delete S._mapDataUrl;
           /* WS3: restore the embedded map image into IndexedDB (async, non-blocking) */
           if (window.ftPlaces) {
@@ -5832,7 +5979,7 @@ const Store = {
           Store.autosave();
           History.clear();  /* BE-13: undo must not cross the import boundary */
           clampPanY(); render();
-          updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updatePlaceFilterBar(); updateUniToggleBar(); updateStatsPanel();
+          updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updatePlaceFilterBar(); updateContinuityFilterBar(); updateUniToggleBar(); updateStatsPanel();
           if (wasLegacy) {
             setTimeout(() => notify('File loaded \u2713 — your Universes are now Life Tracks. All data is intact. Rename them at your own pace.', 'success'), 400);
           } else {
@@ -6375,6 +6522,8 @@ window.addEventListener('DOMContentLoaded', () => {
   updateCatFilterBar();
   updateStatusFilterBar();
   updateTagFilterBar();
+  updatePlaceFilterBar();
+  updateContinuityFilterBar();
   document.getElementById('zoom-pct').textContent = '100%';
 
   /* Frame the timeline on the actual data. The default range is geological
@@ -6537,6 +6686,10 @@ let _tagFilter = null; // null = all, else tag string
 
 /* Place filter (WS3) */
 let _placeFilter = null; // null = all, else place id
+
+/* Continuity/theory filter (WS4): null = all, 'compare' = overlay mode, else continuity id.
+   Events with an empty continuityIds are canon-shared and visible in every mode. */
+let _continuityFilter = null;
 
 /* Stats panel visibility */
 let _statsVisible = false;
@@ -6708,6 +6861,48 @@ function updatePlaceFilterBar() {
   });
   sel.innerHTML = html;
   if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
+}
+
+/* ---- Continuity filter (WS4) ---- */
+function setContinuityFilter(v) {
+  _continuityFilter = v || null;
+  updateContinuityFilterBar();
+  if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
+  render();
+}
+
+function clearContinuityFilter() {
+  _continuityFilter = null;
+  updateContinuityFilterBar();
+  if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
+  render();
+}
+
+function updateContinuityFilterBar() {
+  const sel = document.getElementById('continuity-filter-select');
+  if (!sel) return;
+  const cts = S.continuities || [];
+  const counts = {};
+  S.events.forEach(function (ev) {
+    (ev.continuityIds || []).forEach(function (id) { counts[id] = (counts[id] || 0) + 1; });
+  });
+  var html = '<option value="">⑂ Continuity</option>';
+  cts.forEach(function (ct) {
+    html += '<option value="' + esc(ct.id) + '"' + (_continuityFilter === ct.id ? ' selected' : '') + '>' +
+      esc(ct.name) + ' (' + (counts[ct.id] || 0) + ')</option>';
+  });
+  if (cts.length >= 2) {
+    html += '<option value="compare"' + (_continuityFilter === 'compare' ? ' selected' : '') + '>⇄ Compare all</option>';
+  }
+  sel.innerHTML = html;
+  if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
+}
+
+/* True when the event is hidden by the single-continuity view.
+   Canon-shared events (no continuityIds) are never hidden. */
+function hiddenByContinuity(ev) {
+  return _continuityFilter && _continuityFilter !== 'compare' &&
+    (ev.continuityIds || []).length > 0 && !(ev.continuityIds || []).includes(_continuityFilter);
 }
 
 function updateCatFilterBar() {
@@ -8483,6 +8678,7 @@ function drawStoryLine(c, g) {
     // Bio uses ev.emotionalTone (Universe uses ev.tone) — handle either.
     if (typeof _toneFilter   !== 'undefined' && _toneFilter   && (ev.emotionalTone || ev.tone || '') !== _toneFilter) return;
     if (typeof _placeFilter  !== 'undefined' && _placeFilter  && !(ev.placeIds||[]).includes(_placeFilter)) return;
+    if (typeof hiddenByContinuity === 'function' && hiddenByContinuity(ev)) return;
     const sx  = ws(yw(dec));
     const dir = (vi % 2 === 0) ? -1 : 1;   // -1 = spike UP, 1 = spike DOWN
     pts.push({ dec: dec, sx: sx, vi: vi, dir: dir, color: u.color, ev: ev });
@@ -9462,9 +9658,12 @@ if (typeof window !== 'undefined') {
 /* =====================================================
    PLACES / WORLD MAP (WS3) — wire the shared ft-places.js module.
    ft-places.js loads AFTER this engine, so init on DOMContentLoaded
-   (all defer scripts have executed by then).
+   (all defer scripts have executed by then). NOTE: must be a WINDOW
+   listener — the engine's own load/init listener (INITIALISATION
+   section) is on window, and document-level listeners would fire
+   BEFORE it, i.e. before Store.load() has populated S.
    ===================================================== */
-document.addEventListener('DOMContentLoaded', function () {
+window.addEventListener('DOMContentLoaded', function () {
   if (!window.ftPlaces) return;
   ftPlaces.init({
     kind: 'biography',
@@ -9488,6 +9687,7 @@ document.addEventListener('DOMContentLoaded', function () {
     accent: '#b07942'
   });
   if (typeof updatePlaceFilterBar === 'function') updatePlaceFilterBar();
+  if (typeof updateContinuityFilterBar === 'function') updateContinuityFilterBar();
 });
 
 /* =====================================================

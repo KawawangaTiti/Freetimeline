@@ -3576,6 +3576,7 @@ input[type="color"]:focus-visible {
     <span class="tb-label tb-secondary">Organise</span>
     <button class="btn tb-secondary" onclick="UI.catEditor()" title="Edit Event Categories" style="background:rgba(176,121,66,0.18);border-color:rgba(176,121,66,0.4);color:#c4956a">Categories</button>
     <button class="btn tb-secondary" onclick="UI.affiliationEditor()" title="Edit Organizations &amp; Groups" style="background:rgba(106,142,90,0.18);border-color:rgba(106,142,90,0.4);color:#7ab86a">Groups</button>
+    <button class="btn tb-secondary" onclick="UI.continuityEditor()" title="Manage continuities &amp; theories — alternate readings or branches of your life story, and fan theories">Continuities</button>
     <div class="sep tb-secondary"></div>
     <span class="tb-label tb-secondary">Nav</span>
     <button class="btn tb-secondary" onclick="goToToday()" title="Pan to today's date (preserves zoom)">Today</button>
@@ -3723,6 +3724,17 @@ input[type="color"]:focus-visible {
           <div class="fp-drop-panel-title">Place</div>
           <select id="place-filter-select" onchange="setPlaceFilter(this.value||null)">
             <option value="">— All Places —</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Continuity dropdown -->
+      <div class="fp-drop" id="fp-drop-continuity">
+        <button class="fp-drop-btn" type="button" onclick="ftToggle('fp-drop-continuity',event)">⑂ Continuity <span class="fp-arrow">▾</span></button>
+        <div class="fp-drop-panel">
+          <div class="fp-drop-panel-title">Continuity / Theory</div>
+          <select id="continuity-filter-select" onchange="setContinuityFilter(this.value||null)">
+            <option value="">— All —</option>
           </select>
         </div>
       </div>
@@ -4323,6 +4335,13 @@ window.addEventListener('resize', repositionOpenDrops);
       var plName = (typeof ftPlaces !== 'undefined' && ftPlaces.placeName) ? ftPlaces.placeName(_placeFilter) : '';
       activeChips.push('<span class="fp-active-chip">&#128205; ' + esc(plName || _placeFilter) + '</span>');
     }
+    if (typeof _continuityFilter !== 'undefined' && _continuityFilter) {
+      var ctLabel = _continuityFilter === 'compare' ? '⇄ Compare all' : (function () {
+        var ct = (typeof S !== 'undefined' && S.continuities) ? S.continuities.find(function(c) { return c.id === _continuityFilter; }) : null;
+        return ct ? ct.name : _continuityFilter;
+      })();
+      activeChips.push('<span class="fp-active-chip">&#9282; ' + esc(ctLabel) + '</span>');
+    }
     if (typeof _charFilterIds !== 'undefined' && _charFilterIds.length > 0) {
       var names = _charFilterIds.map(function(cid) {
         var ch = (typeof S !== 'undefined') ? S.people.find(function(c) { return c.id === cid; }) : null;
@@ -4364,6 +4383,7 @@ window.addEventListener('resize', repositionOpenDrops);
     if (typeof _statusFilter !== 'undefined') { _statusFilter = null; if (typeof updateStatusFilterBar === 'function') updateStatusFilterBar(); }
     if (typeof _tagFilter !== 'undefined') { _tagFilter = null; if (typeof updateTagFilterBar === 'function') updateTagFilterBar(); }
     if (typeof _placeFilter !== 'undefined') { _placeFilter = null; if (typeof updatePlaceFilterBar === 'function') updatePlaceFilterBar(); }
+    if (typeof _continuityFilter !== 'undefined') { _continuityFilter = null; if (typeof updateContinuityFilterBar === 'function') updateContinuityFilterBar(); }
     if (typeof _charFilterIds !== 'undefined') { _charFilterIds = []; if (typeof updateFilterBar === 'function') updateFilterBar(); }
     updateMobileActiveStrip();
     if (typeof render === 'function') render();
