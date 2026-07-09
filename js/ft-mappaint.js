@@ -101,6 +101,35 @@
     }
   }
 
+  /* ---------------- political layer (countries) ---------------- */
+  var COUNTRY_COLORS = ['#c0674a', '#4a8fde', '#57b98a', '#e0a24a', '#9a7ae0', '#4ec5c1', '#d95f8a', '#7a9a3a'];
+  function blankPol() { return { w: GW, h: GH, cells: new Array(GW * GH).fill(0) }; }
+  function clonePol(p) { if (!p || !Array.isArray(p.cells)) return blankPol(); return { w: p.w || GW, h: p.h || GH, cells: p.cells.slice() }; }
+  function hexA(hex, a) { hex = String(hex || '#888'); var r = parseInt(hex.slice(1, 3), 16) || 136, g = parseInt(hex.slice(3, 5), 16) || 136, b = parseInt(hex.slice(5, 7), 16) || 136; return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')'; }
+  function renderPolitical(cv, pol, countries) {
+    if (!pol || !countries || !countries.length) return;
+    var ctx = cv.getContext('2d'), W = cv.width, H = cv.height, gw = pol.w, gh = pol.h, cells = pol.cells;
+    var cw = W / gw, ch = H / gh, byId = {}; countries.forEach(function (c) { byId[c.id] = c; });
+    for (var y = 0; y < gh; y++) for (var x = 0; x < gw; x++) { var id = cells[y * gw + x]; if (!id) continue; var c = byId[id]; if (!c) continue; ctx.fillStyle = hexA(c.color, 0.34); ctx.fillRect(Math.floor(x * cw), Math.floor(y * ch), Math.ceil(cw) + 1, Math.ceil(ch) + 1); }
+    function idAt(x, y) { if (x < 0 || y < 0 || x >= gw || y >= gh) return 0; return cells[y * gw + x]; }
+    ctx.strokeStyle = 'rgba(26,18,12,0.72)'; ctx.lineWidth = Math.max(1.2, W / 640); ctx.lineJoin = 'round'; ctx.beginPath();
+    for (var y2 = 0; y2 < gh; y2++) for (var x2 = 0; x2 < gw; x2++) {
+      var id2 = cells[y2 * gw + x2]; if (!id2) continue;
+      if (idAt(x2 + 1, y2) !== id2) { ctx.moveTo((x2 + 1) * cw, y2 * ch); ctx.lineTo((x2 + 1) * cw, (y2 + 1) * ch); }
+      if (idAt(x2 - 1, y2) !== id2) { ctx.moveTo(x2 * cw, y2 * ch); ctx.lineTo(x2 * cw, (y2 + 1) * ch); }
+      if (idAt(x2, y2 + 1) !== id2) { ctx.moveTo(x2 * cw, (y2 + 1) * ch); ctx.lineTo((x2 + 1) * cw, (y2 + 1) * ch); }
+      if (idAt(x2, y2 - 1) !== id2) { ctx.moveTo(x2 * cw, y2 * ch); ctx.lineTo((x2 + 1) * cw, y2 * ch); }
+    }
+    ctx.stroke();
+    ctx.textAlign = 'center'; ctx.font = '700 ' + Math.round(W / 46) + 'px Georgia, serif';
+    countries.forEach(function (c) {
+      var sx = 0, sy = 0, n = 0; for (var i = 0; i < cells.length; i++) if (cells[i] === c.id) { sx += (i % gw); sy += Math.floor(i / gw); n++; }
+      if (!n) return; var lx = sx / n * cw, ly = sy / n * ch;
+      ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(20,14,10,0.85)'; ctx.strokeText(c.name, lx, ly);
+      ctx.fillStyle = 'rgba(255,255,255,0.94)'; ctx.fillText(c.name, lx, ly);
+    });
+  }
+
   /* ---------------- UI ---------------- */
   var els = null;
   function css() {
@@ -156,6 +185,11 @@
     var brush = 2;     // brush radius in cells
     var tool = 'brush';// brush | bucket
     var style = 'relief';// relief | atlas — the art look
+    var mode = 'terrain';// terrain | political (countries)
+    var pol = clonePol(opts.pol);
+    var countries = (opts.countries || []).map(function (c) { return { id: +c.id, name: c.name, color: c.color }; });
+    var curCountry = countries.length ? countries[0].id : 0;
+    var _cid = countries.reduce(function (m, c) { return Math.max(m, +c.id || 0); }, 0);
 
     var scrim = el('div', 'ftmp-scrim');
     scrim.addEventListener('click', function (e) { if (e.target === scrim) close(); });
@@ -171,16 +205,48 @@
     var body = el('div', 'ftmp-body');
     // tools column
     var tools = el('div', 'ftmp-tools');
-    var swWrap = el('div'); swWrap.innerHTML = '<div class="ftmp-lbl">Terrain</div>';
-    var sw = el('div', 'ftmp-swatches');
-    TERRAIN.forEach(function (t) {
-      var b = el('button', 'ftmp-sw' + (t.id === cur ? ' on' : ''));
-      b.type = 'button'; b.dataset.id = t.id;
-      b.innerHTML = '<span class="dot" style="background:' + t.color + '"></span>' + t.name;
-      b.addEventListener('click', function () { cur = t.id; Array.prototype.forEach.call(sw.children, function (c) { c.classList.toggle('on', +c.dataset.id === cur); }); });
-      sw.appendChild(b);
+    var modeWrap = el('div'); modeWrap.innerHTML = '<div class="ftmp-lbl">Layer</div>';
+    var modeSeg = el('div', 'ftmp-seg');
+    [['terrain', 'Terrain'], ['political', 'Countries']].forEach(function (p) {
+      var b = el('button', p[0] === mode ? 'on' : ''); b.type = 'button'; b.textContent = p[1];
+      b.addEventListener('click', function () { mode = p[0]; Array.prototype.forEach.call(modeSeg.children, function (c) { c.classList.toggle('on', c.textContent === p[1]); }); renderPalette(); });
+      modeSeg.appendChild(b);
     });
-    swWrap.appendChild(sw); tools.appendChild(swWrap);
+    modeWrap.appendChild(modeSeg); tools.appendChild(modeWrap);
+    var paletteHost = el('div'); tools.appendChild(paletteHost);
+    function renderPalette() {
+      paletteHost.innerHTML = '';
+      if (mode === 'terrain') {
+        paletteHost.innerHTML = '<div class="ftmp-lbl">Terrain</div>';
+        var sw = el('div', 'ftmp-swatches');
+        TERRAIN.forEach(function (t) {
+          var b = el('button', 'ftmp-sw' + (t.id === cur ? ' on' : '')); b.type = 'button'; b.dataset.id = t.id;
+          b.innerHTML = '<span class="dot" style="background:' + t.color + '"></span>' + t.name;
+          b.addEventListener('click', function () { cur = t.id; Array.prototype.forEach.call(sw.children, function (c) { c.classList.toggle('on', +c.dataset.id === cur); }); });
+          sw.appendChild(b);
+        });
+        paletteHost.appendChild(sw);
+      } else {
+        paletteHost.innerHTML = '<div class="ftmp-lbl">Countries</div>';
+        var list = el('div', 'ftmp-swatches');
+        countries.forEach(function (c) {
+          var b = el('button', 'ftmp-sw' + (c.id === curCountry ? ' on' : '')); b.type = 'button'; b.dataset.cid = c.id;
+          b.innerHTML = '<span class="dot" style="background:' + c.color + '"></span>' + c.name;
+          b.addEventListener('click', function () { curCountry = c.id; Array.prototype.forEach.call(list.children, function (x) { x.classList.toggle('on', +x.dataset.cid === curCountry); }); });
+          list.appendChild(b);
+        });
+        paletteHost.appendChild(list);
+        var add = el('button', 'ftmp-btn'); add.type = 'button'; add.style.cssText = 'width:100%;margin-top:6px'; add.textContent = '＋ New country';
+        add.addEventListener('click', function () {
+          var nm = window.prompt('Country name', 'New nation'); if (!nm) return;
+          _cid++; var c = { id: _cid, name: String(nm).slice(0, 60), color: COUNTRY_COLORS[(_cid - 1) % COUNTRY_COLORS.length] };
+          countries.push(c); curCountry = c.id; renderPalette();
+        });
+        paletteHost.appendChild(add);
+        if (!countries.length) paletteHost.insertAdjacentHTML('beforeend', '<div style="font-size:11px;opacity:.6;margin-top:6px">Add a country, then paint its land — borders draw themselves.</div>');
+      }
+    }
+    renderPalette();
 
     var toolWrap = el('div'); toolWrap.innerHTML = '<div class="ftmp-lbl">Tool</div>';
     var toolSeg = el('div', 'ftmp-seg');
@@ -210,8 +276,8 @@
     styleWrap.appendChild(styleSeg); tools.appendChild(styleWrap);
 
     var clearWrap = el('div');
-    var clearBtn = el('button', 'ftmp-btn'); clearBtn.type = 'button'; clearBtn.style.width = '100%'; clearBtn.textContent = '↺ Clear to water';
-    clearBtn.addEventListener('click', function () { grid = blankGrid(); paint(); });
+    var clearBtn = el('button', 'ftmp-btn'); clearBtn.type = 'button'; clearBtn.style.width = '100%'; clearBtn.textContent = '↺ Clear layer';
+    clearBtn.addEventListener('click', function () { if (mode === 'political') pol = blankPol(); else grid = blankGrid(); paint(); });
     clearWrap.appendChild(clearBtn); tools.appendChild(clearWrap);
 
     body.appendChild(tools);
@@ -235,7 +301,7 @@
     els = { scrim: scrim };
     var _first = modal.querySelector('.ftmp-sw'); if (_first) try { _first.focus(); } catch (_) {}
 
-    function paint() { renderGrid(canvas, grid, style); }
+    function paint() { renderGrid(canvas, grid, style); renderPolitical(canvas, pol, countries); }
 
     function cellAt(ev) {
       var r = canvas.getBoundingClientRect();
@@ -244,12 +310,14 @@
       return [Math.max(0, Math.min(grid.w - 1, x)), Math.max(0, Math.min(grid.h - 1, y))];
     }
     function stamp(cx, cy) {
-      if (tool === 'bucket') { bucket(grid, cx, cy, cur); return; }
+      var g = mode === 'political' ? pol : grid, val = mode === 'political' ? curCountry : cur;
+      if (mode === 'political' && !val) { note('Add a country first (＋ New country).'); return; }
+      if (tool === 'bucket') { bucket(g, cx, cy, val); return; }
       var rr = brush - 1;
       for (var dy = -rr; dy <= rr; dy++) for (var dx = -rr; dx <= rr; dx++) {
         if (dx * dx + dy * dy > rr * rr + rr) continue;
         var x = cx + dx, y = cy + dy;
-        if (x >= 0 && y >= 0 && x < grid.w && y < grid.h) grid.cells[y * grid.w + x] = cur;
+        if (x >= 0 && y >= 0 && x < g.w && y < g.h) g.cells[y * g.w + x] = val;
       }
     }
     var drawing = false;
@@ -265,10 +333,11 @@
 
     function applyMap() {
       var big = document.createElement('canvas'); big.width = 1500; big.height = 1050;
-      renderGrid(big, grid, style);
+      renderGrid(big, grid, style); renderPolitical(big, pol, countries);
       var dataUrl = big.toDataURL('image/png');
       var meta = { name: 'Painted map', w: big.width, h: big.height };
       if (typeof opts.onSaveGrid === 'function') { try { opts.onSaveGrid(cloneGrid(grid)); } catch (_) {} }
+      if (typeof opts.onSavePol === 'function') { try { opts.onSavePol(clonePol(pol), countries.map(function (c) { return { id: c.id, name: c.name, color: c.color }; })); } catch (_) {} }
       var finish = function () { close(); };
       if (typeof opts.onApply === 'function') {
         var r = opts.onApply(dataUrl, meta);

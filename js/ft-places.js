@@ -670,6 +670,8 @@
     var s = S();
     window.ftMapPaint.open({
       grid: s.mapPaintGrid || null,
+      pol: s.mapPoliticalGrid || null,
+      countries: s.mapCountries || [],
       onApply: function (dataUrl, meta) {
         note('Saving your map…');
         return setMapFromDataUrl(dataUrl).then(function (ok) {
@@ -683,7 +685,8 @@
           return true;
         });
       },
-      onSaveGrid: function (grid) { var st = S(); st.mapPaintGrid = grid; persist(); }
+      onSaveGrid: function (grid) { var st = S(); st.mapPaintGrid = grid; persist(); },
+      onSavePol: function (pol, countries) { var st = S(); st.mapPoliticalGrid = pol; st.mapCountries = countries; persist(); }
     });
   }
 
