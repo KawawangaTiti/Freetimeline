@@ -1106,19 +1106,32 @@ function isInPlotArea(mx, my) {
   }
 
   let lastOrient = '', lastActive = '', lastEvLen = -1, lastUniLen = -1;
-  (function tick() {
-    try {
-      const orient = (typeof ORIENTATION !== 'undefined') ? ORIENTATION : '';
-      const active = (typeof S === 'object' && S) ? (S.activeUniverseId || '') : '';
-      const evLen = (typeof S === 'object' && S && S.events) ? S.events.length : -1;
-      const uniLen = visibleUniverses().length;
-      if (orient !== lastOrient || active !== lastActive || evLen !== lastEvLen || uniLen !== lastUniLen) {
-        lastOrient = orient; lastActive = active; lastEvLen = evLen; lastUniLen = uniLen;
-        render();
-      } else if (orient === 'vertical') {
-        render();
-      }
-    } catch (_) {}
+  let _mufLastTs = 0;
+  (function tick(ts) {
+    // Idle-CPU gate (Phase 6 / BE-4): this loop only mirrors data edits into
+    // the mobile feed — native scroll handles movement and resize/orientation
+    // already call render() directly — so it never needs 60fps. Skip work while
+    // the page is hidden, and throttle the change-check to ~150ms (imperceptible
+    // for a feed that only changes on edits, but ~9x less idle CPU on phones).
+    if (typeof document !== 'undefined' && document.hidden) {
+      requestAnimationFrame(tick);
+      return;
+    }
+    if (!ts || ts - _mufLastTs >= 150) {
+      _mufLastTs = ts || 0;
+      try {
+        const orient = (typeof ORIENTATION !== 'undefined') ? ORIENTATION : '';
+        const active = (typeof S === 'object' && S) ? (S.activeUniverseId || '') : '';
+        const evLen = (typeof S === 'object' && S && S.events) ? S.events.length : -1;
+        const uniLen = visibleUniverses().length;
+        if (orient !== lastOrient || active !== lastActive || evLen !== lastEvLen || uniLen !== lastUniLen) {
+          lastOrient = orient; lastActive = active; lastEvLen = evLen; lastUniLen = uniLen;
+          render();
+        } else if (orient === 'vertical') {
+          render();
+        }
+      } catch (_) {}
+    }
     requestAnimationFrame(tick);
   })();
 
