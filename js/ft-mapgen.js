@@ -82,7 +82,7 @@
     var EW = 340, EH = Math.round(EW * H / W), E = new Float32Array(EW * EH);
     for (var j = 0; j < EH; j++) for (var i = 0; i < EW; i++) E[j * EW + i] = elev((i + 0.5) / EW, (j + 0.5) / EH);
     if (window.ftMapRender) {
-      ftMapRender.render(cv, { elevation: E, gw: EW, gh: EH, seaLevel: seaT, seed: seed, style: opts.style || 'atlas' });
+      ftMapRender.render(cv, { elevation: E, gw: EW, gh: EH, seaLevel: seaT, seed: seed, style: opts.style || 'atlas', climate: opts.climate || 'temperate' });
     } else {
       var ctx = cv.getContext('2d'); ctx.clearRect(0, 0, W, H);
       var sm = document.createElement('canvas'); sm.width = EW; sm.height = EH;
@@ -188,7 +188,7 @@
     var scrim = el('div', 'ftmg-scrim');
     scrim.addEventListener('click', function (e) { if (e.target === scrim) close(); });
     var modal = el('div', 'ftmg');
-    modal.setAttribute('role', 'dialog'); modal.setAttribute('aria-label', 'Create a map');
+    modal.setAttribute('role', 'dialog'); modal.setAttribute('aria-modal', 'true'); modal.setAttribute('aria-label', 'Create a map');
     modal.addEventListener('click', function (e) { e.stopPropagation(); });
 
     modal.appendChild(el('div', 'ftmg-head',
@@ -210,6 +210,7 @@
     document.body.appendChild(scrim);
     document.addEventListener('keydown', onKey, true);
     els = { scrim: scrim };
+    var _first = document.getElementById('ftmg-style'); if (_first) try { _first.focus(); } catch (_) {}
 
     function mkX() { var b = el('button', 'ftmg-x'); b.type = 'button'; b.setAttribute('aria-label', 'Close'); b.textContent = '×'; b.addEventListener('click', close); return b; }
   }

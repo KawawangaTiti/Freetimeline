@@ -155,7 +155,7 @@
     var scrim = el('div', 'ftmp-scrim');
     scrim.addEventListener('click', function (e) { if (e.target === scrim) close(); });
     var modal = el('div', 'ftmp');
-    modal.setAttribute('role', 'dialog'); modal.setAttribute('aria-label', 'Paint a map');
+    modal.setAttribute('role', 'dialog'); modal.setAttribute('aria-modal', 'true'); modal.setAttribute('aria-label', 'Paint a map');
     modal.addEventListener('click', function (e) { e.stopPropagation(); });
 
     var head = el('div', 'ftmp-head',
@@ -219,6 +219,7 @@
     document.body.appendChild(scrim);
     document.addEventListener('keydown', onKey, true);
     els = { scrim: scrim };
+    var _first = modal.querySelector('.ftmp-sw'); if (_first) try { _first.focus(); } catch (_) {}
 
     function paint() { renderGrid(canvas, grid, true); }
 

@@ -28,13 +28,29 @@
 
   function landAt(E, gw, gh, x, y, seaT) { if (x < 0 || y < 0 || x >= gw || y >= gh) return false; return E[y * gw + x] >= seaT; }
 
+  /* climate palettes for the coloured Relief style */
+  var RELIEF_PAL = {
+    temperate: { deep: [14, 38, 60], sea: [30, 74, 104], shore: [86, 150, 156], beach: [216, 202, 158], grass: [120, 150, 84], forest: [58, 100, 60], hill: [150, 150, 98], rock: [120, 110, 98], snow: [236, 240, 244] },
+    arid:      { deep: [20, 55, 72], sea: [36, 92, 110], shore: [96, 156, 150], beach: [224, 206, 150], grass: [172, 152, 96], forest: [132, 120, 74], hill: [156, 134, 92], rock: [142, 120, 92], snow: [222, 214, 196] },
+    tropical:  { deep: [10, 60, 78], sea: [26, 120, 124], shore: [82, 184, 168], beach: [228, 214, 150], grass: [88, 162, 74], forest: [40, 118, 60], hill: [122, 152, 80], rock: [120, 120, 92], snow: [236, 240, 236] },
+    frozen:    { deep: [24, 52, 78], sea: [54, 96, 124], shore: [132, 172, 192], beach: [196, 206, 214], grass: [150, 170, 168], forest: [110, 140, 140], hill: [172, 182, 182], rock: [150, 158, 164], snow: [240, 245, 250] }
+  };
+  /* subtle climate tint for the Atlas parchment (stays sepia, shifts warm/cool) */
+  var ATLAS_TINT = {
+    temperate: { l1: [224, 214, 182], l2: [206, 197, 158], hi: [196, 186, 150], sea: [176, 196, 196] },
+    arid:      { l1: [228, 214, 168], l2: [212, 192, 140], hi: [200, 180, 132], sea: [188, 200, 190] },
+    tropical:  { l1: [216, 214, 172], l2: [196, 200, 148], hi: [186, 196, 140], sea: [168, 204, 194] },
+    frozen:    { l1: [220, 220, 214], l2: [204, 206, 204], hi: [196, 200, 204], sea: [196, 208, 210] }
+  };
+
   /* ---------------- RELIEF (coloured, hillshaded) ---------------- */
   function relief(ctx, W, H, o) {
     var E = o.elevation, gw = o.gw, gh = o.gh, seaT = o.seaLevel, seed = o.seed;
     var small = document.createElement('canvas'); small.width = gw; small.height = gh;
     var sc = small.getContext('2d'), img = sc.createImageData(gw, gh), D = img.data;
-    var deep = [14, 38, 60], sea = [30, 74, 104], shore = [86, 150, 156], beach = [216, 202, 158],
-        grass = [120, 150, 84], forest = [58, 100, 60], hill = [150, 150, 98], rock = [120, 110, 98], snow = [236, 240, 244];
+    var P = RELIEF_PAL[o.climate] || RELIEF_PAL.temperate;
+    var deep = P.deep, sea = P.sea, shore = P.shore, beach = P.beach,
+        grass = P.grass, forest = P.forest, hill = P.hill, rock = P.rock, snow = P.snow;
     var isW = function (x, y) { return !landAt(E, gw, gh, x, y, seaT); };
     for (var j = 0; j < gh; j++) for (var i = 0; i < gw; i++) {
       var e = E[j * gw + i], k = (j * gw + i) * 4, col;
@@ -68,7 +84,8 @@
     var land = function (x, y) { return landAt(E, gw, gh, x, y, seaT); };
     var small = document.createElement('canvas'); small.width = gw; small.height = gh;
     var sc = small.getContext('2d'), img = sc.createImageData(gw, gh), D = img.data;
-    var seaC = [176, 196, 196], land1 = [224, 214, 182], land2 = [206, 197, 158], hi = [196, 186, 150];
+    var AT = ATLAS_TINT[o.climate] || ATLAS_TINT.temperate;
+    var seaC = AT.sea, land1 = AT.l1, land2 = AT.l2, hi = AT.hi;
     for (var j = 0; j < gh; j++) for (var i = 0; i < gw; i++) {
       var e = E[j * gw + i], k = (j * gw + i) * 4, c;
       if (e < seaT) c = seaC; else { var t = (e - seaT) / (1 - seaT); c = t < 0.5 ? L(land1, land2, t * 2) : L(land2, hi, (t - 0.5) * 2); }
