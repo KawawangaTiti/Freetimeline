@@ -189,6 +189,13 @@
       '.ftp-ed textarea{min-height:70px;resize:vertical}' +
       '.ftp-ed .ftp-ed-row{display:flex;gap:8px}.ftp-ed .ftp-ed-row>div{flex:1}' +
       '.ftp-ed .ftp-ed-actions{display:flex;gap:8px;margin-top:14px;justify-content:flex-end}' +
+      '.ftp-symgrid{display:flex;flex-wrap:wrap;gap:4px;max-height:148px;overflow:auto;padding:6px;border:1px solid rgba(128,128,128,.3);border-radius:8px;background:rgba(128,128,128,.08);margin-top:3px}' +
+      '.ftp-sym{width:34px;height:34px;display:grid;place-items:center;border:1px solid transparent;border-radius:7px;background:transparent;color:inherit;cursor:pointer;padding:0}' +
+      '.ftp-sym:hover{background:rgba(128,128,128,.18)}' +
+      '.ftp-sym.on{border-color:#4a8fde;background:rgba(74,143,222,.18)}' +
+      '.ftp-sym.none{font-size:14px;opacity:.6}' +
+      '.ftp-sym svg{width:22px;height:22px}' +
+      '.ftp-pin-sym{display:inline-flex;align-items:center;justify-content:center}.ftp-pin-sym svg{width:22px;height:22px}' +
       '@media(max-width:767px){.ftp-wrap{flex-direction:column}.ftp-side{width:auto;border-left:0;' +
         'border-top:1px solid rgba(128,128,128,.25);max-height:45%}}';
     document.head.appendChild(st);
@@ -355,7 +362,10 @@
       b.style.left = (p.pin.x * 100) + '%';
       b.style.top = (p.pin.y * 100) + '%';
       b.setAttribute('aria-label', 'Place: ' + p.name + ' (' + eventsAt(p.id).length + ' events)');
-      b.innerHTML = '<span aria-hidden="true">' + esc(p.icon || '📍') + '</span>' +
+      var _picon = (p.symbol && window.ftSymbols && ftSymbols.byId(p.symbol))
+        ? '<span class="ftp-pin-sym" style="color:' + esc(p.color || '#e8ecf6') + ';transform:scale(' + (p.symSize || 1) + ')">' + ftSymbols.svg(p.symbol) + '</span>'
+        : '<span aria-hidden="true">' + esc(p.icon || '📍') + '</span>';
+      b.innerHTML = _picon +
         '<span class="ftp-pin-lbl" style="' + (p.color ? 'box-shadow:inset 0 -2px 0 ' + esc(p.color) : '') + '">' + esc(p.name) + '</span>';
       b.addEventListener('click', function (e) {
         e.stopPropagation();
@@ -480,12 +490,32 @@
       '<label for="ftp-ed-color">Colour</label>' +
       '<input id="ftp-ed-color" type="color" value="' + esc((p && /^#[0-9a-fA-F]{6}$/.test(p.color || '')) ? p.color : '#7a9ede') + '">' +
       '</div></div>' +
+      '<label>Map symbol <span style="font-weight:400;opacity:.6">(optional — shown on the map instead of the emoji)</span></label>' +
+      '<div class="ftp-symgrid" id="ftp-ed-symgrid"></div>' +
+      '<input type="hidden" id="ftp-ed-symbol" value="' + esc(p ? (p.symbol || '') : '') + '">' +
+      '<div class="ftp-ed-row"><div><label for="ftp-ed-symsize">Symbol size</label>' +
+      '<input id="ftp-ed-symsize" type="range" min="0.7" max="1.8" step="0.1" value="' + ((p && p.symSize) || 1) + '"></div></div>' +
       '<label for="ftp-ed-parent">Region (parent place)</label>' +
       '<select id="ftp-ed-parent"><option value="">— none —</option>' + parentOpts + '</select>' +
       '<label for="ftp-ed-desc">Description</label>' +
       '<textarea id="ftp-ed-desc" maxlength="4000">' + esc(p ? p.description : '') + '</textarea>' +
       '<div class="ftp-ed-actions"></div>';
     var actions = box.querySelector('.ftp-ed-actions');
+    (function () {
+      var grid = box.querySelector('#ftp-ed-symgrid'), hidden = box.querySelector('#ftp-ed-symbol');
+      if (!grid) return;
+      if (!window.ftSymbols) { grid.innerHTML = '<span style="opacity:.6;font-size:12px">Symbol library still loading…</span>'; return; }
+      var html = '<button type="button" class="ftp-sym none' + (hidden.value ? '' : ' on') + '" data-sym="" title="No symbol (use the emoji)">✕</button>';
+      ftSymbols.GROUPS.forEach(function (g) { g.items.forEach(function (it) {
+        html += '<button type="button" class="ftp-sym' + (hidden.value === it[0] ? ' on' : '') + '" data-sym="' + it[0] + '" title="' + it[1] + '">' + ftSymbols.svg(it[0]) + '</button>';
+      }); });
+      grid.innerHTML = html;
+      grid.addEventListener('click', function (e) {
+        var btn = e.target.closest('.ftp-sym'); if (!btn) return;
+        hidden.value = btn.getAttribute('data-sym');
+        Array.prototype.forEach.call(grid.children, function (c) { c.classList.toggle('on', c === btn); });
+      });
+    })();
     if (p) {
       actions.appendChild(mkBtn('Delete', 'danger', function () {
         var evCount = eventsAt(p.id).length;
@@ -516,6 +546,9 @@
       if (!target) { target = { id: uid(), pin: null }; places().push(target); }
       target.name = name.slice(0, 200);
       target.icon = box.querySelector('#ftp-ed-icon').value.trim().slice(0, 8);
+      target.symbol = (box.querySelector('#ftp-ed-symbol') || {}).value || '';
+      var _ss = parseFloat((box.querySelector('#ftp-ed-symsize') || {}).value);
+      target.symSize = (isFinite(_ss) && _ss > 0) ? Math.round(_ss * 10) / 10 : 1;
       target.color = box.querySelector('#ftp-ed-color').value;
       target.parentId = box.querySelector('#ftp-ed-parent').value;
       target.description = box.querySelector('#ftp-ed-desc').value.slice(0, 4000);
