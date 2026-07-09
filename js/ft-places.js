@@ -216,6 +216,7 @@
     var addB = mkBtn('＋ Place', 'acc', function () { openPlaceEditor(null); });
     bar.appendChild(addB);
     if (window.ftMapGen) { bar.appendChild(mkBtn('✨ Create map', '', openMapGen)); }
+    if (window.ftMapPaint) { bar.appendChild(mkBtn('🖌 Paint map', '', openPaintMap)); }
     var upB = mkBtn(mapMeta().has ? 'Replace map image' : 'Upload map image', '', pickImage);
     bar.appendChild(upB);
     if (mapMeta().has) {
@@ -627,6 +628,29 @@
         renderMapView(root);
         note(pins.length + ' place' + (pins.length === 1 ? '' : 's') + ' added to the map.');
       }
+    });
+  }
+
+  /* ---------- painted maps (ft-mappaint bridge) ---------- */
+  function openPaintMap() {
+    if (!window.ftMapPaint) { note('Map painter is still loading — try again in a moment.'); return; }
+    var s = S();
+    window.ftMapPaint.open({
+      grid: s.mapPaintGrid || null,
+      onApply: function (dataUrl, meta) {
+        note('Saving your map…');
+        return setMapFromDataUrl(dataUrl).then(function (ok) {
+          if (!ok) { note('Could not store the map on this device (private mode?).'); return false; }
+          var st = S();
+          st.mapMeta = { has: true, w: (meta && meta.w) || 0, h: (meta && meta.h) || 0, name: (meta && meta.name) || 'Painted map' };
+          view.mapUrl = ''; view.sc = 1; view.px = 0; view.py = 0;
+          persist();
+          note('Map saved — paint again any time to keep editing it.');
+          renderMapView(root);
+          return true;
+        });
+      },
+      onSaveGrid: function (grid) { var st = S(); st.mapPaintGrid = grid; persist(); }
     });
   }
 
