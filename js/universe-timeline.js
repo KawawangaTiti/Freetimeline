@@ -4484,7 +4484,7 @@ const M = {
     this.ttl().textContent   = '+ New Universe';
     this.body().innerHTML =
       '<div class="fg"><label>Name *</label>' +
-      '<input id="au-n" placeholder="e.g. Marvel 616, MCU, DC Rebirth..." value="' + esc(top.name || '') + '"></div>' +
+      '<input id="au-n" placeholder="e.g. The First Age, an alternate branch, a dream world..." value="' + esc(top.name || '') + '"></div>' +
       '<div class="fg"><label>Colour</label>' +
       '<div style="display:flex;align-items:center;gap:12px;margin-bottom:4px">' +
       '<input type="color" id="au-c" value="' + col + '"></div>' +
@@ -4492,7 +4492,7 @@ const M = {
         '<div class="swatch" style="background:' + c2 + '" onclick="document.getElementById(\'au-c\').value=\'' + c2 + '\'"></div>'
       ).join('') + '</div></div>' +
       '<div class="fg"><label>Description <span style="font-weight:400;color:#aaa">(what is this universe about?)</span></label>' +
-      '<textarea id="au-desc" placeholder="e.g. The main Marvel comics continuity, spanning 1961 to present. Heroes, villains, cosmic events..." style="min-height:72px"></textarea></div>' +
+      '<textarea id="au-desc" placeholder="e.g. The main history of your world, from its founding to the present day. Heroes, wars, cataclysms..." style="min-height:72px"></textarea></div>' +
       '<div class="fg"><label>\uD83D\uDCDD Observations &amp; Notes <span style="font-weight:400;color:#aaa">(personal notes, themes, comparisons...)</span></label>' +
       '<textarea id="au-notes" placeholder="Personal observations about this universe..." style="min-height:58px"></textarea></div>';
     this.foot().innerHTML =
@@ -4863,7 +4863,7 @@ const M = {
         '</div>' +
       '</div>' +
       '<div class="fg"><label>Name <span style="color:#e74c3c">*</span></label><input id="ac-name" placeholder="e.g. Tony Stark"></div>' +
-      '<div class="fg"><label>Aliases / Other Names</label><input id="ac-aliases" placeholder="e.g. Iron Man, Iron Patriot, Shellhead"></div>' +
+      '<div class="fg"><label>Aliases / Other Names</label><input id="ac-aliases" placeholder="e.g. The Ashen Queen, the Emberscarred"></div>' +
       '<div class="fg" style="display:flex;gap:10px">' +
         '<div style="flex:1"><label>Status</label><select id="ac-status"><option value="">Unknown</option><option value="Alive">Alive</option><option value="Deceased">Deceased</option><option value="Unknown">Unknown</option><option value="Other">Other</option></select></div>' +
         '<div style="flex:1"><label>Alignment</label><select id="ac-alignment"><option value="">None</option><option value="Hero">Hero</option><option value="Villain">Villain</option><option value="Neutral">Neutral</option></select></div>' +
@@ -6635,224 +6635,153 @@ const Store = {
 function loadSample() {
   if (Store.load()) return;
   S.universes = [
-    { id:'u1', name:'Marvel 616',  color:'#e74c3c', visible:true },
-    { id:'u2', name:'MCU (Films)', color:'#3498db', visible:true },
-    { id:'u3', name:'DC Rebirth',  color:'#2ecc71', visible:true },
+    { id:'u1', name:'Eldemar — The Chronicle Age', color:'#4a8fde', visible:true },
+    { id:'u2', name:'Eldemar — The Ember Branch',  color:'#c0674a', visible:true },
   ];
   S.events = [
-    { id:'e01', universeId:'u1', date:'xx/xx/1963', title:'X-Men Founded',
-      description:'Charles Xavier establishes the Xavier School for Gifted Youngsters and assembles the original five X-Men: Cyclops, Marvel Girl, Beast, Iceman, and Angel.',
-      notes:'First appearance in X-Men #1 (September 1963). Stan Lee & Jack Kirby.',
+    { id:'e01', universeId:'u1', date:'xx/xx/0347', title:'The Founding of Valemoor',
+      description:'Three wandering clans meet at the confluence of the Three Rivers and swear a common peace, raising the first walls of what will become the city of Valemoor.',
+      notes:'This is an example world — feel free to delete it and build your own. Every event, character and connection here is original.',
       category:'Origin', media:[],
       subEvents:[
-        { id:'s01a', title:'Original Roster', date:'xx/xx/1963',
-          description:'Cyclops (Scott Summers), Marvel Girl (Jean Grey), Beast (Hank McCoy), Iceman (Bobby Drake), and Angel (Warren Worthington III).',
+        { id:'s01a', title:'The Pact of Three Rivers', date:'xx/xx/0347',
+          description:'The River, Hearth and Stone clans agree that no one clan shall rule the others — a council of equals instead of a king.',
           notes:'', media:[], subEvents:[] },
-        { id:'s01b', title:'First Mission vs Magneto', date:'xx/xx/1963',
-          description:'The X-Men intercept Magneto at Cape Citadel, a US military installation he has seized.',
+        { id:'s01b', title:'The First Hearth', date:'xx/xx/0348',
+          description:'A single fire is lit at the city centre and never allowed to die — the symbol Valemoor is built around.',
+          notes:'', media:[], subEvents:[] }
+      ]},
+    { id:'e02', universeId:'u1', date:'xx/xx/0512', title:'The Sunder War',
+      description:'The Ember Legion marches out of the southern wastes to claim the river-lands. Valemoor and its allies meet them in a war that lasts a bitter, freezing year.',
+      notes:'', category:'Battle', media:[],
+      subEvents:[
+        { id:'s02a', title:'Siege of Ironhold', date:'xx/xx/0512',
+          description:'The border fortress of Ironhold holds against the Legion for forty days, buying the river-cities time to muster.',
           notes:'', media:[],
           subEvents:[
-            { id:'s01b1', title:'Cape Citadel Battle', date:'xx/xx/1963',
-              description:'Magneto attempts to take control of US ballistic missiles. The X-Men repel him — their first recorded victory.',
-              notes:'This battle establishes the core X-Men vs Magneto rivalry that defines the franchise.',
+            { id:'s02a1', title:'The Broken Bridge', date:'xx/xx/0512',
+              description:'Warden Corin Ironhold orders the great river bridge collapsed to trap the Legion vanguard — a victory that costs him his sword-arm.',
+              notes:'This moment defines Corin for the rest of the saga.',
               media:[], subEvents:[] }
-          ]}
+          ]},
+        { id:'s02b', title:'The Ember Legion Falls', date:'xx/xx/0513',
+          description:'Queen Seraphine Valemoor leads the final charge at the Ashen Field. The Legion breaks, but the sky above the battlefield turns the colour of coal.',
+          notes:'', media:[], subEvents:[] }
       ]},
-    { id:'e02', universeId:'u1', date:'xx/xx/1984', title:'Secret Wars I',
-      description:'The all-powerful Beyonder kidnaps Earth\'s greatest heroes and villains, transporting them to a patchwork world called Battleworld to fight for his entertainment.',
-      notes:'12-issue limited series written by Jim Shooter. Marvel Super Heroes Secret Wars (1984).',
-      category:'Battle', media:[],
+    { id:'e03', universeId:'u1', date:'xx/xx/0530', title:'The Ashfall',
+      description:'Eighteen years after the war, the sky over Eldemar cracks and falls as grey ash. Crops fail; the Three Rivers run dark. No one knows if it is a curse, a wound in the world, or a warning.',
+      notes:'', category:'Cataclysm', media:[],
       subEvents:[
-        { id:'s02a', title:'Battleworld', date:'xx/xx/1984',
-          description:'A planet assembled from fragments of other worlds: Doombase, Denver, an alien city, and more.', notes:'', media:[], subEvents:[] },
-        { id:'s02b', title:"Spider-Man's Alien Costume", date:'xx/xx/1984',
-          description:'Peter Parker bonds with a black alien symbiote — creating the iconic black suit that would later become Venom.',
-          notes:'This single moment spawned Venom, Carnage, and an entire symbiote mythology.',
-          media:[], subEvents:[] }
+        { id:'s03a', title:'The Sky Cracks', date:'xx/xx/0530',
+          description:'A single silent fracture opens across the heavens at dawn. Those who look up too long are said to hear a voice — the Emberwright.',
+          notes:'', media:[], subEvents:[] },
+        { id:'s03b', title:'The Long Winter', date:'xx/xx/0531',
+          description:'A winter that lasts three years grips the river-lands. Half of Valemoor migrates north; the other half refuses to leave the First Hearth.',
+          notes:'', media:[], subEvents:[] }
       ]},
-    { id:'e03', universeId:'u1', date:'xx/xx/2006', title:'Civil War',
-      description:'The Superhero Registration Act fractures the Marvel hero community. Iron Man leads the pro-registration faction; Captain America leads the resistance.',
+    { id:'e04', universeId:'u1', date:'xx/xx/0533', title:'The Concord of Ash',
+      description:'To survive the Ashfall, the surviving city-states set aside old grudges and bind themselves into a single Concord — the first time Eldemar has ever spoken with one voice.',
       notes:'', category:'Political', media:[],
       subEvents:[
-        { id:'s03a', title:'Stamford Disaster', date:'xx/xx/2006',
-          description:"New Warriors filming a reality show confront supervillains near a school. Nitro's explosion kills 600 civilians, triggering public outcry.", notes:'', media:[], subEvents:[] },
-        { id:'s03b', title:'Registration Act Passed', date:'xx/xx/2006',
-          description:'Congress passes the Superhero Registration Act, requiring all people with superpowers to register with S.H.I.E.L.D.', notes:'', media:[], subEvents:[] },
-        { id:'s03c', title:'Rogers Surrenders', date:'xx/xx/2006',
-          description:'Witnessing the collateral destruction of the hero-vs-hero war, Steve Rogers orders his forces to stand down and surrenders.', notes:'', media:[], subEvents:[] }
+        { id:'s04a', title:'The Five Seats', date:'xx/xx/0533',
+          description:'Five cities take permanent seats on the Concord council: Valemoor, Ironhold, Northwatch, the Saltmarch and the Emberwaste itself.',
+          notes:'', media:[], subEvents:[] },
+        { id:'s04b', title:"The Warden's Oath", date:'xx/xx/0533',
+          description:'Corin Ironhold is named first Warden of the Concord, sworn to serve no single seat but the peace between them all.',
+          notes:'', media:[], subEvents:[] }
       ]},
-    { id:'e04', universeId:'u1', date:'xx/xx/2015', title:'Secret Wars II',
-      description:'The Beyonders destroy the entire multiverse. Reed Richards assembles a "Life Raft." All of existence collapses into a final Battleworld ruled by God-Emperor Doom.',
-      notes:'', category:'Cosmic', media:[],
+    { id:'e05', universeId:'u2', date:'xx/xx/0512', title:'The Kingsblood Betrayal',
+      description:'In this branch of history, the Sunder War ends differently: Seraphine does not lead the final charge. She is poisoned on its eve, and a crown is taken by one who never earned it.',
+      notes:'The Ember Branch is an ALTERNATE timeline — the same people, a single different choice, a very different world. A good way to explore "what if".',
+      category:'Betrayal', media:[],
       subEvents:[
-        { id:'s04a', title:'Incursions Begin', date:'xx/xx/2013',
-          description:'Parallel Earths begin colliding and destroying each other — the Illuminati are formed to stop them.', notes:'', media:[], subEvents:[] },
-        { id:'s04b', title:'All Is Lost', date:'xx/xx/2015',
-          description:'The final two Earths collide. Captain America and Iron Man watch the universe end.', notes:'', media:[], subEvents:[] }
+        { id:'s05a', title:'The Poisoned Chalice', date:'xx/xx/0512',
+          description:'On the night before the Ashen Field, Seraphine is given a cup of victory-wine laced with emberroot. She survives — but broken, and absent from the battle that needed her.',
+          notes:'', media:[], subEvents:[] },
+        { id:'s05b', title:'A Crown Unearned', date:'xx/xx/0512',
+          description:'With the Queen fallen ill, a lesser lord claims the Ash Crown by force and declares himself sovereign of the river-lands.',
+          notes:'', media:[], subEvents:[] }
       ]},
-    { id:'e05', universeId:'u2', date:'02/05/2008', title:'Iron Man (MCU)',
-      description:'Tony Stark is captured in Afghanistan, builds a crude armored suit to escape, and later perfects the technology. He publicly reveals himself as Iron Man — the first superhero of the MCU era.',
-      notes:'Directed by Jon Favreau. Robert Downey Jr. The film that launched the entire MCU.',
-      category:'Origin',
-      media:[
-        { id:'m05a', type:'youtube', name:'Iron Man - Official Trailer', src:'https://www.youtube.com/watch?v=8ugaeA-nMTc' }
-      ],
+    { id:'e06', universeId:'u2', date:'xx/xx/0515', title:'Reign of the Ash Crown',
+      description:'The usurper rules through fear. The Concord is never founded here; each city stands alone and afraid, and the Emberwright is welcomed rather than feared.',
+      notes:'', category:'Political', media:[],
       subEvents:[
-        { id:'s05a', title:'Cave: Mark I', date:'xx/xx/2008',
-          description:'"A box of scraps." Tony builds the first Iron Man suit using salvaged missile parts to escape the Ten Rings.',
-          notes:'The arc reactor that powers the Mark I suit is about the size of a plate.',
-          media:[], subEvents:[] },
-        { id:'s05b', title:'"I am Iron Man"', date:'xx/xx/2008',
-          description:'At a press conference, Tony Stark publicly reveals he is Iron Man — shattering the expected secret identity trope.',
-          notes:'An iconic moment — Favreau confirmed RDJ improvised this line.',
+        { id:'s06a', title:'The Silent Courts', date:'xx/xx/0516',
+          description:'Speaking against the Ash Crown becomes a crime. The First Hearth of Valemoor is put out for the first time in two centuries.',
+          notes:'', media:[], subEvents:[] }
+      ]},
+    { id:'e07', universeId:'u2', date:'xx/xx/0540', title:'The Last Rebellion',
+      description:'A one-armed old Warden and an ash-scarred former queen raise a final rebellion against the Ash Crown — and against the Emberwright behind it.',
+      notes:'', category:'Battle', media:[],
+      subEvents:[
+        { id:'s07a', title:'The Gathering Storm', date:'xx/xx/0540',
+          description:'Corin and Seraphine the Ashen relight the First Hearth in secret, and one by one the silent cities answer its smoke.',
+          notes:'', media:[], subEvents:[] },
+        { id:'s07b', title:"The Emberwright's Fall", date:'xx/xx/0541',
+          description:'At the cracked sky where it first spoke, the rebellion confronts the Emberwright. What is won, and what is lost, is left for you to decide.',
+          notes:'Try adding your own ending as a new sub-event here.',
           media:[], subEvents:[] }
-      ]},
-    { id:'e06', universeId:'u2', date:'04/05/2012', title:'The Avengers',
-      description:'Nick Fury activates the Avenger Initiative after Loki steals the Tesseract. Six heroes unite for the first time to repel the Chitauri invasion of New York.',
-      notes:'Directed by Joss Whedon. First time the assembled MCU cast shared the screen.',
-      category:'Alliance', media:[],
-      subEvents:[
-        { id:'s06a', title:'Team Assembled', date:'xx/xx/2012',
-          description:'Iron Man, Captain America, Thor, Hulk, Black Widow, and Hawkeye form the first Avengers roster.', notes:'', media:[], subEvents:[] },
-        { id:'s06b', title:'Battle of New York', date:'xx/xx/2012',
-          description:'The Avengers close the inter-dimensional portal above Stark Tower. Tony flies a nuclear warhead through the wormhole.',
-          notes:'This battle is referenced throughout the entire MCU as a turning point for public awareness of superheroes.',
-          media:[],
-          subEvents:[
-            { id:'s06b1', title:"Tony's Sacrifice", date:'xx/xx/2012',
-              description:'With the nuclear warhead aimed at New York, Tony flies it through the Chitauri portal and nearly dies. His arc reactor temporarily powers down.',
-              notes:'Foreshadows the sacrifice in Endgame. "Part of the journey is the end."',
-              media:[], subEvents:[] }
-          ]}
-      ]},
-    { id:'e07', universeId:'u2', date:'xx/xx/2018', title:'Infinity War',
-      description:'Thanos completes his quest for all six Infinity Stones and snaps half of all life in the universe out of existence.',
-      notes:'', category:'Cosmic', media:[],
-      subEvents:[
-        { id:'s07a', title:'The Snap', date:'xx/xx/2018',
-          description:'Thanos snaps his fingers on Titan and 50% of all life — including half the Avengers — disintegrates into dust.', notes:'', media:[], subEvents:[] }
-      ]},
-    { id:'e08', universeId:'u2', date:'xx/xx/2019', title:'Avengers: Endgame',
-      description:"Five years after the Snap, the remaining Avengers execute a \"time heist\" to collect the Infinity Stones from the past and undo Thanos' genocide.",
-      notes:'The highest-grossing film of all time at release. Conclusion of the Infinity Saga.',
-      category:'Battle', media:[],
-      subEvents:[
-        { id:'s08a', title:'The Time Heist', date:'xx/xx/2023',
-          description:'The Avengers split into teams to retrieve the Stones from 2012, 2013, 2014, and 1970.',
-          notes:'', media:[],
-          subEvents:[
-            { id:'s08a1', title:'New York 2012', date:'xx/xx/2023',
-              description:'Tony and Steve retrieve the Mind Stone and Space Stone. Tony also secretly takes more Pym Particles.',
-              notes:'The "America\'s ass" moment occurs here.', media:[], subEvents:[] },
-            { id:'s08a2', title:'Vormir', date:'xx/xx/2023',
-              description:'Natasha and Clint battle each other for the right to sacrifice themselves for the Soul Stone. Natasha wins — and dies.',
-              notes:'Mirrors the Gamora sacrifice in Infinity War from Thanos\'s perspective.', media:[], subEvents:[] }
-          ]},
-        { id:'s08b', title:'The Final Battle', date:'xx/xx/2023',
-          description:'All restored heroes face Thanos and his full army. Every Avenger, Guardian, wizard, and king fights together.', notes:'', media:[], subEvents:[] },
-        { id:'s08c', title:'"I am Iron Man"', date:'xx/xx/2023',
-          description:'Tony wields the Stones one last time, snapping Thanos and his army out of existence — at the cost of his own life.',
-          notes:'Echoes the press conference line from 2008. Perfect bookend to the MCU Infinity Saga.',
-          media:[], subEvents:[] }
-      ]},
-    { id:'e09', universeId:'u3', date:'xx/xx/1938', title:'Superman Arrives on Earth',
-      description:"Kal-El's rocket crashes in Smallville, Kansas. He is found and raised as Clark Kent by Jonathan and Martha Kent, with powers far beyond mortal men.",
-      notes:'Action Comics #1 (June 1938). The first superhero — Superman defined the genre.',
-      category:'Origin', media:[], subEvents:[]},
-    { id:'e10', universeId:'u3', date:'xx/xx/2011', title:'Flashpoint',
-      description:"Barry Allen travels back in time to save his mother's life, accidentally creating a nightmarish alternate timeline: no Superman, Batman is Thomas Wayne, Aquaman and Wonder Woman are at war.",
-      notes:'', category:'Betrayal', media:[],
-      subEvents:[
-        { id:'s10a', title:"Barry's Mistake", date:'xx/xx/2011',
-          description:'Barry runs back in time and stops the Reverse-Flash from killing his mother. The timeline fractures catastrophically.', notes:'', media:[], subEvents:[] },
-        { id:'s10b', title:'Flashpoint Timeline', date:'xx/xx/2011',
-          description:'A world without Superman, a murderous Thomas Wayne as Batman, and an apocalyptic war between Atlantis and Themyscira.', notes:'', media:[], subEvents:[] },
-        { id:'s10c', title:'Reset', date:'xx/xx/2011',
-          description:"Barry undoes his own action, but Professor Zoom tampers with the timeline — creating the New 52 universe.", notes:'', media:[], subEvents:[] }
-      ]},
-    { id:'e11', universeId:'u3', date:'xx/xx/2016', title:'DC: Rebirth',
-      description:"Wally West escapes the Speed Force and reveals a terrible truth: an outside force stole a decade from the DC Universe and erased legacy heroes from existence. The trail leads to Watchmen's Dr. Manhattan.",
-      notes:'DC Universe Rebirth #1 (May 2016). Written by Geoff Johns. A love letter to DC history.',
-      category:'Discovery', media:[],
-      subEvents:[
-        { id:'s11a', title:'Wally Returns', date:'xx/xx/2016',
-          description:'Wally West, lost in the Speed Force since Flashpoint, reaches out to Barry Allen through sheer will. Barry remembers and pulls him home.', notes:'', media:[], subEvents:[] },
-        { id:'s11b', title:"Metron's Chair & Dr. Manhattan", date:'xx/xx/2016',
-          description:'Batman finds a smiley face button in the Batcave wall — a clue that Dr. Manhattan has been manipulating the DC timeline.', notes:'', media:[], subEvents:[] }
       ]}
   ];
 
   S.characters = [
     {
-      id: 'ch01', name: 'Tony Stark', aliases: 'Iron Man, Iron Patriot, Shellhead',
-      status: 'Deceased', species: 'Human', color: '#3498db',
+      id: 'ch01', name: 'Seraphine Valemoor', aliases: 'The Ashen Queen, Warden of the Hearth',
+      status: 'Alive', species: 'Human', color: '#4a8fde',
       photo: null,
-      powers: 'Genius-level intellect (IQ 270+)\nMaster engineer & inventor\nPowered Iron Man armour (strength, flight, energy weapons, AI support)\nTactical genius & billionaire industrialist',
-      biography: 'Anthony Edward Stark is a genius inventor, billionaire, and former weapons manufacturer who built a powered armour suit and became Iron Man. He co-founded the Avengers and sacrificed his life to defeat Thanos.',
-      notes: 'First appearance: Tales of Suspense #39 (1963).\nRDJ immortalised him in the MCU from 2008–2019.',
-      media: [{ id: 'cm01a', type: 'youtube', name: 'Iron Man - Official Trailer (MCU)', src: 'https://www.youtube.com/watch?v=8ugaeA-nMTc' }],
-      counterpartIds: ['ch02'], universeIds: ['u2']
+      powers: 'Peerless field commander\nSpeaks the old River-tongue\nKeeper of the First Hearth flame',
+      biography: 'Queen of Valemoor who led the charge that broke the Ember Legion at the Ashen Field, then gave up her crown to help found the Concord of Ash.',
+      notes: 'In the Ember Branch she is poisoned before that battle — see her counterpart.',
+      media: [], counterpartIds: ['ch02'], universeIds: ['u1']
     },
     {
-      id: 'ch02', name: 'Tony Stark (616)', aliases: 'Iron Man, Director of S.H.I.E.L.D.',
-      status: 'Alive', species: 'Human', color: '#e74c3c',
+      id: 'ch02', name: 'Seraphine the Ashen', aliases: 'The Poisoned Queen, the Emberscarred',
+      status: 'Alive', species: 'Human', color: '#c0674a',
       photo: null,
-      powers: 'Iron Man armour (multiple variants: Extremis, Bleeding Edge, Godkiller)\nExtremis bio-hack (briefly)\nGenius engineer & strategist',
-      biography: 'The Marvel 616 Tony Stark. Led the pro-registration side during Civil War, later became Director of S.H.I.E.L.D., and has died and been revived multiple times.',
-      notes: 'The original comics version — more morally complex than his MCU counterpart.',
-      media: [], counterpartIds: ['ch01'], universeIds: ['u1']
+      powers: 'Field commander (diminished by lasting illness)\nImmune to emberroot after surviving it\nRallying symbol of the rebellion',
+      biography: 'The same woman as Seraphine Valemoor — but in a timeline where she was poisoned on the eve of the Sunder War. Decades later she leads the last rebellion against the crown that replaced her.',
+      notes: 'A counterpart character: the same soul, a single different night.',
+      media: [], counterpartIds: ['ch01'], universeIds: ['u2']
     },
     {
-      id: 'ch03', name: 'Steve Rogers', aliases: 'Captain America, Cap, Nomad',
-      status: 'Alive', species: 'Super Soldier', color: '#2ecc71',
+      id: 'ch03', name: 'Corin Ironhold', aliases: 'The One-Armed Warden',
+      status: 'Alive', species: 'Human', color: '#57b98a',
       photo: null,
-      powers: 'Peak human physiology via Super Soldier Serum\nEnhanced strength, speed, agility, endurance & healing\nVibranium shield (indestructible)\nMaster tactician & hand-to-hand combatant',
-      biography: 'A frail young man from Brooklyn, Steve Rogers was enhanced by the Super-Soldier Serum in WWII and became Captain America. He embodies ideals of justice and selflessness.',
-      notes: 'Appears in both 616 and MCU continuities in different forms.',
+      powers: 'Master of siege and defence\nUnbending sense of duty\nFights on after losing his sword-arm at the Broken Bridge',
+      biography: 'The soldier who collapsed the great river bridge to trap the Ember Legion, at the cost of his arm. Named first Warden of the Concord — and, in the darker branch, the last man willing to defy the Ash Crown.',
+      notes: 'Appears in BOTH timelines in different roles.',
       media: [], counterpartIds: [], universeIds: ['u1', 'u2']
     },
     {
-      id: 'ch04', name: 'Barry Allen', aliases: 'The Flash, Scarlet Speedster',
-      status: 'Alive', species: 'Meta-Human', color: '#f39c12',
+      id: 'ch04', name: 'The Emberwright', aliases: 'The Voice in the Crack, the Grey Sky',
+      status: 'Unknown', species: 'Unknown', color: '#9b59b6',
       photo: null,
-      powers: 'Connection to the Speed Force\nSupernatural speed (faster than light)\nTime travel via the Speed Force\nPhasing through solid matter\nCreating speed-force lightning\nReverse aging via speed',
-      biography: 'Barry Allen is a Central City forensic scientist who gained super-speed after being struck by lightning in his lab. His time-travel mistake created the Flashpoint disaster.',
-      notes: 'His mother\'s murder by the Reverse-Flash drives much of his arc in DC Rebirth.',
-      media: [], counterpartIds: [], universeIds: ['u3']
-    },
-    {
-      id: 'ch05', name: 'Thanos', aliases: 'The Mad Titan, Infinity\'s Champion',
-      status: 'Deceased', species: 'Eternal-Deviant', color: '#9b59b6',
-      photo: null,
-      powers: 'Superhuman strength, speed, durability & telepathy\nMystic arts & energy manipulation\nMaster strategist\nWith Infinity Gauntlet: omnipotence over Reality, Space, Time, Mind, Power and Soul',
-      biography: 'Thanos of Titan believes the universe\'s finite resources doom all life. His solution: eliminate half of all life with a single snap using the complete Infinity Gauntlet.',
-      notes: 'Appears in both MCU (films) and Marvel 616 comics in different contexts.',
+      powers: 'Speaks from the fracture in the sky\nMay be the cause of the Ashfall\nOffers power to those who will listen',
+      biography: 'A presence rather than a person — whatever spoke when the sky cracked over Eldemar. Feared in one timeline, courted in the other. Its true nature is left for the worldbuilder to decide.',
+      notes: 'A deliberately open mystery — a hook for you to define.',
       media: [], counterpartIds: [], universeIds: ['u1', 'u2']
     }
   ];
 
   // Link characters to sample events
   const charEventLinks = {
-    'e03': ['ch02', 'ch03'],         // Civil War (616)
-    'e04': ['ch02', 'ch03'],         // Secret Wars II
-    'e05': ['ch01'],                 // Iron Man MCU
-    'e06': ['ch01', 'ch03'],         // The Avengers MCU
-    'e07': ['ch01', 'ch03', 'ch05'], // Infinity War
-    'e08': ['ch01', 'ch03', 'ch05'], // Endgame
-    'e10': ['ch04'],                 // Flashpoint
-    'e11': ['ch04']                  // DC Rebirth
+    'e02': ['ch01', 'ch03'],          // Sunder War
+    'e03': ['ch04'],                  // The Ashfall
+    'e04': ['ch01', 'ch03'],          // Concord of Ash
+    'e05': ['ch02'],                  // Kingsblood Betrayal
+    'e06': ['ch04'],                  // Reign of the Ash Crown
+    'e07': ['ch02', 'ch03', 'ch04']   // The Last Rebellion
   };
   S.events.forEach(ev => {
     ev.characterIds = charEventLinks[ev.id] || [];
   });
 
   S.connections = [
-    { id:'c1', fromEventId:'e02', toEventId:'e04', label:'Echoes' },
-    { id:'c2', fromEventId:'e03', toEventId:'e04', label:'Contributes to' },
-    { id:'c3', fromEventId:'e05', toEventId:'e06', label:'Precedes' },
-    { id:'c4', fromEventId:'e06', toEventId:'e07', label:'Leads to' },
-    { id:'c5', fromEventId:'e07', toEventId:'e08', label:'Continues' },
-    { id:'c6', fromEventId:'e10', toEventId:'e11', label:'Leads to' },
+    { id:'c1', fromEventId:'e02', toEventId:'e03', label:'Leads to' },
+    { id:'c2', fromEventId:'e03', toEventId:'e04', label:'Forces' },
+    { id:'c3', fromEventId:'e02', toEventId:'e05', label:'Diverges at' },
+    { id:'c4', fromEventId:'e05', toEventId:'e06', label:'Leads to' },
+    { id:'c5', fromEventId:'e06', toEventId:'e07', label:'Provokes' },
   ];
   syncCategoriesToState();
 }
