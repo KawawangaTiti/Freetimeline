@@ -46,7 +46,11 @@
   }
 
   /* -------- render a grid onto a canvas (smoothed + coastline) -------- */
-  function renderGrid(cv, grid, coastline) {
+  function renderGrid(cv, grid, style) {
+    if (window.ftMapRender) {
+      window.ftMapRender.render(cv, { terrain: grid.cells, gw: grid.w, gh: grid.h, seaLevel: 0.42, seed: 1, style: (style === 'atlas' ? 'atlas' : 'relief'), climate: 'temperate' });
+      return;
+    }
     var W = cv.width, H = cv.height, ctx = cv.getContext('2d');
     var gw = grid.w, gh = grid.h, cells = grid.cells;
     // small canvas at grid resolution, then smooth-upscale for organic coasts
@@ -64,7 +68,7 @@
     var vg = ctx.createRadialGradient(W / 2, H * 0.44, H * 0.25, W / 2, H / 2, W * 0.72);
     vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.22)');
     ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
-    if (coastline === false) return;
+    /* (fallback renderer always draws the coastline) */
     // coastline: stroke shared edges between water and non-water cells
     var cw = W / gw, ch = H / gh;
     ctx.strokeStyle = 'rgba(20,30,40,0.5)'; ctx.lineWidth = Math.max(1, W / 900);
@@ -151,6 +155,7 @@
     var cur = 3;       // current terrain (grass)
     var brush = 2;     // brush radius in cells
     var tool = 'brush';// brush | bucket
+    var style = 'relief';// relief | atlas — the art look
 
     var scrim = el('div', 'ftmp-scrim');
     scrim.addEventListener('click', function (e) { if (e.target === scrim) close(); });
@@ -195,6 +200,15 @@
     });
     sizeWrap.appendChild(sizeSeg); tools.appendChild(sizeWrap);
 
+    var styleWrap = el('div'); styleWrap.innerHTML = '<div class="ftmp-lbl">Map style</div>';
+    var styleSeg = el('div', 'ftmp-seg');
+    [['relief', 'Relief'], ['atlas', 'Atlas']].forEach(function (p) {
+      var b = el('button', p[0] === style ? 'on' : ''); b.type = 'button'; b.textContent = p[1];
+      b.addEventListener('click', function () { style = p[0]; Array.prototype.forEach.call(styleSeg.children, function (c) { c.classList.toggle('on', c.textContent === p[1]); }); paint(); });
+      styleSeg.appendChild(b);
+    });
+    styleWrap.appendChild(styleSeg); tools.appendChild(styleWrap);
+
     var clearWrap = el('div');
     var clearBtn = el('button', 'ftmp-btn'); clearBtn.type = 'button'; clearBtn.style.width = '100%'; clearBtn.textContent = '↺ Clear to water';
     clearBtn.addEventListener('click', function () { grid = blankGrid(); paint(); });
@@ -221,7 +235,7 @@
     els = { scrim: scrim };
     var _first = modal.querySelector('.ftmp-sw'); if (_first) try { _first.focus(); } catch (_) {}
 
-    function paint() { renderGrid(canvas, grid, true); }
+    function paint() { renderGrid(canvas, grid, style); }
 
     function cellAt(ev) {
       var r = canvas.getBoundingClientRect();
@@ -251,7 +265,7 @@
 
     function applyMap() {
       var big = document.createElement('canvas'); big.width = 1500; big.height = 1050;
-      renderGrid(big, grid, true);
+      renderGrid(big, grid, style);
       var dataUrl = big.toDataURL('image/png');
       var meta = { name: 'Painted map', w: big.width, h: big.height };
       if (typeof opts.onSaveGrid === 'function') { try { opts.onSaveGrid(cloneGrid(grid)); } catch (_) {} }
