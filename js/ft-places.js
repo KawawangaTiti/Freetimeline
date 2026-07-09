@@ -143,6 +143,9 @@
       '.ftp-main{flex:1 1 auto;display:flex;flex-direction:column;min-width:0}' +
       '.ftp-bar{display:flex;align-items:center;gap:8px;padding:10px 12px;flex-wrap:wrap}' +
       '.ftp-bar .ftp-hint{font-size:11.5px;opacity:.65;margin-left:auto}' +
+      '.ftp-timebar{display:flex;align-items:center;gap:12px;padding:8px 14px;background:rgba(128,128,128,.10);border-bottom:1px solid rgba(128,128,128,.18)}' +
+      '.ftp-time-lbl{font-size:13px;font-weight:700;min-width:150px;font-variant-numeric:tabular-nums}' +
+      '.ftp-timebar input[type=range]{flex:1;accent-color:#4a8fde;cursor:pointer}' +
       '.ftp-btn{border:1px solid rgba(128,128,128,.4);background:rgba(128,128,128,.12);color:inherit;' +
         'border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer}' +
       '.ftp-btn:hover{background:rgba(128,128,128,.22)}' +
@@ -236,6 +239,28 @@
       : 'Upload your own world map (it stays on this device) — or use the place grid below';
     bar.appendChild(hint);
     main.appendChild(bar);
+
+    /* --- P3: time scrubber — watch the map change across its epochs --- */
+    (function () {
+      var eps = S().mapEpochs || [];
+      if (eps.length < 2 || !mapMeta().has || !(window.ftMapPaint && window.ftMapPaint.renderEpoch)) return;
+      var tbar = document.createElement('div'); tbar.className = 'ftp-timebar';
+      var lbl = document.createElement('span'); lbl.className = 'ftp-time-lbl';
+      var slider = document.createElement('input'); slider.type = 'range'; slider.min = 0; slider.max = eps.length - 1; slider.step = 1;
+      slider.value = Math.min(eps.length - 1, S().mapEpochIndex || (eps.length - 1));
+      slider.setAttribute('aria-label', 'Scrub the map through time');
+      function show(i) {
+        var ep = eps[i]; if (!ep) return;
+        lbl.textContent = '⏳ ' + (ep.year || ep.label || ('Epoch ' + (i + 1)));
+        var cv = document.createElement('canvas'); cv.width = 1200; cv.height = 840;
+        window.ftMapPaint.renderEpoch(cv, ep, 'relief');
+        var im = main.querySelector('.ftp-mapbox img'); if (im) im.src = cv.toDataURL('image/png');
+      }
+      slider.addEventListener('input', function () { show(+this.value); });
+      tbar.appendChild(lbl); tbar.appendChild(slider);
+      main.appendChild(tbar);
+      setTimeout(function () { show(+slider.value); }, 80);
+    })();
 
     /* --- map or grid --- */
     if (mapMeta().has) {
@@ -672,6 +697,8 @@
       grid: s.mapPaintGrid || null,
       pol: s.mapPoliticalGrid || null,
       countries: s.mapCountries || [],
+      epochs: s.mapEpochs || null,
+      epochIndex: s.mapEpochIndex || 0,
       onApply: function (dataUrl, meta) {
         note('Saving your map…');
         return setMapFromDataUrl(dataUrl).then(function (ok) {
@@ -686,7 +713,8 @@
         });
       },
       onSaveGrid: function (grid) { var st = S(); st.mapPaintGrid = grid; persist(); },
-      onSavePol: function (pol, countries) { var st = S(); st.mapPoliticalGrid = pol; st.mapCountries = countries; persist(); }
+      onSavePol: function (pol, countries) { var st = S(); st.mapPoliticalGrid = pol; st.mapCountries = countries; persist(); },
+      onSaveEpochs: function (epochs, idx) { var st = S(); st.mapEpochs = epochs; st.mapEpochIndex = idx; persist(); }
     });
   }
 

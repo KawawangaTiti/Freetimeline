@@ -130,6 +130,19 @@
     });
   }
 
+  /* ---------------- epochs (the map through time) ---------------- */
+  function normalizeEpochs(opts) {
+    if (Array.isArray(opts.epochs) && opts.epochs.length) {
+      return opts.epochs.map(function (e) {
+        return { id: e.id, year: e.year || '', label: e.label || '', paintGrid: cloneGrid(e.paintGrid), polGrid: clonePol(e.polGrid), countries: (e.countries || []).map(function (c) { return { id: +c.id, name: c.name, color: c.color }; }) };
+      });
+    }
+    return [{ id: 1, year: '', label: 'Present', paintGrid: cloneGrid(opts.grid), polGrid: clonePol(opts.pol), countries: (opts.countries || []).map(function (c) { return { id: +c.id, name: c.name, color: c.color }; }) }];
+  }
+  function cloneEpoch(e) { return { id: e.id, year: e.year, label: e.label, paintGrid: cloneGrid(e.paintGrid), polGrid: clonePol(e.polGrid), countries: (e.countries || []).map(function (c) { return { id: c.id, name: c.name, color: c.color }; }) }; }
+  /* Render one epoch (terrain + political) onto a canvas — used by the map view's time scrubber. */
+  function renderEpoch(cv, ep, style) { if (!ep) return; renderGrid(cv, ep.paintGrid || blankGrid(), style || 'relief'); renderPolitical(cv, ep.polGrid, ep.countries); }
+
   /* ---------------- UI ---------------- */
   var els = null;
   function css() {
@@ -156,6 +169,11 @@
       '.ftmp-canvas{width:100%;aspect-ratio:10/7;background:#0a1a28;border:1px solid var(--ftmp-line);border-radius:12px;cursor:crosshair;touch-action:none;display:block}',
       '.ftmp-foot{display:flex;gap:8px;align-items:center}',
       '.ftmp-hint{font-size:11.5px;opacity:.6;flex:1}',
+      '.ftmp-epochs{display:flex;align-items:center;gap:5px;flex-wrap:wrap}',
+      '.ftmp-eplbl{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin-right:4px}',
+      '.ftmp-epchip{height:26px;padding:0 10px;border-radius:99px;border:1px solid var(--ftmp-line);background:var(--ftmp-raise);color:inherit;font-size:12px;font-weight:600;cursor:pointer}',
+      '.ftmp-epchip.on{background:var(--ftmp-acc);border-color:var(--ftmp-acc);color:#fff}',
+      '.ftmp-epchip.add{opacity:.85}',
       '.ftmp-btn{height:36px;padding:0 14px;border-radius:8px;border:1px solid var(--ftmp-line);background:var(--ftmp-raise);color:inherit;font-size:13px;font-weight:600;cursor:pointer}',
       '.ftmp-btn.pri{background:var(--ftmp-acc);border-color:var(--ftmp-acc);color:#fff}',
       '@media(max-width:720px){.ftmp-body{flex-direction:column}.ftmp-tools{width:auto;flex-direction:row;flex-wrap:wrap}}'
@@ -180,16 +198,17 @@
     if (dark == null) { var m = (getComputedStyle(document.body).backgroundColor || '').match(/\d+/g); dark = !m || (0.299 * +m[0] + 0.587 * +m[1] + 0.114 * +m[2]) < 128; }
     css(); theme(dark); close();
 
-    var grid = cloneGrid(opts.grid);
-    var cur = 3;       // current terrain (grass)
-    var brush = 2;     // brush radius in cells
-    var tool = 'brush';// brush | bucket
-    var style = 'relief';// relief | atlas — the art look
-    var mode = 'terrain';// terrain | political (countries)
-    var pol = clonePol(opts.pol);
-    var countries = (opts.countries || []).map(function (c) { return { id: +c.id, name: c.name, color: c.color }; });
+    var epochs = normalizeEpochs(opts);
+    var curIdx = Math.max(0, Math.min((opts.epochIndex | 0) || 0, epochs.length - 1));
+    var grid = cloneGrid(epochs[curIdx].paintGrid);
+    var pol = clonePol(epochs[curIdx].polGrid);
+    var countries = epochs[curIdx].countries.map(function (c) { return { id: c.id, name: c.name, color: c.color }; });
+    var cur = 3, brush = 2, tool = 'brush', style = 'relief', mode = 'terrain';
     var curCountry = countries.length ? countries[0].id : 0;
-    var _cid = countries.reduce(function (m, c) { return Math.max(m, +c.id || 0); }, 0);
+    var _cid = 0; epochs.forEach(function (e) { e.countries.forEach(function (c) { _cid = Math.max(_cid, +c.id || 0); }); });
+    function saveCurrent() { epochs[curIdx].paintGrid = cloneGrid(grid); epochs[curIdx].polGrid = clonePol(pol); epochs[curIdx].countries = countries.map(function (c) { return { id: c.id, name: c.name, color: c.color }; }); }
+    function loadEpoch(i) { if (i < 0 || i >= epochs.length) return; saveCurrent(); curIdx = i; grid = cloneGrid(epochs[i].paintGrid); pol = clonePol(epochs[i].polGrid); countries = epochs[i].countries.map(function (c) { return { id: c.id, name: c.name, color: c.color }; }); curCountry = countries.length ? countries[0].id : 0; renderPalette(); renderEpochBar(); paint(); }
+    function addEpoch() { var yr = window.prompt('Label this epoch — a year or era (e.g. "0512" or "After the War")', ''); if (yr == null) return; saveCurrent(); var nid = epochs.reduce(function (m, x) { return Math.max(m, x.id || 0); }, 0) + 1; epochs.push({ id: nid, year: String(yr).slice(0, 40), label: String(yr).slice(0, 40), paintGrid: cloneGrid(grid), polGrid: clonePol(pol), countries: countries.map(function (c) { return { id: c.id, name: c.name, color: c.color }; }) }); loadEpoch(epochs.length - 1); }
 
     var scrim = el('div', 'ftmp-scrim');
     scrim.addEventListener('click', function (e) { if (e.target === scrim) close(); });
@@ -284,6 +303,20 @@
 
     // canvas column
     var cwrap = el('div', 'ftmp-canvaswrap');
+    var epochBar = el('div', 'ftmp-epochs'); cwrap.appendChild(epochBar);
+    function renderEpochBar() {
+      epochBar.innerHTML = '<span class="ftmp-eplbl">⏳ Time</span>';
+      epochs.forEach(function (e, i) {
+        var b = el('button', 'ftmp-epchip' + (i === curIdx ? ' on' : '')); b.type = 'button';
+        b.textContent = e.year || e.label || ('Epoch ' + (i + 1));
+        b.addEventListener('click', function () { loadEpoch(i); });
+        epochBar.appendChild(b);
+      });
+      var add = el('button', 'ftmp-epchip add'); add.type = 'button'; add.textContent = '＋ Epoch';
+      add.title = 'Snapshot this map at a new point in time, then paint what changed';
+      add.addEventListener('click', addEpoch); epochBar.appendChild(add);
+    }
+    renderEpochBar();
     var canvas = el('canvas', 'ftmp-canvas'); canvas.width = 800; canvas.height = 560;
     cwrap.appendChild(canvas);
     var foot = el('div', 'ftmp-foot');
@@ -332,12 +365,14 @@
     canvas.addEventListener('pointerup', function () { drawing = false; });
 
     function applyMap() {
+      saveCurrent();
       var big = document.createElement('canvas'); big.width = 1500; big.height = 1050;
       renderGrid(big, grid, style); renderPolitical(big, pol, countries);
       var dataUrl = big.toDataURL('image/png');
       var meta = { name: 'Painted map', w: big.width, h: big.height };
       if (typeof opts.onSaveGrid === 'function') { try { opts.onSaveGrid(cloneGrid(grid)); } catch (_) {} }
       if (typeof opts.onSavePol === 'function') { try { opts.onSavePol(clonePol(pol), countries.map(function (c) { return { id: c.id, name: c.name, color: c.color }; })); } catch (_) {} }
+      if (typeof opts.onSaveEpochs === 'function') { try { opts.onSaveEpochs(epochs.map(cloneEpoch), curIdx); } catch (_) {} }
       var finish = function () { close(); };
       if (typeof opts.onApply === 'function') {
         var r = opts.onApply(dataUrl, meta);
@@ -348,5 +383,5 @@
     paint();
   }
 
-  window.ftMapPaint = { open: open, _renderGrid: renderGrid, _blankGrid: blankGrid };
+  window.ftMapPaint = { open: open, renderEpoch: renderEpoch, _renderGrid: renderGrid, _blankGrid: blankGrid };
 })();
