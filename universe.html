@@ -20,6 +20,7 @@
 <script src="js/ft-toolbar.js" defer></script>
 <script src="js/ft-palette.js" defer></script>
 <script src="js/ft-places.js" defer></script>
+<script src="js/ft-mapgen.js" defer></script>
 <script src="js/ft-canvas.js" defer></script>
 <style>
 /* =====================================================
@@ -3681,6 +3682,26 @@ input[type="color"]:focus-visible {
 
     <!-- Stats panel (bottom-left overlay) -->
     <div id="stats-panel"></div>
+    <!-- Guided-tour styling (Continuity + Memories). Was only present in the
+         Save-HTML export template, so the live tour rendered unstyled — inline
+         here so it always applies, matching biography.html. -->
+    <style>
+    .tour-overlay{position:absolute;inset:0;z-index:7;pointer-events:none;opacity:0;transition:opacity .22s ease;}
+    .tour-overlay.active{opacity:1;}
+    .tour-wash{position:absolute;inset:0;background:radial-gradient(circle at 20% 18%,rgba(67,96,220,0.18),rgba(67,96,220,0) 30%),radial-gradient(circle at 82% 22%,rgba(0,212,255,0.16),rgba(0,212,255,0) 34%),linear-gradient(180deg,rgba(8,12,24,0.06),rgba(8,12,24,0.18));}
+    .tour-spotlight{position:absolute;width:154px;height:154px;margin-left:-77px;margin-top:-77px;border-radius:50%;border:1.5px solid rgba(0,212,255,0.45);background:radial-gradient(circle,rgba(96,212,255,0.14) 0%,rgba(96,212,255,0.06) 36%,rgba(96,212,255,0) 74%);box-shadow:0 0 0 12px rgba(70,108,255,0.08),0 0 28px rgba(0,212,255,0.18);transition:transform .24s ease,left .24s ease,top .24s ease,opacity .24s ease;}
+    .tour-card{position:absolute;top:18px;left:18px;width:min(380px,calc(100% - 36px));padding:18px 18px 16px;border-radius:20px;border:1px solid rgba(92,122,220,0.42);background:linear-gradient(180deg,rgba(12,18,36,0.9) 0%,rgba(10,14,28,0.94) 100%);box-shadow:0 18px 48px rgba(0,0,0,0.32);color:#d8e7ff;pointer-events:auto;}
+    .tour-kicker{display:inline-flex;align-items:center;gap:8px;padding:5px 10px;border-radius:999px;background:rgba(0,212,255,0.12);color:#94e8ff;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;}
+    .tour-title{margin:12px 0 4px;font-size:23px;line-height:1.2;color:#f4f8ff;}
+    .tour-meta{color:#88a5cf;font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;}
+    .tour-desc{margin-top:12px;color:#c3d0eb;font-size:14px;line-height:1.72;}
+    .tour-controls{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:18px;border:1px solid rgba(92,122,220,0.38);background:rgba(10,16,30,0.92);box-shadow:0 14px 40px rgba(0,0,0,0.28);pointer-events:auto;}
+    .tour-btn{min-height:40px;padding:8px 14px;border:1px solid rgba(0,212,255,0.22);border-radius:12px;background:linear-gradient(180deg,rgba(15,27,48,0.96) 0%,rgba(11,18,33,0.98) 100%);color:#cbe9ff;font-size:13px;font-family:inherit;font-weight:700;cursor:pointer;}
+    .tour-btn:hover,.tour-btn:focus-visible{border-color:rgba(0,212,255,0.56);box-shadow:0 0 0 3px rgba(0,212,255,0.12);}
+    .tour-btn.exit{border-color:rgba(255,130,130,0.32);color:#ffd2d2;}
+    .tour-progress{min-width:82px;text-align:center;color:#8eb1d6;font-size:12px;font-weight:800;}
+    @media (prefers-reduced-motion: reduce){.tour-overlay,.tour-spotlight{transition:none !important;}}
+    </style>
     <div class="tour-overlay" id="continuity-tour-overlay" aria-hidden="true">
       <div class="tour-wash"></div>
       <div class="tour-spotlight" id="continuity-tour-spotlight"></div>

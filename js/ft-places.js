@@ -214,8 +214,10 @@
     var bar = document.createElement('div');
     bar.className = 'ftp-bar';
     var addB = mkBtn('＋ Place', 'acc', function () { openPlaceEditor(null); });
+    bar.appendChild(addB);
+    if (window.ftMapGen) { bar.appendChild(mkBtn('✨ Create map', '', openMapGen)); }
     var upB = mkBtn(mapMeta().has ? 'Replace map image' : 'Upload map image', '', pickImage);
-    bar.appendChild(addB); bar.appendChild(upB);
+    bar.appendChild(upB);
     if (mapMeta().has) {
       bar.appendChild(mkBtn('Remove map', 'danger', removeImage));
     }
@@ -592,6 +594,40 @@
     };
     if (typeof window.ftConfirm === 'function') window.ftConfirm(msg).then(function (ok) { if (ok) go(); });
     else if (window.confirm(msg)) go();
+  }
+
+  /* ---------- generated maps (ft-mapgen bridge) ---------- */
+  function openMapGen() {
+    if (!window.ftMapGen) { note('Map generator is still loading — try again in a moment.'); return; }
+    window.ftMapGen.open({
+      onApply: function (dataUrl, meta) {
+        note('Saving your new map…');
+        return setMapFromDataUrl(dataUrl).then(function (ok) {
+          if (!ok) { note('Could not store the generated map on this device (private mode?).'); return false; }
+          var s = S();
+          s.mapMeta = { has: true, w: (meta && meta.w) || 0, h: (meta && meta.h) || 0, name: (meta && meta.name) || 'Generated map' };
+          view.mapUrl = ''; view.sc = 1; view.px = 0; view.py = 0;
+          persist();
+          note('Map created — drag a pin, or add Places onto it.');
+          renderMapView(root);
+          return true;
+        });
+      },
+      onAddPlaces: function (pins) {
+        if (!Array.isArray(pins) || !pins.length) return;
+        pins.forEach(function (pin) {
+          places().push({
+            id: uid(),
+            name: String(pin.name || 'Place').slice(0, 200),
+            icon: '', color: pin.color || '#7a9ede', description: '', parentId: '',
+            pin: { x: Math.round((pin.x || 0.5) * 1000) / 1000, y: Math.round((pin.y || 0.5) * 1000) / 1000 }
+          });
+        });
+        persist();
+        renderMapView(root);
+        note(pins.length + ' place' + (pins.length === 1 ? '' : 's') + ' added to the map.');
+      }
+    });
   }
 
   /* ---------- export / import helpers ---------- */
