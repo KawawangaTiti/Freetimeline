@@ -62,17 +62,12 @@
 
   /* Draw a generated world onto `cv`. Returns [{x,y} normalised] region seeds. */
   function generate(cv, opts) {
-    var W = cv.width, H = cv.height, ctx = cv.getContext('2d');
-    var SW = 260, SH = Math.round(SW * H / W);
-    var small = document.createElement('canvas'); small.width = SW; small.height = SH;
-    var sctx = small.getContext('2d'), img = sctx.createImageData(SW, SH), data = img.data;
-    var pal = PAL[opts.climate] || PAL.temperate;
+    var W = cv.width, H = cv.height;
     var seed = (parseInt(opts.seed, 10) || 1) % 100000;
     var seaT = (opts.sea != null ? opts.sea : 48) / 100;
     var arch = opts.shape === 'archipelago', pang = opts.shape === 'pangaea';
     var scale = arch ? 5.2 : (pang ? 2.1 : 3.1);
-    var feats = opts.features || [];
-    var mtn = feats.indexOf('mountains') >= 0;
+    var mtn = (opts.features || []).indexOf('mountains') >= 0;
 
     function elev(nx, ny) {
       var e = fbm(nx * scale, ny * scale, seed, 6);
@@ -82,25 +77,19 @@
       e = e - Math.pow(d, 2.2) * (pang ? 0.55 : 1.0) * edge + (pang ? 0.12 : 0.05);
       return Math.max(0, Math.min(1, e));
     }
-    for (var j = 0; j < SH; j++) {
-      for (var i = 0; i < SW; i++) {
-        var nx = i / SW, ny = j / SH, e = elev(nx, ny), idx = (j * SW + i) * 4, col;
-        if (e < seaT) { col = lerp(pal.sea[0], pal.sea[1], e / seaT); }
-        else {
-          var t = (e - seaT) / (1 - seaT);
-          if (t < 0.06) col = pal.beach;
-          else if (t < 0.55) { var m = fbm(nx * 4 + 20, ny * 4 + 20, seed + 3, 4); col = lerp(pal.land[1], pal.land[0], m); if (m > 0.62) col = pal.land[2]; }
-          else if (t < 0.82) col = lerp(pal.land[0], pal.peak, (t - 0.55) / 0.27);
-          else col = lerp(pal.peak, pal.snow, (t - 0.82) / 0.18);
-          var shd = (fbm(nx * 8, ny * 8, seed + 50, 2) - 0.5) * 20; col = [col[0] + shd, col[1] + shd, col[2] + shd];
-        }
-        data[idx] = col[0]; data[idx + 1] = col[1]; data[idx + 2] = col[2]; data[idx + 3] = 255;
-      }
+
+    /* elevation grid, then delegate to the shared styled renderer */
+    var EW = 340, EH = Math.round(EW * H / W), E = new Float32Array(EW * EH);
+    for (var j = 0; j < EH; j++) for (var i = 0; i < EW; i++) E[j * EW + i] = elev((i + 0.5) / EW, (j + 0.5) / EH);
+    if (window.ftMapRender) {
+      ftMapRender.render(cv, { elevation: E, gw: EW, gh: EH, seaLevel: seaT, seed: seed, style: opts.style || 'atlas' });
+    } else {
+      var ctx = cv.getContext('2d'); ctx.clearRect(0, 0, W, H);
+      var sm = document.createElement('canvas'); sm.width = EW; sm.height = EH;
+      var sx = sm.getContext('2d'), im = sx.createImageData(EW, EH), dd = im.data;
+      for (var q = 0; q < EW * EH; q++) { var lw = E[q] >= seaT, kk = q * 4; dd[kk] = lw ? 110 : 30; dd[kk + 1] = lw ? 140 : 74; dd[kk + 2] = lw ? 80 : 104; dd[kk + 3] = 255; }
+      sx.putImageData(im, 0, 0); ctx.imageSmoothingEnabled = true; ctx.drawImage(sm, 0, 0, W, H);
     }
-    sctx.putImageData(img, 0, 0);
-    ctx.clearRect(0, 0, W, H); ctx.imageSmoothingEnabled = true; ctx.drawImage(small, 0, 0, W, H);
-    var vg = ctx.createRadialGradient(W / 2, H * 0.42, H * 0.2, W / 2, H / 2, W * 0.75);
-    vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.4)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
 
     /* region seeds on land */
     var regions = [], rnd = mulberry32(seed + 777), tries = 0, want = opts.regions || 4;
@@ -117,14 +106,15 @@
   }
 
   /* draw name labels onto the finished canvas */
-  function drawLabels(cv, regions, names) {
-    var ctx = cv.getContext('2d'), W = cv.width;
-    ctx.textAlign = 'center'; ctx.font = '700 ' + Math.round(W / 52) + 'px -apple-system,Segoe UI,Roboto,sans-serif';
+  function drawLabels(cv, regions, names, style) {
+    var ctx = cv.getContext('2d'), W = cv.width, atlas = style === 'atlas';
+    ctx.textAlign = 'center';
+    ctx.font = (atlas ? 'italic 700 ' : '700 ') + Math.round(W / 52) + 'px ' + (atlas ? 'Georgia, "Times New Roman", serif' : '-apple-system,Segoe UI,Roboto,sans-serif');
     regions.forEach(function (r, i) {
       var nm = (names && names[i]) || REGION_NAMES[i % REGION_NAMES.length];
       var x = r.x * cv.width, y = r.y * cv.height;
-      ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillText(nm, x + 1.5, y + 1.5);
-      ctx.fillStyle = '#fff'; ctx.fillText(nm, x, y);
+      if (atlas) { ctx.fillStyle = 'rgba(61,51,32,0.74)'; ctx.fillText(nm, x, y); }
+      else { ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillText(nm, x + 1.5, y + 1.5); ctx.fillStyle = '#fff'; ctx.fillText(nm, x, y); }
     });
   }
 
@@ -232,6 +222,8 @@
     var left = el('div', 'ftmg-pane'), right = el('div', 'ftmg-pane');
 
     left.innerHTML =
+      '<div class="ftmg-f"><label>Map style</label><select class="ftmg-in" id="ftmg-style">' +
+        '<option value="atlas">Atlas — hand-drawn parchment</option><option value="relief">Relief — coloured terrain</option></select></div>' +
       '<div class="ftmg-f"><label>World name</label><input class="ftmg-in" id="ftmg-name" value="Aethelgard"></div>' +
       '<div class="ftmg-2"><div class="ftmg-f"><label>Climate</label><select class="ftmg-in" id="ftmg-clim">' +
         '<option value="temperate">Temperate</option><option value="arid">Arid / desert</option><option value="tropical">Tropical</option><option value="frozen">Frozen</option></select></div>' +
@@ -246,7 +238,7 @@
       '<div class="ftmg-f"><label>Seed</label><div class="ftmg-rw"><input class="ftmg-in" id="ftmg-seed" value="7421" style="flex:1"><button class="ftmg-btn" id="ftmg-shuf" title="Shuffle" style="padding:0 11px">↻</button></div></div></div>';
 
     right.innerHTML =
-      '<div class="ftmg-prev" id="ftmg-prevbox"><canvas id="ftmg-canvas" width="640" height="448" style="display:none"></canvas>' +
+      '<div class="ftmg-prev" id="ftmg-prevbox"><canvas id="ftmg-canvas" width="900" height="630" style="display:none"></canvas>' +
         '<div class="empty" id="ftmg-empty">Fill it in and hit <b>Generate</b> —<br>your world is drawn here, live.</div></div>' +
       '<div class="ftmg-acts"><button class="ftmg-btn pri" id="ftmg-gen" style="flex:1">✨ Generate</button>' +
         '<button class="ftmg-btn" id="ftmg-use" style="flex:1" disabled>Use this map</button></div>' +
@@ -265,18 +257,19 @@
         name: q('#ftmg-name').value.trim() || 'My world',
         climate: q('#ftmg-clim').value, shape: q('#ftmg-shape').value,
         features: Array.prototype.map.call(body.querySelectorAll('#ftmg-feat .ftmg-chip.on'), function (c) { return c.dataset.f; }),
-        sea: +q('#ftmg-sea').value, regions: +q('#ftmg-reg').value, seed: q('#ftmg-seed').value
+        sea: +q('#ftmg-sea').value, regions: +q('#ftmg-reg').value, seed: q('#ftmg-seed').value,
+        style: (q('#ftmg-style') || {}).value || 'atlas'
       };
     }
     var lastRegions = null;
     q('#ftmg-gen').addEventListener('click', function () {
       var cv = q('#ftmg-canvas'); cv.style.display = 'block'; q('#ftmg-empty').style.display = 'none';
-      var o = readOpts(); lastRegions = generate(cv, o); drawLabels(cv, lastRegions, null);
+      var o = readOpts(); lastRegions = generate(cv, o); drawLabels(cv, lastRegions, null, o.style);
       var u = q('#ftmg-use'); u.disabled = false; u.classList.add('pri');
     });
     q('#ftmg-use').addEventListener('click', function () {
       var cv = q('#ftmg-canvas'); if (!lastRegions) return;
-      applyMap(cv, readOpts().name, lastRegions, null, opts);
+      applyMap(cv, readOpts().name, lastRegions, null, opts, null, readOpts());
     });
     return body;
   }
@@ -311,7 +304,7 @@
       return 'You are a fantasy cartographer. Based on this world:\n"' + d + '"\n\n' +
         'Return ONLY valid JSON, no prose, matching exactly:\n{\n' +
         '  "world": "<name>",\n  "climate": "temperate|arid|tropical|frozen",\n' +
-        '  "shape": "continent|archipelago|pangaea",\n  "seed": <integer 1-99999>,\n' +
+        '  "shape": "continent|archipelago|pangaea",\n  "style": "atlas|relief",\n  "seed": <integer 1-99999>,\n' +
         '  "regions": [ {"name":"<region>", "x":<0-100>, "y":<0-100>} ],\n' +
         '  "places": [ {"name":"<city/landmark>", "x":<0-100>, "y":<0-100>} ]\n}\n' +
         'x,y are percentages across the map (0,0 = top-left). Give 3-6 regions and 3-8 places.';
@@ -338,8 +331,8 @@
       var cv = q('#ftmg-aicanvas'); cv.style.display = 'block'; q('#ftmg-aiempty').style.display = 'none';
       var regions = (obj.regions || []).map(function (r) { return { x: (r.x || 50) / 100, y: (r.y || 50) / 100 }; });
       var names = (obj.regions || []).map(function (r) { return r.name; });
-      var o = { climate: obj.climate || 'temperate', shape: obj.shape || 'continent', features: ['mountains'], sea: 46, regions: regions.length || 4, seed: obj.seed || 1234 };
-      generate(cv, o); drawLabels(cv, regions, names);
+      var o = { climate: obj.climate || 'temperate', shape: obj.shape || 'continent', features: ['mountains'], sea: 46, regions: regions.length || 4, seed: obj.seed || 1234, style: (obj.style === 'relief' ? 'relief' : 'atlas') };
+      generate(cv, o); drawLabels(cv, regions, names, o.style);
       /* regions -> baked area labels (above); places -> interactive pins */
       var pins = (obj.places || []).map(function (p, i) {
         return { name: p.name || ('Place ' + (i + 1)), x: (p.x || 50) / 100, y: (p.y || 50) / 100, color: PIN_COLORS[i % PIN_COLORS.length] };
@@ -350,17 +343,17 @@
     q('#ftmg-aiuse').addEventListener('click', function () {
       if (!parsed) return;
       var cv = q('#ftmg-aicanvas');
-      applyMap(cv, parsed.name, parsed.regions, parsed.names, opts, parsed.pins);
+      applyMap(cv, parsed.name, parsed.regions, parsed.names, opts, parsed.pins, parsed.opts);
     });
     return body;
   }
 
   /* -------- apply the finished canvas as the app's map image -------- */
-  function applyMap(previewCanvas, name, regions, names, opts, pins) {
-    /* Upscale the preview into a crisp stored map (the preview is small for speed). */
+  function applyMap(previewCanvas, name, regions, names, opts, pins, genOpts) {
+    /* Re-render crisp at full size for the stored map (fall back to upscaling). */
     var big = document.createElement('canvas'); big.width = 1500; big.height = 1050;
-    var ctx = big.getContext('2d'); ctx.imageSmoothingEnabled = true;
-    ctx.drawImage(previewCanvas, 0, 0, big.width, big.height);
+    if (genOpts) { generate(big, genOpts); drawLabels(big, regions, names, genOpts.style); }
+    else { var ctx = big.getContext('2d'); ctx.imageSmoothingEnabled = true; ctx.drawImage(previewCanvas, 0, 0, big.width, big.height); }
     var dataUrl = big.toDataURL('image/png');
     var meta = { name: (name || 'Generated map') + ' (generated)', w: big.width, h: big.height };
     var finish = function () {
