@@ -65,39 +65,77 @@
     return { gw: gw, gh: gh, N: N, seaT: seaT, seed: seed, climate: o.climate || 'temperate', terrain: !!o.terrain, HT: HT, LAND: LAND, MT: MT, FR: FR, SN: SN, BE: BE };
   }
 
-  /* ---------------- RELIEF (coloured) ---------------- */
+  /* bilinear sample of a per-cell field */
+  function sampleField(F, gw, gh, u, v) {
+    var fx = u * (gw - 1), fy = v * (gh - 1);
+    var x0 = Math.max(0, Math.min(gw - 2, Math.floor(fx))), y0 = Math.max(0, Math.min(gh - 2, Math.floor(fy)));
+    var tx = fx - x0, ty = fy - y0;
+    var a = F[y0 * gw + x0], b = F[y0 * gw + x0 + 1], c = F[(y0 + 1) * gw + x0], dd = F[(y0 + 1) * gw + x0 + 1];
+    return a + (b - a) * tx + (c - a) * ty + (a - b - c + dd) * tx * ty;
+  }
+  function blurField(F, gw, gh, passes) {
+    var A = Float32Array.from(F);
+    for (var p = 0; p < passes; p++) {
+      var B = Float32Array.from(A);
+      for (var y = 0; y < gh; y++) for (var x = 0; x < gw; x++) {
+        var s = 0, n = 0;
+        for (var dy = -1; dy <= 1; dy++) for (var dx = -1; dx <= 1; dx++) { var xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= gw || yy >= gh) continue; s += A[yy * gw + xx]; n++; }
+        B[y * gw + x] = s / n;
+      }
+      A = B;
+    }
+    return A;
+  }
+
+  /* ---------------- RELIEF (coloured, professional) ---------------- */
   function relief(ctx, W, H, S) {
-    var gw = S.gw, gh = S.gh, seaT = S.seaT, P = RELIEF_PAL[S.climate] || RELIEF_PAL.temperate;
-    var HT = S.HT, LAND = S.LAND, MT = S.MT, FR = S.FR, SN = S.SN, BE = S.BE;
-    var small = document.createElement('canvas'); small.width = gw; small.height = gh;
-    var sc = small.getContext('2d'), img = sc.createImageData(gw, gh), D = img.data;
-    function isW(x, y) { if (x < 0 || y < 0 || x >= gw || y >= gh) return true; return !LAND[y * gw + x]; }
-    for (var y = 0; y < gh; y++) for (var x = 0; x < gw; x++) {
-      var j = y * gw + x, k = j * 4, col;
-      if (!LAND[j]) {
-        col = L(P.deep, P.sea, Math.min(1, HT[j] / seaT));
-        if (!isW(x + 1, y) || !isW(x - 1, y) || !isW(x, y + 1) || !isW(x, y - 1)) col = L(col, P.shore, 0.6);
+    var gw = S.gw, gh = S.gh, seaT = S.seaT, seed = S.seed, P = RELIEF_PAL[S.climate] || RELIEF_PAL.temperate;
+    var HT = S.HT, SN = S.SN, MT = S.MT, FR = S.FR, BE = S.BE;
+    var HF = S.terrain ? blurField(HT, gw, gh, 2) : HT; // smooth painter coasts
+    var shoalC = L(P.shore, [200, 226, 224], 0.55);
+    var MR = W <= 820 ? 520 : 860, MRH = Math.round(MR * H / W);
+    var off = document.createElement('canvas'); off.width = MR; off.height = MRH;
+    var octx = off.getContext('2d'), img = octx.createImageData(MR, MRH), D = img.data;
+    function flag(F, u, v) { var cx = Math.min(gw - 1, (u * gw) | 0), cy = Math.min(gh - 1, (v * gh) | 0); return F[cy * gw + cx]; }
+    var dd = 1 / gw;
+    for (var py = 0; py < MRH; py++) for (var px = 0; px < MR; px++) {
+      var u = px / MR, v = py / MRH, e = sampleField(HF, gw, gh, u, v), k = (py * MR + px) * 4, col;
+      var cf = Math.max(0, 1 - Math.abs(e - seaT) / 0.05);
+      if (e < seaT) {
+        var dep = e / seaT; col = L(P.deep, P.sea, dep); col = L(col, P.shore, Math.max(0, dep - 0.5) * 2);
+        col = L(col, shoalC, cf * 0.7);
+        var rip = (fbm(u * 70, v * 70, seed + 80, 2) - 0.5) * 6; col = [col[0] + rip, col[1] + rip, col[2] + rip];
       } else {
-        var t = Math.max(0, Math.min(1, (HT[j] - seaT) / (1 - seaT)));
-        if (SN[j]) col = P.snow;
-        else if (MT[j]) col = L(P.hill, P.rock, 0.6);
-        else if (FR[j]) col = P.forest;
-        else if (BE[j]) col = P.beach;
-        else col = L(P.grass, P.hill, Math.max(0, Math.min(1, (t - 0.06) / 0.5)));
-        if (!S.terrain) { /* hillshade from the continuous elevation gradient */
-          var eL = HT[y * gw + Math.max(0, x - 1)], eR = HT[y * gw + Math.min(gw - 1, x + 1)],
-              eU = HT[Math.max(0, y - 1) * gw + x], eD = HT[Math.min(gh - 1, y + 1) * gw + x];
-          var gx = (eL - eR) * 3.2, gy = (eU - eD) * 3.2, ln = Math.sqrt(gx * gx + gy * gy + 1);
-          var shd = (gx / ln) * (-0.52) + (gy / ln) * (-0.60) + (1 / ln) * 0.61;
-          var f = 0.72 + shd * 0.7; if (f < 0.45) f = 0.45; if (f > 1.35) f = 1.35;
-          col = [col[0] * f, col[1] * f, col[2] * f];
+        var t = Math.max(0, Math.min(1, (e - seaT) / (1 - seaT)));
+        if (!S.terrain) { /* generator: smooth continuous biomes */
+          var mo = fbm(u * 4 + 20, v * 4 + 20, seed + 3, 4);
+          if (t < 0.03) col = P.beach;
+          else if (t < 0.45) col = L(P.forest, P.grass, mo < 0.5 ? mo * 2 : 1);
+          else if (t < 0.7) col = L(P.grass, P.hill, (t - 0.45) / 0.25);
+          else if (t < 0.86) col = L(P.hill, P.rock, (t - 0.7) / 0.16);
+          else col = L(P.rock, P.snow, (t - 0.86) / 0.14);
+        } else { /* painter: honour painted terrain types (per cell) */
+          if (flag(SN, u, v)) col = P.snow;
+          else if (flag(MT, u, v)) col = L(P.hill, P.rock, 0.55);
+          else if (flag(FR, u, v)) col = P.forest;
+          else if (flag(BE, u, v) || t < 0.03) col = P.beach;
+          else col = L(P.grass, P.hill, Math.max(0, Math.min(1, (t - 0.06) / 0.5)));
         }
+        var gr = (fbm(u * 90, v * 90, seed + 40, 3) - 0.5) * 10; col = [col[0] + gr, col[1] + gr, col[2] + gr];
+        var eL = sampleField(HF, gw, gh, Math.max(0, u - dd), v), eR = sampleField(HF, gw, gh, Math.min(1, u + dd), v),
+            eU = sampleField(HF, gw, gh, u, Math.max(0, v - dd)), eD = sampleField(HF, gw, gh, u, Math.min(1, v + dd));
+        var gx = (eL - eR) * 7, gy = (eU - eD) * 7, ln = Math.sqrt(gx * gx + gy * gy + 1);
+        var shd = (gx / ln) * (-0.5) + (gy / ln) * (-0.62) + (1 / ln) * 0.6;
+        var f = 0.74 + shd * 0.72; if (f < 0.4) f = 0.4; if (f > 1.4) f = 1.4;
+        col = [col[0] * f, col[1] * f, col[2] * f];
+        col = [col[0] * (1 - cf * 0.3), col[1] * (1 - cf * 0.3), col[2] * (1 - cf * 0.3)]; // coastal AO
+        if (t > 0.8) { var slz = (t - 0.8) * 1.1 * Math.max(0, shd); col = L(col, [255, 255, 255], slz); }
       }
       D[k] = col[0]; D[k + 1] = col[1]; D[k + 2] = col[2]; D[k + 3] = 255;
     }
-    sc.putImageData(img, 0, 0); ctx.imageSmoothingEnabled = true; ctx.drawImage(small, 0, 0, W, H);
-    var vg = ctx.createRadialGradient(W / 2, H * 0.44, H * 0.28, W / 2, H / 2, W * 0.72);
-    vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(4,10,20,0.5)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+    octx.putImageData(img, 0, 0); ctx.imageSmoothingEnabled = true; ctx.drawImage(off, 0, 0, W, H);
+    var vg = ctx.createRadialGradient(W / 2, H * 0.45, H * 0.3, W / 2, H / 2, W * 0.7);
+    vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(3,8,16,0.5)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
   }
 
   /* ---------------- ATLAS (parchment) ---------------- */
