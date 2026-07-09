@@ -36,6 +36,20 @@
     '.ft-dd-menu>*:hover{background:' + T.hover + '!important}' +
     '.ft-dd-menu label{gap:9px;cursor:default}' +
     '.ft-dd-spacer{flex:1 1 auto}' +
+    /* one calm, non-wrapping action row (tabs move to their own row below) */
+    '#toolbar{flex-wrap:nowrap!important;overflow-x:auto;overflow-y:hidden}' +
+    '#toolbar::-webkit-scrollbar{height:0}' +
+    '#toolbar .logo{font-size:0!important;margin:0 5px 0 2px}' +
+    '#toolbar .ft-dd,#toolbar>.btn{margin:0 1px}' +
+    '#ft-tabsrow{display:flex;align-items:center;gap:6px;padding:6px 16px;overflow-x:auto;' +
+      'background:' + (dark ? 'rgba(255,255,255,0.015)' : 'rgba(0,0,0,0.02)') + ';border-bottom:1px solid ' + T.line + '}' +
+    '#ft-tabsrow::-webkit-scrollbar{height:0}' +
+    '#ft-tabsrow .view-tabs{display:flex;gap:3px;background:transparent;border:0;padding:0}' +
+    '#ft-tabsrow .view-tab{background:transparent;border:1px solid transparent;color:' + T.ink + ';opacity:.72;' +
+      'font-size:13px;font-weight:600;padding:6px 14px;border-radius:9px;min-height:34px;cursor:pointer;white-space:nowrap}' +
+    '#ft-tabsrow .view-tab:hover{background:' + T.hover + ';opacity:1}' +
+    '#ft-tabsrow .view-tab.active{background:linear-gradient(135deg,var(--v-accent,#2f7cf6),var(--v-accent-2,#40c8ff));' +
+      'border-color:transparent;color:#fff;font-weight:700;opacity:1;box-shadow:0 2px 8px rgba(47,124,246,0.28)}' +
     '@media(max-width:820px){.ft-dd-menu{left:auto;right:0}}';
   document.head.appendChild(st);
 
@@ -122,6 +136,15 @@
   var saveStatus = tb.querySelector('.tb-save-status');
   var fileIn = tb.querySelector('#file-in');
   [home, logo, primary, track, tabs, ddData, ddOrg, ddView, today, fit, undo, redo, spacer, saveStatus, ddHelp, fileIn].forEach(function (n) { if (n) tb.appendChild(n); });
+
+  // Move the view tabs onto their own calm row below the actions, so the action
+  // row fits one line instead of wrapping into a ragged wall.
+  if (tabs && tabs.parentNode === tb) {
+    var tabsRow = document.createElement('div');
+    tabsRow.id = 'ft-tabsrow';
+    if (tb.parentNode) tb.parentNode.insertBefore(tabsRow, tb.nextSibling);
+    tabsRow.appendChild(tabs);
+  }
 
   tb.setAttribute('data-ft-grouped', '1');
 
