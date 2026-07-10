@@ -352,7 +352,9 @@
 
     function close() { window.removeEventListener('pointerup', up); window.removeEventListener('resize', onResize); document.removeEventListener('keydown', onKey, true); if (ov.parentNode) ov.parentNode.removeChild(ov); }
     function onKey(e) {
-      if (e.key === 'Escape') { if (transforming) { e.stopPropagation(); cancelTransform(); } else if (selActive) { e.stopPropagation(); deselect(); } else close(); return; }
+      // Esc only steps back (cancel transform / clear selection) — it must NOT close the
+      // editor, so an accidental Esc can't discard unsaved work. Use ✕ Cancel to close.
+      if (e.key === 'Escape') { if (transforming) { e.stopPropagation(); cancelTransform(); } else if (selActive) { e.stopPropagation(); deselect(); } return; }
       if (e.key === 'Enter' && transforming) { e.preventDefault(); e.stopPropagation(); commitTransform(); return; }
       if ((e.key === 'Delete' || e.key === 'Backspace') && selActive && !transforming) { e.preventDefault(); e.stopPropagation(); deleteSel(); return; }
       var mod = e.ctrlKey || e.metaKey;
