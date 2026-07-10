@@ -91,7 +91,7 @@
 
     var rail = document.createElement('div'); rail.className = 'ftsk-rail';
     rail.style.background = T.panel; rail.style.border = '1px solid ' + T.line; rail.style.color = T.ink;
-    var TOOLS = [['land', '✏️', 'Draw land'], ['erase', '🧽', 'Erase'], ['relief', '⛰️', 'Mountains'],
+    var TOOLS = [['land', '✏️', 'Draw land'], ['select', '🖱', 'Select'], ['erase', '🧽', 'Erase'], ['relief', '⛰️', 'Mountains'],
       ['river', '🌊', 'River'], ['lake', '💧', 'Lake'], ['road', '🛤️', 'Road'],
       ['snow', '❄️', 'Snow'], ['border', '🖊️', 'Border'], ['icon', '🏰', 'Places']];
     TOOLS.forEach(function (t, i) {
@@ -213,6 +213,7 @@
       dctx.clearRect(0, 0, r.width, r.height);
       dctx.drawImage(buf, 0, 0, r.width, r.height);
       if (vis.icons) drawIcons(dctx, r.width, r.height);
+      if (selActive) drawSel(movingSel ? moveOff.x : 0, movingSel ? moveOff.y : 0);
     }
     function fit() { var r = disp.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1); disp.width = Math.round(r.width * dpr); disp.height = Math.round(r.height * dpr); dctx.setTransform(dpr, 0, 0, dpr, 0, 0); renderMap(); compose(); }
     function stamp(gx, gy) {
@@ -242,6 +243,12 @@
 
     disp.addEventListener('pointerdown', function (e) {
       try { disp.setPointerCapture(e.pointerId); } catch (_) {} hideHint();
+      if (tool === 'select') {
+        var gs = toGrid(e);
+        if (selActive && inSel(gs.x, gs.y)) { movingSel = true; moveStart = gs; moveOff = { x: 0, y: 0 }; }
+        else { floodSelect(gs.x, gs.y); }
+        compose(); return;
+      }
       if (tool === 'icon') {
         var hit = iconHit(e);
         if (hit >= 0) { pushUndo(); selIcon = hit; dragIcon = hit; compose(); }
@@ -252,10 +259,14 @@
       drawing = true; last = toGrid(e); stamp(last.x, last.y); queue();
     });
     disp.addEventListener('pointermove', function (e) {
+      if (movingSel) { var gm = toGrid(e); moveOff = { x: Math.round(gm.x - moveStart.x), y: Math.round(gm.y - moveStart.y) }; compose(); return; }
       if (dragIcon >= 0) { var g = toGrid(e); icons[dragIcon].x = g.x; icons[dragIcon].y = g.y; compose(); return; }
       if (!drawing) return; var g2 = toGrid(e); line(last, g2); last = g2; queue();
     });
-    function up() { if (drawing) { drawing = false; if (tool === 'land') fillHoles(); renderMap(); compose(); } dragIcon = -1; }
+    function up() {
+      if (movingSel) { movingSel = false; if (moveOff.x || moveOff.y) commitMove(moveOff.x, moveOff.y); moveOff = { x: 0, y: 0 }; renderMap(); compose(); return; }
+      if (drawing) { drawing = false; if (tool === 'land') fillHoles(); renderMap(); compose(); } dragIcon = -1;
+    }
     window.addEventListener('pointerup', up);
     disp.addEventListener('dblclick', function (e) { if (tool !== 'icon') return; var hit = iconHit(e); if (hit >= 0) { pushUndo(); icons.splice(hit, 1); selIcon = -1; compose(); } });
 
@@ -264,6 +275,7 @@
         rail.querySelectorAll('.ftsk-tool').forEach(function (x) { x.classList.remove('on'); x.style.background = 'transparent'; x.style.color = T.ink; });
         b.classList.add('on'); b.style.background = acc; b.style.color = '#fff'; tool = b.dataset.t;
         icoPanel.classList.toggle('show', tool === 'icon');
+        if (tool !== 'select') deselect();
         if (tool !== 'icon') { selIcon = -1; compose(); }
       });
       if (b.classList.contains('on')) { b.style.background = acc; b.style.color = '#fff'; }
@@ -309,7 +321,8 @@
 
     function close() { window.removeEventListener('pointerup', up); window.removeEventListener('resize', onResize); document.removeEventListener('keydown', onKey, true); if (ov.parentNode) ov.parentNode.removeChild(ov); }
     function onKey(e) {
-      if (e.key === 'Escape') { close(); return; }
+      if (e.key === 'Escape') { if (selActive) { e.stopPropagation(); deselect(); } else close(); return; }
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selActive) { e.preventDefault(); e.stopPropagation(); deleteSel(); return; }
       var mod = e.ctrlKey || e.metaKey;
       if (mod && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); e.stopPropagation(); if (e.shiftKey) redo(); else undo(); }
       else if (mod && (e.key === 'y' || e.key === 'Y')) { e.preventDefault(); e.stopPropagation(); redo(); }
@@ -330,6 +343,91 @@
       if (r && typeof r.then === 'function') { saveB.disabled = true; saveB.textContent = 'Saving…'; r.then(function (ok) { if (ok !== false) close(); else { saveB.disabled = false; saveB.textContent = '✓ Use this map'; } }); }
       else close();
     });
+
+    /* ---- Select tool: flood-fill a region (land / lake / water) then move or delete it ---- */
+    var selMask = new Uint8Array(GW * GH), selActive = false, selType = null;
+    var movingSel = false, moveStart = null, moveOff = { x: 0, y: 0 };
+    var selCanvas = document.createElement('canvas'); selCanvas.width = GW; selCanvas.height = GH;
+    var selCtx = selCanvas.getContext('2d');
+
+    function floodSelect(gx, gy) {
+      var cx = Math.max(0, Math.min(GW - 1, Math.round(gx))), cy = Math.max(0, Math.min(GH - 1, Math.round(gy)));
+      var start = cy * GW + cx, pred, type;
+      if (lake[start] > 0.4) { type = 'lake'; pred = function (i) { return lake[i] > 0.4; }; }
+      else if (land[start] > 0.4) { type = 'land'; pred = function (i) { return land[i] > 0.4; }; }
+      else { type = 'water'; pred = function (i) { return land[i] < 0.4 && lake[i] <= 0.4; }; }
+      selMask = new Uint8Array(GW * GH);
+      if (!pred(start)) { selActive = false; selType = null; hideSelBar(); return; }
+      var stack = [start]; selMask[start] = 1;
+      while (stack.length) {
+        var i = stack.pop(), ix = i % GW, iy = (i / GW) | 0, j;
+        if (ix > 0) { j = i - 1; if (!selMask[j] && pred(j)) { selMask[j] = 1; stack.push(j); } }
+        if (ix < GW - 1) { j = i + 1; if (!selMask[j] && pred(j)) { selMask[j] = 1; stack.push(j); } }
+        if (iy > 0) { j = i - GW; if (!selMask[j] && pred(j)) { selMask[j] = 1; stack.push(j); } }
+        if (iy < GH - 1) { j = i + GW; if (!selMask[j] && pred(j)) { selMask[j] = 1; stack.push(j); } }
+      }
+      selActive = true; selType = type; showSelBar();
+    }
+    function inSel(gx, gy) { var cx = Math.round(gx), cy = Math.round(gy); if (cx < 0 || cy < 0 || cx >= GW || cy >= GH) return false; return !!selMask[cy * GW + cx]; }
+    function deselect() { selActive = false; selType = null; movingSel = false; selMask = new Uint8Array(GW * GH); hideSelBar(); compose(); }
+
+    function drawSel(offX, offY) {
+      if (!selActive) return;
+      var d = selCtx.createImageData(GW, GH), p = d.data;
+      for (var i = 0; i < selMask.length; i++) {
+        if (!selMask[i]) continue;
+        var ix = i % GW, iy = (i / GW) | 0;
+        var edge = (ix === 0 || !selMask[i - 1]) || (ix === GW - 1 || !selMask[i + 1]) || (iy === 0 || !selMask[i - GW]) || (iy === GH - 1 || !selMask[i + GW]);
+        var px = i * 4; p[px] = 90; p[px + 1] = 200; p[px + 2] = 255; p[px + 3] = edge ? 235 : 42;
+      }
+      selCtx.putImageData(d, 0, 0);
+      var r = disp.getBoundingClientRect();
+      dctx.imageSmoothingEnabled = true;
+      dctx.drawImage(selCanvas, (offX || 0) / GW * r.width, (offY || 0) / GH * r.height, r.width, r.height);
+    }
+    function commitMove(dx, dy) {
+      pushUndo();
+      var saved = [], i;
+      for (i = 0; i < selMask.length; i++) if (selMask[i]) saved.push([i, land[i], relief[i], river[i], snow[i], lake[i], road[i], borderM[i]]);
+      saved.forEach(function (s) { var k = s[0]; land[k] = relief[k] = river[k] = snow[k] = lake[k] = road[k] = borderM[k] = 0; });
+      var ns = new Uint8Array(GW * GH);
+      saved.forEach(function (s) {
+        var k = s[0], x = k % GW + dx, y = (k / GW | 0) + dy;
+        if (x < 0 || x >= GW || y < 0 || y >= GH) return;
+        var j = y * GW + x;
+        land[j] = Math.min(1, land[j] + s[1]); relief[j] = Math.min(1, relief[j] + s[2]); river[j] = Math.min(1, river[j] + s[3]);
+        snow[j] = Math.min(1, snow[j] + s[4]); lake[j] = Math.min(1, lake[j] + s[5]); road[j] = Math.min(1, road[j] + s[6]); borderM[j] = Math.min(1, borderM[j] + s[7]);
+        ns[j] = 1;
+      });
+      selMask = ns;
+    }
+    function deleteSel() {
+      if (!selActive || selType === 'water') return;
+      pushUndo();
+      for (var i = 0; i < selMask.length; i++) {
+        if (!selMask[i]) continue;
+        if (selType === 'lake') lake[i] = 0;
+        else { land[i] = relief[i] = river[i] = snow[i] = lake[i] = road[i] = borderM[i] = 0; }
+      }
+      deselect(); renderMap(); compose();
+    }
+
+    /* floating selection toolbar */
+    var selBar = document.createElement('div');
+    selBar.style.cssText = 'position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:5;display:none;align-items:center;gap:10px;border-radius:12px;padding:7px 10px 7px 14px;box-shadow:0 8px 24px rgba(0,0,0,.3);font-size:12.5px;font-weight:600';
+    selBar.style.background = T.panel; selBar.style.border = '1px solid ' + T.line; selBar.style.color = T.ink;
+    var selMsg = document.createElement('span'); selMsg.style.opacity = '.8'; selBar.appendChild(selMsg);
+    function selBtn(txt) { var b = document.createElement('button'); b.textContent = txt; b.style.cssText = 'border-radius:8px;padding:6px 11px;cursor:pointer;font:600 12px inherit;background:transparent;color:' + T.ink + ';border:1px solid ' + T.line; return b; }
+    var delBtn = selBtn('🗑 Delete'), dsBtn = selBtn('✕ Deselect');
+    delBtn.addEventListener('click', deleteSel); dsBtn.addEventListener('click', deselect);
+    selBar.appendChild(delBtn); selBar.appendChild(dsBtn);
+    stage.appendChild(selBar);
+    function showSelBar() {
+      selMsg.textContent = selType === 'water' ? 'Water selected' : (selType === 'lake' ? 'Lake selected — drag to move' : 'Land selected — drag to move');
+      delBtn.style.display = selType === 'water' ? 'none' : '';
+      selBar.style.display = 'flex';
+    }
+    function hideSelBar() { selBar.style.display = 'none'; }
 
     /* ---- Layers panel (Photoshop-style: show / hide / clear each layer) ---- */
     function clearLayer(k) {
