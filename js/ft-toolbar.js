@@ -71,8 +71,16 @@
   //  · toggleStats — redundant with the Stats view tab
   //  · toggleReadingMode — a colour theme toggle nobody asked for
   //  · ContinuityTour — keep only ONE guided playback; MemoryTour works on any timeline
-  ['jumpToYear', 'toggleStats', 'toggleReadingMode', 'ContinuityTour'].forEach(function (sub) {
+  //  · saveHTML — exported an HTML that isn't truly standalone (owner asked to drop it)
+  ['jumpToYear', 'toggleStats', 'toggleReadingMode', 'ContinuityTour', 'saveHTML'].forEach(function (sub) {
     find(sub).forEach(function (n) { if (picked.indexOf(n) < 0) picked.push(n); if (n.parentNode) n.parentNode.removeChild(n); });
+  });
+
+  // Relabel the Organise items so the menu explains itself (icons there are text-only).
+  var RELABEL = { 'catEditor': '🏷 Event categories', 'organizationEditor': '👥 Groups & factions',
+    'affiliationEditor': '👥 Groups & factions', 'continuityEditor': '⑂ Alternate timelines' };
+  Object.keys(RELABEL).forEach(function (sub) {
+    find(sub).forEach(function (n) { if (n.tagName === 'BUTTON') n.textContent = RELABEL[sub]; });
   });
 
   function closeAll() {

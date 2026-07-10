@@ -5834,9 +5834,10 @@ body.reading-mode #reading-toggle-btn {
         }
       }, 100);
     }
-    var on = false;
-    try { on = localStorage.getItem(KEY) === '1'; } catch(_){}
-    apply(on);
+    /* Reading Mode retired (toggle removed) — force OFF and clear the flag so nobody is
+       stranded in the parchment palette with light-on-light tabs. */
+    try { localStorage.removeItem(KEY); } catch(_){}
+    apply(false);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();

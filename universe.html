@@ -5429,9 +5429,11 @@ body.reading-mode #reading-toggle-btn {
     apply(on);
   };
   function init(){
-    var on = false;
-    try { on = localStorage.getItem(KEY) === '1'; } catch(_){}
-    apply(on);
+    /* Reading Mode was retired (its toggle was removed). Force it OFF and clear the
+       stored flag so anyone who had it enabled isn't stranded in the parchment palette
+       with no way back — that made the tabs render light-on-light. */
+    try { localStorage.removeItem(KEY); } catch(_){}
+    apply(false);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
