@@ -41,6 +41,15 @@
       '.ftsk-icons .g{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}' +
       '.ftsk-ico{font-size:19px;line-height:1;padding:8px 0;border:1px solid;border-radius:9px;cursor:pointer;text-align:center}' +
       '.ftsk-icons .tip{font-size:11px;opacity:.7;line-height:1.4}' +
+      '.ftsk-layers{position:absolute;top:12px;right:12px;z-index:3;display:flex;flex-direction:column;gap:1px;border-radius:14px;padding:9px 8px;box-shadow:0 8px 24px rgba(0,0,0,.28);width:198px}' +
+      '.ftsk-layers .t{font-size:10.5px;font-weight:700;letter-spacing:.5px;opacity:.7;text-transform:uppercase;padding:2px 6px 7px}' +
+      '.ftsk-lrow{display:flex;align-items:center;gap:8px;padding:6px 7px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:default}' +
+      '.ftsk-lrow .eye{cursor:pointer;width:20px;text-align:center;font-size:13px;user-select:none}' +
+      '.ftsk-lrow .nm{flex:1;display:flex;align-items:center;gap:7px;min-width:0}' +
+      '.ftsk-lrow .nm .le{font-size:14px;width:18px;text-align:center}' +
+      '.ftsk-lrow.off{opacity:.4}' +
+      '.ftsk-lrow .del{cursor:pointer;opacity:.45;font-size:12px;border:0;background:transparent;color:inherit;padding:2px 4px;border-radius:6px}' +
+      '.ftsk-lrow .del:hover{opacity:1}' +
       '.ftsk-hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:3;pointer-events:none;border-radius:999px;padding:7px 16px;font-size:12.5px;box-shadow:0 6px 18px rgba(0,0,0,.2);transition:opacity .4s;white-space:nowrap;max-width:92vw;border:1px solid}';
     document.head.appendChild(st);
   }
@@ -122,6 +131,7 @@
     var icons = [];
     var iconType = '🏰', selIcon = -1, dragIcon = -1;
     var tool = 'land', brush = 16, drawing = false, last = null;
+    var vis = { land: true, lake: true, relief: true, river: true, snow: true, road: true, border: true, icons: true };
     function f() { return new Float32Array(GW * GH); }
 
     // restore prior work
@@ -157,23 +167,23 @@
       var d = imgD.data;
       for (var y = 0; y < GH; y++) for (var x = 0; x < GW; x++) {
         var i = y * GW + x, px = i * 4, v = lb[i];
-        var landA = smooth(0.44, 0.56, v);
+        var landA = vis.land ? smooth(0.44, 0.56, v) : 0;
         var t = Math.min(1, (0.5 - Math.min(v, 0.5)) / 0.5);
         var ocean = t < 0.22 ? mix(SEA_SHOAL, SEA_SHORE, t / 0.22) : mix(SEA_SHORE, SEA_DEEP, (t - 0.22) / 0.78);
         var col;
         if (landA <= 0) col = ocean;
         else {
-          var e = Math.min(1.2, el[i]);
+          var e = vis.relief ? Math.min(1.2, el[i]) : 0;
           var lc = e < 0.5 ? mix(LAND_LO, LAND_MID, e * 2) : mix(LAND_MID, LAND_HI, Math.min(1, (e - 0.5) * 2));
           if (e > 0.75) lc = mix(lc, ROCK, Math.min(0.7, (e - 0.75) * 1.6));
           var nz = (hash(x, y) - 0.5) * 8; lc = [cl(lc[0] + nz), cl(lc[1] + nz), cl(lc[2] + nz)];
           if (e > 0.05) { var gx = el[i + 1] - el[i - 1], gy = el[i + GW] - el[i - GW]; var sh = Math.max(-0.5, Math.min(0.5, (-gx - gy) * 3.6)); lc = [cl(lc[0] * (1 + sh)), cl(lc[1] * (1 + sh)), cl(lc[2] * (1 + sh))]; }
           if (e > 0.92) lc = mix(lc, SNOW, Math.min(0.8, (e - 0.92) * 6));
-          if (road[i] > 0.3) lc = mix(lc, ROAD, Math.min(0.85, road[i]));
-          if (river[i] > 0.22) lc = mix(lc, RIVER, Math.min(0.8, river[i]));
-          var sn = Math.min(1, snow[i]); if (sn > 0.05) lc = mix(lc, SNOW, sn);
-          if (borderM[i] > 0.3) lc = mix(lc, BORDER, Math.min(0.8, borderM[i]));
-          var lkA = smooth(0.45, 0.55, lkb[i]);
+          if (vis.road && road[i] > 0.3) lc = mix(lc, ROAD, Math.min(0.85, road[i]));
+          if (vis.river && river[i] > 0.22) lc = mix(lc, RIVER, Math.min(0.8, river[i]));
+          var sn = vis.snow ? Math.min(1, snow[i]) : 0; if (sn > 0.05) lc = mix(lc, SNOW, sn);
+          if (vis.border && borderM[i] > 0.3) lc = mix(lc, BORDER, Math.min(0.8, borderM[i]));
+          var lkA = vis.lake ? smooth(0.45, 0.55, lkb[i]) : 0;
           var lakeCol = mix(LAKE_SHORE, LAKE_DEEP, Math.min(1, lkb[i]));
           var landCover = landA * (1 - lkA);
           var base = lkA > 0 ? mix(ocean, lakeCol, lkA) : ocean;
@@ -202,7 +212,7 @@
       dctx.imageSmoothingEnabled = true; dctx.imageSmoothingQuality = 'high';
       dctx.clearRect(0, 0, r.width, r.height);
       dctx.drawImage(buf, 0, 0, r.width, r.height);
-      drawIcons(dctx, r.width, r.height);
+      if (vis.icons) drawIcons(dctx, r.width, r.height);
     }
     function fit() { var r = disp.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1); disp.width = Math.round(r.width * dpr); disp.height = Math.round(r.height * dpr); dctx.setTransform(dpr, 0, 0, dpr, 0, 0); renderMap(); compose(); }
     function stamp(gx, gy) {
@@ -314,12 +324,38 @@
       // bake a crisp map image (upscale the low-res buffer + draw icons on top)
       var W = 1500, H = 1000, out = document.createElement('canvas'); out.width = W; out.height = H;
       var octx = out.getContext('2d'); octx.imageSmoothingEnabled = true; octx.imageSmoothingQuality = 'high';
-      octx.drawImage(buf, 0, 0, W, H); drawIcons(octx, W, H);
+      octx.drawImage(buf, 0, 0, W, H); if (vis.icons) drawIcons(octx, W, H);
       var dataUrl = out.toDataURL('image/png');
       var r = opts.onSave ? opts.onSave(dataUrl, { w: W, h: H, name: 'Sketched map' }, pack(), icons) : null;
       if (r && typeof r.then === 'function') { saveB.disabled = true; saveB.textContent = 'Saving…'; r.then(function (ok) { if (ok !== false) close(); else { saveB.disabled = false; saveB.textContent = '✓ Use this map'; } }); }
       else close();
     });
+
+    /* ---- Layers panel (Photoshop-style: show / hide / clear each layer) ---- */
+    function clearLayer(k) {
+      var map = { land: land, relief: relief, river: river, snow: snow, lake: lake, road: road, border: borderM };
+      if (k === 'icons') { icons.length = 0; selIcon = -1; }
+      else if (map[k]) map[k].fill(0);
+    }
+    var layPanel = document.createElement('div'); layPanel.className = 'ftsk-layers';
+    layPanel.style.background = T.panel; layPanel.style.border = '1px solid ' + T.line; layPanel.style.color = T.ink;
+    layPanel.innerHTML = '<span class="t">Layers</span>';
+    var LAYDEF = [['icons', 'Places', '🏰'], ['border', 'Borders', '🖊️'], ['road', 'Roads', '🛤️'],
+      ['river', 'Rivers', '🌊'], ['snow', 'Snow', '❄️'], ['relief', 'Mountains', '⛰️'],
+      ['lake', 'Lakes', '💧'], ['land', 'Land', '✏️']];
+    LAYDEF.forEach(function (d) {
+      var row = document.createElement('div'); row.className = 'ftsk-lrow';
+      var eye = document.createElement('span'); eye.className = 'eye'; eye.textContent = '👁'; eye.title = 'Show / hide layer';
+      var nm = document.createElement('span'); nm.className = 'nm'; nm.innerHTML = '<span class="le">' + d[2] + '</span>' + d[1];
+      var del = document.createElement('button'); del.className = 'del'; del.textContent = '🗑'; del.title = 'Clear this layer';
+      eye.addEventListener('click', function () {
+        vis[d[0]] = !vis[d[0]]; row.classList.toggle('off', !vis[d[0]]); eye.textContent = vis[d[0]] ? '👁' : '🙈';
+        if (d[0] === 'icons') compose(); else { renderMap(); compose(); }
+      });
+      del.addEventListener('click', function () { pushUndo(); clearLayer(d[0]); renderMap(); compose(); });
+      row.appendChild(eye); row.appendChild(nm); row.appendChild(del); layPanel.appendChild(row);
+    });
+    stage.appendChild(layPanel);
 
     requestAnimationFrame(fit);
   }
