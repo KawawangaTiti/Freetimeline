@@ -5638,7 +5638,7 @@ function submitAddEv() {
     notes, media: [..._editMediaList], subEvents: [], category: cat || null, status, tags, tone,
     placeIds, continuityIds,
     recurring: recFreq ? { frequency: recFreq } : null });
-  Store.autosave(); render(); updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updateToneFilterBar(); updatePlaceFilterBar(); updateContinuityFilterBar(); updateStatsPanel(); M.close(); notify('Event created! \u2713', 'success');
+  Store.autosave(); render(); updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updateToneFilterBar(); updatePlaceFilterBar(); updateContinuityFilterBar(); updateFilterVisibility(); updateStatsPanel(); M.close(); notify('Event created! \u2713', 'success');
 }
 
 function saveEv(evId) {
@@ -5686,7 +5686,7 @@ function saveEv(evId) {
   ev.description = document.getElementById('ee-dc').value.trim();
   ev.notes       = document.getElementById('ee-notes').value.trim();
   ev.media       = [..._editMediaList];
-  Store.autosave(); render(); updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updateToneFilterBar(); updatePlaceFilterBar(); updateContinuityFilterBar(); updateStatsPanel();
+  Store.autosave(); render(); updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updateToneFilterBar(); updatePlaceFilterBar(); updateContinuityFilterBar(); updateFilterVisibility(); updateStatsPanel();
   MS.pop(); M.render(); notify('Saved \u2713', 'success');
 }
 
@@ -6605,7 +6605,7 @@ const Store = {
           Store.autosave();
           if (window.History && window.History.clear) window.History.clear();  /* BE-13/UE-18: undo must not cross the import boundary */
           clampPanY(); render();
-          updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updateToneFilterBar(); updatePlaceFilterBar(); updateContinuityFilterBar(); updateCharFilterSelect(); updateUniToggleBar(); updateStatsPanel();
+          updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updateToneFilterBar(); updatePlaceFilterBar(); updateContinuityFilterBar(); updateCharFilterSelect(); updateUniToggleBar(); updateFilterVisibility(); updateStatsPanel();
           notify('Timeline loaded \u2713', 'success');
         }, { title: 'Replace all data?', confirmLabel: 'Replace', danger: true });
       } catch (err) { notify('Could not read file: ' + err.message, 'error'); }
@@ -7144,6 +7144,7 @@ window.addEventListener('DOMContentLoaded', () => {
   updatePlaceFilterBar();
   updateContinuityFilterBar();
   updateCharFilterSelect();
+  updateFilterVisibility();
   fitFullTimeline();
 
   /* Frame the timeline on the actual data. The default range is geological
@@ -7508,6 +7509,33 @@ function updateContinuityFilterBar() {
   }
   sel.innerHTML = html;
   updateAllClearBtn();
+}
+
+/* Hide filter dropdowns that offer nothing for the current data. An empty Place / Tone /
+   Continuity / Tag filter (or a Status where every value is at 0) is dead UI — showing a
+   control that visibly "does nothing" is what made the bar feel broken. We collapse it
+   until the data gives it something to filter. Re-run whenever the filter bars rebuild. */
+function updateFilterVisibility() {
+  var bar = document.getElementById('compact-filter-bar');
+  if (!bar) return;
+  Array.prototype.forEach.call(bar.querySelectorAll('.fp-drop'), function (fp) {
+    var sel = fp.querySelector('select');
+    var alive = false;
+    if (sel) {
+      var opts = Array.prototype.slice.call(sel.options, 1); // skip the header option
+      alive = opts.some(function (o) {
+        var m = o.textContent.match(/\((\d+)\)\s*$/);        // "(N)"-counted values
+        return m ? (+m[1] > 0) : (o.value !== '' && o.value !== 'compare');
+      });
+    }
+    if (!alive) {
+      var chips = fp.querySelectorAll('[class*="filter-chip"]');
+      alive = Array.prototype.some.call(chips, function (c) {
+        var m = c.textContent.match(/\((\d+)\)\s*$/); return m ? (+m[1] > 0) : true;
+      });
+    }
+    fp.style.display = alive ? '' : 'none';
+  });
 }
 
 /* True when the event is hidden by the single-continuity view.
