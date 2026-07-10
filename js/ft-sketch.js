@@ -31,6 +31,9 @@
       '.ftsk-tool{display:flex;align-items:center;gap:9px;border:1px solid transparent;background:transparent;font:600 13px/1 inherit;padding:8px 12px 8px 10px;border-radius:10px;cursor:pointer;text-align:left;min-width:126px}' +
       '.ftsk-tool .em{font-size:16px;width:20px;text-align:center}' +
       '.ftsk-sep{height:1px;margin:3px 4px}' +
+      '.ftsk-gsep{height:1px;margin:5px 8px;opacity:.5}' +
+      '.ftsk-cursor{position:absolute;border:1.5px solid rgba(255,255,255,.75);border-radius:50%;pointer-events:none;z-index:4;display:none;transform:translate(-50%,-50%);box-shadow:0 0 0 1px rgba(0,0,0,.35)}' +
+      '.ftsk-bnum{font-size:11px;font-weight:700;opacity:.7;min-width:20px;text-align:right;font-variant-numeric:tabular-nums}' +
       '.ftsk-mini{display:flex;align-items:center;gap:8px;padding:5px 8px}' +
       '.ftsk-mini label{font-size:11px;font-weight:600;min-width:30px;opacity:.7}' +
       '.ftsk-mini input{accent-color:#2f7cf6;width:92px}' +
@@ -70,7 +73,7 @@
     var bar = document.createElement('div'); bar.className = 'ftsk-bar';
     bar.style.background = T.chrome; bar.style.borderBottom = '1px solid ' + T.line; bar.style.color = T.ink;
     var ttl = document.createElement('div'); ttl.className = 'ttl';
-    ttl.innerHTML = '<strong>✏️ Draw your map</strong><span>Scribble a rough shape — it becomes a clean coastline. Then add mountains, rivers, towns.</span>';
+    ttl.innerHTML = '<strong>✏️ Draw your map</strong><span>Scribble rough — it tidies itself. Then add terrain, water and places.</span>';
     var sp = document.createElement('div'); sp.className = 'ftsk-sp';
     var saveB = document.createElement('button'); saveB.className = 'ftsk-btn'; saveB.textContent = '✓ Use this map';
     saveB.style.cssText += 'background:' + acc + ';color:#fff;border-color:' + acc;
@@ -91,18 +94,23 @@
 
     var rail = document.createElement('div'); rail.className = 'ftsk-rail';
     rail.style.background = T.panel; rail.style.border = '1px solid ' + T.line; rail.style.color = T.ink;
-    var TOOLS = [['land', '✏️', 'Draw land'], ['select', '🖱', 'Select'], ['erase', '🧽', 'Erase'], ['relief', '⛰️', 'Mountains'],
-      ['river', '🌊', 'River'], ['lake', '💧', 'Lake'], ['road', '🛤️', 'Road'],
-      ['snow', '❄️', 'Snow'], ['border', '🖊️', 'Border'], ['icon', '🏰', 'Places']];
-    TOOLS.forEach(function (t, i) {
-      var b = document.createElement('button'); b.className = 'ftsk-tool' + (i === 0 ? ' on' : '');
+    var TOOLS = [['land', '✏️', 'Draw land'], ['select', '🖱', 'Select'], ['erase', '🧽', 'Erase'], ['sep'],
+      ['relief', '⛰️', 'Mountains'], ['snow', '❄️', 'Snow'], ['sep'],
+      ['river', '🌊', 'River'], ['lake', '💧', 'Lake'], ['sep'],
+      ['road', '🛤️', 'Road'], ['border', '🖊️', 'Border'], ['sep'],
+      ['icon', '🏰', 'Places']];
+    TOOLS.forEach(function (t) {
+      if (t[0] === 'sep') { var s = document.createElement('div'); s.className = 'ftsk-gsep'; s.style.background = T.line; rail.appendChild(s); return; }
+      var b = document.createElement('button'); b.className = 'ftsk-tool' + (t[0] === 'land' ? ' on' : '');
       b.dataset.t = t[0]; b.innerHTML = '<span class="em">' + t[1] + '</span>' + t[2];
       b.style.color = T.ink; rail.appendChild(b);
     });
     var sep = document.createElement('div'); sep.className = 'ftsk-sep'; sep.style.background = T.line; rail.appendChild(sep);
     var mini = document.createElement('div'); mini.className = 'ftsk-mini';
     mini.innerHTML = '<label>Brush</label>'; var size = document.createElement('input');
-    size.type = 'range'; size.min = 4; size.max = 34; size.value = 16; mini.appendChild(size); rail.appendChild(mini);
+    size.type = 'range'; size.min = 4; size.max = 34; size.value = 16; mini.appendChild(size);
+    var bnum = document.createElement('span'); bnum.className = 'ftsk-bnum'; bnum.textContent = '16'; mini.appendChild(bnum);
+    rail.appendChild(mini);
     var clearB = document.createElement('button'); clearB.className = 'ftsk-ghost'; clearB.textContent = 'Clear all';
     clearB.style.background = T.panel; clearB.style.borderColor = T.line; clearB.style.color = T.ink; rail.appendChild(clearB);
     stage.appendChild(rail);
@@ -118,6 +126,7 @@
     hint.style.background = T.tip; hint.style.color = T.sub; hint.style.borderColor = T.line;
     hint.textContent = 'Draw a rough island — don’t worry, it’ll be tidied up automatically.';
     stage.appendChild(hint);
+    var ring = document.createElement('div'); ring.className = 'ftsk-cursor'; stage.appendChild(ring);
     ov.appendChild(stage);
     document.body.appendChild(ov);
 
@@ -265,6 +274,14 @@
       if (dragIcon >= 0) { var g = toGrid(e); icons[dragIcon].x = g.x; icons[dragIcon].y = g.y; compose(); return; }
       if (!drawing) return; var g2 = toGrid(e); line(last, g2); last = g2; queue();
     });
+    var PAINT = ['land', 'erase', 'relief', 'river', 'lake', 'road', 'snow', 'border'];
+    disp.addEventListener('pointermove', function (e) {
+      if (PAINT.indexOf(tool) < 0) { ring.style.display = 'none'; return; }
+      var sr = stage.getBoundingClientRect(), d = brush * 2;
+      ring.style.display = 'block'; ring.style.left = (e.clientX - sr.left) + 'px'; ring.style.top = (e.clientY - sr.top) + 'px';
+      ring.style.width = d + 'px'; ring.style.height = d + 'px';
+    });
+    disp.addEventListener('pointerleave', function () { ring.style.display = 'none'; });
     function up() {
       if (dragHandle >= 0) { dragHandle = -1; renderMap(); compose(); return; }
       if (movingSel) { movingSel = false; if (moveOff.x || moveOff.y) { commitMove(moveOff.x, moveOff.y); if (selType === 'land') computeHandles(); } moveOff = { x: 0, y: 0 }; renderMap(); compose(); return; }
@@ -279,6 +296,7 @@
         b.classList.add('on'); b.style.background = acc; b.style.color = '#fff'; tool = b.dataset.t;
         icoPanel.classList.toggle('show', tool === 'icon');
         if (tool !== 'select') deselect();
+        if (['land', 'erase', 'relief', 'river', 'lake', 'road', 'snow', 'border'].indexOf(tool) < 0) ring.style.display = 'none';
         if (tool !== 'icon') { selIcon = -1; compose(); }
       });
       if (b.classList.contains('on')) { b.style.background = acc; b.style.color = '#fff'; }
@@ -289,7 +307,7 @@
       b.addEventListener('click', function () { ig.querySelectorAll('.ftsk-ico').forEach(function (x) { x.classList.remove('on'); x.style.borderColor = T.line; }); b.classList.add('on'); b.style.borderColor = acc; iconType = p[0]; });
       ig.appendChild(b);
     });
-    size.addEventListener('input', function () { brush = +this.value; });
+    size.addEventListener('input', function () { brush = +this.value; bnum.textContent = brush; });
     clearB.addEventListener('click', function () { pushUndo(); LAY.forEach(function (a) { a.fill(0); }); icons.length = 0; selIcon = -1; renderMap(); compose(); });
 
     function pack() { var u = new Uint8Array(NL * GW * GH); for (var L = 0; L < NL; L++) { var off = L * GW * GH, arr = LAY[L]; for (var k = 0; k < GW * GH; k++) u[off + k] = cl(arr[k] * 255); } return u; }
