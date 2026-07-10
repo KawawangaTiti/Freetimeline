@@ -25,7 +25,9 @@
   st.textContent =
     '.ft-dd{position:relative;display:inline-flex}' +
     '.ft-dd-caret{opacity:.55;font-size:.78em;margin-left:3px}' +
-    '.ft-dd-menu{position:absolute;top:calc(100% + 6px);left:0;min-width:190px;z-index:300;' +
+    /* menus live on <body> as position:fixed so the toolbar's overflow clip and the
+       timeline's stacking context can never hide them (positioned via JS on open) */
+    '.ft-dd-menu{position:fixed;min-width:190px;z-index:490;' +
       'background:' + T.panel + ';border:1px solid ' + T.line + ';border-radius:11px;padding:6px;' +
       'box-shadow:0 14px 36px rgba(0,0,0,.34);display:flex;flex-direction:column;gap:2px}' +
     '.ft-dd-menu[hidden]{display:none}' +
@@ -50,7 +52,7 @@
     '#ft-tabsrow .view-tab:hover{background:' + T.hover + ';opacity:1}' +
     '#ft-tabsrow .view-tab.active{background:linear-gradient(135deg,var(--v-accent,#2f7cf6),var(--v-accent-2,#40c8ff));' +
       'border-color:transparent;color:#fff;font-weight:700;opacity:1;box-shadow:0 2px 8px rgba(47,124,246,0.28)}' +
-    '@media(max-width:820px){.ft-dd-menu{left:auto;right:0}}';
+    '';
   document.head.appendChild(st);
 
   function find(sub) {
@@ -65,11 +67,23 @@
   }
 
   function closeAll() {
-    tb.querySelectorAll('.ft-dd-menu').forEach(function (m) { m.hidden = true; });
+    document.querySelectorAll('.ft-dd-menu').forEach(function (m) { m.hidden = true; });
     tb.querySelectorAll('.ft-dd-trigger').forEach(function (t) { t.setAttribute('aria-expanded', 'false'); });
   }
   document.addEventListener('click', closeAll);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAll(); });
+  // reposition/close if the layout shifts while a menu is open
+  window.addEventListener('resize', closeAll);
+  window.addEventListener('scroll', closeAll, true);
+
+  // place a body-mounted fixed menu directly under its trigger, clamped to the viewport
+  function placeMenu(trg, m) {
+    var r = trg.getBoundingClientRect();
+    m.style.top = Math.round(r.bottom + 6) + 'px';
+    var w = m.offsetWidth || 200;
+    var left = Math.min(r.left, window.innerWidth - w - 8);
+    m.style.left = Math.round(Math.max(8, left)) + 'px';
+  }
 
   function menu(label, nodes) {
     if (!nodes.length) return null;
@@ -80,12 +94,14 @@
     trg.innerHTML = label + '<span class="ft-dd-caret">▾</span>';
     var m = document.createElement('div'); m.className = 'ft-dd-menu'; m.setAttribute('role', 'menu'); m.hidden = true;
     nodes.forEach(function (n) { n.classList.remove('tb-secondary'); m.appendChild(n); });
+    // mount the menu on <body>, not inside the toolbar, so nothing can clip or cover it
+    document.body.appendChild(m);
     trg.addEventListener('click', function (e) {
       e.stopPropagation();
       var wasOpen = !m.hidden; closeAll();
-      if (!wasOpen) { m.hidden = false; trg.setAttribute('aria-expanded', 'true'); }
+      if (!wasOpen) { m.hidden = false; placeMenu(trg, m); trg.setAttribute('aria-expanded', 'true'); }
     });
-    wrap.appendChild(trg); wrap.appendChild(m);
+    wrap.appendChild(trg);
     return wrap;
   }
 
