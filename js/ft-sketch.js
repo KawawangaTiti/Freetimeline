@@ -67,7 +67,13 @@
     saveB.style.cssText += 'background:' + acc + ';color:#fff;border-color:' + acc;
     var cancelB = document.createElement('button'); cancelB.className = 'ftsk-btn'; cancelB.textContent = '✕ Cancel';
     cancelB.style.cssText += 'background:transparent;color:' + T.ink + ';border-color:' + T.line;
-    bar.appendChild(ttl); bar.appendChild(sp); bar.appendChild(saveB); bar.appendChild(cancelB);
+    var undoB = document.createElement('button'); undoB.className = 'ftsk-btn'; undoB.textContent = '↶'; undoB.title = 'Undo (Ctrl+Z)';
+    undoB.style.cssText += 'background:transparent;color:' + T.ink + ';border-color:' + T.line + ';font-size:16px;padding:6px 12px';
+    var redoB = document.createElement('button'); redoB.className = 'ftsk-btn'; redoB.textContent = '↷'; redoB.title = 'Redo (Ctrl+Y)';
+    redoB.style.cssText += 'background:transparent;color:' + T.ink + ';border-color:' + T.line + ';font-size:16px;padding:6px 12px';
+    undoB.addEventListener('click', function () { undo(); });
+    redoB.addEventListener('click', function () { redo(); });
+    bar.appendChild(ttl); bar.appendChild(sp); bar.appendChild(undoB); bar.appendChild(redoB); bar.appendChild(saveB); bar.appendChild(cancelB);
     ov.appendChild(bar);
 
     /* stage */
@@ -146,12 +152,12 @@
       }
     }
     function renderMap() {
-      blur(land, lb, 3, 2); blur(relief, rb, 2, 1); blur(lake, lkb, 2, 1);
+      blur(land, lb, 3, 3); blur(relief, rb, 2, 1); blur(lake, lkb, 2, 1);
       for (var i2 = 0; i2 < el.length; i2++) { if (rb[i2] > 0.02) { var x = i2 % GW, y = (i2 / GW) | 0; el[i2] = rb[i2] * (0.45 + ridge(x * 0.09, y * 0.09) * 1.15); } else el[i2] = 0; }
       var d = imgD.data;
       for (var y = 0; y < GH; y++) for (var x = 0; x < GW; x++) {
         var i = y * GW + x, px = i * 4, v = lb[i];
-        var landA = smooth(0.47, 0.53, v);
+        var landA = smooth(0.44, 0.56, v);
         var t = Math.min(1, (0.5 - Math.min(v, 0.5)) / 0.5);
         var ocean = t < 0.22 ? mix(SEA_SHOAL, SEA_SHORE, t / 0.22) : mix(SEA_SHORE, SEA_DEEP, (t - 0.22) / 0.78);
         var col;
@@ -226,16 +232,22 @@
 
     disp.addEventListener('pointerdown', function (e) {
       try { disp.setPointerCapture(e.pointerId); } catch (_) {} hideHint();
-      if (tool === 'icon') { var hit = iconHit(e); if (hit >= 0) { selIcon = hit; dragIcon = hit; compose(); } else { var g = toGrid(e); icons.push({ type: iconType, x: g.x, y: g.y, size: Math.max(16, brush * 1.5) }); selIcon = icons.length - 1; compose(); } return; }
+      if (tool === 'icon') {
+        var hit = iconHit(e);
+        if (hit >= 0) { pushUndo(); selIcon = hit; dragIcon = hit; compose(); }
+        else { pushUndo(); var g = toGrid(e); icons.push({ type: iconType, x: g.x, y: g.y, size: Math.max(16, brush * 1.5) }); selIcon = icons.length - 1; compose(); }
+        return;
+      }
+      pushUndo();
       drawing = true; last = toGrid(e); stamp(last.x, last.y); queue();
     });
     disp.addEventListener('pointermove', function (e) {
       if (dragIcon >= 0) { var g = toGrid(e); icons[dragIcon].x = g.x; icons[dragIcon].y = g.y; compose(); return; }
       if (!drawing) return; var g2 = toGrid(e); line(last, g2); last = g2; queue();
     });
-    function up() { if (drawing) { drawing = false; renderMap(); compose(); } dragIcon = -1; }
+    function up() { if (drawing) { drawing = false; if (tool === 'land') fillHoles(); renderMap(); compose(); } dragIcon = -1; }
     window.addEventListener('pointerup', up);
-    disp.addEventListener('dblclick', function (e) { if (tool !== 'icon') return; var hit = iconHit(e); if (hit >= 0) { icons.splice(hit, 1); selIcon = -1; compose(); } });
+    disp.addEventListener('dblclick', function (e) { if (tool !== 'icon') return; var hit = iconHit(e); if (hit >= 0) { pushUndo(); icons.splice(hit, 1); selIcon = -1; compose(); } });
 
     rail.querySelectorAll('.ftsk-tool').forEach(function (b) {
       b.addEventListener('click', function () {
@@ -253,16 +265,48 @@
       ig.appendChild(b);
     });
     size.addEventListener('input', function () { brush = +this.value; });
-    clearB.addEventListener('click', function () { LAY.forEach(function (a) { a.fill(0); }); icons.length = 0; selIcon = -1; renderMap(); compose(); });
+    clearB.addEventListener('click', function () { pushUndo(); LAY.forEach(function (a) { a.fill(0); }); icons.length = 0; selIcon = -1; renderMap(); compose(); });
 
     function pack() { var u = new Uint8Array(NL * GW * GH); for (var L = 0; L < NL; L++) { var off = L * GW * GH, arr = LAY[L]; for (var k = 0; k < GW * GH; k++) u[off + k] = cl(arr[k] * 255); } return u; }
+    function unpack(u) { for (var L = 0; L < NL; L++) { var off = L * GW * GH, arr = LAY[L]; for (var k = 0; k < GW * GH; k++) arr[k] = u[off + k] / 255; } }
     function hasContent() { for (var k = 0; k < land.length; k++) if (land[k] > 0.05) return true; return icons.length > 0; }
 
-    function close() { window.removeEventListener('pointerup', up); window.removeEventListener('resize', onResize); document.removeEventListener('keydown', onKey); if (ov.parentNode) ov.parentNode.removeChild(ov); }
-    function onKey(e) { if (e.key === 'Escape') { close(); } }
+    /* ---- undo / redo (snapshots of the painted layers + icons) ---- */
+    var undoStack = [], redoStack = [], UCAP = 30;
+    function snap() { return { p: pack(), ic: icons.map(function (o) { return { type: o.type, x: o.x, y: o.y, size: o.size }; }) }; }
+    function restoreSnap(s) { unpack(s.p); icons = s.ic.map(function (o) { return { type: o.type, x: o.x, y: o.y, size: o.size }; }); selIcon = -1; }
+    function pushUndo() { undoStack.push(snap()); if (undoStack.length > UCAP) undoStack.shift(); redoStack.length = 0; }
+    function undo() { if (!undoStack.length) return; redoStack.push(snap()); restoreSnap(undoStack.pop()); renderMap(); compose(); }
+    function redo() { if (!redoStack.length) return; undoStack.push(snap()); restoreSnap(redoStack.pop()); renderMap(); compose(); }
+
+    /* Close a rough outline: any water fully enclosed by land becomes land, so you can
+       scribble a loop and the middle fills itself. Lake cells are left as water, so a
+       lake inside the loop is preserved (land fills only around it). */
+    function fillHoles() {
+      var W = GW, H = GH, reach = new Uint8Array(W * H), stack = [];
+      function seed(x, y) { var i = y * W + x; if (!reach[i] && land[i] < 0.4) { reach[i] = 1; stack.push(i); } }
+      for (var x = 0; x < W; x++) { seed(x, 0); seed(x, H - 1); }
+      for (var y = 0; y < H; y++) { seed(0, y); seed(W - 1, y); }
+      while (stack.length) {
+        var i = stack.pop(), ix = i % W, iy = (i / W) | 0, a;
+        if (ix > 0) { a = i - 1; if (!reach[a] && land[a] < 0.4) { reach[a] = 1; stack.push(a); } }
+        if (ix < W - 1) { a = i + 1; if (!reach[a] && land[a] < 0.4) { reach[a] = 1; stack.push(a); } }
+        if (iy > 0) { a = i - W; if (!reach[a] && land[a] < 0.4) { reach[a] = 1; stack.push(a); } }
+        if (iy < H - 1) { a = i + W; if (!reach[a] && land[a] < 0.4) { reach[a] = 1; stack.push(a); } }
+      }
+      for (var k = 0; k < W * H; k++) { if (land[k] < 0.4 && !reach[k] && lake[k] < 0.4) land[k] = 1; }
+    }
+
+    function close() { window.removeEventListener('pointerup', up); window.removeEventListener('resize', onResize); document.removeEventListener('keydown', onKey, true); if (ov.parentNode) ov.parentNode.removeChild(ov); }
+    function onKey(e) {
+      if (e.key === 'Escape') { close(); return; }
+      var mod = e.ctrlKey || e.metaKey;
+      if (mod && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); e.stopPropagation(); if (e.shiftKey) redo(); else undo(); }
+      else if (mod && (e.key === 'y' || e.key === 'Y')) { e.preventDefault(); e.stopPropagation(); redo(); }
+    }
     function onResize() { fit(); }
     window.addEventListener('resize', onResize);
-    document.addEventListener('keydown', onKey);
+    document.addEventListener('keydown', onKey, true);  // capture, so it beats the app's own Ctrl+Z
     cancelB.addEventListener('click', close);
 
     saveB.addEventListener('click', function () {
