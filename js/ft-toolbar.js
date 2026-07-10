@@ -66,6 +66,15 @@
     return nodes;
   }
 
+  // Curate out low-value / redundant controls entirely (owner call, 2026-07-10):
+  //  · jumpToYear  — clumsy year box; Today + Fit already cover navigation
+  //  · toggleStats — redundant with the Stats view tab
+  //  · toggleReadingMode — a colour theme toggle nobody asked for
+  //  · ContinuityTour — keep only ONE guided playback; MemoryTour works on any timeline
+  ['jumpToYear', 'toggleStats', 'toggleReadingMode', 'ContinuityTour'].forEach(function (sub) {
+    find(sub).forEach(function (n) { if (picked.indexOf(n) < 0) picked.push(n); if (n.parentNode) n.parentNode.removeChild(n); });
+  });
+
   function closeAll() {
     document.querySelectorAll('.ft-dd-menu').forEach(function (m) { m.hidden = true; });
     tb.querySelectorAll('.ft-dd-trigger').forEach(function (t) { t.setAttribute('aria-expanded', 'false'); });
