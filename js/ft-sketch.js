@@ -245,6 +245,7 @@
       try { disp.setPointerCapture(e.pointerId); } catch (_) {} hideHint();
       if (tool === 'select') {
         var gs = toGrid(e);
+        if (selActive && selType === 'land') { var hk = handleHit(e); if (hk >= 0) { pushUndo(); dragHandle = hk; return; } }
         if (selActive && inSel(gs.x, gs.y)) { movingSel = true; moveStart = gs; moveOff = { x: 0, y: 0 }; }
         else { floodSelect(gs.x, gs.y); }
         compose(); return;
@@ -259,12 +260,14 @@
       drawing = true; last = toGrid(e); stamp(last.x, last.y); queue();
     });
     disp.addEventListener('pointermove', function (e) {
+      if (dragHandle >= 0) { var gh = toGrid(e); hR[dragHandle] = Math.max(2, Math.hypot(gh.x - hCX, gh.y - hCY)); rasterizeHandles(); renderMap(); compose(); return; }
       if (movingSel) { var gm = toGrid(e); moveOff = { x: Math.round(gm.x - moveStart.x), y: Math.round(gm.y - moveStart.y) }; compose(); return; }
       if (dragIcon >= 0) { var g = toGrid(e); icons[dragIcon].x = g.x; icons[dragIcon].y = g.y; compose(); return; }
       if (!drawing) return; var g2 = toGrid(e); line(last, g2); last = g2; queue();
     });
     function up() {
-      if (movingSel) { movingSel = false; if (moveOff.x || moveOff.y) commitMove(moveOff.x, moveOff.y); moveOff = { x: 0, y: 0 }; renderMap(); compose(); return; }
+      if (dragHandle >= 0) { dragHandle = -1; renderMap(); compose(); return; }
+      if (movingSel) { movingSel = false; if (moveOff.x || moveOff.y) { commitMove(moveOff.x, moveOff.y); if (selType === 'land') computeHandles(); } moveOff = { x: 0, y: 0 }; renderMap(); compose(); return; }
       if (drawing) { drawing = false; if (tool === 'land') fillHoles(); renderMap(); compose(); } dragIcon = -1;
     }
     window.addEventListener('pointerup', up);
@@ -349,6 +352,59 @@
     var movingSel = false, moveStart = null, moveOff = { x: 0, y: 0 };
     var selCanvas = document.createElement('canvas'); selCanvas.width = GW; selCanvas.height = GH;
     var selCtx = selCanvas.getContext('2d');
+    // reshape handles (radial anchors around a land region — drag to widen/shorten that part)
+    var HN = 20, hCX = 0, hCY = 0, hAng = [], hR = [], curSel = new Uint8Array(GW * GH), dragHandle = -1;
+
+    function computeHandles() {
+      var sum = 0, sx = 0, sy = 0, i;
+      for (i = 0; i < selMask.length; i++) if (selMask[i]) { sx += i % GW; sy += (i / GW) | 0; sum++; }
+      hAng = []; hR = [];
+      if (!sum) return;
+      hCX = sx / sum; hCY = sy / sum;
+      var maxr = new Float32Array(HN);
+      for (i = 0; i < selMask.length; i++) {
+        if (!selMask[i]) continue;
+        var x = i % GW - hCX, y = ((i / GW) | 0) - hCY, a = Math.atan2(y, x); if (a < 0) a += 2 * Math.PI;
+        var k = Math.round(a / (2 * Math.PI) * HN) % HN, d = Math.hypot(x, y); if (d > maxr[k]) maxr[k] = d;
+      }
+      for (var kk = 0; kk < HN; kk++) { hAng[kk] = 2 * Math.PI * kk / HN; hR[kk] = maxr[kk]; }
+      for (kk = 0; kk < HN; kk++) if (hR[kk] === 0) { var p = hR[(kk + HN - 1) % HN], n = hR[(kk + 1) % HN]; hR[kk] = (p + n) / 2 || 3; }
+      curSel = selMask.slice();
+    }
+    function interpR(a) { if (a < 0) a += 2 * Math.PI; var f = a / (2 * Math.PI) * HN, i0 = Math.floor(f) % HN, i1 = (i0 + 1) % HN, fr = f - Math.floor(f); return hR[i0] * (1 - fr) + hR[i1] * fr; }
+    function rasterizeHandles() {
+      if (!hR.length) return;
+      var maxr = 0, k; for (k = 0; k < HN; k++) if (hR[k] > maxr) maxr = hR[k]; maxr += 2;
+      var x0 = Math.max(0, Math.floor(hCX - maxr)), x1 = Math.min(GW - 1, Math.ceil(hCX + maxr));
+      var y0 = Math.max(0, Math.floor(hCY - maxr)), y1 = Math.min(GH - 1, Math.ceil(hCY + maxr));
+      var ns = new Uint8Array(GW * GH);
+      for (var y = y0; y <= y1; y++) for (var x = x0; x <= x1; x++) {
+        var dx = x - hCX, dy = y - hCY; if (Math.hypot(dx, dy) <= interpR(Math.atan2(dy, dx))) ns[y * GW + x] = 1;
+      }
+      for (var i = 0; i < curSel.length; i++) if (curSel[i] && !ns[i]) land[i] = 0;
+      for (i = 0; i < ns.length; i++) if (ns[i]) land[i] = 1;
+      curSel = ns; selMask = ns;
+    }
+    function handleHit(ev) {
+      if (!hR.length) return -1;
+      var r = disp.getBoundingClientRect();
+      for (var k = 0; k < HN; k++) {
+        var gx = hCX + Math.cos(hAng[k]) * hR[k], gy = hCY + Math.sin(hAng[k]) * hR[k];
+        var px = gx / GW * r.width + r.left, py = gy / GH * r.height + r.top;
+        if (Math.hypot(ev.clientX - px, ev.clientY - py) < 11) return k;
+      }
+      return -1;
+    }
+    function drawHandles() {
+      if (selType !== 'land' || !hR.length || movingSel) return;
+      var r = disp.getBoundingClientRect();
+      dctx.save(); dctx.lineWidth = 2; dctx.strokeStyle = '#2f7cf6'; dctx.fillStyle = '#fff';
+      for (var k = 0; k < HN; k++) {
+        var gx = hCX + Math.cos(hAng[k]) * hR[k], gy = hCY + Math.sin(hAng[k]) * hR[k];
+        dctx.beginPath(); dctx.arc(gx / GW * r.width, gy / GH * r.height, 5, 0, 7); dctx.fill(); dctx.stroke();
+      }
+      dctx.restore();
+    }
 
     function floodSelect(gx, gy) {
       var cx = Math.max(0, Math.min(GW - 1, Math.round(gx))), cy = Math.max(0, Math.min(GH - 1, Math.round(gy)));
@@ -367,9 +423,10 @@
         if (iy < GH - 1) { j = i + GW; if (!selMask[j] && pred(j)) { selMask[j] = 1; stack.push(j); } }
       }
       selActive = true; selType = type; showSelBar();
+      if (type === 'land') computeHandles(); else hR = [];
     }
     function inSel(gx, gy) { var cx = Math.round(gx), cy = Math.round(gy); if (cx < 0 || cy < 0 || cx >= GW || cy >= GH) return false; return !!selMask[cy * GW + cx]; }
-    function deselect() { selActive = false; selType = null; movingSel = false; selMask = new Uint8Array(GW * GH); hideSelBar(); compose(); }
+    function deselect() { selActive = false; selType = null; movingSel = false; dragHandle = -1; hR = []; selMask = new Uint8Array(GW * GH); hideSelBar(); compose(); }
 
     function drawSel(offX, offY) {
       if (!selActive) return;
@@ -384,6 +441,7 @@
       var r = disp.getBoundingClientRect();
       dctx.imageSmoothingEnabled = true;
       dctx.drawImage(selCanvas, (offX || 0) / GW * r.width, (offY || 0) / GH * r.height, r.width, r.height);
+      drawHandles();
     }
     function commitMove(dx, dy) {
       pushUndo();
