@@ -256,8 +256,8 @@
         if (transforming) { var tk = tHandleHit(e); if (tk >= 0) { tCorner = tk; tAnchor = tCornerPts()[(tk + 2) % 4]; } return; }
         var gs = toGrid(e);
         if (selActive && selType === 'land') { var hk = handleHit(e); if (hk >= 0) { pushUndo(); dragHandle = hk; return; } }
-        if (selActive && inSel(gs.x, gs.y)) { movingSel = true; moveStart = gs; moveOff = { x: 0, y: 0 }; }
-        else { floodSelect(gs.x, gs.y); }
+        if (selActive && !e.shiftKey && inSel(gs.x, gs.y)) { movingSel = true; moveStart = gs; moveOff = { x: 0, y: 0 }; }
+        else { floodSelect(gs.x, gs.y, e.shiftKey); }
         compose(); return;
       }
       if (tool === 'icon') {
@@ -439,7 +439,7 @@
     }
 
     function enterTransform() {
-      if (!selActive || selType !== 'land' || transforming) return;
+      if (!selActive || (selType !== 'land' && selType !== 'multi') || transforming) return;
       var x0 = GW, y0 = GH, x1 = -1, y1 = -1, i, L;
       for (i = 0; i < selMask.length; i++) if (selMask[i]) { var x = i % GW, y = (i / GW) | 0; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
       if (x1 < x0) return;
@@ -488,24 +488,29 @@
     function commitTransform() { if (!transforming) return; transforming = false; tStamp = null; if (selActive && selType === 'land') computeHandles(); showSelBar(); compose(); }
     function cancelTransform() { if (!transforming) return; transforming = false; tStamp = null; undo(); deselect(); }
 
-    function floodSelect(gx, gy) {
+    function floodSelect(gx, gy, additive) {
       var cx = Math.max(0, Math.min(GW - 1, Math.round(gx))), cy = Math.max(0, Math.min(GH - 1, Math.round(gy)));
       var start = cy * GW + cx, pred, type;
       if (lake[start] > 0.4) { type = 'lake'; pred = function (i) { return lake[i] > 0.4; }; }
       else if (land[start] > 0.4) { type = 'land'; pred = function (i) { return land[i] > 0.4; }; }
       else { type = 'water'; pred = function (i) { return land[i] < 0.4 && lake[i] <= 0.4; }; }
-      selMask = new Uint8Array(GW * GH);
-      if (!pred(start)) { selActive = false; selType = null; hideSelBar(); return; }
-      var stack = [start]; selMask[start] = 1;
+      if (!pred(start)) { if (!additive) { selActive = false; selType = null; hR = []; selMask = new Uint8Array(GW * GH); hideSelBar(); compose(); } return; }
+      var rm = new Uint8Array(GW * GH), stack = [start]; rm[start] = 1;
       while (stack.length) {
         var i = stack.pop(), ix = i % GW, iy = (i / GW) | 0, j;
-        if (ix > 0) { j = i - 1; if (!selMask[j] && pred(j)) { selMask[j] = 1; stack.push(j); } }
-        if (ix < GW - 1) { j = i + 1; if (!selMask[j] && pred(j)) { selMask[j] = 1; stack.push(j); } }
-        if (iy > 0) { j = i - GW; if (!selMask[j] && pred(j)) { selMask[j] = 1; stack.push(j); } }
-        if (iy < GH - 1) { j = i + GW; if (!selMask[j] && pred(j)) { selMask[j] = 1; stack.push(j); } }
+        if (ix > 0) { j = i - 1; if (!rm[j] && pred(j)) { rm[j] = 1; stack.push(j); } }
+        if (ix < GW - 1) { j = i + 1; if (!rm[j] && pred(j)) { rm[j] = 1; stack.push(j); } }
+        if (iy > 0) { j = i - GW; if (!rm[j] && pred(j)) { rm[j] = 1; stack.push(j); } }
+        if (iy < GH - 1) { j = i + GW; if (!rm[j] && pred(j)) { rm[j] = 1; stack.push(j); } }
       }
-      selActive = true; selType = type; showSelBar();
-      if (type === 'land') computeHandles(); else hR = [];
+      // Shift-click adds another region (union) so you can move/align several at once.
+      // A union spans separate blobs, so radial edge-handles don't apply — it becomes 'multi'.
+      if (additive && selActive) {
+        for (var k = 0; k < rm.length; k++) if (rm[k]) selMask[k] = 1;
+        selType = 'multi';
+      } else { selMask = rm; selType = type; }
+      selActive = true; showSelBar();
+      if (selType === 'land') computeHandles(); else hR = [];
     }
     function inSel(gx, gy) { var cx = Math.round(gx), cy = Math.round(gy); if (cx < 0 || cy < 0 || cx >= GW || cy >= GH) return false; return !!selMask[cy * GW + cx]; }
     function deselect() { selActive = false; selType = null; movingSel = false; dragHandle = -1; transforming = false; tStamp = null; tCorner = -1; hR = []; selMask = new Uint8Array(GW * GH); hideSelBar(); compose(); }
@@ -571,9 +576,9 @@
         rzBtn.style.display = 'none'; delBtn.style.display = 'none'; dsBtn.style.display = 'none';
         okBtn.style.display = ''; cxBtn.style.display = '';
       } else {
-        selMsg.textContent = selType === 'water' ? 'Water selected' : (selType === 'lake' ? 'Lake selected — drag to move' : 'Land selected — drag, grab an edge dot, or Resize');
+        selMsg.textContent = selType === 'water' ? 'Water selected · Shift-click adds more' : selType === 'multi' ? 'Multiple selected — drag to move, or Resize' : selType === 'lake' ? 'Lake selected — drag to move · Shift-click adds more' : 'Land selected — drag, grab an edge dot, or Resize · Shift-click adds more';
         delBtn.style.display = selType === 'water' ? 'none' : '';
-        rzBtn.style.display = selType === 'land' ? '' : 'none';
+        rzBtn.style.display = (selType === 'land' || selType === 'multi') ? '' : 'none';
         dsBtn.style.display = ''; okBtn.style.display = 'none'; cxBtn.style.display = 'none';
       }
       selBar.style.display = 'flex';
