@@ -225,7 +225,8 @@
     bar.className = 'ftp-bar';
     var addB = mkBtn('＋ Place', 'acc', function () { openPlaceEditor(null); });
     bar.appendChild(addB);
-    if (window.ftMapGen) { bar.appendChild(mkBtn('✨ Create map', '', openMapGen)); }
+    if (window.ftAzgaar) { bar.appendChild(mkBtn('🗺️ Pro map studio', 'acc', openAzgaar)); }
+    if (window.ftMapGen) { bar.appendChild(mkBtn('✨ Quick map', '', openMapGen)); }
     if (window.ftMapPaint) { bar.appendChild(mkBtn('🖌 Paint map', '', openPaintMap)); }
     var upB = mkBtn(mapMeta().has ? 'Replace map image' : 'Upload map image', '', pickImage);
     bar.appendChild(upB);
@@ -653,6 +654,42 @@
     };
     if (typeof window.ftConfirm === 'function') window.ftConfirm(msg).then(function (ok) { if (ok) go(); });
     else if (window.confirm(msg)) go();
+  }
+
+  /* ---------- Pro Map Studio (ft-azgaar bridge) ---------- */
+  function importMapFile(file, name) {
+    if (!file) return Promise.resolve(false);
+    note('Importing your map…');
+    return compressImage(file).then(function (r) {
+      return mapStore.set(CFG.storageKey, r.blob).then(function (ok) {
+        var s = S();
+        if (!ok) {
+          if (r.blob.size < 1.5 * 1024 * 1024) {
+            return blobToDataUrl(r.blob).then(function (du) { s._mapDataUrl = du; return { ok: true, r: r }; });
+          }
+          note('Could not store the map on this device (private mode?). Try a smaller export.');
+          return { ok: false, r: r };
+        }
+        delete s._mapDataUrl;
+        return { ok: true, r: r };
+      });
+    }).then(function (out) {
+      if (!out.ok) return false;
+      var s = S(), r = out.r;
+      s.mapMeta = { has: true, w: r.w, h: r.h, name: String(name || (file.name || 'World map')).slice(0, 200) };
+      view.mapUrl = ''; view.sc = 1; view.px = 0; view.py = 0;
+      persist();
+      note('Map imported (' + r.w + '×' + r.h + ') — drop Places and pins on top.');
+      renderMapView(root);
+      return true;
+    }).catch(function (e) { note(String(e.message || e)); return false; });
+  }
+
+  function openAzgaar() {
+    if (!window.ftAzgaar) { note('The map studio is still loading — try again in a moment.'); return; }
+    window.ftAzgaar.open({
+      onImport: function (file) { return importMapFile(file, 'World map (studio)'); }
+    });
   }
 
   /* ---------- generated maps (ft-mapgen bridge) ---------- */
