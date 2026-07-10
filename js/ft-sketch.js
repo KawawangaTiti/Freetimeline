@@ -253,6 +253,7 @@
     disp.addEventListener('pointerdown', function (e) {
       try { disp.setPointerCapture(e.pointerId); } catch (_) {} hideHint();
       if (tool === 'select') {
+        if (transforming) { var tk = tHandleHit(e); if (tk >= 0) { tCorner = tk; tAnchor = tCornerPts()[(tk + 2) % 4]; } return; }
         var gs = toGrid(e);
         if (selActive && selType === 'land') { var hk = handleHit(e); if (hk >= 0) { pushUndo(); dragHandle = hk; return; } }
         if (selActive && inSel(gs.x, gs.y)) { movingSel = true; moveStart = gs; moveOff = { x: 0, y: 0 }; }
@@ -269,6 +270,14 @@
       drawing = true; last = toGrid(e); stamp(last.x, last.y); queue();
     });
     disp.addEventListener('pointermove', function (e) {
+      if (transforming && tCorner >= 0) {
+        var gt = toGrid(e), w = gt.x - tAnchor.x, h = gt.y - tAnchor.y;
+        if (e.shiftKey && tStamp) { h = (h < 0 ? -1 : 1) * Math.abs(w) / (tStamp.w / tStamp.h); }
+        var nx0 = Math.min(tAnchor.x, tAnchor.x + w), nx1 = Math.max(tAnchor.x, tAnchor.x + w);
+        var ny0 = Math.min(tAnchor.y, tAnchor.y + h), ny1 = Math.max(tAnchor.y, tAnchor.y + h);
+        if (nx1 - nx0 < 3) nx1 = nx0 + 3; if (ny1 - ny0 < 3) ny1 = ny0 + 3;
+        tBox = { x0: nx0, y0: ny0, x1: nx1, y1: ny1 }; applyTransform(); renderMap(); compose(); return;
+      }
       if (dragHandle >= 0) { var gh = toGrid(e); hR[dragHandle] = Math.max(2, Math.hypot(gh.x - hCX, gh.y - hCY)); rasterizeHandles(); renderMap(); compose(); return; }
       if (movingSel) { var gm = toGrid(e); moveOff = { x: Math.round(gm.x - moveStart.x), y: Math.round(gm.y - moveStart.y) }; compose(); return; }
       if (dragIcon >= 0) { var g = toGrid(e); icons[dragIcon].x = g.x; icons[dragIcon].y = g.y; compose(); return; }
@@ -283,6 +292,7 @@
     });
     disp.addEventListener('pointerleave', function () { ring.style.display = 'none'; });
     function up() {
+      if (transforming && tCorner >= 0) { tCorner = -1; renderMap(); compose(); return; }
       if (dragHandle >= 0) { dragHandle = -1; renderMap(); compose(); return; }
       if (movingSel) { movingSel = false; if (moveOff.x || moveOff.y) { commitMove(moveOff.x, moveOff.y); if (selType === 'land') computeHandles(); } moveOff = { x: 0, y: 0 }; renderMap(); compose(); return; }
       if (drawing) { drawing = false; if (tool === 'land') fillHoles(); renderMap(); compose(); } dragIcon = -1;
@@ -342,11 +352,13 @@
 
     function close() { window.removeEventListener('pointerup', up); window.removeEventListener('resize', onResize); document.removeEventListener('keydown', onKey, true); if (ov.parentNode) ov.parentNode.removeChild(ov); }
     function onKey(e) {
-      if (e.key === 'Escape') { if (selActive) { e.stopPropagation(); deselect(); } else close(); return; }
-      if ((e.key === 'Delete' || e.key === 'Backspace') && selActive) { e.preventDefault(); e.stopPropagation(); deleteSel(); return; }
+      if (e.key === 'Escape') { if (transforming) { e.stopPropagation(); cancelTransform(); } else if (selActive) { e.stopPropagation(); deselect(); } else close(); return; }
+      if (e.key === 'Enter' && transforming) { e.preventDefault(); e.stopPropagation(); commitTransform(); return; }
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selActive && !transforming) { e.preventDefault(); e.stopPropagation(); deleteSel(); return; }
       var mod = e.ctrlKey || e.metaKey;
-      if (mod && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); e.stopPropagation(); if (e.shiftKey) redo(); else undo(); }
-      else if (mod && (e.key === 'y' || e.key === 'Y')) { e.preventDefault(); e.stopPropagation(); redo(); }
+      if (mod && (e.key === 't' || e.key === 'T')) { if (selActive && selType === 'land') { e.preventDefault(); e.stopPropagation(); if (transforming) commitTransform(); else enterTransform(); } return; }
+      if (mod && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); e.stopPropagation(); if (!transforming) { if (e.shiftKey) redo(); else undo(); } }
+      else if (mod && (e.key === 'y' || e.key === 'Y')) { e.preventDefault(); e.stopPropagation(); if (!transforming) redo(); }
     }
     function onResize() { fit(); }
     window.addEventListener('resize', onResize);
@@ -372,6 +384,8 @@
     var selCtx = selCanvas.getContext('2d');
     // reshape handles (radial anchors around a land region — drag to widen/shorten that part)
     var HN = 20, hCX = 0, hCY = 0, hAng = [], hR = [], curSel = new Uint8Array(GW * GH), dragHandle = -1;
+    // free transform (Ctrl+T): resize the selection like an image via 4 corner handles
+    var transforming = false, tBox = null, tCorner = -1, tAnchor = null, tStamp = null, prevPaste = new Uint8Array(GW * GH);
 
     function computeHandles() {
       var sum = 0, sx = 0, sy = 0, i;
@@ -424,6 +438,56 @@
       dctx.restore();
     }
 
+    function enterTransform() {
+      if (!selActive || selType !== 'land' || transforming) return;
+      var x0 = GW, y0 = GH, x1 = -1, y1 = -1, i, L;
+      for (i = 0; i < selMask.length; i++) if (selMask[i]) { var x = i % GW, y = (i / GW) | 0; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+      if (x1 < x0) return;
+      var w = x1 - x0 + 1, h = y1 - y0 + 1;
+      tStamp = { w: w, h: h, mask: new Uint8Array(w * h), lay: [] };
+      for (L = 0; L < 7; L++) tStamp.lay.push(new Float32Array(w * h));
+      for (i = 0; i < selMask.length; i++) if (selMask[i]) { var sx = i % GW - x0, sy = ((i / GW) | 0) - y0, si = sy * w + sx; tStamp.mask[si] = 1; for (L = 0; L < 7; L++) tStamp.lay[L][si] = LAY[L][i]; }
+      pushUndo();
+      for (i = 0; i < selMask.length; i++) if (selMask[i]) for (L = 0; L < 7; L++) LAY[L][i] = 0;
+      tBox = { x0: x0, y0: y0, x1: x1 + 1, y1: y1 + 1 };
+      prevPaste = new Uint8Array(GW * GH); hR = []; transforming = true;
+      applyTransform(); showSelBar(); renderMap(); compose();
+    }
+    function applyTransform() {
+      var i, L;
+      for (i = 0; i < prevPaste.length; i++) if (prevPaste[i]) for (L = 0; L < 7; L++) LAY[L][i] = 0;
+      var np = new Uint8Array(GW * GH);
+      var bx0 = Math.round(tBox.x0), by0 = Math.round(tBox.y0), bx1 = Math.round(tBox.x1), by1 = Math.round(tBox.y1);
+      var bw = bx1 - bx0, bh = by1 - by0;
+      if (bw >= 1 && bh >= 1) {
+        for (var y = Math.max(0, by0); y < Math.min(GH, by1); y++) for (var x = Math.max(0, bx0); x < Math.min(GW, bx1); x++) {
+          var s2x = Math.floor((x - bx0) / bw * tStamp.w), s2y = Math.floor((y - by0) / bh * tStamp.h);
+          if (s2x < 0 || s2x >= tStamp.w || s2y < 0 || s2y >= tStamp.h) continue;
+          var si = s2y * tStamp.w + s2x; if (!tStamp.mask[si]) continue;
+          var di = y * GW + x; for (L = 0; L < 7; L++) LAY[L][di] = Math.min(1, tStamp.lay[L][si]); np[di] = 1;
+        }
+      }
+      prevPaste = np; selMask = np;
+    }
+    function tCornerPts() { return [{ x: tBox.x0, y: tBox.y0 }, { x: tBox.x1, y: tBox.y0 }, { x: tBox.x1, y: tBox.y1 }, { x: tBox.x0, y: tBox.y1 }]; }
+    function tHandleHit(ev) {
+      if (!transforming) return -1;
+      var r = disp.getBoundingClientRect(), c = tCornerPts();
+      for (var k = 0; k < 4; k++) { var px = c[k].x / GW * r.width + r.left, py = c[k].y / GH * r.height + r.top; if (Math.hypot(ev.clientX - px, ev.clientY - py) < 13) return k; }
+      return -1;
+    }
+    function drawTransform() {
+      if (!transforming) return;
+      var r = disp.getBoundingClientRect();
+      var X0 = tBox.x0 / GW * r.width, Y0 = tBox.y0 / GH * r.height, X1 = tBox.x1 / GW * r.width, Y1 = tBox.y1 / GH * r.height;
+      dctx.save(); dctx.strokeStyle = '#2f7cf6'; dctx.lineWidth = 1.5; dctx.setLineDash([6, 4]); dctx.strokeRect(X0, Y0, X1 - X0, Y1 - Y0); dctx.setLineDash([]);
+      dctx.fillStyle = '#fff';
+      [[X0, Y0], [X1, Y0], [X1, Y1], [X0, Y1]].forEach(function (p) { dctx.beginPath(); dctx.rect(p[0] - 5, p[1] - 5, 10, 10); dctx.fill(); dctx.stroke(); });
+      dctx.restore();
+    }
+    function commitTransform() { if (!transforming) return; transforming = false; tStamp = null; if (selActive && selType === 'land') computeHandles(); showSelBar(); compose(); }
+    function cancelTransform() { if (!transforming) return; transforming = false; tStamp = null; undo(); deselect(); }
+
     function floodSelect(gx, gy) {
       var cx = Math.max(0, Math.min(GW - 1, Math.round(gx))), cy = Math.max(0, Math.min(GH - 1, Math.round(gy)));
       var start = cy * GW + cx, pred, type;
@@ -444,7 +508,7 @@
       if (type === 'land') computeHandles(); else hR = [];
     }
     function inSel(gx, gy) { var cx = Math.round(gx), cy = Math.round(gy); if (cx < 0 || cy < 0 || cx >= GW || cy >= GH) return false; return !!selMask[cy * GW + cx]; }
-    function deselect() { selActive = false; selType = null; movingSel = false; dragHandle = -1; hR = []; selMask = new Uint8Array(GW * GH); hideSelBar(); compose(); }
+    function deselect() { selActive = false; selType = null; movingSel = false; dragHandle = -1; transforming = false; tStamp = null; tCorner = -1; hR = []; selMask = new Uint8Array(GW * GH); hideSelBar(); compose(); }
 
     function drawSel(offX, offY) {
       if (!selActive) return;
@@ -459,7 +523,7 @@
       var r = disp.getBoundingClientRect();
       dctx.imageSmoothingEnabled = true;
       dctx.drawImage(selCanvas, (offX || 0) / GW * r.width, (offY || 0) / GH * r.height, r.width, r.height);
-      drawHandles();
+      drawHandles(); drawTransform();
     }
     function commitMove(dx, dy) {
       pushUndo();
@@ -494,13 +558,24 @@
     selBar.style.background = T.panel; selBar.style.border = '1px solid ' + T.line; selBar.style.color = T.ink;
     var selMsg = document.createElement('span'); selMsg.style.opacity = '.8'; selBar.appendChild(selMsg);
     function selBtn(txt) { var b = document.createElement('button'); b.textContent = txt; b.style.cssText = 'border-radius:8px;padding:6px 11px;cursor:pointer;font:600 12px inherit;background:transparent;color:' + T.ink + ';border:1px solid ' + T.line; return b; }
-    var delBtn = selBtn('🗑 Delete'), dsBtn = selBtn('✕ Deselect');
+    var rzBtn = selBtn('⤢ Resize'), delBtn = selBtn('🗑 Delete'), dsBtn = selBtn('✕ Deselect'), okBtn = selBtn('✓ Apply'), cxBtn = selBtn('✕ Cancel');
     delBtn.addEventListener('click', deleteSel); dsBtn.addEventListener('click', deselect);
-    selBar.appendChild(delBtn); selBar.appendChild(dsBtn);
+    rzBtn.addEventListener('click', function () { enterTransform(); });
+    okBtn.addEventListener('click', function () { commitTransform(); });
+    cxBtn.addEventListener('click', function () { cancelTransform(); });
+    selBar.appendChild(rzBtn); selBar.appendChild(delBtn); selBar.appendChild(okBtn); selBar.appendChild(cxBtn); selBar.appendChild(dsBtn);
     stage.appendChild(selBar);
     function showSelBar() {
-      selMsg.textContent = selType === 'water' ? 'Water selected' : (selType === 'lake' ? 'Lake selected — drag to move' : 'Land selected — drag to move');
-      delBtn.style.display = selType === 'water' ? 'none' : '';
+      if (transforming) {
+        selMsg.textContent = 'Resize — drag the corners · hold Shift to keep ratio';
+        rzBtn.style.display = 'none'; delBtn.style.display = 'none'; dsBtn.style.display = 'none';
+        okBtn.style.display = ''; cxBtn.style.display = '';
+      } else {
+        selMsg.textContent = selType === 'water' ? 'Water selected' : (selType === 'lake' ? 'Lake selected — drag to move' : 'Land selected — drag, grab an edge dot, or Resize');
+        delBtn.style.display = selType === 'water' ? 'none' : '';
+        rzBtn.style.display = selType === 'land' ? '' : 'none';
+        dsBtn.style.display = ''; okBtn.style.display = 'none'; cxBtn.style.display = 'none';
+      }
       selBar.style.display = 'flex';
     }
     function hideSelBar() { selBar.style.display = 'none'; }
