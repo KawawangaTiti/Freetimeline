@@ -5,43 +5,52 @@
 <style>
   :root{
     --paper:#f3ead6; --ink:#3a2c1c; --panel:#fffaf0; --line:#e0d3b8;
-    --sea-deep:#255074; --sea-shore:#6fb0cf; --land:#dcc79c; --land-hi:#a8794a; --accent:#2f7cf6;
+    --accent:#2f7cf6;
     --sans:ui-sans-serif,system-ui,"Segoe UI",Roboto,sans-serif;
     --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,ui-serif,serif;
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%;background:var(--paper);color:var(--ink);font-family:var(--sans);overflow:hidden;-webkit-user-select:none;user-select:none}
   #app{display:flex;flex-direction:column;height:100%}
-  header{display:flex;align-items:baseline;gap:12px;padding:12px 18px 8px}
-  header h1{font-family:var(--serif);font-size:20px;margin:0;font-weight:600;letter-spacing:.2px}
+  header{display:flex;align-items:baseline;gap:12px;padding:12px 18px 8px;flex-wrap:wrap}
+  header h1{font-family:var(--serif);font-size:20px;margin:0;font-weight:600}
   header p{margin:0;font-size:12.5px;color:#8a745a}
   #stage{flex:1;position:relative;min-height:0;margin:6px 14px 14px;border-radius:14px;overflow:hidden;
     box-shadow:0 2px 0 rgba(0,0,0,.04),0 18px 40px rgba(60,44,28,.14);border:1px solid var(--line)}
-  #map{position:absolute;inset:0;width:100%;height:100%;display:block;image-rendering:auto;touch-action:none;cursor:crosshair}
-  /* tool rail */
-  #rail{position:absolute;top:12px;left:12px;display:flex;flex-direction:column;gap:6px;z-index:3;
+  #map{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
+  #rail{position:absolute;top:12px;left:12px;display:flex;flex-direction:column;gap:5px;z-index:3;
     background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:7px;box-shadow:0 8px 24px rgba(60,44,28,.18)}
   .tool{display:flex;align-items:center;gap:9px;border:1px solid transparent;background:transparent;color:var(--ink);
-    font:600 13px/1 var(--sans);padding:9px 12px 9px 10px;border-radius:10px;cursor:pointer;text-align:left;min-width:118px;transition:background .12s}
-  .tool .em{font-size:17px;width:20px;text-align:center}
+    font:600 13px/1 var(--sans);padding:8px 12px 8px 10px;border-radius:10px;cursor:pointer;text-align:left;min-width:124px;transition:background .12s}
+  .tool .em{font-size:16px;width:20px;text-align:center}
   .tool:hover{background:#f1e7d2}
   .tool.on{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 3px 10px rgba(47,124,246,.3)}
   .rail-sep{height:1px;background:var(--line);margin:3px 4px}
-  .mini{display:flex;align-items:center;gap:8px;padding:6px 8px}
-  .mini label{font-size:11px;color:#8a745a;font-weight:600}
-  input[type=range]{accent-color:var(--accent);width:96px}
+  .mini{display:flex;align-items:center;gap:8px;padding:5px 8px}
+  .mini label{font-size:11px;color:#8a745a;font-weight:600;min-width:30px}
+  input[type=range]{accent-color:var(--accent);width:92px}
   .ghost{border:1px solid var(--line);background:var(--panel);color:var(--ink);font:600 12px var(--sans);
     padding:8px 11px;border-radius:9px;cursor:pointer}
   .ghost:hover{background:#f1e7d2}
+  /* icon palette */
+  #icons{position:absolute;top:12px;left:158px;z-index:3;display:none;flex-direction:column;gap:6px;
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:9px;box-shadow:0 8px 24px rgba(60,44,28,.18);width:190px}
+  #icons.show{display:flex}
+  #icons .it-title{font-size:10.5px;font-weight:700;letter-spacing:.5px;color:#a2895f;text-transform:uppercase}
+  #icons .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+  .ico{font-size:19px;line-height:1;padding:8px 0;border:1px solid var(--line);border-radius:9px;background:#fffdf7;cursor:pointer;text-align:center}
+  .ico:hover{background:#f1e7d2}
+  .ico.on{border-color:var(--accent);box-shadow:0 0 0 2px rgba(47,124,246,.25);background:#eaf1ff}
+  #icons .tip{font-size:11px;color:#8a745a;line-height:1.4}
   #hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:3;pointer-events:none;
     background:rgba(255,250,240,.92);border:1px solid var(--line);border-radius:999px;padding:7px 16px;font-size:12.5px;color:#7a6448;
-    box-shadow:0 6px 18px rgba(60,44,28,.16);transition:opacity .4s;white-space:nowrap}
+    box-shadow:0 6px 18px rgba(60,44,28,.16);transition:opacity .4s;white-space:nowrap;max-width:90vw}
   #brand{position:absolute;right:14px;bottom:12px;z-index:3;font-size:11px;opacity:.5;font-family:var(--serif);font-style:italic;color:#a2895f}
 </style>
 <div id="app">
   <header>
     <h1>Sketch a Map</h1>
-    <p>Scribble a rough shape — it becomes a clean coastline. Then add relief, snow, borders.</p>
+    <p>Scribble a rough shape — it becomes a clean coastline. Then add mountains, rivers, lakes, roads, towns.</p>
   </header>
   <div id="stage">
     <canvas id="map"></canvas>
@@ -50,11 +59,19 @@
       <button class="tool" data-t="erase"><span class="em">🧽</span>Erase</button>
       <button class="tool" data-t="relief"><span class="em">⛰️</span>Mountains</button>
       <button class="tool" data-t="river"><span class="em">🌊</span>River</button>
+      <button class="tool" data-t="lake"><span class="em">💧</span>Lake</button>
+      <button class="tool" data-t="road"><span class="em">🛤️</span>Road</button>
       <button class="tool" data-t="snow"><span class="em">❄️</span>Snow</button>
       <button class="tool" data-t="border"><span class="em">🖊️</span>Border</button>
+      <button class="tool" data-t="icon"><span class="em">🏰</span>Places</button>
       <div class="rail-sep"></div>
-      <div class="mini"><label>Brush</label><input id="size" type="range" min="4" max="34" value="16"></div>
+      <div class="mini"><label id="szlab">Brush</label><input id="size" type="range" min="4" max="34" value="16"></div>
       <button class="ghost" id="clear">Clear all</button>
+    </div>
+    <div id="icons">
+      <span class="it-title">Stamp a place</span>
+      <div class="grid" id="icogrid"></div>
+      <span class="tip">Click the map to place · drag to move · double-click to remove.</span>
     </div>
     <div id="hint">Draw a rough island with your mouse — don’t worry, it’ll be tidied up automatically.</div>
     <div id="brand">FreeTimeline · prototype</div>
@@ -62,176 +79,199 @@
 </div>
 <script>
 (function(){
-  var disp = document.getElementById('map');
-  var dctx = disp.getContext('2d');
-  // low-res simulation grid (fast per-pixel), upscaled to the display
+  var disp=document.getElementById('map'), dctx=disp.getContext('2d');
   var GW=360, GH=240;
-  var buf = document.createElement('canvas'); buf.width=GW; buf.height=GH;
-  var bctx = buf.getContext('2d');
-  var img = bctx.createImageData(GW,GH);
+  var buf=document.createElement('canvas'); buf.width=GW; buf.height=GH;
+  var bctx=buf.getContext('2d'); var img=bctx.createImageData(GW,GH);
 
-  var land = new Float32Array(GW*GH);   // 0..1 landness
-  var relief = new Float32Array(GW*GH); // 0..1 elevation on land
-  var snow = new Float32Array(GW*GH);   // 0..1 snow on land
-  var river = new Float32Array(GW*GH);  // 0..1 rivers on land
-  var borderMask = new Float32Array(GW*GH); // political ink
-  var lb = new Float32Array(GW*GH), rb = new Float32Array(GW*GH); // blurred scratch
+  var land=new Float32Array(GW*GH), relief=new Float32Array(GW*GH), river=new Float32Array(GW*GH),
+      snow=new Float32Array(GW*GH), lake=new Float32Array(GW*GH), road=new Float32Array(GW*GH),
+      borderM=new Float32Array(GW*GH);
+  var lb=new Float32Array(GW*GH), rb=new Float32Array(GW*GH), lkb=new Float32Array(GW*GH), el=new Float32Array(GW*GH);
+  var icons=[]; // {type,x,y,size} in grid coords
+  var ICONS=[['🏰','Kingdom'],['🏯','Fortress'],['🏘️','City'],['🏠','Town'],['🗼','Capital'],['⚓','Port'],['⛩️','Temple'],['🗿','Ruin'],['🌲','Forest'],['⛰️','Peak'],['⚔️','Battle'],['💀','Danger']];
+  var iconType='🏰', selIcon=-1, dragIcon=-1;
 
   var tool='land', brush=16, drawing=false, last=null;
 
   function fit(){
-    var r = disp.getBoundingClientRect(), dpr=Math.min(2,window.devicePixelRatio||1);
+    var r=disp.getBoundingClientRect(), dpr=Math.min(2,window.devicePixelRatio||1);
     disp.width=Math.round(r.width*dpr); disp.height=Math.round(r.height*dpr);
     dctx.setTransform(dpr,0,0,dpr,0,0);
-    render();
+    renderMap(); compose();
   }
   window.addEventListener('resize', fit);
 
-  // separable box blur (radius r, passes p) on src->dst
   function blur(src,dst,rad,passes){
-    var tmp = dst; var a=src;
+    var tmp=dst, a=src;
     for(var p=0;p<passes;p++){
-      // horizontal
-      for(var y=0;y<GH;y++){
-        var row=y*GW, acc=0, n=0, i;
-        for(i=-rad;i<=rad;i++){ var x=Math.max(0,Math.min(GW-1,i)); acc+=a[row+x]; n++; }
-        for(var x2=0;x2<GW;x2++){
-          tmp[row+x2]=acc/n;
-          var xo=x2-rad, xi=x2+rad+1;
-          acc -= a[row+Math.max(0,Math.min(GW-1,xo))];
-          acc += a[row+Math.max(0,Math.min(GW-1,xi))];
-        }
-      }
-      // vertical
-      for(var x3=0;x3<GW;x3++){
-        var acc2=0,n2=0,j;
-        for(j=-rad;j<=rad;j++){ var yy=Math.max(0,Math.min(GH-1,j)); acc2+=tmp[yy*GW+x3]; n2++; }
-        for(var y2=0;y2<GH;y2++){
-          dst[y2*GW+x3]=acc2/n2;
-          var yo=y2-rad, yi=y2+rad+1;
-          acc2 -= tmp[Math.max(0,Math.min(GH-1,yo))*GW+x3];
-          acc2 += tmp[Math.max(0,Math.min(GH-1,yi))*GW+x3];
-        }
-      }
+      for(var y=0;y<GH;y++){var row=y*GW,acc=0,n=0,i;
+        for(i=-rad;i<=rad;i++){var x=Math.max(0,Math.min(GW-1,i));acc+=a[row+x];n++;}
+        for(var x2=0;x2<GW;x2++){tmp[row+x2]=acc/n;var xo=x2-rad,xi=x2+rad+1;acc-=a[row+Math.max(0,Math.min(GW-1,xo))];acc+=a[row+Math.max(0,Math.min(GW-1,xi))];}}
+      for(var x3=0;x3<GW;x3++){var acc2=0,n2=0,j;
+        for(j=-rad;j<=rad;j++){var yy=Math.max(0,Math.min(GH-1,j));acc2+=tmp[yy*GW+x3];n2++;}
+        for(var y2=0;y2<GH;y2++){dst[y2*GW+x3]=acc2/n2;var yo=y2-rad,yi=y2+rad+1;acc2-=tmp[Math.max(0,Math.min(GH-1,yo))*GW+x3];acc2+=tmp[Math.max(0,Math.min(GH-1,yi))*GW+x3];}}
       a=dst;
     }
   }
-
   function cl(v){return v<0?0:v>255?255:Math.round(v);}
   function lerp(a,b,t){return a+(b-a)*t;}
-  function mix(c1,c2,t){return [Math.round(lerp(c1[0],c2[0],t)),Math.round(lerp(c1[1],c2[1],t)),Math.round(lerp(c1[2],c2[2],t))];}
-  function smooth(a,b,x){ if(x<=a)return 0; if(x>=b)return 1; var t=(x-a)/(b-a); return t*t*(3-2*t); }
-  function hash(x,y){ var n=(x*374761393+y*668265263)|0; n=(n^(n>>13))*1274126177|0; return ((n^(n>>16))>>>0)/4294967295; }
-  var SEA_DEEP=[24,58,88], SEA_SHORE=[92,150,182], SEA_SHOAL=[150,196,210];
-  var LAND_LO=[212,198,159], LAND_MID=[194,172,124], LAND_HI=[150,110,68], SNOW=[242,246,250], RIVER=[70,122,162];
-  var INK=[58,44,28], BORDER=[150,60,60];
+  function mix(c1,c2,t){return [lerp(c1[0],c2[0],t),lerp(c1[1],c2[1],t),lerp(c1[2],c2[2],t)];}
+  function smooth(a,b,x){if(x<=a)return 0;if(x>=b)return 1;var t=(x-a)/(b-a);return t*t*(3-2*t);}
+  function hash(x,y){var n=(x*374761393+y*668265263)|0;n=(n^(n>>13))*1274126177|0;return ((n^(n>>16))>>>0)/4294967295;}
+  function vn(x,y){var xi=Math.floor(x),yi=Math.floor(y),xf=x-xi,yf=y-yi;
+    var tl=hash(xi,yi),tr=hash(xi+1,yi),bl=hash(xi,yi+1),br=hash(xi+1,yi+1);
+    var u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf);return lerp(lerp(tl,tr,u),lerp(bl,br,u),v);}
+  function ridge(x,y){ // sharp mountain crests from ridged fbm
+    var a=1-Math.abs(2*vn(x,y)-1), b=1-Math.abs(2*vn(x*2.1,y*2.1)-1), c=1-Math.abs(2*vn(x*4.3,y*4.3)-1);
+    return a*0.6+b*0.3+c*0.1;
+  }
 
-  function render(){
-    // smooth the raw scribble into an organic coastline
+  var SEA_DEEP=[24,58,88], SEA_SHORE=[92,150,182], SEA_SHOAL=[150,196,210];
+  var LAKE_DEEP=[46,96,120], LAKE_SHORE=[110,168,186];
+  var LAND_LO=[212,198,159], LAND_MID=[190,168,120], LAND_HI=[150,112,70], ROCK=[110,80,50];
+  var SNOW=[242,246,250], RIVER=[70,122,162], ROAD=[120,92,58], BORDER=[150,60,60], INK=[58,44,28];
+
+  function renderMap(){
     blur(land, lb, 3, 2);
     blur(relief, rb, 2, 1);
+    blur(lake, lkb, 2, 1);
+    // elevation field with ridged noise (built once, so hillshade can read its slope)
+    for(var i2=0;i2<el.length;i2++){
+      if(rb[i2]>0.02){ var x=(i2%GW), y=(i2/GW)|0; el[i2]=rb[i2]*(0.45+ridge(x*0.09,y*0.09)*1.15); }
+      else el[i2]=0;
+    }
     var d=img.data;
-    for(var y=0;y<GH;y++){
-      for(var x=0;x<GW;x++){
-        var i=y*GW+x, v=lb[i], px=i*4;
-        // anti-aliased shoreline: soft land coverage across the 0.5 isoline
-        var landA = smooth(0.47, 0.53, v);
-        // water colour (shoal near the coast -> deep offshore)
-        var t = Math.min(1,(0.5-Math.min(v,0.5))/0.5);
-        var water = t<0.22 ? mix(SEA_SHOAL,SEA_SHORE,t/0.22) : mix(SEA_SHORE,SEA_DEEP,(t-0.22)/0.78);
-        var col;
-        if(landA<=0){ col=water; }
-        else {
-          var e=Math.min(1,rb[i]*1.7);
-          var lc = e<0.5 ? mix(LAND_LO,LAND_MID,e*2) : mix(LAND_MID,LAND_HI,(e-0.5)*2);
-          // faint paper grain so land isn't a flat fill
-          var nz=(hash(x,y)-0.5)*9; lc=[cl(lc[0]+nz),cl(lc[1]+nz),cl(lc[2]+nz)];
-          if(e>0.03){ // hillshade from the NW, so relief reads as ridges not blobs
-            var gx=(rb[i+1]-rb[i-1]), gy=(rb[i+GW]-rb[i-GW]);
-            var sh=Math.max(-0.42,Math.min(0.42,(-gx-gy)*4.2));
-            lc=[cl(lc[0]*(1+sh)),cl(lc[1]*(1+sh)),cl(lc[2]*(1+sh))];
-            if(e>0.55) lc=mix(lc,[120,86,52],(e-0.55)*0.5); // darker rocky peaks
-          }
-          if(river[i]>0.22) lc=mix(lc,RIVER,Math.min(0.8,river[i]));
-          var sn=Math.min(1,snow[i]); if(sn>0.05) lc=mix(lc,SNOW,Math.min(1,sn));
-          if(borderMask[i]>0.3) lc=mix(lc,BORDER,Math.min(0.8,borderMask[i]));
-          col = landA>=1 ? lc : mix(water,lc,landA);
-        }
-        // soft ink shoreline hugging the 0.5 isoline
-        var edge = 1 - Math.min(1, Math.abs(v-0.5)/0.045);
-        if(edge>0) col=mix(col, INK, edge*edge*0.4);
-        d[px]=col[0]; d[px+1]=col[1]; d[px+2]=col[2]; d[px+3]=255;
+    for(var y=0;y<GH;y++)for(var x=0;x<GW;x++){
+      var i=y*GW+x, px=i*4, v=lb[i];
+      var landA=smooth(0.47,0.53,v);
+      var t=Math.min(1,(0.5-Math.min(v,0.5))/0.5);
+      var ocean=t<0.22?mix(SEA_SHOAL,SEA_SHORE,t/0.22):mix(SEA_SHORE,SEA_DEEP,(t-0.22)/0.78);
+      var col;
+      if(landA<=0){ col=ocean; }
+      else{
+        var e=Math.min(1.2,el[i]);
+        var lc=e<0.5?mix(LAND_LO,LAND_MID,e*2):mix(LAND_MID,LAND_HI,Math.min(1,(e-0.5)*2));
+        if(e>0.75) lc=mix(lc,ROCK,Math.min(0.7,(e-0.75)*1.6));
+        var nz=(hash(x,y)-0.5)*8; lc=[cl(lc[0]+nz),cl(lc[1]+nz),cl(lc[2]+nz)];
+        if(e>0.05){ var gx=(el[i+1]-el[i-1]),gy=(el[i+GW]-el[i-GW]);
+          var sh=Math.max(-0.5,Math.min(0.5,(-gx-gy)*3.6)); lc=[cl(lc[0]*(1+sh)),cl(lc[1]*(1+sh)),cl(lc[2]*(1+sh))]; }
+        if(e>0.92) lc=mix(lc,SNOW,Math.min(0.8,(e-0.92)*6)); // snow-capped peaks
+        if(road[i]>0.3) lc=mix(lc,ROAD,Math.min(0.85,road[i]));
+        if(river[i]>0.22) lc=mix(lc,RIVER,Math.min(0.8,river[i]));
+        var sn=Math.min(1,snow[i]); if(sn>0.05) lc=mix(lc,SNOW,sn);
+        if(borderM[i]>0.3) lc=mix(lc,BORDER,Math.min(0.8,borderM[i]));
+        // lakes carve inland water into the land
+        var lkA=smooth(0.45,0.55,lkb[i]);
+        var lakeCol=mix(LAKE_SHORE,LAKE_DEEP,Math.min(1,lkb[i]));
+        var landCover=landA*(1-lkA);
+        var base=lkA>0?mix(ocean,lakeCol,lkA):ocean;
+        col=mix(base,lc,landCover);
+        // lake shore ink
+        var eLake=1-Math.min(1,Math.abs(lkb[i]-0.5)/0.05);
+        if(landA>0.5 && eLake>0) col=mix(col,INK,eLake*eLake*0.35);
       }
+      var edge=1-Math.min(1,Math.abs(v-0.5)/0.045);
+      if(edge>0) col=mix(col,INK,edge*edge*0.4);
+      d[px]=cl(col[0]); d[px+1]=cl(col[1]); d[px+2]=cl(col[2]); d[px+3]=255;
     }
     bctx.putImageData(img,0,0);
+  }
+
+  function compose(){
     var r=disp.getBoundingClientRect();
     dctx.imageSmoothingEnabled=true; dctx.imageSmoothingQuality='high';
     dctx.clearRect(0,0,r.width,r.height);
     dctx.drawImage(buf,0,0,r.width,r.height);
-  }
-
-  function stamp(gx,gy){
-    var rad=brush*GW/ (disp.getBoundingClientRect().width);
-    rad=Math.max(2,rad);
-    var r2=rad*rad;
-    var x0=Math.max(0,Math.floor(gx-rad)), x1=Math.min(GW-1,Math.ceil(gx+rad));
-    var y0=Math.max(0,Math.floor(gy-rad)), y1=Math.min(GH-1,Math.ceil(gy+rad));
-    for(var y=y0;y<=y1;y++)for(var x=x0;x<=x1;x++){
-      var dx=x-gx,dy=y-gy,dd=dx*dx+dy*dy; if(dd>r2)continue;
-      var i=y*GW+x, f=1-Math.sqrt(dd)/rad;
-      if(tool==='land'){ land[i]=Math.min(1,land[i]+f*0.8); }
-      else if(tool==='erase'){ land[i]=Math.max(0,land[i]-f); relief[i]*=(1-f); snow[i]*=(1-f); river[i]*=(1-f); borderMask[i]*=(1-f); }
-      else if(tool==='relief'){ if(land[i]>0.3||lb[i]>0.4) relief[i]=Math.min(1,relief[i]+f*0.5); }
-      else if(tool==='river'){ if(land[i]>0.3||lb[i]>0.4) river[i]=Math.min(1,river[i]+f*0.9); }
-      else if(tool==='snow'){ if(land[i]>0.3||lb[i]>0.4) snow[i]=Math.min(1,snow[i]+f*0.5); }
-      else if(tool==='border'){ if(land[i]>0.3||lb[i]>0.4) borderMask[i]=Math.min(1,borderMask[i]+f*0.7); }
+    // icons on top, crisp
+    dctx.textAlign='center'; dctx.textBaseline='middle';
+    for(var k=0;k<icons.length;k++){
+      var ic=icons[k], cx=ic.x/GW*r.width, cy=ic.y/GH*r.height, sz=ic.size;
+      if(k===selIcon){ dctx.save(); dctx.strokeStyle='rgba(47,124,246,.9)'; dctx.lineWidth=2;
+        dctx.beginPath(); dctx.arc(cx,cy,sz*0.62,0,7); dctx.stroke(); dctx.restore(); }
+      dctx.save(); dctx.shadowColor='rgba(0,0,0,.35)'; dctx.shadowBlur=3; dctx.shadowOffsetY=1;
+      dctx.font=sz+'px '+getComputedStyle(document.body).fontFamily;
+      dctx.fillText(ic.type, cx, cy); dctx.restore();
     }
   }
 
-  function toGrid(ev){
-    var r=disp.getBoundingClientRect();
-    return { x:(ev.clientX-r.left)/r.width*GW, y:(ev.clientY-r.top)/r.height*GH };
+  function stamp(gx,gy){
+    var scale=GW/disp.getBoundingClientRect().width, rad=Math.max(2,brush*scale), r2=rad*rad;
+    var x0=Math.max(0,Math.floor(gx-rad)),x1=Math.min(GW-1,Math.ceil(gx+rad));
+    var y0=Math.max(0,Math.floor(gy-rad)),y1=Math.min(GH-1,Math.ceil(gy+rad));
+    for(var y=y0;y<=y1;y++)for(var x=x0;x<=x1;x++){
+      var dx=x-gx,dy=y-gy,dd=dx*dx+dy*dy; if(dd>r2)continue;
+      var i=y*GW+x, f=1-Math.sqrt(dd)/rad, onLand=(land[i]>0.3||lb[i]>0.4);
+      if(tool==='land') land[i]=Math.min(1,land[i]+f*0.8);
+      else if(tool==='erase'){ land[i]=Math.max(0,land[i]-f); relief[i]*=(1-f);snow[i]*=(1-f);river[i]*=(1-f);lake[i]*=(1-f);road[i]*=(1-f);borderM[i]*=(1-f);}
+      else if(tool==='relief'){ if(onLand) relief[i]=Math.min(1,relief[i]+f*0.5);}
+      else if(tool==='river'){ if(onLand) river[i]=Math.min(1,river[i]+f*0.9);}
+      else if(tool==='lake'){ if(onLand) lake[i]=Math.min(1,lake[i]+f*0.8);}
+      else if(tool==='road'){ if(onLand) road[i]=Math.min(1,road[i]+f*0.9);}
+      else if(tool==='snow'){ if(onLand) snow[i]=Math.min(1,snow[i]+f*0.5);}
+      else if(tool==='border'){ if(onLand) borderM[i]=Math.min(1,borderM[i]+f*0.7);}
+    }
   }
-  function line(a,b){ // stamp along a segment so fast strokes stay continuous
-    var dx=b.x-a.x,dy=b.y-a.y,dist=Math.hypot(dx,dy),steps=Math.max(1,Math.ceil(dist/1.5));
-    for(var s=0;s<=steps;s++) stamp(a.x+dx*s/steps, a.y+dy*s/steps);
-  }
-  var raf=null;
-  function queue(){ if(raf)return; raf=requestAnimationFrame(function(){ raf=null; render(); }); }
+  function toGrid(ev){var r=disp.getBoundingClientRect();return {x:(ev.clientX-r.left)/r.width*GW,y:(ev.clientY-r.top)/r.height*GH};}
+  function line(a,b){var dx=b.x-a.x,dy=b.y-a.y,dist=Math.hypot(dx,dy),steps=Math.max(1,Math.ceil(dist/1.5));for(var s=0;s<=steps;s++)stamp(a.x+dx*s/steps,a.y+dy*s/steps);}
+  var raf=null; function queue(){if(raf)return;raf=requestAnimationFrame(function(){raf=null;renderMap();compose();});}
 
-  disp.addEventListener('pointerdown',function(e){ disp.setPointerCapture(e.pointerId); drawing=true; last=toGrid(e); stamp(last.x,last.y); queue(); hideHint(); });
-  disp.addEventListener('pointermove',function(e){ if(!drawing)return; var g=toGrid(e); line(last,g); last=g; queue(); });
-  window.addEventListener('pointerup',function(){ if(drawing){ drawing=false; render(); } });
+  function iconHit(ev){ var r=disp.getBoundingClientRect();
+    for(var k=icons.length-1;k>=0;k--){ var ic=icons[k],cx=ic.x/GW*r.width+r.left,cy=ic.y/GH*r.height+r.top;
+      if(Math.hypot(ev.clientX-cx,ev.clientY-cy)<Math.max(14,ic.size*0.6)) return k; } return -1; }
 
-  var hintEl=document.getElementById('hint'); var hintGone=false;
-  function hideHint(){ if(hintGone)return; hintGone=true; hintEl.style.opacity=0; setTimeout(function(){hintEl.remove();},450); }
+  disp.addEventListener('pointerdown',function(e){
+    disp.setPointerCapture(e.pointerId); hideHint();
+    if(tool==='icon'){
+      var hit=iconHit(e);
+      if(hit>=0){ selIcon=hit; dragIcon=hit; compose(); }
+      else{ var g=toGrid(e); icons.push({type:iconType,x:g.x,y:g.y,size:Math.max(16,brush*1.5)}); selIcon=icons.length-1; compose(); }
+      return;
+    }
+    drawing=true; last=toGrid(e); stamp(last.x,last.y); queue();
+  });
+  disp.addEventListener('pointermove',function(e){
+    if(dragIcon>=0){ var g=toGrid(e); icons[dragIcon].x=g.x; icons[dragIcon].y=g.y; compose(); return; }
+    if(!drawing)return; var g=toGrid(e); line(last,g); last=g; queue();
+  });
+  window.addEventListener('pointerup',function(){ if(drawing){drawing=false;renderMap();compose();} dragIcon=-1; });
+  disp.addEventListener('dblclick',function(e){ if(tool!=='icon')return; var hit=iconHit(e); if(hit>=0){ icons.splice(hit,1); selIcon=-1; compose(); } });
+
+  var hintEl=document.getElementById('hint'), hintGone=false;
+  function hideHint(){if(hintGone)return;hintGone=true;hintEl.style.opacity=0;setTimeout(function(){if(hintEl.parentNode)hintEl.remove();},450);}
 
   document.querySelectorAll('.tool').forEach(function(b){
     b.addEventListener('click',function(){
       document.querySelectorAll('.tool').forEach(function(x){x.classList.remove('on');});
       b.classList.add('on'); tool=b.dataset.t;
+      document.getElementById('icons').classList.toggle('show', tool==='icon');
+      document.getElementById('szlab').textContent = tool==='icon'?'Size':(tool==='land'||tool==='erase'?'Brush':'Brush');
+      if(tool!=='icon'){ selIcon=-1; compose(); }
     });
   });
+  // icon palette
+  var ig=document.getElementById('icogrid');
+  ICONS.forEach(function(p,idx){ var b=document.createElement('button'); b.className='ico'+(idx===0?' on':''); b.textContent=p[0]; b.title=p[1];
+    b.addEventListener('click',function(){ ig.querySelectorAll('.ico').forEach(function(x){x.classList.remove('on');}); b.classList.add('on'); iconType=p[0]; }); ig.appendChild(b); });
+
   document.getElementById('size').addEventListener('input',function(){ brush=+this.value; });
   document.getElementById('clear').addEventListener('click',function(){
-    land.fill(0); relief.fill(0); snow.fill(0); river.fill(0); borderMask.fill(0); render();
+    land.fill(0);relief.fill(0);river.fill(0);snow.fill(0);lake.fill(0);road.fill(0);borderM.fill(0);icons.length=0;selIcon=-1;renderMap();compose();
   });
 
-  // demo scribble hook for screenshots / first impression
   window.demoScribble=function(){
-    var pts=[[90,70],[130,52],[175,60],[205,85],[212,120],[190,150],[150,158],[110,150],[86,118],[84,88],[90,70]];
+    var pts=[[110,80],[160,60],[210,66],[248,92],[258,130],[236,168],[186,180],[132,172],[104,132],[100,98],[110,80]];
     tool='land'; for(var k=0;k<pts.length-1;k++) line({x:pts[k][0],y:pts[k][1]},{x:pts[k+1][0],y:pts[k+1][1]});
-    // fill interior roughly
-    for(var yy=70;yy<150;yy+=3)for(var xx=95;xx<205;xx+=3){ stamp(xx,yy); }
-    // a mountain ridge (natural blobs), a snowy peak, and a river to the sea
-    tool='relief'; var ridge=[[120,95],[132,100],[145,96],[158,104],[170,98]];
-    ridge.forEach(function(p){ for(var q=0;q<6;q++) stamp(p[0]+(q%3)*3,p[1]+(q/3|0)*3); });
-    tool='snow'; stamp(158,104); stamp(160,101);
-    tool='river'; var rv=[[150,100],[150,118],[146,132],[140,146],[132,156]];
-    for(var k2=0;k2<rv.length-1;k2++) line({x:rv[k2][0],y:rv[k2][1]},{x:rv[k2+1][0],y:rv[k2+1][1]});
-    tool='land'; render(); hideHint();
+    for(var yy=82;yy<172;yy+=3)for(var xx=112;xx<248;xx+=3) stamp(xx,yy);
+    tool='relief'; var ridge=[[150,110],[166,116],[182,110],[198,118],[214,112]]; brush=13;
+    ridge.forEach(function(p){ for(var q=0;q<10;q++) stamp(p[0]+(q%4)*3-4,p[1]+((q/4|0))*4); });
+    tool='snow'; stamp(182,110); stamp(198,118);
+    tool='river'; brush=7; var rv=[[182,116],[180,138],[172,158],[160,172]]; for(var k2=0;k2<rv.length-1;k2++) line({x:rv[k2][0],y:rv[k2][1]},{x:rv[k2+1][0],y:rv[k2+1][1]});
+    tool='lake'; brush=12; stamp(135,140); stamp(140,144);
+    tool='road'; brush=6; var rd=[[150,150],[176,150],[204,146]]; for(var k3=0;k3<rd.length-1;k3++) line({x:rd[k3][0],y:rd[k3][1]},{x:rd[k3+1][0],y:rd[k3+1][1]});
+    icons.push({type:'🏰',x:150,y:150,size:26}); icons.push({type:'🏘️',x:204,y:146,size:22}); icons.push({type:'⚓',x:118,y:120,size:20});
+    brush=16; tool='land'; renderMap(); compose(); hideHint();
   };
-
   fit();
 })();
 </script>
