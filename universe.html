@@ -1429,7 +1429,8 @@ body { background: #07081a; }
 #filter-panel {
   background: rgba(7,8,26,0.94);
   border-bottom: 1px solid rgba(0,210,255,0.1);
-  backdrop-filter: blur(8px);
+  /* no backdrop-filter: it forms a containing block that traps the position:fixed
+     filter dropdowns inside this bar, so they'd render behind the timeline canvas */
 }
 #uni-toggle-bar {
   background: rgba(9,11,28,0.88);
@@ -1798,7 +1799,7 @@ body { background: #07081a; }
   border-radius: 12px;
   padding: 12px 14px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03);
-  z-index: 200;
+  z-index: 480;
   animation: fpDropIn 0.14s ease;
   flex-direction: column;
   gap: 8px;
@@ -3222,8 +3223,8 @@ input[type="color"]:focus-visible {
   box-shadow: 0 0 0 1px rgba(0,210,255,0.06), 0 16px 60px rgba(0,0,0,0.7);
 }
 
-/* Filter panel backdrop */
-#filter-panel { backdrop-filter: blur(12px); }
+/* Filter panel: intentionally NO backdrop-filter — it forms a containing block that
+   traps the position:fixed filter dropdowns, rendering them behind the timeline canvas. */
 
 /* Connection items */
 .conn-item {
@@ -3540,7 +3541,7 @@ input[type="color"]:focus-visible {
       </div>
     </div>
     <!-- Compact filter row: Universes dropdown + Search + Dropdowns -->
-    <div id="compact-filter-bar" style="display:flex;align-items:center;gap:8px;padding:6px 14px;background:rgba(7,8,22,0.92);border-bottom:1px solid rgba(0,210,255,0.1);flex-wrap:wrap;min-height:38px;font-size:12px;backdrop-filter:blur(6px);">
+    <div id="compact-filter-bar" style="display:flex;align-items:center;gap:8px;padding:6px 14px;background:rgba(7,8,22,0.92);border-bottom:1px solid rgba(0,210,255,0.1);flex-wrap:wrap;min-height:38px;font-size:12px;">
       <!-- Universes dropdown (replaces the old uni-toggle-bar row) -->
       <div id="uni-drop-wrap" style="position:relative;display:inline-flex;align-items:center;">
         <button type="button" id="uni-drop-btn"
