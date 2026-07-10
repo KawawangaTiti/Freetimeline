@@ -225,13 +225,17 @@
     bar.className = 'ftp-bar';
     var addB = mkBtn('＋ Place', 'acc', function () { openPlaceEditor(null); });
     bar.appendChild(addB);
-    if (window.ftAzgaar) { bar.appendChild(mkBtn('🗺️ Pro map studio', 'acc', openAzgaar)); }
+    /* One calm set of choices: draw it, generate a base, or bring your own.
+       The heavy Azgaar studio is tucked behind "Advanced" so it doesn't overwhelm. */
+    if (window.ftSketch) { bar.appendChild(mkBtn('✏️ Draw map', 'acc', openSketch)); }
     if (window.ftMapGen) { bar.appendChild(mkBtn('✨ Quick map', '', openMapGen)); }
-    if (window.ftMapPaint) { bar.appendChild(mkBtn('🖌 Paint map', '', openPaintMap)); }
-    var upB = mkBtn(mapMeta().has ? 'Replace map image' : 'Upload map image', '', pickImage);
+    var upB = mkBtn(mapMeta().has ? 'Replace image' : '⬆ Upload image', '', pickImage);
     bar.appendChild(upB);
     if (mapMeta().has) {
       bar.appendChild(mkBtn('Remove map', 'danger', removeImage));
+    }
+    if (window.ftAzgaar || window.ftMapPaint) {
+      bar.appendChild(mkBtn('⚙ Advanced', '', openAdvancedMap));
     }
     var hint = document.createElement('span');
     hint.className = 'ftp-hint';
@@ -646,8 +650,10 @@
     var msg = 'Remove the map image? Places and pins are kept.';
     var go = function () {
       mapStore.del(CFG.storageKey);
+      try { mapStore.del(CFG.storageKey + '__sketch'); } catch (_) {}
       var s = S();
       delete s._mapDataUrl;
+      delete s.mapSketchIcons;
       s.mapMeta = { has: false, w: 0, h: 0, name: '' };
       view.mapUrl = '';
       persist(); renderMapView(root); note('Map image removed.');
@@ -690,6 +696,71 @@
     window.ftAzgaar.open({
       onImport: function (file) { return importMapFile(file, 'World map (studio)'); }
     });
+  }
+
+  /* ---------- Sketch-a-Map (ft-sketch bridge) — the simple drawer ---------- */
+  function sketchKey() { return CFG.storageKey + '__sketch'; }
+  function openSketch() {
+    if (!window.ftSketch) { note('The map editor is still loading — try again in a moment.'); return; }
+    var s = S();
+    // Load any prior painted layers from IndexedDB so drawing is resumable.
+    Promise.resolve(mapStore.get(sketchKey())).then(function (blob) {
+      if (blob && typeof blob.arrayBuffer === 'function') return blob.arrayBuffer().then(function (ab) { return new Uint8Array(ab); });
+      if (blob instanceof Uint8Array) return blob;
+      return null;
+    }).catch(function () { return null; }).then(function (packed) {
+      window.ftSketch.open({
+        packed: packed,
+        icons: Array.isArray(s.mapSketchIcons) ? s.mapSketchIcons : null,
+        onSave: function (dataUrl, meta, pk, icons) {
+          note('Saving your map…');
+          return setMapFromDataUrl(dataUrl).then(function (ok) {
+            if (!ok) { note('Could not store the map on this device (private mode?).'); return false; }
+            var st = S();
+            st.mapMeta = { has: true, w: (meta && meta.w) || 0, h: (meta && meta.h) || 0, name: (meta && meta.name) || 'Sketched map' };
+            st.mapSketchIcons = (icons || []).map(function (o) { return { type: o.type, x: o.x, y: o.y, size: o.size }; });
+            view.mapUrl = ''; view.sc = 1; view.px = 0; view.py = 0;
+            persist();
+            try { mapStore.set(sketchKey(), new Blob([pk])); } catch (_) {}  // editable layers live in IDB, not localStorage
+            note('Map saved — drop Places and pins on top, or reopen to keep editing.');
+            renderMapView(root);
+            return true;
+          });
+        }
+      });
+    });
+  }
+
+  /* ---------- Advanced maps (tucked away: Azgaar studio + grid painter) ---------- */
+  function openAdvancedMap() {
+    var ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;z-index:9500;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)';
+    var card = document.createElement('div');
+    var dark = (function () { var m = (getComputedStyle(document.body).backgroundColor || '').match(/\d+/g); return m ? (0.299 * +m[0] + 0.587 * +m[1] + 0.114 * +m[2]) < 128 : false; })();
+    card.style.cssText = 'min-width:280px;max-width:360px;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;box-shadow:0 20px 60px rgba(0,0,0,.5);' +
+      (dark ? 'background:#141d33;color:#e7ecf7;border:1px solid #26365c' : 'background:#fffdf8;color:#3d2b1f;border:1px solid #e6dac6');
+    var h = document.createElement('div'); h.style.cssText = 'font-weight:800;font-size:15px'; h.textContent = 'Advanced map tools';
+    var p = document.createElement('div'); p.style.cssText = 'font-size:12.5px;opacity:.72;margin-bottom:4px';
+    p.textContent = 'Power-user options. Most people won’t need these — “Draw map” and “Quick map” cover it.';
+    card.appendChild(h); card.appendChild(p);
+    function row(label, desc, fn) {
+      var b = document.createElement('button');
+      b.style.cssText = 'text-align:left;border-radius:10px;padding:11px 13px;cursor:pointer;font:600 13px inherit;' +
+        (dark ? 'background:#0e1830;color:#e7ecf7;border:1px solid #26365c' : 'background:#fff;color:#3d2b1f;border:1px solid #e6dac6');
+      b.innerHTML = label + '<div style="font-weight:400;opacity:.65;font-size:11.5px;margin-top:2px">' + desc + '</div>';
+      b.addEventListener('click', function () { document.body.removeChild(ov); fn(); });
+      return b;
+    }
+    if (window.ftAzgaar) card.appendChild(row('🗺️ Pro map studio (Azgaar)', 'Full fantasy-map generator — rivers, biomes, countries, any scale. Export a PNG and import it.', openAzgaar));
+    if (window.ftMapPaint) card.appendChild(row('🖌 Grid painter', 'The older cell-based painter, with political countries and time epochs.', openPaintMap));
+    var cancel = document.createElement('button');
+    cancel.textContent = 'Cancel';
+    cancel.style.cssText = 'align-self:flex-end;margin-top:4px;border:0;background:transparent;color:inherit;opacity:.7;cursor:pointer;font:600 12px inherit;padding:6px 4px';
+    cancel.addEventListener('click', function () { document.body.removeChild(ov); });
+    card.appendChild(cancel);
+    ov.appendChild(card);
+    ov.addEventListener('click', function (e) { if (e.target === ov) document.body.removeChild(ov); });
+    document.body.appendChild(ov);
   }
 
   /* ---------- generated maps (ft-mapgen bridge) ---------- */
