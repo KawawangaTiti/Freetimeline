@@ -6612,6 +6612,41 @@ const Store = {
       } catch (err) { notify('Could not read file: ' + err.message, 'error'); }
     };
     r.readAsText(f); e.target.value = '';
+  },
+
+  /* ---- Level 0: share a timeline by link (no server; maps not included) ---- */
+  shareLink() {
+    if (!window.ftShare) { notify('Sharing needs a modern browser.', 'error'); return; }
+    var payload = { _ft: 'universe-share1',
+      universes: S.universes, events: S.events, connections: S.connections,
+      characters: S.characters, categories: S.categories, affiliations: S.affiliations,
+      places: S.places, continuities: S.continuities,
+      mapMeta: { has: false, w: 0, h: 0, name: '' } };
+    window.ftShare.make(payload).then(function (url) {
+      var big = url.length > 14000;
+      var msg = big ? 'Link copied — note: large timeline, some apps may cut the link (use ↓ JSON for big ones).' : 'Share link copied to clipboard ✓';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function () { notify(msg, 'success'); }, function () { prompt('Copy your share link:', url); });
+      } else { prompt('Copy your share link:', url); }
+    }, function (e) { notify('Could not build the link: ' + (e && e.message || e), 'error'); });
+  },
+
+  loadShared(raw) {
+    var d = (typeof ftValidateImport === 'function') ? ftValidateImport(raw, { kind: 'universe' }) : raw;
+    ftConfirmGate('Open this shared timeline? It will REPLACE your current data.', function () {
+      S.universes = d.universes || []; S.events = d.events || []; S.connections = d.connections || [];
+      S.characters = d.characters || []; S.categories = d.categories || {}; S.affiliations = d.affiliations || [];
+      S.places = d.places || []; S.continuities = d.continuities || [];
+      S.mapMeta = { has: false, w: 0, h: 0, name: '' };
+      _continuityFilter = null; delete S._mapDataUrl;
+      if (window.ftPlaces) { try { ftPlaces.mapStore.del(SKEY); } catch (_) {} }
+      if (window.ftPlacesClearSketch) window.ftPlacesClearSketch();
+      syncCategoriesFromState(); Store.autosave();
+      if (window.History && window.History.clear) window.History.clear();
+      clampPanY(); render();
+      updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updateToneFilterBar(); updatePlaceFilterBar(); updateContinuityFilterBar(); updateCharFilterSelect(); updateUniToggleBar(); updateFilterVisibility(); updateStatsPanel();
+      notify('Shared timeline loaded ✓', 'success');
+    }, { title: 'Open shared timeline?', confirmLabel: 'Open', danger: true });
   }
 };
 
@@ -7147,6 +7182,9 @@ window.addEventListener('DOMContentLoaded', () => {
   updateCharFilterSelect();
   updateFilterVisibility();
   fitFullTimeline();
+
+  /* Level 0 share: if the URL carries a shared timeline (#s=…), offer to open it. */
+  if (window.ftShare) window.ftShare.openLoadIfPresent(function (d) { Store.loadShared(d); });
 
   /* Frame the timeline on the actual data. The default range is geological
      (200,000 BC – 20,000 AD), leaving events as lost specks with nothing to

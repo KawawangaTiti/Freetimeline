@@ -24,6 +24,7 @@
 <script src="js/ft-mapgen.js" defer></script>
 <script src="js/ft-mappaint.js" defer></script>
 <script src="js/ft-symbols.js" defer></script>
+<script src="js/ft-share.js" defer></script>
 <script src="js/ft-sketch.js" defer></script>
 <script src="js/ft-azgaar.js" defer></script>
 <script src="js/ft-canvas.js" defer></script>
@@ -3571,6 +3572,7 @@ input[type="color"]:focus-visible {
     <span class="tb-label tb-secondary">Save</span>
     <button class="btn accent tb-secondary" onclick="Store.saveHTML()" title="Save your timeline as a portable HTML file you can open anywhere" style="background:linear-gradient(135deg,#6a9e5a,#5a8448);border-color:#5a7a4a;color:#fff;font-weight:700">Save HTML</button>
     <button class="btn tb-secondary" onclick="Store.saveJSON()" title="Export all data as a JSON backup file">JSON</button>
+    <button class="btn tb-secondary" onclick="Store.shareLink()" title="Copy a shareable link — the timeline travels inside the link (no server; maps not included)">🔗 Share link</button>
     <button class="btn tb-secondary" onclick="Store.importClick()" title="Load a previously saved HTML or JSON file">Load</button>
     <button class="btn danger tb-secondary" onclick="Store.blankTimeline()" title="Clear all Life Tracks, events, people, and connections after optional JSON export">Blank</button>
     <input type="file" id="file-in" accept=".html,.json" onchange="Store.importFile(event)" style="display:none" aria-label="Load biography timeline file">

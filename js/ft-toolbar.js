@@ -123,7 +123,7 @@
   }
 
   // --- collect groups (order of preference; first match wins, no dupes) ---
-  var dataM = group(['saveHTML', 'saveJSON', 'importClick', 'blankTimeline']);
+  var dataM = group(['saveHTML', 'saveJSON', 'shareLink', 'importClick', 'blankTimeline']);
   var orgM = group(['catEditor', 'affiliationEditor', 'organizationEditor', 'continuityEditor']);
   var viewM = group(['jumpToYear', 'toggleStoryLine', 'resetView', 'toggleStats', 'ContinuityTour', 'MemoryTour', 'toggleReadingMode', 'openRangeConfig', 'track-h', 'TRACK_H']);
   var helpM = group(['toggleKbd', 'UI.help(', 'openSettings', 'UI.settings']);
