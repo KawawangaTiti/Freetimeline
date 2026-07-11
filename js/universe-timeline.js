@@ -6606,6 +6606,7 @@ const Store = {
           if (window.History && window.History.clear) window.History.clear();  /* BE-13/UE-18: undo must not cross the import boundary */
           clampPanY(); render();
           updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updateToneFilterBar(); updatePlaceFilterBar(); updateContinuityFilterBar(); updateCharFilterSelect(); updateUniToggleBar(); updateFilterVisibility(); updateStatsPanel();
+          if (window.ftPlacesClearSketch) window.ftPlacesClearSketch();  // imported data \u2192 drop stale sketch layers
           notify('Timeline loaded \u2713', 'success');
         }, { title: 'Replace all data?', confirmLabel: 'Replace', danger: true });
       } catch (err) { notify('Could not read file: ' + err.message, 'error'); }

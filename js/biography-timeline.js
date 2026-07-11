@@ -5993,6 +5993,7 @@ const Store = {
           History.clear();  /* BE-13: undo must not cross the import boundary */
           clampPanY(); render();
           updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updatePlaceFilterBar(); updateContinuityFilterBar(); updateUniToggleBar(); updateStatsPanel();
+          if (window.ftPlacesClearSketch) window.ftPlacesClearSketch();  // imported data → drop stale sketch layers
           if (wasLegacy) {
             setTimeout(() => notify('File loaded \u2713 — your Universes are now Life Tracks. All data is intact. Rename them at your own pace.', 'success'), 400);
           } else {
