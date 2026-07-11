@@ -1,0 +1,22 @@
+name = "freetimeline-api"
+main = "src/index.js"
+compatibility_date = "2024-09-23"
+
+# Public var (CORS). Change to your production origin.
+[vars]
+ALLOWED_ORIGIN = "https://freetimeline.pt"
+
+# D1 database — fill database_id after: wrangler d1 create freetimeline
+[[d1_databases]]
+binding = "DB"
+database_name = "freetimeline"
+database_id = "REPLACE_WITH_YOUR_D1_ID"
+
+# R2 bucket for map images (optional) — after: wrangler r2 bucket create freetimeline-maps
+[[r2_buckets]]
+binding = "MAPS"
+bucket_name = "freetimeline-maps"
+
+# Secret (do NOT put here): set with
+#   wrangler secret put JWT_SECRET
+# Use a long random value, e.g.:  openssl rand -base64 48
