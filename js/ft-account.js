@@ -9,7 +9,7 @@
  * is the same shape the app already exports/imports, so save/load reuse that plumbing.
  */
 (function () {
-  var API = ''; // e.g. 'https://freetimeline-api.yourname.workers.dev'  ← set after deploy
+  var API = 'https://freetimeline-api.break0utphp.workers.dev'; // live Cloudflare Worker (D1 in EU)
   var KEY = 'ft_token', UKEY = 'ft_user';
 
   function token() { try { return localStorage.getItem(KEY) || ''; } catch (_) { return ''; } }

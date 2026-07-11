@@ -6038,7 +6038,17 @@ const Store = {
       updateCatFilterBar(); updateStatusFilterBar(); updateTagFilterBar(); updatePlaceFilterBar(); updateContinuityFilterBar(); updateUniToggleBar(); updateStatsPanel();
       notify('Shared timeline loaded ✓', 'success');
     }, { title: 'Open shared timeline?', confirmLabel: 'Open', danger: true });
-  }
+  },
+
+  /* ---- Level 2 cloud: export the current timeline / open one from the cloud ---- */
+  cloudExport() {
+    var name = (S.lifeTracks && S.lifeTracks[0] && S.lifeTracks[0].name) || 'My timeline';
+    return { app: 'biography', title: String(name).slice(0, 120), data: {
+      _ft: 'biography-share1', lifeTracks: S.lifeTracks, events: S.events, connections: S.connections,
+      people: S.people, categories: S.categories, affiliations: S.affiliations,
+      places: S.places, continuities: S.continuities, mapMeta: { has: false, w: 0, h: 0, name: '' } } };
+  },
+  cloudOpen(data) { this.loadShared(data); }
 };
 
   /* =====================================================
@@ -6577,6 +6587,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
   /* Level 0 share: if the URL carries a shared timeline (#s=…), offer to open it. */
   if (window.ftShare) window.ftShare.openLoadIfPresent(function (d) { Store.loadShared(d); });
+  /* Level 2: a public cloud link (?cloud=ID) → fetch and open it. */
+  var _cm = location.search.match(/[?&]cloud=([\w-]+)/);
+  if (_cm && window.ftAccount) window.ftAccount.loadPublic(_cm[1]).then(function (r) { if (r && r.timeline) Store.loadShared(r.timeline.data); }).catch(function () {});
 
   /* Frame the timeline on the actual data. The default range is geological
      (200,000 BC – 20,000 AD), leaving life events as lost specks with nothing to
