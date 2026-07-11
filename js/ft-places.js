@@ -636,6 +636,7 @@
           if (!stored) return;
           var s = S();
           s.mapMeta = { has: true, w: r.w, h: r.h, name: f.name.slice(0, 200) };
+          clearSketchStore(s);
           view.mapUrl = ''; view.sc = 1; view.px = 0; view.py = 0;
           persist();
           note('Map image saved (' + r.w + '×' + r.h + ').');
@@ -683,6 +684,7 @@
       if (!out.ok) return false;
       var s = S(), r = out.r;
       s.mapMeta = { has: true, w: r.w, h: r.h, name: String(name || (file.name || 'World map')).slice(0, 200) };
+      clearSketchStore(s);
       view.mapUrl = ''; view.sc = 1; view.px = 0; view.py = 0;
       persist();
       note('Map imported (' + r.w + '×' + r.h + ') — drop Places and pins on top.');
@@ -700,6 +702,10 @@
 
   /* ---------- Sketch-a-Map (ft-sketch bridge) — the simple drawer ---------- */
   function sketchKey() { return CFG.storageKey + '__sketch'; }
+  /* When the map is replaced from another source (upload / generator / painter), drop the
+     saved sketch layers + icons so reopening "Draw map" doesn't resurrect a stale drawing. */
+  function clearSketchStore(st) { try { mapStore.del(sketchKey()); } catch (_) {} if (st) delete st.mapSketchIcons; }
+  window.ftPlacesClearSketch = function () { clearSketchStore(S()); };
   function openSketch() {
     if (!window.ftSketch) { note('The map editor is still loading — try again in a moment.'); return; }
     var s = S();
@@ -773,6 +779,7 @@
           if (!ok) { note('Could not store the generated map on this device (private mode?).'); return false; }
           var s = S();
           s.mapMeta = { has: true, w: (meta && meta.w) || 0, h: (meta && meta.h) || 0, name: (meta && meta.name) || 'Generated map' };
+          clearSketchStore(s);
           view.mapUrl = ''; view.sc = 1; view.px = 0; view.py = 0;
           persist();
           note('Map created — drag a pin, or add Places onto it.');
@@ -813,6 +820,7 @@
           if (!ok) { note('Could not store the map on this device (private mode?).'); return false; }
           var st = S();
           st.mapMeta = { has: true, w: (meta && meta.w) || 0, h: (meta && meta.h) || 0, name: (meta && meta.name) || 'Painted map' };
+          clearSketchStore(st);
           view.mapUrl = ''; view.sc = 1; view.px = 0; view.py = 0;
           persist();
           note('Map saved — paint again any time to keep editing it.');

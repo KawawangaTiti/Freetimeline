@@ -186,7 +186,7 @@
           var lc = e < 0.5 ? mix(LAND_LO, LAND_MID, e * 2) : mix(LAND_MID, LAND_HI, Math.min(1, (e - 0.5) * 2));
           if (e > 0.75) lc = mix(lc, ROCK, Math.min(0.7, (e - 0.75) * 1.6));
           var nz = (hash(x, y) - 0.5) * 8; lc = [cl(lc[0] + nz), cl(lc[1] + nz), cl(lc[2] + nz)];
-          if (e > 0.05) { var gx = el[i + 1] - el[i - 1], gy = el[i + GW] - el[i - GW]; var sh = Math.max(-0.5, Math.min(0.5, (-gx - gy) * 3.6)); lc = [cl(lc[0] * (1 + sh)), cl(lc[1] * (1 + sh)), cl(lc[2] * (1 + sh))]; }
+          if (e > 0.05) { var xl = x > 0 ? i - 1 : i, xr = x < GW - 1 ? i + 1 : i, yt = y > 0 ? i - GW : i, yb = y < GH - 1 ? i + GW : i; var gx = el[xr] - el[xl], gy = el[yb] - el[yt]; var sh = Math.max(-0.5, Math.min(0.5, (-gx - gy) * 3.6)); lc = [cl(lc[0] * (1 + sh)), cl(lc[1] * (1 + sh)), cl(lc[2] * (1 + sh))]; }
           if (e > 0.92) lc = mix(lc, SNOW, Math.min(0.8, (e - 0.92) * 6));
           if (vis.road && road[i] > 0.3) lc = mix(lc, ROAD, Math.min(0.85, road[i]));
           if (vis.river && river[i] > 0.22) lc = mix(lc, RIVER, Math.min(0.8, river[i]));
@@ -280,7 +280,7 @@
       }
       if (dragHandle >= 0) { var gh = toGrid(e); hR[dragHandle] = Math.max(2, Math.hypot(gh.x - hCX, gh.y - hCY)); rasterizeHandles(); renderMap(); compose(); return; }
       if (movingSel) { var gm = toGrid(e); moveOff = { x: Math.round(gm.x - moveStart.x), y: Math.round(gm.y - moveStart.y) }; compose(); return; }
-      if (dragIcon >= 0) { var g = toGrid(e); icons[dragIcon].x = g.x; icons[dragIcon].y = g.y; compose(); return; }
+      if (dragIcon >= 0) { var g = toGrid(e); icons[dragIcon].x = Math.max(0, Math.min(GW, g.x)); icons[dragIcon].y = Math.max(0, Math.min(GH, g.y)); compose(); return; }
       if (!drawing) return; var g2 = toGrid(e); line(last, g2); last = g2; queue();
     });
     var PAINT = ['land', 'erase', 'relief', 'river', 'lake', 'road', 'snow', 'border'];
@@ -305,6 +305,7 @@
         rail.querySelectorAll('.ftsk-tool').forEach(function (x) { x.classList.remove('on'); x.style.background = 'transparent'; x.style.color = T.ink; });
         b.classList.add('on'); b.style.background = acc; b.style.color = '#fff'; tool = b.dataset.t;
         icoPanel.classList.toggle('show', tool === 'icon');
+        dragIcon = -1; drawing = false;  // don't carry a live gesture into the new tool
         if (tool !== 'select') deselect();
         if (['land', 'erase', 'relief', 'river', 'lake', 'road', 'snow', 'border'].indexOf(tool) < 0) ring.style.display = 'none';
         if (tool !== 'icon') { selIcon = -1; compose(); }
@@ -358,9 +359,11 @@
       if (e.key === 'Enter' && transforming) { e.preventDefault(); e.stopPropagation(); commitTransform(); return; }
       if ((e.key === 'Delete' || e.key === 'Backspace') && selActive && !transforming) { e.preventDefault(); e.stopPropagation(); deleteSel(); return; }
       var mod = e.ctrlKey || e.metaKey;
-      if (mod && (e.key === 't' || e.key === 'T')) { if (selActive && selType === 'land') { e.preventDefault(); e.stopPropagation(); if (transforming) commitTransform(); else enterTransform(); } return; }
-      if (mod && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); e.stopPropagation(); if (!transforming) { if (e.shiftKey) redo(); else undo(); } }
-      else if (mod && (e.key === 'y' || e.key === 'Y')) { e.preventDefault(); e.stopPropagation(); if (!transforming) redo(); }
+      if (mod && (e.key === 't' || e.key === 'T')) { if (selActive && (selType === 'land' || selType === 'multi')) { e.preventDefault(); e.stopPropagation(); if (transforming) commitTransform(); else enterTransform(); } return; }
+      // Never undo/redo mid-gesture — restoring layers under a live drag corrupts the map.
+      var busy = transforming || movingSel || drawing || dragHandle >= 0 || dragIcon >= 0 || tCorner >= 0;
+      if (mod && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); e.stopPropagation(); if (!busy) { if (e.shiftKey) redo(); else undo(); } }
+      else if (mod && (e.key === 'y' || e.key === 'Y')) { e.preventDefault(); e.stopPropagation(); if (!busy) redo(); }
     }
     function onResize() { fit(); }
     window.addEventListener('resize', onResize);
@@ -495,7 +498,7 @@
       var start = cy * GW + cx, pred, type;
       if (lake[start] > 0.4) { type = 'lake'; pred = function (i) { return lake[i] > 0.4; }; }
       else if (land[start] > 0.4) { type = 'land'; pred = function (i) { return land[i] > 0.4; }; }
-      else { type = 'water'; pred = function (i) { return land[i] < 0.4 && lake[i] <= 0.4; }; }
+      else { type = 'water'; pred = function (i) { return land[i] <= 0.4 && lake[i] <= 0.4; }; }
       if (!pred(start)) { if (!additive) { selActive = false; selType = null; hR = []; selMask = new Uint8Array(GW * GH); hideSelBar(); compose(); } return; }
       var rm = new Uint8Array(GW * GH), stack = [start]; rm[start] = 1;
       while (stack.length) {
