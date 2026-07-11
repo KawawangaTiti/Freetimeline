@@ -2,6 +2,12 @@ name = "freetimeline-api"
 main = "src/index.js"
 compatibility_date = "2024-09-23"
 
+# (Optional later) serve on your own domain once freetimeline.pt's zone is in
+# this Cloudflare account:
+# [[routes]]
+# pattern = "api.freetimeline.pt"
+# custom_domain = true
+
 # Public var (CORS). Change to your production origin.
 [vars]
 ALLOWED_ORIGIN = "https://freetimeline.pt"
@@ -10,12 +16,13 @@ ALLOWED_ORIGIN = "https://freetimeline.pt"
 [[d1_databases]]
 binding = "DB"
 database_name = "freetimeline"
-database_id = "REPLACE_WITH_YOUR_D1_ID"
+database_id = "ce155b07-dea4-4afc-acb2-e68fea6a5075"
 
-# R2 bucket for map images (optional) — after: wrangler r2 bucket create freetimeline-maps
-[[r2_buckets]]
-binding = "MAPS"
-bucket_name = "freetimeline-maps"
+# R2 bucket for map images (optional) — enable later after:
+#   wrangler r2 bucket create freetimeline-maps
+# [[r2_buckets]]
+# binding = "MAPS"
+# bucket_name = "freetimeline-maps"
 
 # Secret (do NOT put here): set with
 #   wrangler secret put JWT_SECRET

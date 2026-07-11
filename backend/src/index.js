@@ -14,7 +14,7 @@
  *   env.ALLOWED_ORIGIN  e.g. "https://freetimeline.pt" (CORS)
  */
 
-const PBKDF2_ITERS = 210000; // OWASP 2023 guidance for PBKDF2-HMAC-SHA256
+const PBKDF2_ITERS = 100000; // Cloudflare Workers caps PBKDF2 at 100k iterations (WebCrypto limit)
 const JWT_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 export default {
