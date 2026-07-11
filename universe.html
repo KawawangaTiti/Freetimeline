@@ -24,6 +24,7 @@
 <script src="js/ft-mapgen.js" defer></script>
 <script src="js/ft-mappaint.js" defer></script>
 <script src="js/ft-symbols.js" defer></script>
+<script src="js/ft-share.js" defer></script>
 <script src="js/ft-sketch.js" defer></script>
 <script src="js/ft-azgaar.js" defer></script>
 <script src="js/ft-canvas.js" defer></script>
@@ -3502,6 +3503,7 @@ input[type="color"]:focus-visible {
       <span class="tb-group-label">Data</span>
       <button class="btn accent" onclick="Store.saveHTML()"    title="Export your entire universe as a self-contained HTML file — open it anywhere offline">Save HTML</button>
       <button class="btn"        onclick="Store.saveJSON()"    title="Export a lightweight JSON backup of all timeline data">JSON</button>
+      <button class="btn"        onclick="Store.shareLink()"  title="Copy a shareable link — the timeline travels inside the link (no server; maps not included)">🔗 Share link</button>
       <button class="btn"        onclick="Store.importClick()" title="Load a previously saved HTML or JSON timeline archive">Load</button>
       <button class="btn danger" onclick="Store.blankTimeline()" title="Clear all universes, events, characters, and connections — a JSON backup is offered first">Blank</button>
       <!-- Tools (Stats / Story / Continuity Tour / Range) merged inline after Archive -->
