@@ -19,7 +19,7 @@ const JWT_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 export default {
   async fetch(request, env) {
-    const origin = env.ALLOWED_ORIGIN || 'https://freetimeline.pt';
+    const origin = corsOrigin(request.headers.get('Origin') || '', env);
     if (request.method === 'OPTIONS') return cors(new Response(null, { status: 204 }), origin);
     try {
       const res = await route(request, env);
@@ -29,6 +29,14 @@ export default {
     }
   }
 };
+
+/* Reflect the request Origin when it's allowed (prod + localhost for dev), else prod. */
+function corsOrigin(origin, env) {
+  const prod = env.ALLOWED_ORIGIN || 'https://freetimeline.pt';
+  if (origin === prod || origin === 'https://www.freetimeline.pt') return origin;
+  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return origin;
+  return prod;
+}
 
 async function route(request, env) {
   const url = new URL(request.url);
