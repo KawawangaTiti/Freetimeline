@@ -3,11 +3,22 @@
 -- The DB lives in YOUR Cloudflare account — you own and control all of it.
 
 CREATE TABLE IF NOT EXISTS users (
-  id           TEXT PRIMARY KEY,           -- uuid
-  email        TEXT UNIQUE NOT NULL,       -- stored lowercase
-  pw_hash      TEXT NOT NULL,              -- pbkdf2$iterations$saltB64$hashB64
-  display_name TEXT,
-  created_at   INTEGER NOT NULL            -- epoch ms
+  id            TEXT PRIMARY KEY,          -- uuid
+  email         TEXT UNIQUE NOT NULL,      -- stored lowercase
+  pw_hash       TEXT NOT NULL,             -- pbkdf2$iterations$saltB64$hashB64
+  display_name  TEXT,
+  created_at    INTEGER NOT NULL,          -- epoch ms
+  token_version INTEGER NOT NULL DEFAULT 0,-- bump to revoke all sessions (password change / logout-all)
+  failed_logins INTEGER NOT NULL DEFAULT 0,
+  locked_until  INTEGER                    -- epoch ms; NULL = not locked
+);
+
+-- Fixed-window rate limiting (per IP / per email) for auth endpoints.
+CREATE TABLE IF NOT EXISTS rate_limits (
+  bucket_key   TEXT NOT NULL,
+  window_start INTEGER NOT NULL,
+  count        INTEGER NOT NULL DEFAULT 1,
+  PRIMARY KEY (bucket_key, window_start)
 );
 
 CREATE TABLE IF NOT EXISTS timelines (

@@ -38,6 +38,22 @@ function corsOrigin(origin, env) {
   return prod;
 }
 
+/* Fixed-window rate limit backed by D1 — throws 429 when a bucket exceeds `limit`. */
+async function rateLimit(env, key, limit, windowMs) {
+  const windowStart = Math.floor(Date.now() / windowMs) * windowMs;
+  const row = await env.DB.prepare(
+    'INSERT INTO rate_limits (bucket_key, window_start, count) VALUES (?,?,1) ' +
+    'ON CONFLICT(bucket_key, window_start) DO UPDATE SET count = count + 1 RETURNING count'
+  ).bind(key, windowStart).first();
+  if (row && row.count > limit) throw httpError(429, 'Too many attempts — please wait a bit and try again.');
+}
+function clientIp(request) { return request.headers.get('CF-Connecting-IP') || 'unknown'; }
+/* A real PBKDF2 hash to verify against when the email doesn't exist, so login timing
+   doesn't reveal whether an account is registered. Computed once, cached. */
+let _dummyHash = null;
+async function getDummyHash() { if (!_dummyHash) _dummyHash = await hashPassword('ft-dummy-' + crypto.randomUUID()); return _dummyHash; }
+const LOCK_AFTER = 5, LOCK_MS = 15 * 60 * 1000, MAX_TIMELINES = 100;
+
 async function route(request, env) {
   const url = new URL(request.url);
   const p = url.pathname.replace(/\/+$/, '') || '/';
@@ -49,6 +65,8 @@ async function route(request, env) {
   if (p === '/api/register' && m === 'POST') return register(request, env);
   if (p === '/api/login' && m === 'POST') return login(request, env);
   if (p === '/api/me' && m === 'GET') { const u = await requireUser(request, env); return json({ user: publicUser(u) }); }
+  if (p === '/api/change-password' && m === 'POST') return changePassword(request, env);
+  if (p === '/api/logout-all' && m === 'POST') return logoutAll(request, env);
 
   // ---- public read (no auth) ----
   let mm;
@@ -70,6 +88,7 @@ async function route(request, env) {
 /* ============================ auth ============================ */
 
 async function register(request, env) {
+  await rateLimit(env, 'register:ip:' + clientIp(request), 5, 60 * 60 * 1000);
   const { email, password, displayName } = await readJson(request);
   const em = normEmail(email);
   if (!em || !em.includes('@')) throw httpError(400, 'A valid email is required.');
@@ -85,11 +104,42 @@ async function register(request, env) {
 }
 
 async function login(request, env) {
+  const ip = clientIp(request);
   const { email, password } = await readJson(request);
   const em = normEmail(email);
+  await rateLimit(env, 'login:ip:' + ip, 10, 15 * 60 * 1000);
+  await rateLimit(env, 'login:email:' + em, 8, 15 * 60 * 1000);
   const u = await env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(em).first();
-  if (!u || !(await verifyPassword(password || '', u.pw_hash))) throw httpError(401, 'Wrong email or password.');
+  if (u && u.locked_until && u.locked_until > Date.now()) throw httpError(423, 'Account temporarily locked after too many attempts. Try again later.');
+  // Always run PBKDF2 (dummy hash when the email is unknown) so timing can't reveal existence.
+  const ok = await verifyPassword(password || '', u ? u.pw_hash : await getDummyHash());
+  if (!u || !ok) {
+    if (u) {
+      const failed = (u.failed_logins || 0) + 1;
+      const lockedUntil = failed >= LOCK_AFTER ? Date.now() + LOCK_MS : null;
+      await env.DB.prepare('UPDATE users SET failed_logins = ?, locked_until = ? WHERE id = ?').bind(failed, lockedUntil, u.id).run();
+    }
+    throw httpError(401, 'Wrong email or password.');
+  }
+  if (u.failed_logins || u.locked_until) await env.DB.prepare('UPDATE users SET failed_logins = 0, locked_until = NULL WHERE id = ?').bind(u.id).run();
   return json({ token: await signJwt(u, env), user: publicUser(u) });
+}
+
+async function changePassword(request, env) {
+  const u = await requireUser(request, env);
+  const { currentPassword, newPassword } = await readJson(request);
+  if (!(await verifyPassword(currentPassword || '', u.pw_hash))) throw httpError(401, 'Current password is wrong.');
+  if (!newPassword || newPassword.length < 8) throw httpError(400, 'New password must be at least 8 characters.');
+  const pw_hash = await hashPassword(newPassword);
+  const tv = (u.token_version || 0) + 1; // rotate → every other session is revoked
+  await env.DB.prepare('UPDATE users SET pw_hash = ?, token_version = ? WHERE id = ?').bind(pw_hash, tv, u.id).run();
+  u.token_version = tv;
+  return json({ token: await signJwt(u, env), user: publicUser(u) }); // fresh token keeps THIS session alive
+}
+async function logoutAll(request, env) {
+  const u = await requireUser(request, env);
+  await env.DB.prepare('UPDATE users SET token_version = token_version + 1 WHERE id = ?').bind(u.id).run();
+  return json({ ok: true }); // invalidates all tokens, including the current one
 }
 
 async function requireUser(request, env) {
@@ -99,6 +149,7 @@ async function requireUser(request, env) {
   if (!payload) throw httpError(401, 'Please sign in.');
   const u = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(payload.sub).first();
   if (!u) throw httpError(401, 'Please sign in.');
+  if ((payload.tv || 0) !== (u.token_version || 0)) throw httpError(401, 'Session expired — please sign in again.');
   return u;
 }
 
@@ -122,6 +173,8 @@ async function createTimeline(request, env) {
   const b = await readJson(request);
   const data = JSON.stringify(b.data ?? {});
   if (data.length > 4_000_000) throw httpError(413, 'Timeline is too large (max ~4 MB).');
+  const n = await env.DB.prepare('SELECT COUNT(*) AS c FROM timelines WHERE owner_id = ?').bind(u.id).first();
+  if (n && n.c >= MAX_TIMELINES) throw httpError(429, 'You have reached the maximum number of cloud timelines.');
   const id = crypto.randomUUID(), now = Date.now();
   await env.DB.prepare('INSERT INTO timelines (id, owner_id, title, app, visibility, data, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?)')
     .bind(id, u.id, (b.title || 'Untitled').slice(0, 200), b.app === 'biography' ? 'biography' : 'universe',
@@ -213,6 +266,9 @@ function cors(res, origin) {
   h.set('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
   h.set('Access-Control-Allow-Headers', 'Authorization, Content-Type');
   h.set('Vary', 'Origin');
+  h.set('X-Content-Type-Options', 'nosniff');
+  h.set('Referrer-Policy', 'no-referrer');
+  h.set('Cache-Control', 'no-store');
   return new Response(res.body, { status: res.status, headers: h });
 }
 
@@ -239,7 +295,7 @@ function timingSafeEqual(a, b) { if (a.length !== b.length) return false; let d 
 async function signJwt(user, env) {
   const header = { alg: 'HS256', typ: 'JWT' };
   const now = Date.now();
-  const payload = { sub: user.id, email: user.email, iat: Math.floor(now / 1000), exp: Math.floor((now + JWT_TTL_MS) / 1000) };
+  const payload = { sub: user.id, email: user.email, tv: user.token_version || 0, iat: Math.floor(now / 1000), exp: Math.floor((now + JWT_TTL_MS) / 1000) };
   const data = `${b64url(JSON.stringify(header))}.${b64url(JSON.stringify(payload))}`;
   const sig = await hmac(data, env.JWT_SECRET);
   return `${data}.${b64urlBytes(new Uint8Array(sig))}`;
@@ -249,7 +305,8 @@ async function verifyJwt(token, env) {
   if (parts.length !== 3) return null;
   const data = `${parts[0]}.${parts[1]}`;
   const sig = await hmac(data, env.JWT_SECRET);
-  if (b64urlBytes(new Uint8Array(sig)) !== parts[2]) return null;
+  const expected = b64urlBytes(new Uint8Array(sig)), got = parts[2];
+  if (expected.length !== got.length || !timingSafeEqual(new TextEncoder().encode(expected), new TextEncoder().encode(got))) return null;
   let payload; try { payload = JSON.parse(unb64urlStr(parts[1])); } catch (_) { return null; }
   if (!payload.exp || payload.exp * 1000 < Date.now()) return null;
   return payload;
