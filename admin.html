@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>FreeTimeline · Admin</title>
+<style>
+  :root{--bg:#0d1020;--card:#151a2e;--line:#26304e;--ink:#e7ecf7;--sub:#93a0c4;--acc:#4f6bed;--danger:#e0605f;--good:#4bbd7f;--warn:#d9a441;
+    --mono:ui-monospace,Consolas,monospace;--sans:ui-sans-serif,system-ui,"Segoe UI",Roboto,sans-serif}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px}
+  a{color:var(--acc)}
+  .wrap{max-width:1040px;margin:0 auto;padding:22px 18px 80px}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  header h1{font-size:18px;margin:0}
+  header .who{margin-left:auto;color:var(--sub);font-size:12.5px}
+  .btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px;cursor:pointer;font:600 12.5px var(--sans)}
+  .btn:hover{border-color:var(--acc)}
+  .btn.acc{background:var(--acc);border-color:var(--acc);color:#fff}
+  .btn.danger{color:var(--danger);border-color:#5a2b2b}
+  .btn.sm{padding:5px 9px;font-size:11.5px}
+  input,select{background:#0e1526;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:9px 11px;font:inherit;font-size:13px}
+  .tabs{display:flex;gap:6px;margin:0 0 16px;flex-wrap:wrap}
+  .tab{padding:8px 14px;border-radius:9px;cursor:pointer;border:1px solid var(--line);background:var(--card);font-weight:600}
+  .tab.on{background:var(--acc);border-color:var(--acc);color:#fff}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:8px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .stat .n{font-size:26px;font-weight:800}.stat .l{color:var(--sub);font-size:12px;margin-top:2px}
+  .bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  .bar input{flex:1;min-width:160px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+  th{color:var(--sub);font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+  .pill{font:700 10px var(--sans);padding:2px 7px;border-radius:999px;border:1px solid var(--line)}
+  .pill.pub{color:var(--good);border-color:#2c5a41}.pill.priv{color:var(--sub)}.pill.shared{color:var(--warn);border-color:#5a4a24}.pill.susp{color:var(--danger);border-color:#5a2b2b}
+  .acts{display:flex;gap:5px;flex-wrap:wrap}
+  .login{max-width:340px;margin:8vh auto;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px}
+  .login h2{margin:0 0 4px}.login p{color:var(--sub);margin:0 0 16px;font-size:12.5px}
+  .login input{width:100%;margin:6px 0}
+  .err{color:var(--danger);font-size:12.5px;min-height:16px;margin:6px 0}
+  .mono{font-family:var(--mono);font-size:11.5px;color:var(--sub)}
+  .muted{color:var(--sub)}
+  #view{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="login" id="login">
+    <h2>Admin</h2>
+    <p>Sign in with an account whose email is in <span class="mono">ADMIN_EMAILS</span>.</p>
+    <input id="l-email" type="email" placeholder="Email" autocomplete="username">
+    <input id="l-pw" type="password" placeholder="Password" autocomplete="current-password">
+    <div class="err" id="l-err"></div>
+    <button class="btn acc" id="l-go" style="width:100%">Sign in</button>
+  </div>
+
+  <div id="view">
+    <header>
+      <h1>🛡️ FreeTimeline Admin</h1>
+      <span class="who" id="who"></span>
+      <button class="btn sm" id="signout">Sign out</button>
+    </header>
+    <div class="tabs">
+      <div class="tab on" data-t="stats">Stats</div>
+      <div class="tab" data-t="users">Users</div>
+      <div class="tab" data-t="timelines">Timelines</div>
+      <div class="tab" data-t="audit">Audit log</div>
+    </div>
+    <div id="panel"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var API='https://freetimeline-api.break0utphp.workers.dev';
+  function tok(){return sessionStorage.getItem('ft_admin_tok')||''}
+  function setTok(t){t?sessionStorage.setItem('ft_admin_tok',t):sessionStorage.removeItem('ft_admin_tok')}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function when(ts){if(!ts)return'';var d=new Date(ts);return d.toISOString().slice(0,16).replace('T',' ')}
+  async function api(path,method,body){
+    var r=await fetch(API+path,{method:method||'GET',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok()},body:body?JSON.stringify(body):undefined});
+    var d=null;try{d=await r.json()}catch(e){}
+    if(!r.ok)throw new Error((d&&d.error)||('HTTP '+r.status));
+    return d;
+  }
+  var $=function(id){return document.getElementById(id)};
+  var login=$('login'),view=$('view'),panel=$('panel');
+
+  function showLogin(){view.style.display='none';login.style.display='block'}
+  async function showApp(){
+    login.style.display='none';view.style.display='block';
+    try{var me=await api('/api/me');$('who').textContent=me.user.email}catch(e){}
+    tab('stats');
+  }
+  $('l-go').onclick=doLogin;
+  $('l-pw').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()});
+  async function doLogin(){
+    var err=$('l-err');err.textContent='';var go=$('l-go');go.disabled=true;go.textContent='…';
+    try{
+      var r=await fetch(API+'/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:$('l-email').value,password:$('l-pw').value})});
+      var d=await r.json();if(!r.ok)throw new Error(d.error||'Failed');
+      setTok(d.token);
+      await api('/api/admin/stats'); // will 403 if not admin
+      showApp();
+    }catch(e){setTok('');err.textContent=/403|Forbidden/.test(e.message)?'That account is not an admin.':e.message}
+    go.disabled=false;go.textContent='Sign in';
+  }
+  $('signout').onclick=function(){setTok('');showLogin()};
+  document.querySelectorAll('.tab').forEach(function(t){t.onclick=function(){document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on')});t.classList.add('on');tab(t.dataset.t)}});
+
+  function tab(name){({stats:stats,users:users,timelines:timelines,audit:audit}[name]||stats)()}
+
+  async function stats(){
+    panel.innerHTML='<p class="muted">Loading…</p>';
+    try{var s=await api('/api/admin/stats');
+      var apps=(s.byApp||[]).map(function(a){return a.app+': '+a.c}).join(' · ');
+      panel.innerHTML='<div class="cards">'+
+        card(s.users,'Users')+card(s.timelines,'Timelines')+card(s.public,'Public')+card(s.newUsers24h,'New / 24h')+card(s.suspended,'Suspended')+
+      '</div><p class="muted">'+esc(apps)+'</p>';
+    }catch(e){panel.innerHTML=errHtml(e)}
+  }
+  function card(n,l){return'<div class="stat"><div class="n">'+n+'</div><div class="l">'+l+'</div></div>'}
+
+  async function users(){
+    panel.innerHTML='<div class="bar"><input id="u-q" placeholder="Search email or name…"><button class="btn" id="u-s">Search</button></div><div id="u-list" class="muted">Loading…</div>';
+    var run=function(){loadUsers($('u-q').value)};
+    $('u-s').onclick=run;$('u-q').addEventListener('keydown',function(e){if(e.key==='Enter')run()});
+    loadUsers('');
+  }
+  async function loadUsers(q){
+    var host=$('u-list');host.innerHTML='<p class="muted">Loading…</p>';
+    try{var r=await api('/api/admin/users?limit=100&q='+encodeURIComponent(q||''));
+      host.innerHTML='<table><thead><tr><th>Email</th><th>Name</th><th>Joined</th><th>Status</th><th></th></tr></thead><tbody>'+
+        r.items.map(function(u){return '<tr><td>'+esc(u.email)+'</td><td>'+esc(u.display_name||'')+'</td><td class="mono">'+when(u.created_at)+'</td><td>'+
+          (u.suspended_at?'<span class="pill susp">suspended</span>':'<span class="pill priv">active</span>')+'</td><td class="acts">'+
+          (u.suspended_at?'<button class="btn sm" data-un="'+u.id+'">Unsuspend</button>':'<button class="btn sm" data-sus="'+u.id+'">Suspend</button>')+
+          '<button class="btn sm danger" data-del="'+u.id+'" data-em="'+esc(u.email)+'">Delete</button></td></tr>'}).join('')+
+        '</tbody></table>'+(r.items.length?'':'<p class="muted">No users.</p>');
+      host.querySelectorAll('[data-sus]').forEach(function(b){b.onclick=function(){var r2=prompt('Reason for suspension?');if(r2===null)return;api('/api/admin/users/'+b.dataset.sus+'/suspend','POST',{reason:r2}).then(function(){loadUsers(q)})}});
+      host.querySelectorAll('[data-un]').forEach(function(b){b.onclick=function(){api('/api/admin/users/'+b.dataset.un+'/unsuspend','POST').then(function(){loadUsers(q)})}});
+      host.querySelectorAll('[data-del]').forEach(function(b){b.onclick=function(){var em=b.dataset.em;if(prompt('Type the email to confirm deletion:')!==em)return;api('/api/admin/users/'+b.dataset.del+'?confirm='+encodeURIComponent(em),'DELETE').then(function(){loadUsers(q)}).catch(function(e){alert(e.message)})}});
+    }catch(e){host.innerHTML=errHtml(e)}
+  }
+
+  async function timelines(){
+    panel.innerHTML='<div class="bar"><input id="t-q" placeholder="Search title…">'+
+      '<select id="t-app"><option value="">All apps</option><option value="universe">Universe</option><option value="biography">Biography</option></select>'+
+      '<select id="t-vis"><option value="">All</option><option value="public">Public</option><option value="private">Private</option><option value="shared">Shared</option></select>'+
+      '<button class="btn" id="t-s">Search</button></div><div id="t-list" class="muted">Loading…</div>';
+    var run=function(){loadTimelines()};
+    $('t-s').onclick=run;$('t-q').addEventListener('keydown',function(e){if(e.key==='Enter')run()});
+    loadTimelines();
+  }
+  async function loadTimelines(){
+    var host=$('t-list');host.innerHTML='<p class="muted">Loading…</p>';
+    try{
+      var qs='limit=100&q='+encodeURIComponent($('t-q').value||'')+'&app='+($('t-app').value||'')+'&visibility='+($('t-vis').value||'');
+      var r=await api('/api/admin/timelines?'+qs);
+      host.innerHTML='<table><thead><tr><th>Title</th><th>App</th><th>Vis</th><th>Updated</th><th></th></tr></thead><tbody>'+
+        r.items.map(function(t){return '<tr><td>'+esc(t.title)+'</td><td class="muted">'+t.app+'</td><td><span class="pill '+({public:'pub',private:'priv',shared:'shared'}[t.visibility])+'">'+t.visibility+'</span></td>'+
+          '<td class="mono">'+when(t.updated_at)+'</td><td class="acts">'+
+          (t.visibility==='public'?'<button class="btn sm" data-unpub="'+t.id+'">Unpublish</button>':'')+
+          '<button class="btn sm danger" data-tdel="'+t.id+'">Delete</button></td></tr>'}).join('')+
+        '</tbody></table>'+(r.items.length?'':'<p class="muted">No timelines.</p>');
+      host.querySelectorAll('[data-unpub]').forEach(function(b){b.onclick=function(){api('/api/admin/timelines/'+b.dataset.unpub+'/visibility','POST',{visibility:'private'}).then(loadTimelines)}});
+      host.querySelectorAll('[data-tdel]').forEach(function(b){b.onclick=function(){if(!confirm('Delete this timeline permanently?'))return;api('/api/admin/timelines/'+b.dataset.tdel,'DELETE').then(loadTimelines).catch(function(e){alert(e.message)})}});
+    }catch(e){host.innerHTML=errHtml(e)}
+  }
+
+  async function audit(){
+    panel.innerHTML='<div id="a-list" class="muted">Loading…</div>';
+    try{var r=await api('/api/admin/audit-log?limit=100');
+      $('a-list').innerHTML='<table><thead><tr><th>When</th><th>Admin</th><th>Action</th><th>Target</th><th>Detail</th></tr></thead><tbody>'+
+        r.items.map(function(a){return '<tr><td class="mono">'+when(a.created_at)+'</td><td>'+esc(a.actor_email)+'</td><td>'+esc(a.action)+'</td><td class="mono">'+esc(a.target_type)+':'+esc((a.target_id||'').slice(0,8))+'</td><td class="mono">'+esc((a.detail||'').slice(0,60))+'</td></tr>'}).join('')+
+        '</tbody></table>'+(r.items.length?'':'<p class="muted">No actions logged yet.</p>');
+    }catch(e){$('a-list').innerHTML=errHtml(e)}
+  }
+
+  function errHtml(e){return'<p class="err">'+esc(e.message||'Error')+'</p>'}
+
+  if(tok())showApp();else showLogin();
+})();
+</script>
+</body>
+</html>

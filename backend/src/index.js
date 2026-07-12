@@ -82,6 +82,9 @@ async function route(request, env) {
   }
   if ((mm = p.match(/^\/api\/timelines\/([\w-]+)\/share$/)) && m === 'POST') return shareTimeline(request, env, mm[1]);
 
+  // ---- admin (owner-only, gated by ADMIN_EMAILS allowlist) ----
+  if (p.startsWith('/api/admin/')) return admin(request, env, p, m);
+
   return json({ error: 'Not found' }, 404);
 }
 
@@ -121,8 +124,113 @@ async function login(request, env) {
     }
     throw httpError(401, 'Wrong email or password.');
   }
+  if (u.suspended_at) throw httpError(403, 'This account has been suspended.');
   if (u.failed_logins || u.locked_until) await env.DB.prepare('UPDATE users SET failed_logins = 0, locked_until = NULL WHERE id = ?').bind(u.id).run();
   return json({ token: await signJwt(u, env), user: publicUser(u) });
+}
+
+/* ============================ admin ============================ */
+function isAdmin(u, env) {
+  const allow = String(env.ADMIN_EMAILS || '').toLowerCase().split(',').map(s => s.trim()).filter(Boolean);
+  return allow.includes(String(u.email).toLowerCase());
+}
+async function requireAdmin(request, env) {
+  const u = await requireUser(request, env);
+  if (!isAdmin(u, env)) throw httpError(403, 'Forbidden.');
+  return u;
+}
+async function logAdmin(env, adm, action, targetType, targetId, detail, request) {
+  await env.DB.prepare('INSERT INTO audit_log (id, actor_id, actor_email, action, target_type, target_id, detail, ip, created_at) VALUES (?,?,?,?,?,?,?,?,?)')
+    .bind(crypto.randomUUID(), adm.id, adm.email, action, targetType, targetId || null, JSON.stringify(detail || {}), clientIp(request), Date.now()).run();
+}
+
+async function admin(request, env, p, m) {
+  const me = await requireAdmin(request, env);
+  const qp = new URL(request.url).searchParams;
+  const lim = () => Math.min(200, Math.max(1, +(qp.get('limit') || 50)));
+  const off = () => Math.max(0, +(qp.get('offset') || 0));
+  let mm;
+
+  if (p === '/api/admin/stats' && m === 'GET') {
+    const one = async (sql, ...b) => (await env.DB.prepare(sql).bind(...b).first()).c;
+    return json({
+      users: await one('SELECT COUNT(*) c FROM users'),
+      timelines: await one('SELECT COUNT(*) c FROM timelines'),
+      public: await one("SELECT COUNT(*) c FROM timelines WHERE visibility='public'"),
+      suspended: await one('SELECT COUNT(*) c FROM users WHERE suspended_at IS NOT NULL'),
+      newUsers24h: await one('SELECT COUNT(*) c FROM users WHERE created_at > ?', Date.now() - 86400000),
+      byApp: (await env.DB.prepare('SELECT app, COUNT(*) c FROM timelines GROUP BY app').all()).results || []
+    });
+  }
+
+  if (p === '/api/admin/users' && m === 'GET') {
+    const q = (qp.get('q') || '').trim().toLowerCase(), like = '%' + q + '%';
+    const rows = q
+      ? await env.DB.prepare('SELECT id,email,display_name,created_at,suspended_at FROM users WHERE LOWER(email) LIKE ? OR LOWER(display_name) LIKE ? ORDER BY created_at DESC LIMIT ? OFFSET ?').bind(like, like, lim(), off()).all()
+      : await env.DB.prepare('SELECT id,email,display_name,created_at,suspended_at FROM users ORDER BY created_at DESC LIMIT ? OFFSET ?').bind(lim(), off()).all();
+    return json({ items: rows.results || [] });
+  }
+  if ((mm = p.match(/^\/api\/admin\/users\/([\w-]+)$/)) && m === 'GET') {
+    const u = await env.DB.prepare('SELECT id,email,display_name,created_at,suspended_at,suspended_reason FROM users WHERE id=?').bind(mm[1]).first();
+    if (!u) throw httpError(404, 'Not found.');
+    const c = (await env.DB.prepare('SELECT COUNT(*) c FROM timelines WHERE owner_id=?').bind(mm[1]).first()).c;
+    return json({ user: u, timelineCount: c });
+  }
+  if ((mm = p.match(/^\/api\/admin\/users\/([\w-]+)\/suspend$/)) && m === 'POST') {
+    const b = await readJson(request);
+    await env.DB.prepare('UPDATE users SET suspended_at=?, suspended_reason=?, token_version=token_version+1 WHERE id=?').bind(Date.now(), String(b.reason || '').slice(0, 200), mm[1]).run();
+    await logAdmin(env, me, 'user.suspend', 'user', mm[1], { reason: b.reason }, request);
+    return json({ ok: true });
+  }
+  if ((mm = p.match(/^\/api\/admin\/users\/([\w-]+)\/unsuspend$/)) && m === 'POST') {
+    await env.DB.prepare('UPDATE users SET suspended_at=NULL, suspended_reason=NULL WHERE id=?').bind(mm[1]).run();
+    await logAdmin(env, me, 'user.unsuspend', 'user', mm[1], {}, request);
+    return json({ ok: true });
+  }
+  if ((mm = p.match(/^\/api\/admin\/users\/([\w-]+)$/)) && m === 'DELETE') {
+    const u = await env.DB.prepare('SELECT email FROM users WHERE id=?').bind(mm[1]).first();
+    if (!u) throw httpError(404, 'Not found.');
+    if (qp.get('confirm') !== u.email) throw httpError(400, 'Confirm by passing the exact email.');
+    await env.DB.prepare('DELETE FROM users WHERE id=?').bind(mm[1]).run();
+    await logAdmin(env, me, 'user.delete', 'user', mm[1], { email: u.email }, request);
+    return json({ ok: true });
+  }
+
+  if (p === '/api/admin/timelines' && m === 'GET') {
+    const q = (qp.get('q') || '').trim().toLowerCase(), app = qp.get('app'), vis = qp.get('visibility');
+    const where = ['1=1'], params = [];
+    if (q) { where.push('LOWER(title) LIKE ?'); params.push('%' + q + '%'); }
+    if (app === 'universe' || app === 'biography') { where.push('app=?'); params.push(app); }
+    if (vis === 'public' || vis === 'private' || vis === 'shared') { where.push('visibility=?'); params.push(vis); }
+    params.push(lim(), off());
+    const rows = await env.DB.prepare('SELECT id,owner_id,title,app,visibility,created_at,updated_at FROM timelines WHERE ' + where.join(' AND ') + ' ORDER BY updated_at DESC LIMIT ? OFFSET ?').bind(...params).all();
+    return json({ items: rows.results || [] });
+  }
+  if ((mm = p.match(/^\/api\/admin\/timelines\/([\w-]+)$/)) && m === 'GET') {
+    const t = await env.DB.prepare('SELECT * FROM timelines WHERE id=?').bind(mm[1]).first();
+    if (!t) throw httpError(404, 'Not found.');
+    return json({ timeline: rowToTimeline(t) });
+  }
+  if ((mm = p.match(/^\/api\/admin\/timelines\/([\w-]+)$/)) && m === 'DELETE') {
+    const t = await env.DB.prepare('SELECT owner_id,title FROM timelines WHERE id=?').bind(mm[1]).first();
+    if (!t) throw httpError(404, 'Not found.');
+    await env.DB.prepare('DELETE FROM timelines WHERE id=?').bind(mm[1]).run();
+    await logAdmin(env, me, 'timeline.delete', 'timeline', mm[1], { title: t.title, owner: t.owner_id }, request);
+    return json({ ok: true });
+  }
+  if ((mm = p.match(/^\/api\/admin\/timelines\/([\w-]+)\/visibility$/)) && m === 'POST') {
+    const b = await readJson(request);
+    await env.DB.prepare('UPDATE timelines SET visibility=? WHERE id=?').bind(visOf(b.visibility), mm[1]).run();
+    await logAdmin(env, me, 'timeline.visibility', 'timeline', mm[1], { visibility: b.visibility }, request);
+    return json({ ok: true });
+  }
+
+  if (p === '/api/admin/audit-log' && m === 'GET') {
+    const rows = await env.DB.prepare('SELECT * FROM audit_log ORDER BY created_at DESC LIMIT ?').bind(lim()).all();
+    return json({ items: rows.results || [] });
+  }
+
+  return json({ error: 'Not found' }, 404);
 }
 
 async function changePassword(request, env) {
