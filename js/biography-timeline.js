@@ -5773,9 +5773,12 @@ const Store = {
         S.categories   = d.categories  || {};
         S.affiliations = d.affiliations || [];
         S.places       = d.places      || [];
+        S.maps         = Array.isArray(d.maps) ? d.maps : null;
+        S.currentMapId = (typeof d.currentMapId === 'string') ? d.currentMapId : 'root';
         S.mapMeta      = d.mapMeta     || { has: false, w: 0, h: 0, name: '' };
         S.continuities = d.continuities || [];
         if (typeof d._mapDataUrl === 'string') S._mapDataUrl = d._mapDataUrl;
+        if (d.mapSketchIconsByMap && typeof d.mapSketchIconsByMap === 'object') S.mapSketchIconsByMap = d.mapSketchIconsByMap;
         Store.normalize();
         return true;
       }
@@ -5793,18 +5796,26 @@ const Store = {
      Resolves '' when there is no map or ft-places.js is missing. */
   _mapExportPromise() {
     try {
+      if (window.ftPlaces && ftPlaces.getAllMapImages) {
+        /* nested maps: root image (legacy mapImage) + every map's image */
+        return Promise.all([
+          (S.mapMeta && S.mapMeta.has) ? ftPlaces.getMapDataUrl().catch(() => '') : Promise.resolve(''),
+          ftPlaces.getAllMapImages().catch(() => [])
+        ]).then(([du, imgs]) => ({ du: du, imgs: imgs }));
+      }
       if (window.ftPlaces && S.mapMeta && S.mapMeta.has) {
-        return ftPlaces.getMapDataUrl().catch(function () { return ''; });
+        return ftPlaces.getMapDataUrl().catch(function () { return ''; }).then(du => ({ du: du, imgs: [] }));
       }
     } catch (_) {}
-    return Promise.resolve('');
+    return Promise.resolve({ du: '', imgs: [] });
   },
 
-  /* WS3: export payload = S plus the map image (if any). */
-  _exportPayload(mapDataUrl) {
+  /* WS3 + nested maps: export payload = S plus the map image(s) (if any). */
+  _exportPayload(mapDataUrl, mapImages) {
     const payload = Object.assign({}, S);
     delete payload._mapDataUrl;               /* private-mode carrier \u2014 mapImage supersedes it */
     if (mapDataUrl) payload.mapImage = mapDataUrl;
+    if (mapImages && mapImages.length) payload.mapImages = mapImages;
     return payload;
   },
 
@@ -5813,8 +5824,8 @@ const Store = {
      cannot break out of the script element, and escape '/' so user text can
      never forge the STATE_START / STATE_END comment markers. JSON.parse on
      import restores every original character, so the round-trip stays lossless. */
-  _buildHTMLExport(src, mapDataUrl) {
-    const stateJSON = JSON.stringify(Store._exportPayload(mapDataUrl))
+  _buildHTMLExport(src, mapDataUrl, mapImages) {
+    const stateJSON = JSON.stringify(Store._exportPayload(mapDataUrl, mapImages))
       .replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/\//g, '\\/');
     const stateBlock = '/*STATE_START*/let S = ' + stateJSON + ';/*STATE_END*/';
     let newSrc = src.replace(/\/\*STATE_START\*\/[\s\S]*?\/\*STATE_END\*\//, stateBlock);
@@ -5847,9 +5858,9 @@ const Store = {
   saveHTML() {
     notify('Preparing HTML file\u2026', 'info');
     Promise.all([fetch(location.href).then(r => r.text()), Store._mapExportPromise()])
-      .then(([src, du]) => {
+      .then(([src, m]) => {
         const date = new Date().toISOString().slice(0, 10);
-        Store._downloadBlob(Store._buildHTMLExport(src, du), 'text/html', 'free-timeline_' + date + '.html');
+        Store._downloadBlob(Store._buildHTMLExport(src, m.du, m.imgs), 'text/html', 'free-timeline_' + date + '.html');
         notify('Timeline saved as HTML \u2713', 'success');
       })
       .catch(() => {
@@ -5860,17 +5871,17 @@ const Store = {
 
   /* Fallback for when fetch(location.href) is blocked */
   _saveHTMLFallback() {
-    Store._mapExportPromise().then(du => {
+    Store._mapExportPromise().then(m => {
       const date = new Date().toISOString().slice(0, 10);
-      Store._downloadBlob(Store._buildHTMLExport(document.documentElement.outerHTML, du), 'text/html', 'free-timeline_' + date + '.html');
+      Store._downloadBlob(Store._buildHTMLExport(document.documentElement.outerHTML, m.du, m.imgs), 'text/html', 'free-timeline_' + date + '.html');
       notify('Timeline saved as HTML \u2713', 'success');
     });
   },
 
   /* ---- Export as plain JSON backup (map image embedded as dataURL) ---- */
   saveJSON() {
-    Store._mapExportPromise().then(du => {
-      const json = JSON.stringify(Store._exportPayload(du), null, 2);
+    Store._mapExportPromise().then(m => {
+      const json = JSON.stringify(Store._exportPayload(m.du, m.imgs), null, 2);
       const date = new Date().toISOString().slice(0, 10);
       Store._downloadBlob(json, 'application/json', 'free-timeline_' + date + '.json');
       notify('Data exported as JSON \u2713', 'success');
@@ -5972,15 +5983,20 @@ const Store = {
           S.categories   = d.categories  || {};
           S.affiliations = d.affiliations || [];
           S.places       = d.places      || [];
+          S.maps         = Array.isArray(d.maps) ? d.maps : null;
+          S.currentMapId = (typeof d.currentMapId === 'string') ? d.currentMapId : 'root';
+          S.mapSketchIconsByMap = (d.mapSketchIconsByMap && typeof d.mapSketchIconsByMap === 'object') ? d.mapSketchIconsByMap : undefined;
           S.mapMeta      = d.mapMeta     || { has: false, w: 0, h: 0, name: '' };
           S.continuities = d.continuities || [];
           _continuityFilter = null;
           delete S._mapDataUrl;
-          /* WS3: restore the embedded map image into IndexedDB (async, non-blocking) */
+          /* WS3 + nested maps: restore every embedded map image into IndexedDB */
           if (window.ftPlaces) {
-            if (d.mapImage) {
-              S.mapMeta.has = true;
-              ftPlaces.setMapFromDataUrl(d.mapImage).then(function (ok) {
+            var _imgs = Array.isArray(d.mapImages) ? d.mapImages.filter(function (x) { return x && x.dataUrl; }) : [];
+            if (d.mapImage && !_imgs.some(function (x) { return (x.mapId || 'root') === 'root'; })) _imgs.unshift({ mapId: 'root', dataUrl: d.mapImage });
+            if (_imgs.length) {
+              if (!S.maps) S.mapMeta.has = true;   /* legacy single-map import */
+              ftPlaces.restoreMapImages(_imgs).then(function (ok) {
                 if (ok) { Store.autosave(); if (_currentView === 'places') switchView('places'); }
               });
             } else {

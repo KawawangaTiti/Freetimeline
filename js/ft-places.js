@@ -30,10 +30,67 @@
 
   function S() { return CFG.getS(); }
   function places() { var s = S(); if (!Array.isArray(s.places)) s.places = []; return s.places; }
-  function mapMeta() {
+  /* ===================== map tree (nested / drill-down maps) =====================
+     A timeline can hold several maps arranged as a tree: click a place pin to enter
+     the sub-map anchored to it (world → region → city). Each map node owns its own
+     image (IndexedDB) and its own places (place.mapId). The ROOT map keeps the legacy
+     IDB key (CFG.storageKey) and S.mapMeta mirror, so timelines authored before
+     nesting open completely unchanged. */
+  var ROOT = 'root';
+  function ensureMaps() {
     var s = S();
-    if (!s.mapMeta || typeof s.mapMeta !== 'object') s.mapMeta = { has: false, w: 0, h: 0, name: '' };
-    return s.mapMeta;
+    if (!Array.isArray(s.maps) || !s.maps.length) {
+      var meta = (s.mapMeta && typeof s.mapMeta === 'object') ? s.mapMeta : { has: false, w: 0, h: 0, name: '' };
+      s.maps = [{ id: ROOT, name: meta.name || 'World map', parentMapId: null, anchorPlaceId: null, mapMeta: meta }];
+    }
+    if (!s.currentMapId || !s.maps.some(function (m) { return m.id === s.currentMapId; })) s.currentMapId = ROOT;
+    return s.maps;
+  }
+  function curMapId() { ensureMaps(); return S().currentMapId; }
+  function mapById(id) { ensureMaps(); return S().maps.find(function (m) { return m.id === id; }) || null; }
+  function curMap() { return mapById(curMapId()) || S().maps[0]; }
+  /* keep S.mapMeta pointing at the ROOT node's meta so the engine's export path works */
+  function syncRootMeta() { var s = S(), r = mapById(ROOT); if (r) s.mapMeta = r.mapMeta; }
+  function mapMeta() { return curMap().mapMeta; }
+  function newMapId() { return 'm_' + Math.random().toString(36).slice(2, 10); }
+  /* IDB image key for a map (root reuses the legacy key; children get a suffix) */
+  function imgKey(id) { return (id === ROOT || id == null) ? CFG.storageKey : CFG.storageKey + '__map_' + id; }
+  function curKey() { return imgKey(curMapId()); }
+  /* places pinned on the current map (legacy places with no mapId belong to root) */
+  function placesHere() { var cur = curMapId(); return places().filter(function (p) { return (p.mapId || ROOT) === cur; }); }
+  /* the child map anchored to a given place, if one exists */
+  function childMapOf(placeId) { ensureMaps(); return S().maps.find(function (m) { return m.anchorPlaceId === placeId; }) || null; }
+
+  /* Enter (creating on first use) the sub-map anchored to a place. */
+  function enterSubMap(p) {
+    ensureMaps();
+    var child = childMapOf(p.id);
+    if (!child) {
+      child = { id: newMapId(), name: p.name, parentMapId: curMapId(), anchorPlaceId: p.id,
+                mapMeta: { has: false, w: 0, h: 0, name: p.name } };
+      S().maps.push(child);
+    }
+    gotoMap(child.id);
+    note('Entered “' + child.name + '”. Draw or upload a map for this area — its own places live here.');
+  }
+  /* Switch the view to another map in the tree (used by breadcrumb + drill-down). */
+  function gotoMap(id) {
+    ensureMaps();
+    if (!mapById(id)) return;
+    S().currentMapId = id;
+    view.sel = null; view.arming = false; view.sc = 1; view.px = 0; view.py = 0; view.mapUrl = '';
+    persist();
+    if (root) renderMapView(root);
+  }
+  /* Delete a map and everything under it (descendant maps, their places, their images). */
+  function deleteMapCascade(mapId) {
+    ensureMaps();
+    var s = S();
+    s.maps.filter(function (m) { return m.parentMapId === mapId; }).forEach(function (k) { deleteMapCascade(k.id); });
+    s.places = places().filter(function (p) { return (p.mapId || ROOT) !== mapId; });
+    s.maps = s.maps.filter(function (m) { return m.id !== mapId; });
+    try { mapStore.del(imgKey(mapId)); mapStore.del(imgKey(mapId) + '__sketch'); } catch (_) {}
+    if (s.currentMapId === mapId) s.currentMapId = ROOT;
   }
   function esc(t) {
     return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) {
@@ -199,6 +256,16 @@
       '.ftp-sym.none{font-size:14px;opacity:.6}' +
       '.ftp-sym svg{width:22px;height:22px}' +
       '.ftp-pin-sym{display:inline-flex;align-items:center;justify-content:center}.ftp-pin-sym svg{width:22px;height:22px}' +
+      '.ftp-pin-sub{position:absolute;top:-7px;right:-9px;font-size:11px;font-weight:700;background:' + acc + ';color:#fff;' +
+        'border-radius:50%;width:16px;height:16px;line-height:16px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.4)}' +
+      '.ftp-crumbs{display:flex;align-items:center;gap:2px;flex-wrap:wrap;padding:9px 12px 0}' +
+      '.ftp-crumb{border:0;background:transparent;color:inherit;cursor:pointer;padding:2px 7px;border-radius:6px;' +
+        'font:600 12.5px inherit;opacity:.62}' +
+      '.ftp-crumb:hover{background:rgba(128,128,128,.16);opacity:1}' +
+      '.ftp-crumb.cur{opacity:1;cursor:default;background:rgba(128,128,128,.12)}' +
+      '.ftp-crumb-sep{opacity:.4;font-size:13px}' +
+      '.ftp-card-sub{margin-left:auto;font-weight:700;color:' + acc + ';font-size:15px;padding-left:6px}' +
+      '.ftp-card-name{width:100%}' +
       '@media(max-width:767px){.ftp-wrap{flex-direction:column}.ftp-side{width:auto;border-left:0;' +
         'border-top:1px solid rgba(128,128,128,.25);max-height:45%}}';
     document.head.appendChild(st);
@@ -219,6 +286,10 @@
     var main = document.createElement('div');
     main.className = 'ftp-main';
     wrap.appendChild(main);
+
+    /* --- breadcrumb (only once there is more than the root map) --- */
+    var bc = buildBreadcrumb();
+    if (bc) main.appendChild(bc);
 
     /* --- top bar --- */
     var bar = document.createElement('div');
@@ -384,18 +455,20 @@
     Array.prototype.forEach.call(inner.querySelectorAll('.ftp-pin'), function (p) { p.remove(); });
     var img = inner.querySelector('img');
     if (!img || !img.naturalWidth) return;
-    places().forEach(function (p) {
+    placesHere().forEach(function (p) {
       if (!p.pin) return;
+      var hasSub = !!childMapOf(p.id);
       var b = document.createElement('button');
       b.type = 'button';
       b.className = 'ftp-pin' + (view.sel === p.id ? ' sel' : '');
       b.style.left = (p.pin.x * 100) + '%';
       b.style.top = (p.pin.y * 100) + '%';
-      b.setAttribute('aria-label', 'Place: ' + p.name + ' (' + eventsAt(p.id).length + ' events)');
+      b.setAttribute('aria-label', 'Place: ' + p.name + ' (' + eventsAt(p.id).length + ' events)' + (hasSub ? ' — has a sub-map' : ''));
       var _picon = (p.symbol && window.ftSymbols && ftSymbols.byId(p.symbol))
         ? '<span class="ftp-pin-sym" style="color:' + esc(p.color || '#e8ecf6') + ';transform:scale(' + (p.symSize || 1) + ')">' + ftSymbols.svg(p.symbol) + '</span>'
         : '<span aria-hidden="true">' + esc(p.icon || '📍') + '</span>';
       b.innerHTML = _picon +
+        (hasSub ? '<span class="ftp-pin-sub" title="Open sub-map" aria-hidden="true">↴</span>' : '') +
         '<span class="ftp-pin-lbl" style="' + (p.color ? 'box-shadow:inset 0 -2px 0 ' + esc(p.color) : '') + '">' + esc(p.name) + '</span>';
       b.addEventListener('click', function (e) {
         e.stopPropagation();
@@ -406,20 +479,44 @@
     });
   }
 
+  /* ---------- breadcrumb trail (World › Region › City) ---------- */
+  function buildBreadcrumb() {
+    ensureMaps();
+    var s = S();
+    if (s.maps.length < 2) return null;
+    var chain = [], m = curMap(), guard = 0;
+    while (m && guard++ < 40) { chain.unshift(m); m = m.parentMapId ? mapById(m.parentMapId) : null; }
+    var bcx = document.createElement('div');
+    bcx.className = 'ftp-crumbs';
+    bcx.setAttribute('aria-label', 'Map location');
+    chain.forEach(function (node, i) {
+      if (i) { var sep = document.createElement('span'); sep.className = 'ftp-crumb-sep'; sep.textContent = '›'; bcx.appendChild(sep); }
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ftp-crumb' + (node.id === curMapId() ? ' cur' : '');
+      b.textContent = (i === 0 ? '🌍 ' : '') + (node.name || 'Map');
+      if (node.id !== curMapId()) b.addEventListener('click', function () { gotoMap(node.id); });
+      bcx.appendChild(b);
+    });
+    return bcx;
+  }
+
   /* ---------- abstract grid (no image) ---------- */
   function buildGrid() {
     var g = document.createElement('div');
     g.className = 'ftp-grid';
-    var all = places();
+    var all = placesHere();
     var roots = all.filter(function (p) { return !p.parentId || !byId(p.parentId); });
     function card(p, isChild) {
       var c = document.createElement('button');
       c.type = 'button';
       c.className = 'ftp-card' + (isChild ? ' child' : '') + (view.sel === p.id ? ' sel' : '');
       var n = eventsAt(p.id).length;
+      var kid = childMapOf(p.id);
       c.innerHTML =
         '<div class="ftp-card-name"><span class="ftp-dot" style="background:' + esc(p.color || '#888') + '"></span>' +
-        esc(p.icon ? p.icon + ' ' : '') + esc(p.name) + '</div>' +
+        esc(p.icon ? p.icon + ' ' : '') + esc(p.name) +
+        (kid ? '<span class="ftp-card-sub" title="Has a sub-map — open it">↴</span>' : '') + '</div>' +
         '<div class="ftp-card-count">' + n + ' event' + (n === 1 ? '' : 's') + '</div>';
       c.addEventListener('click', function () { view.sel = p.id; renderMapView(root); });
       return c;
@@ -462,6 +559,9 @@
         renderMapView(root);
       }));
     }
+    /* drill-down: give this place its own map (world → region → city) */
+    var _sub = childMapOf(p.id);
+    row.appendChild(mkBtn(_sub ? '⤵ Open sub-map' : '⤵ New sub-map', 'acc', function () { enterSubMap(p); }));
     if (typeof CFG.setPlaceFilter === 'function') {
       row.appendChild(mkBtn('Filter timeline', 'acc', function () { CFG.setPlaceFilter(p.id); }));
     }
@@ -504,7 +604,7 @@
     box.className = 'ftp-ed';
     box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true');
     box.setAttribute('aria-label', p ? 'Edit place' : 'New place');
-    var parentOpts = places()
+    var parentOpts = placesHere()
       .filter(function (q) { return (!p || q.id !== p.id) && !q.parentId; })
       .map(function (q) {
         return '<option value="' + esc(q.id) + '"' + (p && p.parentId === q.id ? ' selected' : '') + '>' + esc(q.name) + '</option>';
@@ -549,8 +649,11 @@
     if (p) {
       actions.appendChild(mkBtn('Delete', 'danger', function () {
         var evCount = eventsAt(p.id).length;
-        var msg = 'Delete place “' + p.name + '”' + (evCount ? ' (linked to ' + evCount + ' events — the events stay, only the link is removed)' : '') + '?';
+        var _kid = childMapOf(p.id);
+        var msg = 'Delete place “' + p.name + '”' + (evCount ? ' (linked to ' + evCount + ' events — the events stay, only the link is removed)' : '') +
+          (_kid ? '\n\nThis place has a sub-map — it and everything inside it will be deleted too.' : '') + '?';
         var go = function () {
+          if (_kid) deleteMapCascade(_kid.id);
           var s = S();
           s.places = places().filter(function (q) { return q.id !== p.id; });
           s.places.forEach(function (q) { if (q.parentId === p.id) q.parentId = ''; });
@@ -573,7 +676,7 @@
       var name = box.querySelector('#ftp-ed-name').value.trim();
       if (!name) { note('Give the place a name.'); return; }
       var target = p;
-      if (!target) { target = { id: uid(), pin: null }; places().push(target); }
+      if (!target) { target = { id: uid(), pin: null, mapId: curMapId() }; places().push(target); }
       target.name = name.slice(0, 200);
       target.icon = box.querySelector('#ftp-ed-icon').value.trim().slice(0, 8);
       target.symbol = (box.querySelector('#ftp-ed-symbol') || {}).value || '';
@@ -596,7 +699,7 @@
   /* ---------- map image lifecycle ---------- */
   function ensureMapUrl() {
     if (view.mapUrl) return Promise.resolve(view.mapUrl);
-    return mapStore.get(CFG.storageKey).then(function (stored) {
+    return mapStore.get(curKey()).then(function (stored) {
       if (stored instanceof Blob) {
         if (_objUrl) URL.revokeObjectURL(_objUrl);
         _objUrl = URL.createObjectURL(stored);
@@ -620,7 +723,7 @@
       if (!f) return;
       note('Processing map image…');
       compressImage(f).then(function (r) {
-        return mapStore.set(CFG.storageKey, r.blob).then(function (ok) {
+        return mapStore.set(curKey(), r.blob).then(function (ok) {
           var s = S();
           if (!ok) {
             /* IDB unavailable (private mode): small images ride in state */
@@ -635,7 +738,8 @@
         }).then(function (stored) {
           if (!stored) return;
           var s = S();
-          s.mapMeta = { has: true, w: r.w, h: r.h, name: f.name.slice(0, 200) };
+          curMap().mapMeta = { has: true, w: r.w, h: r.h, name: f.name.slice(0, 200) };
+          syncRootMeta();
           clearSketchStore(s);
           view.mapUrl = ''; view.sc = 1; view.px = 0; view.py = 0;
           persist();
@@ -650,12 +754,13 @@
   function removeImage() {
     var msg = 'Remove the map image? Places and pins are kept.';
     var go = function () {
-      mapStore.del(CFG.storageKey);
-      try { mapStore.del(CFG.storageKey + '__sketch'); } catch (_) {}
+      mapStore.del(curKey());
+      try { mapStore.del(sketchKey()); } catch (_) {}
       var s = S();
       delete s._mapDataUrl;
-      delete s.mapSketchIcons;
-      s.mapMeta = { has: false, w: 0, h: 0, name: '' };
+      sketchIconsSet(null);
+      curMap().mapMeta = { has: false, w: 0, h: 0, name: '' };
+      syncRootMeta();
       view.mapUrl = '';
       persist(); renderMapView(root); note('Map image removed.');
     };
@@ -668,7 +773,7 @@
     if (!file) return Promise.resolve(false);
     note('Importing your map…');
     return compressImage(file).then(function (r) {
-      return mapStore.set(CFG.storageKey, r.blob).then(function (ok) {
+      return mapStore.set(curKey(), r.blob).then(function (ok) {
         var s = S();
         if (!ok) {
           if (r.blob.size < 1.5 * 1024 * 1024) {
@@ -683,7 +788,8 @@
     }).then(function (out) {
       if (!out.ok) return false;
       var s = S(), r = out.r;
-      s.mapMeta = { has: true, w: r.w, h: r.h, name: String(name || (file.name || 'World map')).slice(0, 200) };
+      curMap().mapMeta = { has: true, w: r.w, h: r.h, name: String(name || (file.name || 'World map')).slice(0, 200) };
+      syncRootMeta();
       clearSketchStore(s);
       view.mapUrl = ''; view.sc = 1; view.px = 0; view.py = 0;
       persist();
@@ -701,10 +807,24 @@
   }
 
   /* ---------- Sketch-a-Map (ft-sketch bridge) — the simple drawer ---------- */
-  function sketchKey() { return CFG.storageKey + '__sketch'; }
+  function sketchKey() { return curKey() + '__sketch'; }
+  /* Sketch icons are stored per map: the root map keeps the legacy S.mapSketchIcons
+     field; child maps use S.mapSketchIconsByMap[id]. */
+  function sketchIconsGet() {
+    var s = S();
+    if (curMapId() === ROOT) return Array.isArray(s.mapSketchIcons) ? s.mapSketchIcons : null;
+    var d = s.mapSketchIconsByMap || {};
+    return Array.isArray(d[curMapId()]) ? d[curMapId()] : null;
+  }
+  function sketchIconsSet(arr) {
+    var s = S();
+    if (curMapId() === ROOT) { if (arr) s.mapSketchIcons = arr; else delete s.mapSketchIcons; return; }
+    if (!s.mapSketchIconsByMap) s.mapSketchIconsByMap = {};
+    if (arr) s.mapSketchIconsByMap[curMapId()] = arr; else delete s.mapSketchIconsByMap[curMapId()];
+  }
   /* When the map is replaced from another source (upload / generator / painter), drop the
      saved sketch layers + icons so reopening "Draw map" doesn't resurrect a stale drawing. */
-  function clearSketchStore(st) { try { mapStore.del(sketchKey()); } catch (_) {} if (st) delete st.mapSketchIcons; }
+  function clearSketchStore(st) { try { mapStore.del(sketchKey()); } catch (_) {} sketchIconsSet(null); }
   window.ftPlacesClearSketch = function () { clearSketchStore(S()); };
   function openSketch() {
     if (!window.ftSketch) { note('The map editor is still loading — try again in a moment.'); return; }
@@ -717,14 +837,14 @@
     }).catch(function () { return null; }).then(function (packed) {
       window.ftSketch.open({
         packed: packed,
-        icons: Array.isArray(s.mapSketchIcons) ? s.mapSketchIcons : null,
+        icons: sketchIconsGet(),
         onSave: function (dataUrl, meta, pk, icons) {
           note('Saving your map…');
           return setMapFromDataUrl(dataUrl).then(function (ok) {
             if (!ok) { note('Could not store the map on this device (private mode?).'); return false; }
-            var st = S();
-            st.mapMeta = { has: true, w: (meta && meta.w) || 0, h: (meta && meta.h) || 0, name: (meta && meta.name) || 'Sketched map' };
-            st.mapSketchIcons = (icons || []).map(function (o) { return { type: o.type, x: o.x, y: o.y, size: o.size }; });
+            curMap().mapMeta = { has: true, w: (meta && meta.w) || 0, h: (meta && meta.h) || 0, name: (meta && meta.name) || 'Sketched map' };
+            syncRootMeta();
+            sketchIconsSet((icons || []).map(function (o) { return { type: o.type, x: o.x, y: o.y, size: o.size }; }));
             view.mapUrl = ''; view.sc = 1; view.px = 0; view.py = 0;
             persist();
             try { mapStore.set(sketchKey(), new Blob([pk])); } catch (_) {}  // editable layers live in IDB, not localStorage
@@ -778,7 +898,8 @@
         return setMapFromDataUrl(dataUrl).then(function (ok) {
           if (!ok) { note('Could not store the generated map on this device (private mode?).'); return false; }
           var s = S();
-          s.mapMeta = { has: true, w: (meta && meta.w) || 0, h: (meta && meta.h) || 0, name: (meta && meta.name) || 'Generated map' };
+          curMap().mapMeta = { has: true, w: (meta && meta.w) || 0, h: (meta && meta.h) || 0, name: (meta && meta.name) || 'Generated map' };
+          syncRootMeta();
           clearSketchStore(s);
           view.mapUrl = ''; view.sc = 1; view.px = 0; view.py = 0;
           persist();
@@ -793,7 +914,7 @@
           places().push({
             id: uid(),
             name: String(pin.name || 'Place').slice(0, 200),
-            icon: '', color: pin.color || '#7a9ede', description: '', parentId: '',
+            icon: '', color: pin.color || '#7a9ede', description: '', parentId: '', mapId: curMapId(),
             pin: { x: Math.round((pin.x || 0.5) * 1000) / 1000, y: Math.round((pin.y || 0.5) * 1000) / 1000 }
           });
         });
@@ -819,7 +940,8 @@
         return setMapFromDataUrl(dataUrl).then(function (ok) {
           if (!ok) { note('Could not store the map on this device (private mode?).'); return false; }
           var st = S();
-          st.mapMeta = { has: true, w: (meta && meta.w) || 0, h: (meta && meta.h) || 0, name: (meta && meta.name) || 'Painted map' };
+          curMap().mapMeta = { has: true, w: (meta && meta.w) || 0, h: (meta && meta.h) || 0, name: (meta && meta.name) || 'Painted map' };
+          syncRootMeta();
           clearSketchStore(st);
           view.mapUrl = ''; view.sc = 1; view.px = 0; view.py = 0;
           persist();
@@ -836,20 +958,40 @@
 
   /* ---------- export / import helpers ---------- */
   /* Resolve the current map image as a dataURL for embedding in exports ('' if none). */
-  function getMapDataUrl() {
-    if (!mapMeta().has) return Promise.resolve('');
-    return mapStore.get(CFG.storageKey).then(function (stored) {
+  function getMapDataUrl(mapId) {
+    var id = mapId || ROOT;
+    var m = mapById(id);
+    if (!m || !m.mapMeta || !m.mapMeta.has) return Promise.resolve('');
+    return mapStore.get(imgKey(id)).then(function (stored) {
       if (stored instanceof Blob) return blobToDataUrl(stored);
       if (typeof stored === 'string') return stored;
       var s = S();
-      return (typeof s._mapDataUrl === 'string') ? s._mapDataUrl : '';
+      return (id === ROOT && typeof s._mapDataUrl === 'string') ? s._mapDataUrl : '';
     });
   }
-  /* Write an imported dataURL back to IDB (called by the engine after validation). */
+  /* Gather every map's image as a dataURL — for lossless export of the whole tree. */
+  function getAllMapImages() {
+    ensureMaps();
+    var maps = S().maps.filter(function (m) { return m.mapMeta && m.mapMeta.has; });
+    return Promise.all(maps.map(function (m) {
+      return getMapDataUrl(m.id).then(function (du) { return du ? { mapId: m.id, dataUrl: du } : null; }).catch(function () { return null; });
+    })).then(function (arr) { return arr.filter(Boolean); });
+  }
+  /* Restore a list of {mapId,dataUrl} back into IDB (called by the engine on import). */
+  function restoreMapImages(arr) {
+    if (!Array.isArray(arr) || !arr.length) return Promise.resolve(true);
+    return Promise.all(arr.map(function (it) {
+      if (!it || !it.dataUrl) return Promise.resolve();
+      return compressImage(it.dataUrl)
+        .then(function (r) { return mapStore.set(imgKey(it.mapId || ROOT), r.blob); })
+        .catch(function () {});
+    })).then(function () { view.mapUrl = ''; return true; });
+  }
+  /* Write an imported/generated dataURL back to IDB for the CURRENT map. */
   function setMapFromDataUrl(dataUrl) {
     if (!dataUrl) return Promise.resolve(false);
     return compressImage(dataUrl).then(function (r) {
-      return mapStore.set(CFG.storageKey, r.blob).then(function (ok) {
+      return mapStore.set(curKey(), r.blob).then(function (ok) {
         var s = S();
         if (!ok && r.blob.size < 1.5 * 1024 * 1024) {
           return blobToDataUrl(r.blob).then(function (du) { s._mapDataUrl = du; return true; });
@@ -892,6 +1034,8 @@
     placeChipsHtml: placeChipsHtml,
     placeOptionsHtml: placeOptionsHtml,
     getMapDataUrl: getMapDataUrl,
+    getAllMapImages: getAllMapImages,
+    restoreMapImages: restoreMapImages,
     setMapFromDataUrl: setMapFromDataUrl,
     mapStore: mapStore,
     selectPlace: function (id) { view.sel = id; },
