@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<script src="js/ft-consent.js" defer></script>
+<title>Help &amp; FAQ — FreeTimeline | Support, Backups &amp; Data</title>
+<meta name="description" content="Answers to common FreeTimeline questions: where your data is stored, how to back up and export timelines, offline use, moving between devices, ads &amp; cookies, and reporting bugs.">
+<link rel="canonical" href="https://freetimeline.pt/faq.html">
+<meta name="theme-color" content="#050611">
+<link rel="alternate" type="application/rss+xml" href="/feed.xml" title="FreeTimeline Guides">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://freetimeline.pt/"},{"@type":"ListItem","position":2,"name":"Help & FAQ","item":"https://freetimeline.pt/faq.html"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Where is my data stored? Did I lose my data?","acceptedAnswer":{"@type":"Answer","text":"Everything you create in FreeTimeline is saved locally in your own browser, using localStorage and IndexedDB. Nothing is uploaded to a server. This means your timelines live on the specific device and browser where you made them. If a timeline seems to be missing, first make sure you opened the same browser on the same device, are not in a private/incognito window, and have not cleared your browsing data. Clearing your browser's cookies and site data, or using a \"clean up\" tool, will permanently erase timelines that were not exported. The best protection is to export a backup regularly."}},{"@type":"Question","name":"How do I back up or export my timeline?","acceptedAnswer":{"@type":"Answer","text":"Open the Data menu (the Data ▾ button in the app toolbar) and choose Export JSON to download a complete copy of your timeline as a .json file, or Save HTML to download a self-contained viewable page. Keep these files somewhere safe such as cloud storage or an external drive. Because your data lives only in your browser, a regular exported backup is the only way to guarantee you never lose your work."}},{"@type":"Question","name":"Does FreeTimeline work offline?","acceptedAnswer":{"@type":"Answer","text":"Yes. FreeTimeline is local-first. Once the page has loaded, the app runs entirely in your browser and does not need an internet connection to create, edit, or view your timelines. A connection is only used to load the page itself and to display ads that keep the tool free."}},{"@type":"Question","name":"How do I move my timeline to another device or browser?","acceptedAnswer":{"@type":"Answer","text":"Because data is stored per-browser, you move a timeline by exporting and importing it. On the original device, open Data ▾ and choose Export JSON. Transfer that .json file to the other device (email, cloud, USB). On the new device, open FreeTimeline, go to Data ▾ and choose Import to load the file. The same method works when switching browsers on the same computer."}},{"@type":"Question","name":"Why do I see ads, and how do I manage cookies?","acceptedAnswer":{"@type":"Answer","text":"FreeTimeline is free and has no accounts or subscriptions, so lightweight advertising (Google AdSense) pays for the domain and hosting. When required, a consent banner lets you accept or reject personalised advertising cookies. You can change your choice at any time using the \"Manage cookie preferences\" link in the footer. For full details on what is stored and why, see our Cookie Policy."}},{"@type":"Question","name":"Is it really free? Do I need an account?","acceptedAnswer":{"@type":"Answer","text":"Yes, it is genuinely free, and no account is required. You can open the app and start building a timeline immediately. There are no premium tiers or hidden costs for the core local tool. Accounts are only relevant if optional cloud sync or sharing features are used; the offline, on-device experience never requires signing up."}},{"@type":"Question","name":"How do I report a bug or request a feature?","acceptedAnswer":{"@type":"Answer","text":"We want to hear about problems and ideas. Use the Contact page to send us a bug report or suggestion, and include what you were doing and which browser you use so we can reproduce it. You can also see what is planned, in progress, and shipped, and vote on ideas, on our public Roadmap."}},{"@type":"Question","name":"Universe or Biography — which one should I use?","acceptedAnswer":{"@type":"Answer","text":"Use the Universe Timeline for fiction and world-building: fantasy histories, multi-book sagas, campaign lore, characters, factions and arcs across centuries. Use the Biography Timeline for real life: your own milestones, relationships and personal chapters. Both are local-first, work offline, and let you export your data as JSON."}}]}</script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #050611;
+  --bg2: #080a18;
+  --surface: #0d0f20;
+  --surface2: #111328;
+  --border: rgba(255,255,255,0.06);
+  --border-mid: rgba(255,255,255,0.1);
+  --text: #e4e8f5;
+  --text-bright: #ffffff;
+  --muted: #aab3cc;
+  --dim: #8a93b0;
+  --gold: #d4af37;
+  --gold-glow: rgba(212,175,55,0.3);
+  --accent: #4a8fde;
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: -apple-system, 'Segoe UI', system-ui, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.7;
+}
+
+.page-wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* TOPBAR */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 60px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(5,6,17,0.95);
+  backdrop-filter: blur(16px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-brand {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.brand-infinity {
+  font-size: 1.4em;
+  background: linear-gradient(135deg, #5a80ff, #40c8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.brand-name {
+  background: linear-gradient(135deg, #c8d4ff, #90d8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.topbar-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+.topbar-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.topbar-links a:hover { color: var(--text-bright); }
+
+/* MAIN CONTENT */
+.main-content {
+  flex: 1;
+  padding: 80px 40px;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.page-title {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: var(--text-bright);
+  margin-bottom: 20px;
+  letter-spacing: -1px;
+}
+
+.page-subtitle {
+  font-size: 1.2rem;
+  color: var(--gold);
+  margin-bottom: 40px;
+  font-weight: 600;
+}
+
+.content-section {
+  margin-bottom: 48px;
+}
+
+.content-section h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 16px;
+}
+
+.content-section p {
+  font-size: 1.05rem;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+.content-section strong {
+  color: var(--text);
+}
+
+.content-section a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.content-section a:hover { text-decoration: underline; }
+
+.highlight-box {
+  background: var(--surface);
+  border: 1px solid var(--border-mid);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 32px 0;
+}
+
+.highlight-box h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+
+/* FAQ ACCORDION */
+.faq-list {
+  margin-top: 8px;
+}
+.faq-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.faq-item[open] {
+  border-color: var(--border-mid);
+}
+.faq-item > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 20px 24px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.faq-item > summary::-webkit-details-marker { display: none; }
+.faq-item > summary::after {
+  content: "+";
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--gold);
+  flex-shrink: 0;
+  transition: transform 0.2s;
+  line-height: 1;
+}
+.faq-item[open] > summary::after {
+  content: "\2212";
+}
+.faq-item .faq-answer {
+  padding: 0 24px 22px;
+}
+.faq-item .faq-answer p {
+  font-size: 1.02rem;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 14px;
+}
+.faq-item .faq-answer p:last-child { margin-bottom: 0; }
+.faq-item .faq-answer strong { color: var(--text); }
+.faq-item .faq-answer a { color: var(--accent); text-decoration: none; }
+.faq-item .faq-answer a:hover { text-decoration: underline; }
+.faq-item .faq-answer code {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 1px 7px;
+  font-size: 0.9em;
+  color: var(--text-bright);
+  white-space: nowrap;
+}
+
+/* FOOTER */
+footer {
+  padding: 32px 40px;
+  border-top: 1px solid var(--border);
+  background: rgba(5,6,17,0.9);
+  margin-top: auto;
+}
+.footer-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--dim);
+}
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.footer-links a {
+  color: var(--dim);
+  font-size: 0.82rem;
+  text-decoration: none;
+  padding: 3px 6px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+.footer-links a:hover {
+  color: var(--muted);
+  background: rgba(255,255,255,0.04);
+}
+.footer-links .fdot {
+  color: var(--dim);
+  font-size: 0.65rem;
+}
+.footer-note {
+  font-size: 0.8rem;
+  color: var(--dim);
+  text-align: center;
+  width: 100%;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .topbar { padding: 0 20px; }
+  .topbar-links { display: none; }
+  .main-content { padding: 40px 20px; }
+  .page-title { font-size: 2rem; }
+  .faq-item > summary { font-size: 1rem; padding: 18px 18px; }
+  .faq-item .faq-answer { padding: 0 18px 20px; }
+  footer { padding: 24px 20px; }
+  .footer-inner { flex-direction: column; align-items: flex-start; }
+}
+
+.footer-links .ft-cookie-prefs{background:none;border:0;color:var(--dim);font:inherit;font-size:.82rem;padding:3px 6px;border-radius:6px;cursor:pointer;text-decoration:underline;text-underline-offset:2px;font-family:inherit;}
+.footer-links .ft-cookie-prefs:hover{color:var(--muted);background:rgba(255,255,255,.04);}
+
+
+/* --- PART 12: A11y baseline --- */
+.skip-link{position:absolute;left:-9999px;top:0;z-index:99999;background:#ffd166;color:#050611;padding:10px 16px;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;}
+.skip-link:focus{left:0;outline:3px solid #ffd166;outline-offset:2px;}
+:focus-visible{outline:3px solid #ffd166;outline-offset:2px;border-radius:4px;}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[tabindex]:focus-visible,summary:focus-visible{outline:3px solid #ffd166;outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:0.001ms!important;animation-iteration-count:1!important;transition-duration:0.001ms!important;scroll-behavior:auto!important;}}
+
+</style>
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://freetimeline.pt/faq.html">
+<meta property="og:title" content="Help &amp; FAQ — FreeTimeline | Support, Backups &amp; Data">
+<meta property="og:description" content="Answers to common FreeTimeline questions: where your data is stored, how to back up and export timelines, offline use, moving between devices, ads &amp; cookies, and reporting bugs.">
+<meta property="og:image" content="https://freetimeline.pt/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="FreeTimeline">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Help &amp; FAQ — FreeTimeline | Support, Backups &amp; Data">
+<meta name="twitter:description" content="Answers to common FreeTimeline questions: where your data is stored, backups, offline use, moving between devices, ads &amp; cookies, and reporting bugs.">
+<meta name="twitter:image" content="https://freetimeline.pt/og.png">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<div class="page-wrap">
+
+  <header class="topbar">
+    <a href="index.html" class="topbar-brand">
+      <span class="brand-infinity">&#8734;</span>
+      <span class="brand-name">FreeTimeline</span>
+    </a>
+    <nav class="topbar-links">
+      <a href="index.html">Home</a>
+      <a href="guides.html">Guides</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="cookies.html">Cookies</a>
+    </nav>
+  </header>
+
+  <main class="main-content" id="main" tabindex="-1">
+    <h1 class="page-title">Help &amp; FAQ</h1>
+    <p class="page-subtitle">Everything you need to know about using FreeTimeline</p>
+
+    <section class="content-section">
+      <p>FreeTimeline is a free, local-first timeline tool. Your work lives in your own browser, not on our servers. Most questions come down to that one fact — so if you read nothing else, read the first answer about where your data lives and how to back it up.</p>
+    </section>
+
+    <div class="highlight-box">
+      <h3>The 10-second summary</h3>
+      <p style="color: var(--muted); margin-bottom: 0;">Your timelines are stored <strong style="color:var(--text)">in your browser</strong>, on <strong style="color:var(--text)">this device</strong>. They are never uploaded to us. Clearing your browser data deletes them. Use <strong style="color:var(--text)">Data &#9662; &rarr; Export JSON</strong> regularly to keep a safe backup.</p>
+    </div>
+
+    <section class="content-section">
+      <h2>Frequently asked questions</h2>
+      <div class="faq-list">
+
+        <details class="faq-item">
+          <summary>Where is my data stored? Did I lose my data?</summary>
+          <div class="faq-answer">
+            <p>Everything you create in FreeTimeline is saved <strong>locally in your own browser</strong>, using <code>localStorage</code> and <code>IndexedDB</code>. Nothing is uploaded to a server — we never see your timelines. The trade-off is that your data lives on the <strong>specific device and browser</strong> where you made it.</p>
+            <p>If a timeline seems to have vanished, check these first:</p>
+            <p>&bull; You opened the <strong>same browser on the same device</strong> where you created it.<br>
+            &bull; You are <strong>not in a private / incognito window</strong> (those forget everything when closed).<br>
+            &bull; You have not cleared cookies, site data, or run a browser "clean-up" tool.</p>
+            <p>Clearing your browser's site data, uninstalling the browser, or using a cleaner tool will <strong>permanently erase</strong> any timeline that was not exported. There is no copy on our side to restore from. The only real protection is a backup — see the next question.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>How do I back up or export my timeline?</summary>
+          <div class="faq-answer">
+            <p>Open the <strong>Data &#9662;</strong> menu in the app toolbar and choose one of:</p>
+            <p>&bull; <strong>Export JSON</strong> &mdash; downloads a complete <code>.json</code> copy of your timeline. This is the format to keep for backups and for moving between devices.<br>
+            &bull; <strong>Save HTML</strong> &mdash; downloads a self-contained page you can open and read in any browser, handy for sharing or archiving.</p>
+            <p>Store those files somewhere durable — cloud storage, an external drive, or an email to yourself. Because your data lives only in your browser, a <strong>regular exported backup is the only guaranteed way</strong> to never lose your work. Make one whenever you have done a meaningful amount of editing.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Does FreeTimeline work offline?</summary>
+          <div class="faq-answer">
+            <p>Yes. FreeTimeline is <strong>local-first</strong>. Once the page has finished loading, the app runs entirely inside your browser and needs no internet connection to create, edit, or view your timelines.</p>
+            <p>A connection is only used to load the page in the first place and to show the ads that keep the tool free. Your actual timeline data never travels over the network.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>How do I move to another device or browser?</summary>
+          <div class="faq-answer">
+            <p>Since data is stored per-browser, you move a timeline by <strong>exporting then importing</strong> it:</p>
+            <p>1. On the original device, open <strong>Data &#9662; &rarr; Export JSON</strong> and save the file.<br>
+            2. Transfer that <code>.json</code> file to the new device (cloud, email, or USB stick).<br>
+            3. On the new device, open FreeTimeline and choose <strong>Data &#9662; &rarr; Import</strong> to load the file.</p>
+            <p>The same steps work when you simply switch to a different browser on the same computer — each browser keeps its own separate storage.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Is it really free? Do I need an account?</summary>
+          <div class="faq-answer">
+            <p>Yes, it is genuinely free, and <strong>no account is required</strong>. Open the app and start building a timeline right away — there are no premium tiers, trials, or hidden costs for the core local tool.</p>
+            <p>Accounts only become relevant if optional cloud sync or sharing features are used. The offline, on-device experience never asks you to sign up or hand over an email address.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Why do I see ads? How do I manage cookies?</summary>
+          <div class="faq-answer">
+            <p>FreeTimeline has no subscriptions and no paywall, so lightweight advertising (Google AdSense) pays for the domain and hosting. That is what lets the tool itself stay free.</p>
+            <p>Where required, a <strong>consent banner</strong> lets you accept or reject personalised advertising cookies. You can change your mind at any time using the <strong>"Manage cookie preferences"</strong> link in the footer of any page. For the full breakdown of what is stored and why, see our <a href="cookies.html">Cookie Policy</a>.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>How do I report a bug or request a feature?</summary>
+          <div class="faq-answer">
+            <p>We genuinely want to hear about problems and ideas. Head to the <a href="contact.html">Contact</a> page to send a bug report or suggestion. If it is a bug, please include <strong>what you were doing</strong> and <strong>which browser</strong> you use, so we can reproduce it.</p>
+            <p>You can also see what is planned, in progress, and already shipped — and <strong>vote on ideas</strong> — on our public <a href="roadmap.html">Roadmap</a>.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Universe or Biography — which one should I use?</summary>
+          <div class="faq-answer">
+            <p><strong>Universe Timeline</strong> is for fiction and world-building: fantasy histories, multi-book sagas, campaign lore, and the characters, factions and arcs that stretch across centuries.</p>
+            <p><strong>Biography Timeline</strong> is for real life: your own milestones, relationships, and personal chapters — a private record of your journey through time.</p>
+            <p>Both are local-first, both work offline, and both let you export your data as JSON. Not sure? Read more on the <a href="about.html">About</a> page.</p>
+          </div>
+        </details>
+
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>Still stuck?</h2>
+      <p>If your question is not answered here, reach out at <a href="mailto:support@freetimeline.pt">support@freetimeline.pt</a> or through the <a href="contact.html">Contact</a> page. We are a small independent team and we read everything.</p>
+    </section>
+  </main>
+<!-- AdSense slot: faq — above footer (replace data-ad-slot with a real unit ID from your AdSense console) -->
+<ins class="adsbygoogle" style="display:block;margin:32px auto;max-width:728px"
+     data-ad-client="ca-pub-4135034633295293"
+     data-ad-slot="5213958958"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+
+
+        <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="brand-infinity">&#8734;</span>
+        <span>FreeTimeline</span>
+      </div>
+      <nav class="footer-links">
+        <a href="about.html">About</a>
+        <span class="fdot">&#8226;</span>
+        <a href="contact.html">Contact</a>
+        <span class="fdot">&#8226;</span>
+        <a href="guides.html">Guides</a>
+        <span class="fdot">&#8226;</span>
+        <a href="pricing.html">Pricing</a>
+        <span class="fdot">&#8226;</span>
+        <a href="roadmap.html">Roadmap</a>
+        <span class="fdot">&#8226;</span>
+        <a href="terms.html">Terms</a>
+        <span class="fdot">&#8226;</span>
+        <a href="privacy.html">Privacy</a>
+        <span class="fdot">&#8226;</span>
+        <a href="cookies.html">Cookies</a>
+        <span class="fdot">&#8226;</span>
+        <button type="button" class="ft-cookie-prefs" id="ft-cookie-prefs-footer">Manage cookie preferences</button>
+      </nav>
+      <p class="footer-note">&copy; <span id="footer-year">2026</span> FreeTimeline &mdash; All data is saved locally in your browser.</p>
+    </div>
+  </footer>
+
+</div>
+
+
+
+<script>(function(){var y=document.getElementById('footer-year');if(y)y.textContent=new Date().getFullYear();})();</script>
+</body>
+</html>

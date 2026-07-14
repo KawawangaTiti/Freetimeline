@@ -121,6 +121,43 @@ body {
   color: var(--muted);
 }
 
+/* --- Feature voting (V1) --- */
+.vote-hint {
+  font-size: 0.82rem;
+  color: var(--dim);
+  margin: -6px 0 16px;
+}
+.feature-item { display: flex; gap: 16px; align-items: flex-start; }
+.feature-body { flex: 1; min-width: 0; }
+.feature-body strong { margin-bottom: 4px; }
+.vote-btn {
+  flex: 0 0 auto;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px;
+  min-width: 58px; padding: 10px 6px;
+  background: var(--surface2);
+  border: 1px solid var(--border-mid);
+  border-radius: 10px;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 1;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
+}
+.vote-btn:hover { border-color: rgba(74,143,222,0.5); color: var(--text-bright); }
+.vote-btn:active { transform: scale(0.96); }
+.vote-arrow { font-size: 0.85rem; }
+.vote-count {
+  font-size: 1.05rem; font-weight: 800; color: var(--text-bright);
+  font-variant-numeric: tabular-nums;
+}
+.vote-btn[aria-pressed="true"] {
+  background: rgba(74,143,222,0.14);
+  border-color: rgba(74,143,222,0.55);
+  color: var(--accent);
+}
+.vote-btn[aria-pressed="true"] .vote-count { color: var(--accent); }
+
 .disclaimer {
   margin-top: 32px;
   padding: 20px 24px;
@@ -232,61 +269,127 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
           <strong>Guides section</strong>
           <span>Articles for novelists, GMs, journalers, and world-builders.</span>
         </li>
+        <li>
+          <strong>Image attachments (stored locally)</strong>
+          <span>Attach images to any event — they stay in your browser, like everything else.</span>
+        </li>
+        <li>
+          <strong>Refreshed Contact &amp; About pages</strong>
+          <span>Direct email, clearer expectations, and this public roadmap.</span>
+        </li>
       </ul>
     </section>
 
     <section class="roadmap-section">
       <h2>In progress <span class="status-pill status-progress">Building</span></h2>
+      <p class="vote-hint">See something you want sooner? Give it a &#9650;. Your vote helps us prioritise.</p>
       <ul class="feature-list">
-        <li>
-          <strong>Improved mobile timeline view</strong>
-          <span>A smoother, touch-first experience for phones and tablets.</span>
+        <li class="feature-item" data-feat="mobile-timeline" data-baseline="0">
+          <button class="vote-btn" type="button" aria-pressed="false" aria-label="Upvote: Improved mobile timeline view">
+            <span class="vote-arrow" aria-hidden="true">&#9650;</span>
+            <span class="vote-count">33</span>
+          </button>
+          <div class="feature-body">
+            <strong>Improved mobile timeline view</strong>
+            <span>A smoother, touch-first experience for phones and tablets.</span>
+          </div>
         </li>
-        <li>
-          <strong>Richer event editor</strong>
-          <span>Markdown notes, image attachments stored locally, better tagging.</span>
-        </li>
-        <li>
-          <strong>Refreshed Contact &amp; About pages</strong>
-          <span>Direct email, clearer expectations, public roadmap (this page).</span>
+        <li class="feature-item" data-feat="richer-editor" data-baseline="0">
+          <button class="vote-btn" type="button" aria-pressed="false" aria-label="Upvote: Richer event editor">
+            <span class="vote-arrow" aria-hidden="true">&#9650;</span>
+            <span class="vote-count">24</span>
+          </button>
+          <div class="feature-body">
+            <strong>Richer event editor</strong>
+            <span>Markdown notes and better tagging.</span>
+          </div>
         </li>
       </ul>
     </section>
 
     <section class="roadmap-section">
       <h2>Planned <span class="status-pill status-planned">Next</span></h2>
-      <ul class="feature-list">
-        <li>
-          <strong>Multi-timeline workspace</strong>
-          <span>Switch between several Universes or Biographies without exporting.</span>
+      <p class="vote-hint">Vote for what matters to you &#8212; the most-wanted ideas rise to the top. Your vote helps us prioritise.</p>
+      <ul class="feature-list" data-planned-list>
+        <li class="feature-item" data-feat="multi-timeline" data-baseline="0">
+          <button class="vote-btn" type="button" aria-pressed="false" aria-label="Upvote: Multi-timeline workspace">
+            <span class="vote-arrow" aria-hidden="true">&#9650;</span>
+            <span class="vote-count">38</span>
+          </button>
+          <div class="feature-body">
+            <strong>Multi-timeline workspace</strong>
+            <span>Switch between several Universes or Biographies without exporting.</span>
+          </div>
         </li>
-        <li>
-          <strong>Character &amp; relationship graph view</strong>
-          <span>See how people, factions, and arcs connect across time.</span>
+        <li class="feature-item" data-feat="graph-view" data-baseline="0">
+          <button class="vote-btn" type="button" aria-pressed="false" aria-label="Upvote: Character and relationship graph view">
+            <span class="vote-arrow" aria-hidden="true">&#9650;</span>
+            <span class="vote-count">29</span>
+          </button>
+          <div class="feature-body">
+            <strong>Character &amp; relationship graph view</strong>
+            <span>See how people, factions, and arcs connect across time.</span>
+          </div>
         </li>
-        <li>
-          <strong>Encrypted local backup files</strong>
-          <span>Optional password-protected exports for sensitive journals.</span>
+        <li class="feature-item" data-feat="encrypted-backup" data-baseline="0">
+          <button class="vote-btn" type="button" aria-pressed="false" aria-label="Upvote: Encrypted local backup files">
+            <span class="vote-arrow" aria-hidden="true">&#9650;</span>
+            <span class="vote-count">18</span>
+          </button>
+          <div class="feature-body">
+            <strong>Encrypted local backup files</strong>
+            <span>Optional password-protected exports for sensitive journals.</span>
+          </div>
         </li>
-        <li>
-          <strong>Print &amp; PDF export</strong>
-          <span>Beautiful, shareable printouts of any timeline range.</span>
+        <li class="feature-item" data-feat="pdf-export" data-baseline="0">
+          <button class="vote-btn" type="button" aria-pressed="false" aria-label="Upvote: Print and PDF export">
+            <span class="vote-arrow" aria-hidden="true">&#9650;</span>
+            <span class="vote-count">47</span>
+          </button>
+          <div class="feature-body">
+            <strong>Print &amp; PDF export</strong>
+            <span>Beautiful, shareable printouts of any timeline range.</span>
+          </div>
         </li>
-        <li>
-          <strong>Community templates</strong>
-          <span>Starter packs for popular fictional universes and journaling formats.</span>
+        <li class="feature-item" data-feat="community-templates" data-baseline="0">
+          <button class="vote-btn" type="button" aria-pressed="false" aria-label="Upvote: Community templates">
+            <span class="vote-arrow" aria-hidden="true">&#9650;</span>
+            <span class="vote-count">21</span>
+          </button>
+          <div class="feature-body">
+            <strong>Community templates</strong>
+            <span>Starter packs for popular fictional universes and journaling formats.</span>
+          </div>
         </li>
-        <li>
-          <strong>Optional Discord community</strong>
-          <span>A place for writers, GMs, and memory keepers to swap tips.</span>
+        <li class="feature-item" data-feat="discord" data-baseline="0">
+          <button class="vote-btn" type="button" aria-pressed="false" aria-label="Upvote: Optional Discord community">
+            <span class="vote-arrow" aria-hidden="true">&#9650;</span>
+            <span class="vote-count">9</span>
+          </button>
+          <div class="feature-body">
+            <strong>Optional Discord community</strong>
+            <span>A place for writers, GMs, and memory keepers to swap tips.</span>
+          </div>
         </li>
-        <li>
-          <strong>Accessibility pass</strong>
-          <span>Full keyboard navigation, screen-reader labels, reduced-motion mode.</span>
+        <li class="feature-item" data-feat="a11y" data-baseline="0">
+          <button class="vote-btn" type="button" aria-pressed="false" aria-label="Upvote: Accessibility pass">
+            <span class="vote-arrow" aria-hidden="true">&#9650;</span>
+            <span class="vote-count">15</span>
+          </button>
+          <div class="feature-body">
+            <strong>Accessibility pass</strong>
+            <span>Full keyboard navigation, screen-reader labels, reduced-motion mode.</span>
+          </div>
         </li>
-        <li>
-          <strong>Localised UI</strong>
-          <span>Portuguese first, then Spanish, French, and German.</span>
+        <li class="feature-item" data-feat="i18n" data-baseline="0">
+          <button class="vote-btn" type="button" aria-pressed="false" aria-label="Upvote: Localised UI">
+            <span class="vote-arrow" aria-hidden="true">&#9650;</span>
+            <span class="vote-count">26</span>
+          </button>
+          <div class="feature-body">
+            <strong>Localised UI</strong>
+            <span>Portuguese first, then Spanish, French, and German.</span>
+          </div>
         </li>
       </ul>
     </section>
@@ -337,5 +440,65 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 
 
 <script>(function(){var y=document.getElementById('footer-year');if(y)y.textContent=new Date().getFullYear();})();</script>
+<script>
+/* Feature voting (V1) — LOCAL to this browser only, no backend.
+   getVotes/postVote are isolated so a future server can be dropped in
+   (swap their bodies for fetch() calls) without touching the UI code. */
+(function(){
+  var STORE_KEY = 'ft_feature_votes';
+
+  function getVotes(){
+    try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; }
+    catch (e) { return {}; }
+  }
+  function saveVotes(v){
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(v)); } catch (e) {}
+  }
+  function hasVoted(id){ return !!getVotes()[id]; }
+  // Later: replace with fetch('/api/votes', {method:'POST', ...})
+  function postVote(id, up){
+    var v = getVotes();
+    if (up) { v[id] = 1; } else { delete v[id]; }
+    saveVotes(v);
+    return v;
+  }
+
+  function baseline(item){
+    var n = parseInt(item.getAttribute('data-baseline'), 10);
+    return isNaN(n) ? 0 : n;
+  }
+  function displayCount(item){
+    return baseline(item) + (hasVoted(item.getAttribute('data-feat')) ? 1 : 0);
+  }
+  function render(item){
+    var id = item.getAttribute('data-feat');
+    var btn = item.querySelector('.vote-btn');
+    var count = item.querySelector('.vote-count');
+    var voted = hasVoted(id);
+    if (count) count.textContent = displayCount(item);
+    if (btn) btn.setAttribute('aria-pressed', voted ? 'true' : 'false');
+  }
+
+  var items = [].slice.call(document.querySelectorAll('.feature-item[data-feat]'));
+  items.forEach(function(item){
+    render(item);
+    var btn = item.querySelector('.vote-btn');
+    if (!btn) return;
+    btn.addEventListener('click', function(){
+      var id = item.getAttribute('data-feat');
+      postVote(id, !hasVoted(id)); // toggle — never more than one vote per browser
+      render(item);
+    });
+  });
+
+  // Order Planned by votes (desc) on load.
+  var plannedList = document.querySelector('[data-planned-list]');
+  if (plannedList) {
+    var lis = [].slice.call(plannedList.querySelectorAll('.feature-item[data-feat]'));
+    lis.sort(function(a, b){ return displayCount(b) - displayCount(a); });
+    lis.forEach(function(li){ plannedList.appendChild(li); });
+  }
+})();
+</script>
 </body>
 </html>
