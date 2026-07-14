@@ -30,6 +30,7 @@
 
   var STYLE_ID = 'ft-print-style';
   var BTN_ID = 'ftp-print-btn';
+  var MENU_ID = 'ftp-menu';
   var TIP_ID = 'ftp-tip';
   var TIP_SEEN_KEY = 'ftp_tip_seen';
 
@@ -75,6 +76,30 @@
       '    }',
       '    #' + BTN_ID + '{ padding:9px; }',
       '  }',
+      '  #' + BTN_ID + ' .ftp-caret{ font-size:11px; line-height:1; opacity:.85; }',
+      /* Export dropdown menu (opens above the button) */
+      '  #' + MENU_ID + '{',
+      '    position:fixed; z-index:322; min-width:194px; padding:6px;',
+      '    border-radius:12px;',
+      '    background:var(--v-panel,#1c1f38);',
+      '    border:1px solid var(--v-bd,rgba(140,160,220,0.3));',
+      '    box-shadow:0 12px 34px rgba(0,0,0,0.5);',
+      '    -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);',
+      '    display:flex; flex-direction:column; gap:4px;',
+      '  }',
+      '  #' + MENU_ID + '[hidden]{ display:none; }',
+      '  #' + MENU_ID + ' .ftp-mi{',
+      '    display:flex; align-items:center; gap:9px;',
+      '    width:100%; text-align:left; padding:9px 12px; min-height:38px;',
+      '    border-radius:8px; cursor:pointer; border:1px solid transparent;',
+      '    background:transparent; color:var(--v-ink,#e4e8f5);',
+      "    font:600 13px/1.1 -apple-system,'Segoe UI',system-ui,Arial,sans-serif;",
+      '  }',
+      '  #' + MENU_ID + ' .ftp-mi:hover, #' + MENU_ID + ' .ftp-mi:focus{',
+      '    background:var(--v-panel-2,rgba(48,54,92,0.95));',
+      '  }',
+      '  #' + MENU_ID + ' .ftp-mi:focus-visible{ outline:3px solid var(--v-accent,#8fd3ff); outline-offset:2px; }',
+      '  #' + MENU_ID + ' .ftp-mi-ico{ font-size:15px; line-height:1; width:18px; text-align:center; }',
       /* One-time tip popover */
       '  #' + TIP_ID + '{',
       '    position:fixed; left:12px; bottom:104px; z-index:321;',
@@ -129,7 +154,7 @@
       '  #ft-hud-btn, #ft-hud-panel,',
       '  .ft-dd-menu, .cm-legend-panel, .map-tip,',
       '  ins.adsbygoogle, .adsbygoogle,',
-      '  #' + BTN_ID + ', #' + TIP_ID + ' {',
+      '  #' + BTN_ID + ', #' + MENU_ID + ', #' + TIP_ID + ' {',
       '    display:none !important;',
       '  }',
 
@@ -285,20 +310,267 @@
   }
 
   /* ---------------------------------------------------------------
-   * 4. FLOATING BUTTON
+   * 4. MARKDOWN / OBSIDIAN EXPORT (read-only)
    * ------------------------------------------------------------- */
+
+  /* Detect the current app by the PAGE (title/pathname), never by the
+   * storage key. 'biograph' anywhere => biography, otherwise universe. */
+  function detectApp() {
+    var hay = ((document.title || '') + ' ' + ((location && location.pathname) || '')).toLowerCase();
+    return hay.indexOf('biograph') !== -1 ? 'biography' : 'universe';
+  }
+
+  function readState(key) {
+    try {
+      var raw = localStorage.getItem(key);
+      if (!raw) return null;
+      var obj = JSON.parse(raw);
+      return (obj && typeof obj === 'object') ? obj : null;
+    } catch (e) { return null; }
+  }
+
+  /* Collapse a value to a single, heading-safe inline string. */
+  function mdInline(v) {
+    return String(v == null ? '' : v).replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+  /* Preserve paragraph structure for block text; trim runaway blank lines. */
+  function mdBlock(v) {
+    return String(v == null ? '' : v).replace(/\r\n?/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+  }
+  function slugify(v) {
+    var s = String(v == null ? '' : v).toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    return s || 'freetimeline-export';
+  }
+
+  /* Best-effort chronological key from free-form date strings. Values with
+   * no 4-digit year sort last; ties keep their original (stable) order. */
+  function dateNum(d) {
+    var s = String(d == null ? '' : d);
+    var ym = s.match(/(\d{4})/);
+    if (!ym) return Number.POSITIVE_INFINITY;
+    var year = parseInt(ym[1], 10);
+    var dm = s.match(/^\s*(\d{1,2})\D+(\d{1,2})\D+\d{2,4}/); // dd/mm/yyyy-ish
+    var mo = dm ? parseInt(dm[2], 10) : 0;
+    var day = dm ? parseInt(dm[1], 10) : 0;
+    return (year * 10000) + (mo * 100) + day;
+  }
+  function byDate(a, b) { return dateNum(a && a.date) - dateNum(b && b.date); }
+
+  function pushSubs(out, subs, depth) {
+    var pad = new Array(depth * 2 + 1).join(' '); // 2 spaces per nesting level
+    for (var i = 0; i < subs.length; i++) {
+      var se = subs[i];
+      if (!se) continue;
+      var when = mdInline(se.date) ? ' (' + mdInline(se.date) + ')' : '';
+      var desc = mdInline(se.description) ? ' — ' + mdInline(se.description) : '';
+      out.push(pad + '- **' + mdInline(se.title || 'Untitled sub-event') + '**' + when + desc);
+      if (se.subEvents && se.subEvents.length) pushSubs(out, se.subEvents, depth + 1);
+    }
+  }
+
+  function pushEvent(out, ev) {
+    var when = mdInline(ev.date) ? ' (' + mdInline(ev.date) + ')' : '';
+    out.push('### ' + mdInline(ev.title || 'Untitled event') + when);
+    out.push('');
+    if (mdBlock(ev.description)) { out.push(mdBlock(ev.description)); out.push(''); }
+    if (mdBlock(ev.notes)) {
+      out.push('> ' + mdBlock(ev.notes).replace(/\n/g, '\n> '));
+      out.push('');
+    }
+    var subs = ev.subEvents || [];
+    if (subs.length) { pushSubs(out, subs, 0); out.push(''); }
+  }
+
+  /* Build the whole Markdown document. Returns { text, name } or null when
+   * there is nothing to export. NEVER mutates state. */
+  function buildMarkdown() {
+    var app = detectApp();
+    var key = app === 'biography' ? 'inf_biography_v1' : 'inf_universe_v4';
+    var S = readState(key);
+    if (!S) return null;
+
+    var tracks = (app === 'biography' ? S.lifeTracks : S.universes) || [];
+    var events = S.events || [];
+    var people = (app === 'biography' ? S.people : S.characters) || [];
+    if (!tracks.length && !events.length && !people.length) return null;
+
+    var titleName = (tracks[0] && tracks[0].name) ||
+      (app === 'biography' ? 'FreeTimeline biography' : 'FreeTimeline export');
+
+    var out = [];
+    // YAML frontmatter (no date: Date.now is intentionally not used).
+    out.push('---');
+    out.push('app: ' + app);
+    out.push('---');
+    out.push('');
+    out.push('# ' + mdInline(titleName));
+    out.push('');
+
+    var assigned = {};
+    tracks.forEach(function (t) {
+      assigned[t.id] = true;
+      out.push('## ' + mdInline(t.name || 'Untitled'));
+      out.push('');
+      if (mdBlock(t.description)) { out.push(mdBlock(t.description)); out.push(''); }
+      var evs = events.filter(function (e) { return e && e.universeId === t.id; }).slice().sort(byDate);
+      if (!evs.length) { out.push('_No events yet._'); out.push(''); }
+      evs.forEach(function (ev) { pushEvent(out, ev); });
+    });
+
+    // Any events whose track is missing are still worth exporting.
+    var orphans = events.filter(function (e) { return e && !assigned[e.universeId]; }).slice().sort(byDate);
+    if (orphans.length) {
+      out.push('## (Unassigned events)');
+      out.push('');
+      orphans.forEach(function (ev) { pushEvent(out, ev); });
+    }
+
+    if (people.length) {
+      out.push('## ' + (app === 'biography' ? 'People' : 'Characters'));
+      out.push('');
+      people.forEach(function (p) {
+        if (!p) return;
+        out.push('### ' + mdInline(p.name || 'Unnamed'));
+        out.push('');
+        if (mdBlock(p.biography)) { out.push(mdBlock(p.biography)); out.push(''); }
+      });
+    }
+
+    var text = out.join('\n').replace(/\n{3,}/g, '\n\n').replace(/\s+$/, '') + '\n';
+    return { text: text, name: slugify(titleName) + '.md' };
+  }
+
+  function exportMarkdown() {
+    var doc = buildMarkdown();
+    if (!doc) { toast('Nothing to export yet'); return; }
+    try {
+      var blob = new Blob([doc.text], { type: 'text/markdown;charset=utf-8' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = doc.name;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.setTimeout(function () { try { URL.revokeObjectURL(url); } catch (e) {} }, 4000);
+    } catch (e) {
+      toast('Export failed');
+    }
+  }
+
+  function toast(msg) {
+    try {
+      if (window.ftNotify && typeof window.ftNotify === 'function') { window.ftNotify(msg); return; }
+    } catch (e) { /* fall through */ }
+    try { window.alert(msg); } catch (e) { /* no-op */ }
+  }
+
+  /* ---------------------------------------------------------------
+   * 5. EXPORT MENU + FLOATING BUTTON
+   * ------------------------------------------------------------- */
+  var menuOpen = false;
+  var outsideHandler = null;
+
+  function menuEl() { return document.getElementById(MENU_ID); }
+
+  function onMenuKeydown(ev) {
+    var menu = menuEl();
+    if (!menu) return;
+    var items = Array.prototype.slice.call(menu.querySelectorAll('.ftp-mi'));
+    if (!items.length) return;
+    var idx = items.indexOf(document.activeElement);
+    if (ev.key === 'Escape') {
+      ev.preventDefault(); ev.stopPropagation(); closeMenu(true);
+    } else if (ev.key === 'ArrowDown') {
+      ev.preventDefault(); items[(idx + 1 + items.length) % items.length].focus();
+    } else if (ev.key === 'ArrowUp') {
+      ev.preventDefault(); items[(idx - 1 + items.length) % items.length].focus();
+    } else if (ev.key === 'Home') {
+      ev.preventDefault(); items[0].focus();
+    } else if (ev.key === 'End') {
+      ev.preventDefault(); items[items.length - 1].focus();
+    } else if (ev.key === 'Tab') {
+      closeMenu(false);
+    }
+  }
+
+  function buildMenu() {
+    var menu = document.createElement('div');
+    menu.id = MENU_ID;
+    menu.setAttribute('role', 'menu');
+    menu.setAttribute('aria-label', 'Export options');
+    menu.setAttribute('aria-orientation', 'vertical');
+    menu.setAttribute('hidden', '');
+    menu.innerHTML =
+      '<button type="button" role="menuitem" class="ftp-mi" data-ftp="print">' +
+        '<span class="ftp-mi-ico" aria-hidden="true">&#128424;</span>Print / PDF</button>' +
+      '<button type="button" role="menuitem" class="ftp-mi" data-ftp="md">' +
+        '<span class="ftp-mi-ico" aria-hidden="true">&#128221;</span>Markdown (.md)</button>';
+    menu.addEventListener('click', function (ev) {
+      var t = ev.target && ev.target.closest ? ev.target.closest('[data-ftp]') : null;
+      if (!t) return;
+      var act = t.getAttribute('data-ftp');
+      closeMenu(false);
+      if (act === 'print') { if (tipSeen()) doPrint(); else showTip(); }
+      else if (act === 'md') { exportMarkdown(); }
+    });
+    menu.addEventListener('keydown', onMenuKeydown);
+    return menu;
+  }
+
+  function openMenu() {
+    var btn = document.getElementById(BTN_ID);
+    if (!btn) return;
+    var menu = menuEl() || (function () { var m = buildMenu(); document.body.appendChild(m); return m; })();
+    // Anchor the menu directly above the button.
+    var r = btn.getBoundingClientRect();
+    menu.style.left = Math.round(r.left) + 'px';
+    menu.style.bottom = Math.round(window.innerHeight - r.top + 8) + 'px';
+    menu.removeAttribute('hidden');
+    btn.setAttribute('aria-expanded', 'true');
+    menuOpen = true;
+    var first = menu.querySelector('.ftp-mi');
+    if (first) first.focus();
+    outsideHandler = function (e) {
+      if (menu.contains(e.target) || e.target === btn) return;
+      closeMenu(false);
+    };
+    // Defer so this very click doesn't immediately close the menu.
+    window.setTimeout(function () {
+      document.addEventListener('mousedown', outsideHandler, true);
+    }, 0);
+  }
+
+  function closeMenu(focusBtn) {
+    var menu = menuEl();
+    if (menu) menu.setAttribute('hidden', '');
+    var btn = document.getElementById(BTN_ID);
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+    menuOpen = false;
+    if (outsideHandler) {
+      document.removeEventListener('mousedown', outsideHandler, true);
+      outsideHandler = null;
+    }
+    if (focusBtn && btn) { try { btn.focus(); } catch (e) {} }
+  }
+
   function buildButton() {
     var btn = document.createElement('button');
     btn.id = BTN_ID;
     btn.type = 'button';
-    btn.setAttribute('aria-label', 'Print or save the timeline as PDF');
-    btn.title = 'Print / Save as PDF';
+    btn.setAttribute('aria-label', 'Export the timeline (Print / PDF or Markdown)');
+    btn.setAttribute('aria-haspopup', 'menu');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.title = 'Export (Print / PDF or Markdown)';
     btn.innerHTML =
-      '<span class="ftp-ico" aria-hidden="true">&#128424;</span>' +
-      '<span class="ftp-label">Print / PDF</span>';
+      '<span class="ftp-ico" aria-hidden="true">&#128228;</span>' +
+      '<span class="ftp-label">Export</span>' +
+      '<span class="ftp-caret" aria-hidden="true">&#9662;</span>';
     btn.addEventListener('click', function () {
-      if (tipSeen()) doPrint();
-      else showTip();
+      if (menuOpen) closeMenu(true);
+      else openMenu();
     });
     document.body.appendChild(btn);
   }
