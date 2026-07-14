@@ -3665,11 +3665,38 @@ function buildMediaDisplay(media) {
   return html;
 }
 
-/** Render notes block in detail (read-only) view */
+/* V4: minimal, XSS-safe inline markdown. The raw text is escaped FIRST, then a
+   small, controlled set of patterns is applied to the ALREADY-escaped string, so
+   no user-supplied HTML (e.g. <script>) can ever reach the DOM \u2014 it stays escaped.
+   Supports **bold**, *italic*, `code`, and [txt](http(s)://\u2026) links. */
+function mdInline(str) {
+  var s = esc(String(str));
+  /* inline code first, so its contents aren't re-transformed by the rules below */
+  s = s.replace(/`([^`]+)`/g, function (_, c) { return '<code>' + c + '</code>'; });
+  /* links: only http/https; the URL is already escaped so quotes/brackets are inert */
+  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, function (_, t, u) {
+    return '<a href="' + u + '" target="_blank" rel="noopener noreferrer">' + t + '</a>';
+  });
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  return s;
+}
+
+/** Render notes block in detail (read-only) view. V4: renders a safe subset of
+    markdown (inline styles via mdInline, plus simple -/* lists and line breaks). */
 function buildNotesDisplay(notes) {
   if (!notes || !notes.trim()) return '';
+  var lines = String(notes).replace(/\r\n?/g, '\n').split('\n');
+  var out = [], list = null;
+  for (var i = 0; i < lines.length; i++) {
+    var m = /^\s*[-*]\s+(.*)$/.exec(lines[i]);
+    if (m) { if (!list) list = []; list.push('<li>' + mdInline(m[1]) + '</li>'); }
+    else { if (list) { out.push('<ul>' + list.join('') + '</ul>'); list = null; } out.push(mdInline(lines[i])); }
+  }
+  if (list) out.push('<ul>' + list.join('') + '</ul>');
+  var html = out.join('<br>').replace(/<br>(<ul>)/g, '$1').replace(/(<\/ul>)<br>/g, '$1');
   return '<div><div class="notes-label">\uD83D\uDCDD NOTES</div>' +
-    '<div class="notes-display">' + esc(notes) + '</div></div>';
+    '<div class="notes-display">' + html + '</div></div>';
 }
 
 /* =====================================================
@@ -5814,8 +5841,12 @@ const Store = {
   _exportPayload(mapDataUrl, mapImages) {
     const payload = Object.assign({}, S);
     delete payload._mapDataUrl;               /* private-mode carrier \u2014 mapImage supersedes it */
-    if (mapDataUrl) payload.mapImage = mapDataUrl;
     if (mapImages && mapImages.length) payload.mapImages = mapImages;
+    /* B5: don't duplicate the root map image. When getAllMapImages already carries
+       a mapId==='root' entry, the legacy top-level mapImage is redundant (import
+       deduplicates the same way) and would embed the large dataURL twice. */
+    var _hasRoot = mapImages && mapImages.some(function (x) { return x && (x.mapId || 'root') === 'root'; });
+    if (mapDataUrl && !_hasRoot) payload.mapImage = mapDataUrl;
     return payload;
   },
 
@@ -6027,7 +6058,7 @@ const Store = {
     var payload = { _ft: 'biography-share1',
       lifeTracks: S.lifeTracks, events: S.events, connections: S.connections,
       people: S.people, categories: S.categories, affiliations: S.affiliations,
-      places: S.places, continuities: S.continuities,
+      places: S.places, maps: S.maps, currentMapId: S.currentMapId, continuities: S.continuities,
       mapMeta: { has: false, w: 0, h: 0, name: '' } };
     window.ftShare.make(payload).then(function (url) {
       var big = url.length > 14000;
@@ -6044,6 +6075,8 @@ const Store = {
       S.lifeTracks = d.lifeTracks || d.universes || []; S.events = d.events || []; S.connections = d.connections || [];
       S.people = d.people || d.characters || []; S.categories = d.categories || {}; S.affiliations = d.affiliations || [];
       S.places = d.places || []; S.continuities = d.continuities || [];
+      S.maps = Array.isArray(d.maps) ? d.maps : null;
+      S.currentMapId = (typeof d.currentMapId === 'string') ? d.currentMapId : 'root';
       S.mapMeta = { has: false, w: 0, h: 0, name: '' };
       _continuityFilter = null; delete S._mapDataUrl;
       if (window.ftPlaces) { try { ftPlaces.mapStore.del(SKEY); } catch (_) {} }
@@ -6062,7 +6095,7 @@ const Store = {
     return { app: 'biography', title: String(name).slice(0, 120), data: {
       _ft: 'biography-share1', lifeTracks: S.lifeTracks, events: S.events, connections: S.connections,
       people: S.people, categories: S.categories, affiliations: S.affiliations,
-      places: S.places, continuities: S.continuities, mapMeta: { has: false, w: 0, h: 0, name: '' } } };
+      places: S.places, maps: S.maps, currentMapId: S.currentMapId, continuities: S.continuities, mapMeta: { has: false, w: 0, h: 0, name: '' } } };
   },
   cloudOpen(data) { this.loadShared(data); }
 };
@@ -6099,6 +6132,14 @@ const Store = {
         S.people       = d.people || d.characters || [];
         S.categories   = d.categories   || {};
         S.affiliations = d.affiliations || [];
+        /* MP2: undo/redo must also restore the places/maps layer, not just the
+           core entities — otherwise an undo silently drops maps and sub-map places. */
+        if (d.places)               S.places               = d.places;
+        if (d.maps !== undefined)   S.maps                 = d.maps;
+        if (d.mapMeta)              S.mapMeta              = d.mapMeta;
+        if (d.currentMapId)         S.currentMapId         = d.currentMapId;
+        if (d.mapSketchIcons)       S.mapSketchIcons       = d.mapSketchIcons;
+        if (d.mapSketchIconsByMap)  S.mapSketchIconsByMap  = d.mapSketchIconsByMap;
         syncCategoriesFromState();
         clampPanY();
         render();

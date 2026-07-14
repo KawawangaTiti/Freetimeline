@@ -31,8 +31,8 @@
   function S() { return CFG.getS(); }
   function places() { var s = S(); if (!Array.isArray(s.places)) s.places = []; return s.places; }
   /* ===================== map tree (nested / drill-down maps) =====================
-     A timeline can hold several maps arranged as a tree: click a place pin to enter
-     the sub-map anchored to it (world → region → city). Each map node owns its own
+     A timeline can hold several maps arranged as a tree: click a place pin's ↴ badge to
+     enter the sub-map anchored to it (world → region → city). Each map node owns its own
      image (IndexedDB) and its own places (place.mapId). The ROOT map keeps the legacy
      IDB key (CFG.storageKey) and S.mapMeta mirror, so timelines authored before
      nesting open completely unchanged. */
@@ -78,6 +78,7 @@
     ensureMaps();
     if (!mapById(id)) return;
     S().currentMapId = id;
+    if (_objUrl) { try { URL.revokeObjectURL(_objUrl); } catch (_) {} _objUrl = ''; }
     view.sel = null; view.arming = false; view.sc = 1; view.px = 0; view.py = 0; view.mapUrl = '';
     persist();
     if (root) renderMapView(root);
@@ -89,6 +90,7 @@
     s.maps.filter(function (m) { return m.parentMapId === mapId; }).forEach(function (k) { deleteMapCascade(k.id); });
     s.places = places().filter(function (p) { return (p.mapId || ROOT) !== mapId; });
     s.maps = s.maps.filter(function (m) { return m.id !== mapId; });
+    if (s.mapSketchIconsByMap) delete s.mapSketchIconsByMap[mapId];
     try { mapStore.del(imgKey(mapId)); mapStore.del(imgKey(mapId) + '__sketch'); } catch (_) {}
     if (s.currentMapId === mapId) s.currentMapId = ROOT;
   }
@@ -185,7 +187,13 @@
   var view = { sc: 1, px: 0, py: 0, sel: null, arming: false, mapUrl: '' };
   var _objUrl = '';
 
-  function persist() { try { CFG.autosave(); } catch (_) {} }
+  function persist() {
+    /* MP2: CFG.autosave() -> Store.autosave(), which is already wrapped in both
+       apps to push an undo snapshot. restore() now covers maps/places, so map/place
+       edits land on the undo stack via autosave — no extra History.push (that would
+       double-snapshot in Universe, making undo take two presses). */
+    try { CFG.autosave(); } catch (_) {}
+  }
   function note(m) { try { CFG.notify(m); } catch (_) {} }
 
   /* ============================ styles ============================ */
@@ -319,7 +327,9 @@
     /* --- P3: time scrubber — watch the map change across its epochs --- */
     (function () {
       var eps = S().mapEpochs || [];
-      if (eps.length < 2 || !mapMeta().has || !(window.ftMapPaint && window.ftMapPaint.renderEpoch)) return;
+      /* MP4: epochs are a world-map concept — never scrub (and overwrite the image
+         with the root grid) while a child sub-map is open. */
+      if (eps.length < 2 || !mapMeta().has || curMapId() !== ROOT || !(window.ftMapPaint && window.ftMapPaint.renderEpoch)) return;
       var tbar = document.createElement('div'); tbar.className = 'ftp-timebar';
       var lbl = document.createElement('span'); lbl.className = 'ftp-time-lbl';
       var slider = document.createElement('input'); slider.type = 'range'; slider.min = 0; slider.max = eps.length - 1; slider.step = 1;
@@ -468,13 +478,24 @@
         ? '<span class="ftp-pin-sym" style="color:' + esc(p.color || '#e8ecf6') + ';transform:scale(' + (p.symSize || 1) + ')">' + ftSymbols.svg(p.symbol) + '</span>'
         : '<span aria-hidden="true">' + esc(p.icon || '📍') + '</span>';
       b.innerHTML = _picon +
-        (hasSub ? '<span class="ftp-pin-sub" title="Open sub-map" aria-hidden="true">↴</span>' : '') +
+        (hasSub ? '<span class="ftp-pin-sub" title="Open sub-map" role="button" tabindex="0" aria-label="Open sub-map for ' + esc(p.name) + '">↴</span>' : '') +
         '<span class="ftp-pin-lbl" style="' + (p.color ? 'box-shadow:inset 0 -2px 0 ' + esc(p.color) : '') + '">' + esc(p.name) + '</span>';
       b.addEventListener('click', function (e) {
         e.stopPropagation();
         view.sel = p.id; view.arming = false;
         renderMapView(root);
       });
+      /* MP3: the ↴ badge is the real drill-down control — clicking it enters the
+         sub-map (and must not fall through to the pin's plain select handler). */
+      if (hasSub) {
+        var subBadge = b.querySelector('.ftp-pin-sub');
+        if (subBadge) {
+          subBadge.style.cursor = 'pointer';
+          var enter = function (e) { e.stopPropagation(); e.preventDefault(); enterSubMap(p); };
+          subBadge.addEventListener('click', enter);
+          subBadge.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') enter(e); });
+        }
+      }
       inner.appendChild(b);
     });
   }
@@ -697,6 +718,27 @@
   }
 
   /* ---------- map image lifecycle ---------- */
+  /* MP5: private-mode image fallback, kept per-map so sibling maps don't share one
+     picture when IndexedDB is unavailable. Legacy timelines stored a single
+     S._mapDataUrl — treat it as the ROOT map's entry for backward compatibility. */
+  function mapDataUrlGet(id) {
+    var s = S();
+    if (s._mapDataUrlByMap && typeof s._mapDataUrlByMap[id] === 'string' && s._mapDataUrlByMap[id]) return s._mapDataUrlByMap[id];
+    if (id === ROOT && typeof s._mapDataUrl === 'string' && s._mapDataUrl) return s._mapDataUrl;
+    return '';
+  }
+  function mapDataUrlSet(id, du) {
+    var s = S();
+    if (!s._mapDataUrlByMap) s._mapDataUrlByMap = {};
+    s._mapDataUrlByMap[id] = du;
+    if (id === ROOT) delete s._mapDataUrl; /* the per-map entry now supersedes the legacy field */
+  }
+  function mapDataUrlDel(id) {
+    var s = S();
+    if (s._mapDataUrlByMap) delete s._mapDataUrlByMap[id];
+    if (id === ROOT) delete s._mapDataUrl;
+  }
+
   function ensureMapUrl() {
     if (view.mapUrl) return Promise.resolve(view.mapUrl);
     return mapStore.get(curKey()).then(function (stored) {
@@ -707,9 +749,9 @@
         return view.mapUrl;
       }
       if (typeof stored === 'string' && stored) { view.mapUrl = stored; return stored; }
-      /* private-mode fallback carried in state */
-      var s = S();
-      if (typeof s._mapDataUrl === 'string' && s._mapDataUrl) { view.mapUrl = s._mapDataUrl; return view.mapUrl; }
+      /* private-mode fallback carried in state (per-map) */
+      var du = mapDataUrlGet(curMapId());
+      if (du) { view.mapUrl = du; return view.mapUrl; }
       return '';
     });
   }
@@ -728,12 +770,12 @@
           if (!ok) {
             /* IDB unavailable (private mode): small images ride in state */
             if (r.blob.size < 1.5 * 1024 * 1024) {
-              return blobToDataUrl(r.blob).then(function (du) { s._mapDataUrl = du; return true; });
+              return blobToDataUrl(r.blob).then(function (du) { mapDataUrlSet(curMapId(), du); return true; });
             }
             note('Could not store the map on this device (private mode?). Use a smaller image.');
             return false;
           }
-          delete s._mapDataUrl;
+          mapDataUrlDel(curMapId());
           return true;
         }).then(function (stored) {
           if (!stored) return;
@@ -757,7 +799,7 @@
       mapStore.del(curKey());
       try { mapStore.del(sketchKey()); } catch (_) {}
       var s = S();
-      delete s._mapDataUrl;
+      mapDataUrlDel(curMapId());
       sketchIconsSet(null);
       curMap().mapMeta = { has: false, w: 0, h: 0, name: '' };
       syncRootMeta();
@@ -777,12 +819,12 @@
         var s = S();
         if (!ok) {
           if (r.blob.size < 1.5 * 1024 * 1024) {
-            return blobToDataUrl(r.blob).then(function (du) { s._mapDataUrl = du; return { ok: true, r: r }; });
+            return blobToDataUrl(r.blob).then(function (du) { mapDataUrlSet(curMapId(), du); return { ok: true, r: r }; });
           }
           note('Could not store the map on this device (private mode?). Try a smaller export.');
           return { ok: false, r: r };
         }
-        delete s._mapDataUrl;
+        mapDataUrlDel(curMapId());
         return { ok: true, r: r };
       });
     }).then(function (out) {
@@ -965,8 +1007,7 @@
     return mapStore.get(imgKey(id)).then(function (stored) {
       if (stored instanceof Blob) return blobToDataUrl(stored);
       if (typeof stored === 'string') return stored;
-      var s = S();
-      return (id === ROOT && typeof s._mapDataUrl === 'string') ? s._mapDataUrl : '';
+      return mapDataUrlGet(id);
     });
   }
   /* Gather every map's image as a dataURL — for lossless export of the whole tree. */
@@ -992,11 +1033,10 @@
     if (!dataUrl) return Promise.resolve(false);
     return compressImage(dataUrl).then(function (r) {
       return mapStore.set(curKey(), r.blob).then(function (ok) {
-        var s = S();
         if (!ok && r.blob.size < 1.5 * 1024 * 1024) {
-          return blobToDataUrl(r.blob).then(function (du) { s._mapDataUrl = du; return true; });
+          return blobToDataUrl(r.blob).then(function (du) { mapDataUrlSet(curMapId(), du); return true; });
         }
-        if (ok) delete s._mapDataUrl;
+        if (ok) mapDataUrlDel(curMapId());
         return ok;
       });
     }).then(function (stored) {

@@ -14,3 +14,9 @@ package-lock.json
 
 # Cloudflare Wrangler local state
 backend/.wrangler/
+
+# overnight autonomous work (never deploy)
+OVERNIGHT-WORKLOG.md
+.shots/
+test-results/
+playwright-report/

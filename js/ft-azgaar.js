@@ -79,14 +79,39 @@
     loading.innerHTML = '<div style="font-size:26px">🌍</div><div>Loading the map studio…</div>';
     frameWrap.appendChild(loading);
 
+    /* The studio is a cross-origin github.io app — with no internet the iframe never
+       fires `load`, leaving the "Loading…" spinner forever. Warn after ~12s. */
+    var loaded = false, noNetTimer = null;
+
     var frame = document.createElement('iframe');
     frame.src = AZGAAR_URL;
     frame.title = 'Fantasy Map Generator';
     frame.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#fff';
     frame.allow = 'clipboard-write; fullscreen';
-    frame.addEventListener('load', function () { loading.style.display = 'none'; });
+    frame.addEventListener('load', function () {
+      loaded = true;
+      if (noNetTimer) { clearTimeout(noNetTimer); noNetTimer = null; }
+      loading.style.display = 'none';
+    });
     frameWrap.appendChild(frame);
     ov.appendChild(frameWrap);
+
+    noNetTimer = setTimeout(function () {
+      noNetTimer = null;
+      if (loaded) return;
+      loading.style.pointerEvents = 'auto';
+      loading.innerHTML =
+        '<div style="font-size:26px">📡</div>' +
+        '<div style="max-width:320px;text-align:center;line-height:1.5">Sem ligação — o Pro Studio precisa de internet. ' +
+        'Usa <b>Desenhar</b> ou <b>Quick map</b> para trabalhar offline.</div>';
+      var closeWarn = document.createElement('button');
+      closeWarn.type = 'button';
+      closeWarn.textContent = 'Fechar';
+      closeWarn.style.cssText = 'margin-top:6px;border:1px solid ' + T.acc + ';background:' + T.acc + ';color:' + T.accInk +
+        ';border-radius:9px;padding:8px 16px;cursor:pointer;font-weight:700;font-size:13px';
+      closeWarn.addEventListener('click', close);
+      loading.appendChild(closeWarn);
+    }, 12000);
 
     /* --- hidden importer (reads the PNG the user exported from Azgaar) --- */
     var fileIn = document.createElement('input');
@@ -96,6 +121,7 @@
     ov.appendChild(fileIn);
 
     function close() {
+      if (noNetTimer) { clearTimeout(noNetTimer); noNetTimer = null; }
       document.removeEventListener('keydown', onKey);
       if (ov.parentNode) ov.parentNode.removeChild(ov);
     }
