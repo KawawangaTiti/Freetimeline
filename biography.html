@@ -188,6 +188,11 @@ body.mm-collapsed #minimap-show { display: inline-flex; }
   #minimap { display: none; }
   #minimap-jump { display: flex; }
 }
+/* Lift zoom controls above the minimap when it is expanded (desktop only —
+   minimap is hidden below 600px), so they don't collide (H5). */
+@media (min-width: 600px) {
+  body:not(.mm-collapsed) #zoom-ctrl { bottom: 88px; }
+}
 
 /* ===== Compact life-tracks dropdown (ported from Universe — A-10) ===== */
 #uni-drop-btn {
@@ -3611,7 +3616,7 @@ input[type="color"]:focus-visible {
     <button class="btn tb-secondary" onclick="MemoryTour.start()" title="Cinematic auto-playing tour through your memories">Memories</button>
     <div class="sep tb-secondary"></div>
     <label class="tb-secondary" style="font-size:10px;color:rgba(196,149,106,0.75);white-space:nowrap;display:flex;align-items:center;gap:5px;letter-spacing:0.03em;" title="Adjust track row height">
-      
+      Row
       <input type="range" id="track-h-slider" min="60" max="200" step="10" value="100" aria-label="Adjust life track row height"
         style="width:64px;cursor:pointer;accent-color:#b07942;"
         oninput="TRACK_H=+this.value;document.getElementById('track-h-val').textContent=this.value;clampPanY();render()">
@@ -4026,7 +4031,7 @@ input[type="color"]:focus-visible {
       <div class="kbd-row"><span class="kbd-key kbd-btn">&#8617; Undo / &#8618; Redo</span> <span class="kbd-desc">Step back or forward through history</span></div>
       <div class="kbd-row"><span class="kbd-key kbd-btn">Import</span> <span class="kbd-desc">Load a previously exported JSON file</span></div>
       <div class="kbd-row"><span class="kbd-key kbd-btn">Export JSON</span> <span class="kbd-desc">Save full data as a JSON backup</span></div>
-      <div class="kbd-row"><span class="kbd-key kbd-btn">Save HTML</span> <span class="kbd-desc">Export a self-contained offline page</span></div>
+      <div class="kbd-row"><span class="kbd-key kbd-btn">Data &#9662; &#8594; Save HTML</span> <span class="kbd-desc">Export a self-contained offline page</span></div>
     </div>
 
     <p class="kbd-section-label">Other Shortcuts</p>
@@ -4770,7 +4775,19 @@ window.addEventListener('resize', repositionOpenDrops);
       section.appendChild(btn);
     }
 
-    var nodes = toolbar.querySelectorAll('.sep, .btn, .view-tab, input[type="range"]');
+    // View tabs are reparented out of #toolbar into #ft-tabsrow by ft-toolbar.js,
+    // so a #toolbar-scoped query misses them. Gather them from both locations and
+    // give them their own 'View' section (H2).
+    var viewTabs = document.querySelectorAll('#toolbar .view-tab, #ft-tabsrow .view-tab');
+    if (viewTabs.length) {
+      var vSec = makeSection('View');
+      viewTabs.forEach(function(tab){ appendControl(vSec, tab); });
+      if (vSec.children.length > 1) body.appendChild(vSec);
+    }
+
+    // .view-tab handled by the dedicated View section above — excluded here to
+    // avoid duplication when the toolbar is not reparented.
+    var nodes = toolbar.querySelectorAll('.sep, .btn, input[type="range"]');
 
     if (toolbar.getAttribute('data-ft-grouped')) {
       // Toolbar was regrouped by ft-toolbar.js: mirror its dropdown sections

@@ -17,9 +17,11 @@
 
   function lum(c) { var m = (c || '').match(/\d+/g); return m ? (0.299 * +m[0] + 0.587 * +m[1] + 0.114 * +m[2]) : 255; }
   var dark = lum(getComputedStyle(document.body).backgroundColor) < 128;
+  // Panel/line/ink pull from the page theme vars (which flip live on theme change) with a
+  // per-mode fallback so nothing breaks where the vars aren't defined. Hover stays static.
   var T = dark
-    ? { panel: '#111a31', line: '#26365c', ink: '#e7ecf7', hover: 'rgba(255,255,255,0.08)' }
-    : { panel: '#fffdf8', line: '#e6dac6', ink: '#3d2b1f', hover: 'rgba(120,80,30,0.08)' };
+    ? { panel: 'var(--v-panel,#111a31)', line: 'var(--v-bd,#26365c)', ink: 'var(--v-ink,#e7ecf7)', hover: 'rgba(255,255,255,0.08)' }
+    : { panel: 'var(--v-panel,#fffdf8)', line: 'var(--v-bd,#e6dac6)', ink: 'var(--v-ink,#3d2b1f)', hover: 'rgba(120,80,30,0.08)' };
 
   var st = document.createElement('style');
   st.textContent =
@@ -29,7 +31,8 @@
        timeline's stacking context can never hide them (positioned via JS on open) */
     '.ft-dd-menu{position:fixed;min-width:190px;z-index:490;' +
       'background:' + T.panel + ';border:1px solid ' + T.line + ';border-radius:11px;padding:6px;' +
-      'box-shadow:0 14px 36px rgba(0,0,0,.34);display:flex;flex-direction:column;gap:2px}' +
+      'box-shadow:0 14px 36px rgba(0,0,0,.34);display:flex;flex-direction:column;gap:2px;' +
+      'overflow-y:auto;-webkit-overflow-scrolling:touch}' +
     '.ft-dd-menu[hidden]{display:none}' +
     '.ft-dd-menu>*{display:flex!important;align-items:center;justify-content:flex-start!important;' +
       'width:100%;min-width:0;background:transparent!important;border:0!important;border-radius:7px!important;' +
@@ -41,6 +44,14 @@
     /* one calm, non-wrapping action row (tabs move to their own row below) */
     '#toolbar{flex-wrap:nowrap!important;overflow-x:auto;overflow-y:hidden}' +
     '#toolbar::-webkit-scrollbar{height:0}' +
+    /* overflow affordance: fade the edge(s) that have hidden content beyond them.
+       Purely visual (mask), so it never affects layout. Classes toggled on scroll. */
+    '#toolbar.ovf-l.ovf-r{-webkit-mask-image:linear-gradient(to right,transparent,#000 26px,#000 calc(100% - 26px),transparent);' +
+      'mask-image:linear-gradient(to right,transparent,#000 26px,#000 calc(100% - 26px),transparent)}' +
+    '#toolbar.ovf-l:not(.ovf-r){-webkit-mask-image:linear-gradient(to right,transparent,#000 26px);' +
+      'mask-image:linear-gradient(to right,transparent,#000 26px)}' +
+    '#toolbar.ovf-r:not(.ovf-l){-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 26px),transparent);' +
+      'mask-image:linear-gradient(to right,#000 calc(100% - 26px),transparent)}' +
     '#toolbar .logo{font-size:0!important;margin:0 5px 0 2px}' +
     '#toolbar .ft-dd,#toolbar>.btn{margin:0 1px}' +
     '#ft-tabsrow{display:flex;align-items:center;gap:6px;padding:6px 16px;overflow-x:auto;' +
@@ -52,6 +63,8 @@
     '#ft-tabsrow .view-tab:hover{background:' + T.hover + ';opacity:1}' +
     '#ft-tabsrow .view-tab.active{background:linear-gradient(135deg,var(--v-accent,#2f7cf6),var(--v-accent-2,#40c8ff));' +
       'border-color:transparent;color:#fff;font-weight:700;opacity:1;box-shadow:0 2px 8px rgba(47,124,246,0.28)}' +
+    /* mobile uses hamburger + sheet; the injected extra tabs row is redundant there */
+    '@media (max-width:767px){#ft-tabsrow{display:none}}' +
     '';
   document.head.appendChild(st);
 
@@ -71,8 +84,8 @@
   //  · toggleStats — redundant with the Stats view tab
   //  · toggleReadingMode — a colour theme toggle nobody asked for
   //  · ContinuityTour — keep only ONE guided playback; MemoryTour works on any timeline
-  //  · saveHTML — exported an HTML that isn't truly standalone (owner asked to drop it)
-  ['jumpToYear', 'toggleStats', 'toggleReadingMode', 'ContinuityTour', 'saveHTML'].forEach(function (sub) {
+  // (saveHTML re-introduced into Data▾ per owner call 2026-07-13 — export code still works)
+  ['jumpToYear', 'toggleStats', 'toggleReadingMode', 'ContinuityTour'].forEach(function (sub) {
     find(sub).forEach(function (n) { if (picked.indexOf(n) < 0) picked.push(n); if (n.parentNode) n.parentNode.removeChild(n); });
   });
 
@@ -96,10 +109,22 @@
   // place a body-mounted fixed menu directly under its trigger, clamped to the viewport
   function placeMenu(trg, m) {
     var r = trg.getBoundingClientRect();
-    m.style.top = Math.round(r.bottom + 6) + 'px';
     var w = m.offsetWidth || 200;
     var left = Math.min(r.left, window.innerWidth - w - 8);
     m.style.left = Math.round(Math.max(8, left)) + 'px';
+    // Vertical clamp: prefer opening downward, but if the space below is cramped and there's
+    // more room above, flip upward. Either way cap max-height so long menus scroll internally.
+    var below = window.innerHeight - r.bottom - 12;
+    var above = r.top - 12;
+    if (below < 160 && above > below) {
+      m.style.top = 'auto';
+      m.style.bottom = Math.round(window.innerHeight - r.top + 6) + 'px';
+      m.style.maxHeight = Math.max(120, Math.round(above)) + 'px';
+    } else {
+      m.style.bottom = 'auto';
+      m.style.top = Math.round(r.bottom + 6) + 'px';
+      m.style.maxHeight = Math.max(120, Math.round(below)) + 'px';
+    }
   }
 
   function menu(label, nodes) {
@@ -181,6 +206,16 @@
 
   tb.setAttribute('data-ft-grouped', '1');
 
+  // Toggle edge-fade classes so the user sees there's more toolbar to scroll to.
+  function updateOvf() {
+    var over = tb.scrollWidth - tb.clientWidth > 2;
+    tb.classList.toggle('ovf-l', over && tb.scrollLeft > 2);
+    tb.classList.toggle('ovf-r', over && tb.scrollLeft < tb.scrollWidth - tb.clientWidth - 2);
+  }
+  tb.addEventListener('scroll', updateOvf, { passive: true });
+  window.addEventListener('resize', updateOvf);
+  updateOvf();
+
   /* One-time coachmark so nobody hunts for their "disappeared" Save/Load buttons.
      Dismiss persists via localStorage (sessionStorage fallback for private mode). */
   (function coachmark() {
@@ -192,15 +227,28 @@
     if (!trg) return;
     var tip = document.createElement('div');
     tip.setAttribute('role', 'status');
-    tip.style.cssText = 'position:absolute;z-index:350;top:calc(100% + 10px);left:0;width:max-content;max-width:240px;' +
+    // Fixed on <body> (not inside #toolbar, whose overflow clip would cut it off);
+    // positioned under the Data▾ trigger via getBoundingClientRect, like placeMenu.
+    tip.style.cssText = 'position:fixed;z-index:495;width:max-content;max-width:240px;' +
       'background:' + T.panel + ';border:1px solid ' + T.line + ';border-radius:11px;padding:10px 12px;' +
       'box-shadow:0 14px 36px rgba(0,0,0,.34);color:' + T.ink + ';font-size:12.5px;line-height:1.45';
     tip.innerHTML = 'Your <b>Save / Load</b> buttons now live in the <b>Data ▾</b> menu. ' +
       'Tip: press <b>Ctrl+K</b> to search every action. ' +
       '<button type="button" style="display:block;margin-top:8px;border:1px solid ' + T.line + ';background:transparent;' +
       'color:' + T.ink + ';border-radius:7px;padding:4px 10px;cursor:pointer;font-weight:600">Got it</button>';
-    tip.querySelector('button').addEventListener('click', function () { markSeen(); tip.remove(); });
-    ddData.appendChild(tip);
-    setTimeout(function () { markSeen(); if (tip.parentNode) tip.remove(); }, 15000);
+    function placeTip() {
+      var r = trg.getBoundingClientRect();
+      var w = tip.offsetWidth || 240;
+      tip.style.top = Math.round(r.bottom + 10) + 'px';
+      tip.style.left = Math.round(Math.max(8, Math.min(r.left, window.innerWidth - w - 8))) + 'px';
+    }
+    function dismiss() { markSeen(); if (tip.parentNode) tip.remove();
+      window.removeEventListener('resize', placeTip); window.removeEventListener('scroll', placeTip, true); }
+    tip.querySelector('button').addEventListener('click', dismiss);
+    document.body.appendChild(tip);
+    placeTip();
+    window.addEventListener('resize', placeTip);
+    window.addEventListener('scroll', placeTip, true);
+    setTimeout(dismiss, 15000);
   })();
 })();

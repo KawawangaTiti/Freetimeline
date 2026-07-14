@@ -206,6 +206,12 @@ body.mm-collapsed #minimap-show { display: inline-flex; }
   position: absolute; bottom: 16px; right: 16px;
   display: flex; flex-direction: column; gap: 3px; z-index: 8;
 }
+/* H5: when the minimap is expanded (not collapsed) it occupies the bottom strip
+   up to ~76px; lift the zoom controls above it so they don't overlap. On mobile
+   (<600px) the minimap is hidden, so keep zoom in its default corner. */
+@media (min-width: 600px) {
+  body:not(.mm-collapsed) #zoom-ctrl { bottom: 88px; }
+}
 .zbtn {
   width: 42px; height: 42px; border: 1px solid rgba(100,120,200,0.3);
   background: rgba(20,22,40,0.85); border-radius: 10px; cursor: pointer;
@@ -3824,9 +3830,9 @@ input[type="color"]:focus-visible {
       <div class="kbd-row"><span class="kbd-key kbd-btn">Categories</span> <span class="kbd-desc">Manage &amp; filter event categories</span></div>
       <div class="kbd-row"><span class="kbd-key kbd-btn">Stats</span> <span class="kbd-desc">View timeline statistics overview</span></div>
       <div class="kbd-row"><span class="kbd-key kbd-btn">&#8617; Undo / &#8618; Redo</span> <span class="kbd-desc">Step back or forward through history</span></div>
-      <div class="kbd-row"><span class="kbd-key kbd-btn">Import</span> <span class="kbd-desc">Load a previously exported JSON file</span></div>
-      <div class="kbd-row"><span class="kbd-key kbd-btn">Export JSON</span> <span class="kbd-desc">Save full data as a JSON backup</span></div>
-      <div class="kbd-row"><span class="kbd-key kbd-btn">Save HTML</span> <span class="kbd-desc">Export a self-contained offline page</span></div>
+      <div class="kbd-row"><span class="kbd-key kbd-btn">Data ▾ → Import</span> <span class="kbd-desc">Load a previously exported JSON file</span></div>
+      <div class="kbd-row"><span class="kbd-key kbd-btn">Data ▾ → JSON</span> <span class="kbd-desc">Save full data as a JSON backup</span></div>
+      <div class="kbd-row"><span class="kbd-key kbd-btn">Data ▾ → Save HTML</span> <span class="kbd-desc">Export a self-contained offline page</span></div>
     </div>
 
     <p class="kbd-section-label">Other Shortcuts</p>
@@ -4464,6 +4470,34 @@ input[type="color"]:focus-visible {
       fSec.appendChild(fBtn);
       body.appendChild(fSec);
     }
+    // View tabs (Timeline/Characters/Relations/Places/Stats/List) are reparented
+    // out of #toolbar into the sibling #ft-tabsrow by js/ft-toolbar.js BEFORE this
+    // sheet is built, so the cloned-toolbar walk below never sees them (H2). Pull
+    // them from BOTH homes and expose an explicit 'View' section that swaps view
+    // and closes the sheet.
+    var viewTabs = document.querySelectorAll('#toolbar .view-tab, #ft-tabsrow .view-tab');
+    if (viewTabs.length) {
+      var vSec = document.createElement('div');
+      vSec.className = 'tlb-sheet-section';
+      var vTtl = document.createElement('div');
+      vTtl.className = 'tlb-sheet-title';
+      vTtl.textContent = 'View';
+      vSec.appendChild(vTtl);
+      viewTabs.forEach(function(tab){
+        var b = tab.cloneNode(true);
+        b.removeAttribute('id');
+        b.removeAttribute('onclick');
+        b.removeAttribute('style');
+        b.classList.toggle('active', tab.classList.contains('active'));
+        b.addEventListener('click', function(e){
+          e.preventDefault();
+          closeSheet();
+          setTimeout(function(){ try { tab.click(); } catch (err) {} }, 60);
+        });
+        vSec.appendChild(b);
+      });
+      body.appendChild(vSec);
+    }
     function makeSection(title) {
       var sec = document.createElement('div');
       sec.className = 'tlb-sheet-section';
@@ -4511,7 +4545,9 @@ input[type="color"]:focus-visible {
       section.appendChild(btn);
     }
 
-    var nodes = toolbar.querySelectorAll('.sep, .btn, .view-tab, input[type="range"]');
+    // .view-tab intentionally excluded — handled above as a dedicated 'View'
+    // section, so it is not double-listed here (H2).
+    var nodes = toolbar.querySelectorAll('.sep, .btn, input[type="range"]');
 
     if (toolbar.getAttribute('data-ft-grouped')) {
       // Toolbar was regrouped by ft-toolbar.js: mirror its dropdown sections

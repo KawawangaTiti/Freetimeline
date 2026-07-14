@@ -46,6 +46,30 @@
     background:rgba(255,250,240,.92);border:1px solid var(--line);border-radius:999px;padding:7px 16px;font-size:12.5px;color:#7a6448;
     box-shadow:0 6px 18px rgba(60,44,28,.16);transition:opacity .4s;white-space:nowrap;max-width:90vw}
   #brand{position:absolute;right:14px;bottom:12px;z-index:3;font-size:11px;opacity:.5;font-family:var(--serif);font-style:italic;color:#a2895f}
+  /* ── mobile ────────────────────────────────────────────────── */
+  @media (max-width:600px){
+    header{padding:9px 12px 4px}
+    header h1{font-size:17px}
+    header p{font-size:11px;line-height:1.3}
+    #stage{margin:4px 8px 8px}
+    /* rail → compact horizontal scroll strip pinned to the bottom (doesn't tint the canvas above it) */
+    #rail{flex-direction:row;align-items:center;top:auto;left:8px;right:8px;bottom:8px;gap:6px;
+      padding:6px 8px;border-radius:12px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+    #rail::-webkit-scrollbar{height:0}
+    .tool{flex:0 0 auto;min-width:0;min-height:44px;padding:8px 13px;white-space:nowrap}
+    .rail-sep{width:1px;height:30px;margin:0 2px;flex:0 0 auto}
+    .mini{flex:0 0 auto;padding:5px 6px}
+    .mini label{min-width:0}
+    input[type=range]{width:76px;min-height:44px}
+    .ghost{flex:0 0 auto;min-height:44px;white-space:nowrap}
+    /* icon palette → bottom sheet sitting just above the rail, never wider than the stage */
+    #icons{top:auto;left:12px;right:12px;bottom:70px;width:auto;max-width:calc(100% - 24px)}
+    #icons .grid{grid-template-columns:repeat(6,1fr)}
+    .ico{font-size:20px;padding:0;min-height:44px}
+    /* keep the hint clear of the rail strip; move the brand up out of the way */
+    #hint{bottom:76px}
+    #brand{top:8px;right:12px;bottom:auto}
+  }
 </style>
 <div id="app">
   <header>
