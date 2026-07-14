@@ -91,7 +91,16 @@
     s.places = places().filter(function (p) { return (p.mapId || ROOT) !== mapId; });
     s.maps = s.maps.filter(function (m) { return m.id !== mapId; });
     if (s.mapSketchIconsByMap) delete s.mapSketchIconsByMap[mapId];
-    try { mapStore.del(imgKey(mapId)); mapStore.del(imgKey(mapId) + '__sketch'); } catch (_) {}
+    /* Clean the per-map inline fallback (private mode) from localStorage — it lives in S,
+       so undo can still restore it from the pre-delete snapshot, but leaving it here would
+       bloat the small localStorage quota. (Was missed when _mapDataUrlByMap was added.) */
+    if (s._mapDataUrlByMap) delete s._mapDataUrlByMap[mapId];
+    /* NOTE: we intentionally do NOT delete the IndexedDB image/sketch blobs here.
+       Undo snapshots only serialize S (not IDB); deleting the blob synchronously made an
+       undo of a map deletion restore a blank sub-map (image gone from IDB). IndexedDB has a
+       large quota and map ids are unique uids, so an unreferenced blob is a harmless, bounded
+       leak — far better than a blank-on-undo. (Orphan blobs are never exported, since
+       getAllMapImages walks S.maps.) A future GC at a hard undo boundary could reclaim them. */
     if (s.currentMapId === mapId) s.currentMapId = ROOT;
   }
   function esc(t) {

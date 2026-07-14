@@ -24,13 +24,18 @@
   };
 
   function detectApp() {
-    try {
-      if (localStorage.getItem(APPS.universe.key))  return APPS.universe;
-      if (localStorage.getItem(APPS.biography.key)) return APPS.biography;
-    } catch (_) {}
+    /* Detect by the CURRENT PAGE first — a user may have saves from BOTH apps in
+       the same origin, so keying off localStorage presence would read the wrong
+       project (e.g. show universe data while on the biography page). */
     var t = (document.title || '').toLowerCase();
     var p = (location.pathname || '').toLowerCase();
     if (t.indexOf('biograph') !== -1 || p.indexOf('biograph') !== -1) return APPS.biography;
+    if (t.indexOf('universe') !== -1 || p.indexOf('universe') !== -1) return APPS.universe;
+    /* Ambiguous page (unexpected) — fall back to whichever save exists. */
+    try {
+      if (localStorage.getItem(APPS.biography.key)) return APPS.biography;
+      if (localStorage.getItem(APPS.universe.key))  return APPS.universe;
+    } catch (_) {}
     return APPS.universe;
   }
 
