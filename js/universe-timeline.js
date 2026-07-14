@@ -276,7 +276,7 @@ function parseDate(d, time) {
   if (isNaN(yr)) return null;
   const mo = p[1].toLowerCase().includes('x') ? 6  : clamp(parseInt(p[1]) || 6,  1, 12);
   const da = p[0].toLowerCase().includes('x') ? 15 : clamp(parseInt(p[0]) || 15, 1, 31);
-  let dec = yr + (mo - 1) / 12 + (da - 1) / 365;
+  let dec = (window.ftCalendar && ftCalendar.partsToValue) ? ftCalendar.partsToValue({day: da, month: mo, year: yr}) : (yr + (mo - 1) / 12 + (da - 1) / 365);
   if (time) {
     const tp = time.split(':');
     const h = parseInt(tp[0]) || 0;
@@ -300,6 +300,7 @@ function parseDateParts(d) {
 }
 
 function formatDateParts(parts) {
+  if (window.ftCalendar && ftCalendar.formatParts) return ftCalendar.formatParts(parts);
   const dd = String(parts.day).padStart(2, '0');
   const mm = String(parts.month).padStart(2, '0');
   return dd + '/' + mm + '/' + parts.year;
@@ -1509,6 +1510,7 @@ function decYearToDate(dec) {
 }
 
 function formatCalendarYear(yr) {
+    if (window.ftCalendar && ftCalendar.yearLabel) return ftCalendar.yearLabel(yr);
     const abs = Math.abs(yr);
     const neg = yr < 0;
     const suf = neg ? ' BC' : ' AD';
@@ -7271,6 +7273,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
   render();
   updateUniverseScrollbar();
+
+  /* Calendar engine: redraw the timeline/labels whenever the user changes the
+     custom calendar definition (ft-calendar.js dispatches 'ftcalendarchange'). */
+  window.addEventListener('ftcalendarchange', function () {
+    try { if (typeof render === 'function') render(); } catch (_) {}
+  });
 
   /* #043: first-run onboarding. Shown only when there was no saved work
      (sample data is now visible) and the user has not dismissed it before. */

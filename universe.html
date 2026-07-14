@@ -22,6 +22,7 @@
 <script src="js/ft-print.js" defer></script>
 <script src="js/ft-integrity.js" defer></script>
 <script src="js/ft-search.js" defer></script>
+<script src="js/ft-calendar.js" defer></script>
 <script src="js/ft-palette.js" defer></script>
 <script src="js/ft-places.js" defer></script>
 <script src="js/ft-maprender.js" defer></script>
@@ -3524,6 +3525,7 @@ input[type="color"]:focus-visible {
       <button class="btn" onclick="ContinuityTour.start()" title="Start a read-only guided tour through your timeline, one moment at a time">Tour</button>
       <button class="btn" onclick="MemoryTour.start()" title="Cinematic auto-playing tour through your events">Memories</button>
       <button class="btn" onclick="openRangeConfig()"   title="Configure the visible year range and epoch of the timeline">Range</button>
+      <button class="btn" onclick="if(window.ftCalendar)ftCalendar.openSettings()" title="Design a custom or fantasy calendar — months, weekdays, eras and year labels">🗓 Calendar</button>
       <button class="btn" id="reading-toggle-btn" onclick="toggleReadingMode()" title="Reading mode — larger text, calmer canvas">Read</button>
     </div>
     <input type="file" id="file-in" accept=".html,.json" onchange="Store.importFile(event)" style="display:none" aria-label="Load universe timeline file">
