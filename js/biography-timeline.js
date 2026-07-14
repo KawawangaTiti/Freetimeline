@@ -6005,6 +6005,13 @@ const Store = {
         const d = (typeof ftValidateImport === 'function')
           ? ftValidateImport(raw, { kind: 'biography' })
           : raw;
+        /* DATA-SAFETY: never blank a non-empty timeline from an empty/malformed file. */
+        var _incomingEmpty = !((Array.isArray(d.lifeTracks) && d.lifeTracks.length) || (Array.isArray(d.universes) && d.universes.length) || (Array.isArray(d.events) && d.events.length));
+        var _currentHasContent = (Array.isArray(S.lifeTracks) && S.lifeTracks.length) || (Array.isArray(S.events) && S.events.length);
+        if (_incomingEmpty && _currentHasContent) {
+          notify('That file has no events — keeping your current data. (Nothing was deleted.)', 'error');
+          return;
+        }
         ftConfirmGate('Loading will replace ALL current data. Continue?', function () {
           const wasLegacy = !!d._wasLegacy;
           S.lifeTracks    = d.lifeTracks || d.universes || [];
@@ -6070,7 +6077,23 @@ const Store = {
   },
 
   loadShared(raw) {
-    var d = (typeof ftValidateImport === 'function') ? ftValidateImport(raw, { kind: 'biography' }) : raw;
+    /* DATA-SAFETY: the cloud/Worker may hand us the timeline as a JSON string
+       (D1 stores TEXT); parse it before validating so we don't silently fail. */
+    var d;
+    try {
+      var input = (typeof raw === 'string') ? JSON.parse(raw) : raw;
+      d = (typeof ftValidateImport === 'function') ? ftValidateImport(input, { kind: 'biography' }) : input;
+    } catch (err) {
+      notify('Could not read that timeline (bad format) — your data was NOT changed.', 'error');
+      return;
+    }
+    /* NEVER blank a non-empty timeline from an empty/malformed load. */
+    var incomingEmpty = !((Array.isArray(d.lifeTracks) && d.lifeTracks.length) || (Array.isArray(d.universes) && d.universes.length) || (Array.isArray(d.events) && d.events.length));
+    var currentHasContent = (Array.isArray(S.lifeTracks) && S.lifeTracks.length) || (Array.isArray(S.events) && S.events.length);
+    if (incomingEmpty && currentHasContent) {
+      notify('That timeline came back empty — keeping your current data. (Nothing was deleted.)', 'error');
+      return;
+    }
     ftConfirmGate('Open this shared timeline? It will REPLACE your current data.', function () {
       S.lifeTracks = d.lifeTracks || d.universes || []; S.events = d.events || []; S.connections = d.connections || [];
       S.people = d.people || d.characters || []; S.categories = d.categories || {}; S.affiliations = d.affiliations || [];
