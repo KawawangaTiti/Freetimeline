@@ -1,9 +1,10 @@
 /* FreeTimeline — account client (Level 2). Thin wrapper over the Cloudflare Worker API.
  *
- * INERT until you set API below to your deployed Worker URL, and it is NOT loaded by
- * the site yet (no <script> tag) — so it can't affect production. When the backend is
- * live: set API, add the <script> tag to universe.html + biography.html, and add the
- * API origin to the meta-CSP connect-src.
+ * LIVE IN PRODUCTION. Accounts are active: API below points at the deployed Cloudflare
+ * Worker (D1 in EU), and this script IS loaded via <script> tag in universe.html and
+ * biography.html, with the API origin whitelisted in the meta-CSP connect-src.
+ * Exposing sign in / sign up to visitors is intentional — the cloud is opt-in and the
+ * app stays local-first by default (see ft-account-ui.js).
  *
  * Token is kept in localStorage and sent as `Authorization: Bearer`. The timeline JSON
  * is the same shape the app already exports/imports, so save/load reuse that plumbing.

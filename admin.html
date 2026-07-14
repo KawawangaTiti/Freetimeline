@@ -75,7 +75,7 @@
   var API='https://freetimeline-api.break0utphp.workers.dev';
   function tok(){return sessionStorage.getItem('ft_admin_tok')||''}
   function setTok(t){t?sessionStorage.setItem('ft_admin_tok',t):sessionStorage.removeItem('ft_admin_tok')}
-  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function when(ts){if(!ts)return'';var d=new Date(ts);return d.toISOString().slice(0,16).replace('T',' ')}
   async function api(path,method,body){
     var r=await fetch(API+path,{method:method||'GET',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok()},body:body?JSON.stringify(body):undefined});
@@ -157,7 +157,7 @@
       var qs='limit=100&q='+encodeURIComponent($('t-q').value||'')+'&app='+($('t-app').value||'')+'&visibility='+($('t-vis').value||'');
       var r=await api('/api/admin/timelines?'+qs);
       host.innerHTML='<table><thead><tr><th>Title</th><th>App</th><th>Vis</th><th>Updated</th><th></th></tr></thead><tbody>'+
-        r.items.map(function(t){return '<tr><td>'+esc(t.title)+'</td><td class="muted">'+t.app+'</td><td><span class="pill '+({public:'pub',private:'priv',shared:'shared'}[t.visibility])+'">'+t.visibility+'</span></td>'+
+        r.items.map(function(t){return '<tr><td>'+esc(t.title)+'</td><td class="muted">'+esc(t.app)+'</td><td><span class="pill '+({public:'pub',private:'priv',shared:'shared'}[t.visibility])+'">'+t.visibility+'</span></td>'+
           '<td class="mono">'+when(t.updated_at)+'</td><td class="acts">'+
           (t.visibility==='public'?'<button class="btn sm" data-unpub="'+t.id+'">Unpublish</button>':'')+
           '<button class="btn sm danger" data-tdel="'+t.id+'">Delete</button></td></tr>'}).join('')+

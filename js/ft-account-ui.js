@@ -10,7 +10,7 @@
   function curId() { try { return localStorage.getItem('ft_cloud_' + appKey()) || ''; } catch (_) { return ''; } }
   function setCurId(id) { try { if (id) localStorage.setItem('ft_cloud_' + appKey(), id); else localStorage.removeItem('ft_cloud_' + appKey()); } catch (_) {} }
   function note(m, t) { try { (window.notify || function () {})(m, t || 'success'); } catch (_) {} }
-  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 
   var dark, T;
   function theme() {
@@ -92,7 +92,11 @@
       var email = (card.querySelector('#ftac-email') || {}).value, pw = (card.querySelector('#ftac-pw') || {}).value;
       var name = (card.querySelector('#ftac-name') || {}).value;
       var errEl = card.querySelector('#ftac-err'), go = card.querySelector('#ftac-go');
-      errEl.textContent = ''; go.disabled = true; go.textContent = '…';
+      errEl.textContent = '';
+      // Client-side guard (backend stays the source of truth): fail fast, no round-trip.
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email || '')) { errEl.textContent = 'Enter a valid email address.'; return; }
+      if ((pw || '').length < 8) { errEl.textContent = 'Password must be at least 8 characters.'; return; }
+      go.disabled = true; go.textContent = '…';
       var p = mode === 'login' ? A.login(email, pw) : A.register(email, pw, name);
       p.then(function () { close(); refreshChip(); note('Signed in ✓'); dashboard(); },
         function (e) { errEl.textContent = e.message || 'Failed.'; go.disabled = false; go.textContent = mode === 'login' ? 'Sign in' : 'Create account'; });
@@ -138,7 +142,7 @@
     var el = document.createElement('div'); el.className = 'ftac-item'; el.style.borderColor = T.line;
     var visColor = t.visibility === 'public' ? '#3f9d63' : t.visibility === 'shared' ? '#b7791f' : T.sub;
     el.innerHTML = '<div class="t">' + esc(t.title || 'Untitled') +
-      '<span class="ftac-vis" style="border-color:' + visColor + ';color:' + visColor + '">' + t.visibility + '</span></div>' +
+      '<span class="ftac-vis" style="border-color:' + visColor + ';color:' + visColor + '">' + esc(t.visibility) + '</span></div>' +
       '<div class="acts"></div>';
     var acts = el.querySelector('.acts');
     acts.appendChild(btn('Open', 'sm', function () { openCloud(t.id); }));
