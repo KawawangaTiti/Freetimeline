@@ -61,6 +61,25 @@
   /* the child map anchored to a given place, if one exists */
   function childMapOf(placeId) { ensureMaps(); return S().maps.find(function (m) { return m.anchorPlaceId === placeId; }) || null; }
 
+  /* ---- map scales (universe → … → city). Absent scale = legacy: root behaves as
+     'world', children stay generic. Space scales swap the terrestrial generators
+     for the star-map one and change the breadcrumb glyph. ---- */
+  var SCALES = ['universe', 'galaxy', 'system', 'planet', 'world', 'region', 'city'];
+  var SCALE_GLYPH = { universe: '🌌', galaxy: '🌀', system: '☀️', planet: '🪐', world: '🌍', region: '🗺️', city: '🏰' };
+  var SCALE_LABEL = { universe: 'Universe', galaxy: 'Galaxy', system: 'Star system', planet: 'Planet', world: 'World', region: 'Region', city: 'City' };
+  function mapScale(m) { return (m && SCALES.indexOf(m.scale) !== -1) ? m.scale : null; }
+  function scaleGlyph(m, isTop) { var sc = mapScale(m); return sc ? SCALE_GLYPH[sc] : (isTop ? '🌍' : ''); }
+  function isSpaceScale(m) { var sc = mapScale(m); return sc === 'universe' || sc === 'galaxy' || sc === 'system'; }
+  /* one step down / up the ladder (city and universe clamp) */
+  function childScaleOf(sc) { var i = SCALES.indexOf(sc); return i === -1 ? null : SCALES[Math.min(SCALES.length - 1, i + 1)]; }
+  function parentScaleOf(sc) { var i = SCALES.indexOf(sc); return i === -1 ? 'universe' : SCALES[Math.max(0, i - 1)]; }
+  /* the top of the current map's ancestry chain (parentMapId == null) */
+  function topMapOf(id) {
+    var m = mapById(id), guard = 0;
+    while (m && m.parentMapId && guard++ < 40) m = mapById(m.parentMapId);
+    return m;
+  }
+
   /* Enter (creating on first use) the sub-map anchored to a place. */
   function enterSubMap(p) {
     ensureMaps();
@@ -68,10 +87,80 @@
     if (!child) {
       child = { id: newMapId(), name: p.name, parentMapId: curMapId(), anchorPlaceId: p.id,
                 mapMeta: { has: false, w: 0, h: 0, name: p.name } };
+      var cs = childScaleOf(mapScale(curMap()));
+      if (cs) child.scale = cs;
       S().maps.push(child);
     }
     gotoMap(child.id);
     note('Entered “' + child.name + '”. Draw or upload a map for this area — its own places live here.');
+  }
+
+  /* Zoom OUT: wrap the current top-level map in a NEW parent (e.g. put the world
+     inside a star system, the system inside a galaxy, the galaxy inside a universe).
+     The old top map becomes a pinned place on the new parent, so drill-down works
+     both ways. Additive + undoable (S.maps/S.places are in the undo snapshot). */
+  function createParentMap(scale, name) {
+    ensureMaps();
+    var s = S();
+    var top = topMapOf(curMapId());
+    if (!top) return;
+    var sc = SCALES.indexOf(scale) !== -1 ? scale : parentScaleOf(mapScale(top) || 'world');
+    var nm = String(name || SCALE_LABEL[sc] || 'Parent map').slice(0, 200);
+    var parent = { id: newMapId(), name: nm, parentMapId: null, anchorPlaceId: null,
+                   mapMeta: { has: false, w: 0, h: 0, name: nm }, scale: sc };
+    /* the old top becomes a place pinned at the centre of the new parent */
+    var anchor = {
+      id: uid(), name: top.name || 'Map', description: '', parentId: '', mapId: parent.id,
+      color: '#7a9ede', icon: scaleGlyph(top, true) || '🌍', symbol: '', symSize: 1,
+      pin: { x: 0.5, y: 0.5 }
+    };
+    s.maps.push(parent);
+    places().push(anchor);
+    top.parentMapId = parent.id;
+    top.anchorPlaceId = anchor.id;
+    gotoMap(parent.id);
+    note('“' + nm + '” created above “' + (top.name || 'your map') + '” — generate or upload its map, then add more pins.');
+  }
+
+  /* Small chooser for the zoom-out action. */
+  function openParentMapModal() {
+    ensureMaps();
+    var top = topMapOf(curMapId());
+    var defScale = parentScaleOf(mapScale(top) || 'world');
+    var ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;z-index:9500;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)';
+    var dark = (function () { var m = (getComputedStyle(document.body).backgroundColor || '').match(/\d+/g); return m ? (0.299 * +m[0] + 0.587 * +m[1] + 0.114 * +m[2]) < 128 : false; })();
+    var card = document.createElement('div');
+    card.style.cssText = 'min-width:300px;max-width:380px;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;box-shadow:0 20px 60px rgba(0,0,0,.5);' +
+      (dark ? 'background:#141d33;color:#e7ecf7;border:1px solid #26365c' : 'background:#fffdf8;color:#3d2b1f;border:1px solid #e6dac6');
+    var inCss = 'width:100%;padding:9px 11px;border-radius:9px;font:inherit;font-size:13px;' +
+      (dark ? 'background:#0e1830;color:#e7ecf7;border:1px solid #26365c' : 'background:#fff;color:#3d2b1f;border:1px solid #e6dac6');
+    card.innerHTML =
+      '<div style="font-weight:800;font-size:15px">⤴ Zoom out — new parent map</div>' +
+      '<div style="font-size:12.5px;opacity:.72">“' + esc(top ? top.name : 'Your map') + '” becomes a pin inside a bigger map ' +
+      '(world → star system → galaxy → universe). You can then map what surrounds it.</div>' +
+      '<label style="font-size:11.5px;opacity:.75">Scale of the new map</label>' +
+      '<select id="ftp-pm-scale" style="' + inCss + '">' +
+      SCALES.map(function (sc) { return '<option value="' + sc + '"' + (sc === defScale ? ' selected' : '') + '>' + SCALE_GLYPH[sc] + ' ' + SCALE_LABEL[sc] + '</option>'; }).join('') +
+      '</select>' +
+      '<label style="font-size:11.5px;opacity:.75">Name</label>' +
+      '<input id="ftp-pm-name" style="' + inCss + '" placeholder="' + esc(SCALE_LABEL[defScale] || 'Parent map') + '">' +
+      '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">' +
+      '<button id="ftp-pm-cancel" style="border:0;background:transparent;color:inherit;opacity:.7;cursor:pointer;font:600 12.5px inherit;padding:8px 6px">Cancel</button>' +
+      '<button id="ftp-pm-go" style="border:0;border-radius:9px;padding:9px 14px;cursor:pointer;font:700 13px inherit;background:#2f7cf6;color:#fff">Create</button></div>';
+    ov.appendChild(card);
+    document.body.appendChild(ov);
+    var sel = card.querySelector('#ftp-pm-scale'), nameIn = card.querySelector('#ftp-pm-name');
+    sel.addEventListener('change', function () { nameIn.placeholder = SCALE_LABEL[sel.value] || 'Parent map'; });
+    function closeOv() { if (ov.parentNode) ov.parentNode.removeChild(ov); }
+    card.querySelector('#ftp-pm-cancel').addEventListener('click', closeOv);
+    ov.addEventListener('click', function (e) { if (e.target === ov) closeOv(); });
+    card.querySelector('#ftp-pm-go').addEventListener('click', function () {
+      var sc = sel.value, nm = nameIn.value.trim() || SCALE_LABEL[sc] || 'Parent map';
+      closeOv();
+      createParentMap(sc, nm);
+    });
+    nameIn.focus();
   }
   /* Switch the view to another map in the tree (used by breadcrumb + drill-down). */
   function gotoMap(id) {
@@ -313,23 +402,34 @@
     bar.className = 'ftp-bar';
     var addB = mkBtn('＋ Place', 'acc', function () { openPlaceEditor(null); });
     bar.appendChild(addB);
-    /* One calm set of choices: draw it, generate a base, or bring your own.
-       The heavy Azgaar studio is tucked behind "Advanced" so it doesn't overwhelm. */
-    if (window.ftSketch) { bar.appendChild(mkBtn('✏️ Draw map', 'acc', openSketch)); }
-    if (window.ftMapGen) { bar.appendChild(mkBtn('✨ Quick map', '', openMapGen)); }
+    /* One calm set of choices per scale: space scales get the star-map generator,
+       terrestrial ones the drawer + quick map. Azgaar stays behind "Advanced". */
+    var space = isSpaceScale(curMap());
+    if (space) {
+      if (window.ftSpaceGen) bar.appendChild(mkBtn('🌌 Space map', 'acc', openSpaceGen));
+    } else {
+      if (window.ftSketch) { bar.appendChild(mkBtn('✏️ Draw map', 'acc', openSketch)); }
+      if (window.ftMapGen) { bar.appendChild(mkBtn('✨ Quick map', '', openMapGen)); }
+    }
     var upB = mkBtn(mapMeta().has ? 'Replace image' : '⬆ Upload image', '', pickImage);
     bar.appendChild(upB);
     if (mapMeta().has) {
       bar.appendChild(mkBtn('Remove map', 'danger', removeImage));
     }
-    if (window.ftAzgaar || window.ftMapPaint) {
+    /* zoom OUT only from the top of the tree — everything below already has a parent */
+    if (curMap().parentMapId == null) {
+      bar.appendChild(mkBtn('⤴ Zoom out', '', openParentMapModal));
+    }
+    if (window.ftAzgaar || window.ftMapPaint || window.ftSpaceGen) {
       bar.appendChild(mkBtn('⚙ Advanced', '', openAdvancedMap));
     }
     var hint = document.createElement('span');
     hint.className = 'ftp-hint';
     hint.textContent = mapMeta().has
       ? 'Scroll to zoom · drag to pan · click a pin for its events'
-      : 'Upload your own world map (it stays on this device) — or use the place grid below';
+      : (space
+        ? 'Generate a star map for this ' + (SCALE_LABEL[mapScale(curMap())] || 'space').toLowerCase() + ' — each pin can hold its own sub-map'
+        : 'Upload your own world map (it stays on this device) — or use the place grid below');
     bar.appendChild(hint);
     main.appendChild(bar);
 
@@ -524,7 +624,8 @@
       var b = document.createElement('button');
       b.type = 'button';
       b.className = 'ftp-crumb' + (node.id === curMapId() ? ' cur' : '');
-      b.textContent = (i === 0 ? '🌍 ' : '') + (node.name || 'Map');
+      var g = scaleGlyph(node, i === 0);
+      b.textContent = (g ? g + ' ' : '') + (node.name || 'Map');
       if (node.id !== curMapId()) b.addEventListener('click', function () { gotoMap(node.id); });
       bcx.appendChild(b);
     });
@@ -930,6 +1031,26 @@
     }
     if (window.ftAzgaar) card.appendChild(row('🗺️ Pro map studio (Azgaar)', 'Full fantasy-map generator — rivers, biomes, countries, any scale. Export a PNG and import it.', openAzgaar));
     if (window.ftMapPaint) card.appendChild(row('🖌 Grid painter', 'The older cell-based painter, with political countries and time epochs.', openPaintMap));
+    if (window.ftSpaceGen) card.appendChild(row('🌌 Space map generator', 'Star fields, galaxies and star systems — for universe-scale maps.', openSpaceGen));
+    /* scale switcher: lets any map (incl. legacy roots) declare what it is */
+    (function () {
+      var wrapEl = document.createElement('div');
+      wrapEl.style.cssText = 'display:flex;align-items:center;gap:8px;font-size:12.5px;margin-top:2px';
+      var lab = document.createElement('span'); lab.style.opacity = '.75'; lab.textContent = '🏷 This map is a:';
+      var sel = document.createElement('select');
+      sel.style.cssText = 'flex:1;padding:7px 9px;border-radius:9px;font:inherit;font-size:12.5px;' +
+        (dark ? 'background:#0e1830;color:#e7ecf7;border:1px solid #26365c' : 'background:#fff;color:#3d2b1f;border:1px solid #e6dac6');
+      sel.innerHTML = '<option value="">(unset)</option>' + SCALES.map(function (sc) {
+        return '<option value="' + sc + '"' + (mapScale(curMap()) === sc ? ' selected' : '') + '>' + SCALE_GLYPH[sc] + ' ' + SCALE_LABEL[sc] + '</option>';
+      }).join('');
+      sel.addEventListener('change', function () {
+        if (sel.value) curMap().scale = sel.value; else delete curMap().scale;
+        persist();
+        renderMapView(root);
+      });
+      wrapEl.appendChild(lab); wrapEl.appendChild(sel);
+      card.appendChild(wrapEl);
+    })();
     var cancel = document.createElement('button');
     cancel.textContent = 'Cancel';
     cancel.style.cssText = 'align-self:flex-end;margin-top:4px;border:0;background:transparent;color:inherit;opacity:.7;cursor:pointer;font:600 12px inherit;padding:6px 4px';
@@ -972,6 +1093,45 @@
         persist();
         renderMapView(root);
         note(pins.length + ' place' + (pins.length === 1 ? '' : 's') + ' added to the map.');
+      }
+    });
+  }
+
+  /* ---------- space maps (ft-spacegen bridge) — universe / galaxy / system ---------- */
+  function openSpaceGen() {
+    if (!window.ftSpaceGen) { note('The space-map generator is still loading — try again in a moment.'); return; }
+    window.ftSpaceGen.open({
+      scale: mapScale(curMap()) || 'galaxy',
+      onApply: function (dataUrl, meta) {
+        note('Saving your space map…');
+        return setMapFromDataUrl(dataUrl).then(function (ok) {
+          if (!ok) { note('Could not store the map on this device (private mode?).'); return false; }
+          var s = S();
+          curMap().mapMeta = { has: true, w: (meta && meta.w) || 0, h: (meta && meta.h) || 0, name: (meta && meta.name) || 'Space map' };
+          if (meta && SCALES.indexOf(meta.scale) !== -1) curMap().scale = meta.scale;
+          syncRootMeta();
+          clearSketchStore(s);
+          view.mapUrl = ''; view.sc = 1; view.px = 0; view.py = 0;
+          persist();
+          note('Space map created — every pin can hold its own sub-map (⤵).');
+          renderMapView(root);
+          return true;
+        });
+      },
+      onAddPlaces: function (pins) {
+        if (!Array.isArray(pins) || !pins.length) return;
+        pins.forEach(function (pin) {
+          places().push({
+            id: uid(),
+            name: String(pin.name || 'Place').slice(0, 200),
+            icon: pin.icon || '', color: pin.color || '#9db8f0', description: '', parentId: '', mapId: curMapId(),
+            symbol: '', symSize: 1,
+            pin: { x: Math.round((pin.x || 0.5) * 1000) / 1000, y: Math.round((pin.y || 0.5) * 1000) / 1000 }
+          });
+        });
+        persist();
+        renderMapView(root);
+        note(pins.length + ' pin' + (pins.length === 1 ? '' : 's') + ' added — open any of them with ⤵ to map what’s inside.');
       }
     });
   }

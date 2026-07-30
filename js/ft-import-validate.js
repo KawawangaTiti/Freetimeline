@@ -249,13 +249,17 @@
     } : { has: false, w: 0, h: 0, name: '' };
     var id = sanitiseString(m.id, 64);
     if (!id) return null;
-    return {
+    var out = {
       id: id,
       name: sanitiseString(m.name, 200),
       parentMapId: m.parentMapId == null ? null : (sanitiseString(m.parentMapId, 64) || null),
       anchorPlaceId: m.anchorPlaceId == null ? null : (sanitiseString(m.anchorPlaceId, 64) || null),
       mapMeta: mm
     };
+    /* universe maps: the node's scale on the universe→city ladder (optional) */
+    var SCALES = ['universe', 'galaxy', 'system', 'planet', 'world', 'region', 'city'];
+    if (SCALES.indexOf(m.scale) !== -1) out.scale = m.scale;
+    return out;
   }
   function sanitiseMaps(a) {
     if (!Array.isArray(a)) return null;
