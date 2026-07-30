@@ -52,7 +52,7 @@
   var chip, ov;
   function refreshChip() {
     var u = A.currentUser();
-    chip.innerHTML = u ? '☁ ' + esc((u.email || '').split('@')[0]) : '☁ Sign in';
+    chip.innerHTML = u ? '☁ ' + esc(u.username ? '@' + u.username : (u.email || '').split('@')[0]) : '☁ Sign in';
   }
 
   function openModal(html) {
@@ -109,14 +109,80 @@
   /* ---- signed-in: dashboard ---- */
   function dashboard() {
     var u = A.currentUser(); if (!u) return authForm();
+    var who = u.username ? '@' + esc(u.username) : esc(u.email);
     var card = openModal(
       '<button class="ftac-x">×</button><h3>My timelines</h3>' +
-      '<p class="sub" style="color:' + T.sub + '">Signed in as <b>' + esc(u.email) + '</b> · <a href="#" id="ftac-out" style="color:' + acc + '">sign out</a></p>' +
-      '<div class="ftac-row"><button class="ftac-btn" id="ftac-save" style="flex:1">☁ Save this timeline to cloud</button></div>' +
+      '<p class="sub" style="color:' + T.sub + '">Signed in as <b>' + who + '</b> · <a href="#" id="ftac-prof" style="color:' + acc + '">profile</a> · <a href="#" id="ftac-out" style="color:' + acc + '">sign out</a></p>' +
+      '<div class="ftac-row">' +
+        (window.Store && Store.cloudExport ? '<button class="ftac-btn" id="ftac-save" style="flex:1">☁ Save this timeline to cloud</button>' : '') +
+        '<button class="ftac-btn ghost" id="ftac-bell" style="flex:1;border-color:' + T.line + ';color:' + T.ink + '">🔔 Notifications<span id="ftac-bell-n"></span></button>' +
+      '</div>' +
+      '<p class="sub" style="color:' + T.sub + ';margin:10px 0 0">' +
+        '<a href="discover.html" style="color:' + acc + '">🧭 Discover public timelines</a>' +
+        (u.username ? ' · <a href="profile.html?u=' + encodeURIComponent(u.username) + '" style="color:' + acc + '">my public page</a>' : '') + '</p>' +
       '<div class="ftac-list" id="ftac-list"><p class="sub" style="color:' + T.sub + '">Loading…</p></div>');
     card.querySelector('#ftac-out').onclick = function (e) { e.preventDefault(); A.logout(); refreshChip(); close(); note('Signed out ✓'); };
-    card.querySelector('#ftac-save').onclick = saveToCloud;
+    card.querySelector('#ftac-prof').onclick = function (e) { e.preventDefault(); profileEditor(); };
+    var saveBtn = card.querySelector('#ftac-save'); if (saveBtn) saveBtn.onclick = saveToCloud;
+    card.querySelector('#ftac-bell').onclick = notifPanel;
+    A.notifications().then(function (r) {
+      var n = card.querySelector('#ftac-bell-n');
+      if (n && r.unread) { n.textContent = ' ' + r.unread; n.style.fontWeight = '800'; }
+    }, function () {});
     loadList(card);
+  }
+
+  /* ---- profile editor (username, display name, bio, avatar) ---- */
+  function profileEditor() {
+    var u = A.currentUser() || {};
+    var av = u.avatar || {};
+    var card = openModal(
+      '<button class="ftac-x">×</button><h3>Your profile</h3>' +
+      '<p class="sub" style="color:' + T.sub + '">This is what other people see on your public page and comments.</p>' +
+      '<label class="sub" style="color:' + T.sub + '">Username (3-20: a-z, 0-9, _)</label>' + fld('ftp-un', 'text', 'username') +
+      '<label class="sub" style="color:' + T.sub + '">Display name</label>' + fld('ftp-dn', 'text', 'Display name') +
+      '<label class="sub" style="color:' + T.sub + '">Bio</label>' +
+      '<textarea class="ftac-in" id="ftp-bio" rows="3" maxlength="500" placeholder="A line about you" style="background:' + T.field + ';border-color:' + T.line + ';color:' + T.ink + ';resize:vertical"></textarea>' +
+      '<div class="ftac-row"><div style="flex:1"><label class="sub" style="color:' + T.sub + '">Avatar emoji</label>' + fld('ftp-em', 'text', '🙂') + '</div>' +
+      '<div><label class="sub" style="color:' + T.sub + '">Colour</label><br><input type="color" id="ftp-col" value="#4a8fde" style="width:52px;height:38px;border:1px solid ' + T.line + ';border-radius:9px;background:' + T.field + '"></div></div>' +
+      '<div class="ftac-err" id="ftp-err"></div>' +
+      '<button class="ftac-btn" id="ftp-save" style="width:100%">Save profile</button>');
+    card.querySelector('#ftp-un').value = u.username || '';
+    card.querySelector('#ftp-dn').value = u.displayName || '';
+    card.querySelector('#ftp-bio').value = u.bio || '';
+    card.querySelector('#ftp-em').value = av.emoji || '';
+    if (av.color) card.querySelector('#ftp-col').value = av.color;
+    card.querySelector('#ftp-save').onclick = function () {
+      var b = card.querySelector('#ftp-save'); b.disabled = true; b.textContent = '…';
+      A.updateProfile({
+        username: card.querySelector('#ftp-un').value.trim(),
+        displayName: card.querySelector('#ftp-dn').value.trim(),
+        bio: card.querySelector('#ftp-bio').value.trim(),
+        avatar: { emoji: card.querySelector('#ftp-em').value.trim(), color: card.querySelector('#ftp-col').value }
+      }).then(function () { note('Profile saved ✓'); refreshChip(); dashboard(); },
+        function (e) { card.querySelector('#ftp-err').textContent = e.message || 'Failed.'; b.disabled = false; b.textContent = 'Save profile'; });
+    };
+  }
+
+  /* ---- notifications ---- */
+  function notifPanel() {
+    var card = openModal('<button class="ftac-x">×</button><h3>Notifications</h3><div class="ftac-list" id="ftn-list"><p class="sub" style="color:' + T.sub + '">Loading…</p></div>');
+    A.notifications().then(function (r) {
+      var host = card.querySelector('#ftn-list'); host.innerHTML = '';
+      if (!(r.items || []).length) { host.innerHTML = '<p class="sub" style="color:' + T.sub + '">Nothing yet — publish a timeline and the likes will come.</p>'; return; }
+      r.items.forEach(function (n) {
+        var who = n.actor_username ? '@' + n.actor_username : 'Someone';
+        var what = n.type === 'like' ? 'liked' : n.type === 'comment' ? 'commented on' : n.type === 'reply' ? 'replied to your comment on' : n.type === 'follow' ? 'followed you' : 'shared';
+        var el = document.createElement('div'); el.className = 'ftac-item'; el.style.borderColor = T.line;
+        if (!n.read_at) el.style.background = dark ? 'rgba(47,124,246,.08)' : 'rgba(47,124,246,.06)';
+        el.innerHTML = '<div class="t" style="font-weight:600">' + esc(who) + ' ' + what +
+          (n.timeline_title ? ' “' + esc(n.timeline_title) + '”' : '') + '</div>' +
+          '<div class="sub" style="color:' + T.sub + '">' + new Date(n.created_at).toLocaleString() + '</div>';
+        if (n.timeline_id) { el.style.cursor = 'pointer'; el.onclick = function () { location.href = 'view.html?id=' + n.timeline_id; }; }
+        host.appendChild(el);
+      });
+      A.readNotifications().then(function () {}, function () {});
+    }, function (e) { card.querySelector('#ftn-list').innerHTML = '<p class="ftac-err">' + esc(e.message || 'Could not load') + '</p>'; });
   }
 
   function saveToCloud() {
@@ -140,15 +206,18 @@
 
   function itemEl(t, owned) {
     var el = document.createElement('div'); el.className = 'ftac-item'; el.style.borderColor = T.line;
-    var visColor = t.visibility === 'public' ? '#3f9d63' : t.visibility === 'shared' ? '#b7791f' : T.sub;
+    var visColor = t.visibility === 'public' ? '#3f9d63' : t.visibility === 'unlisted' ? '#7c6bd6' : t.visibility === 'shared' ? '#b7791f' : T.sub;
+    var listed = t.visibility === 'public' || t.visibility === 'unlisted';
+    var stats = listed && (t.like_count || t.view_count || t.comment_count)
+      ? '<div class="sub" style="color:' + T.sub + ';margin-top:4px">♥ ' + (t.like_count | 0) + ' · 💬 ' + (t.comment_count | 0) + ' · 👁 ' + (t.view_count | 0) + '</div>' : '';
     el.innerHTML = '<div class="t">' + esc(t.title || 'Untitled') +
       '<span class="ftac-vis" style="border-color:' + visColor + ';color:' + visColor + '">' + esc(t.visibility) + '</span></div>' +
-      '<div class="acts"></div>';
+      stats + '<div class="acts"></div>';
     var acts = el.querySelector('.acts');
     acts.appendChild(btn('Open', 'sm', function () { openCloud(t.id); }));
     if (owned) {
-      acts.appendChild(btn(t.visibility === 'public' ? 'Unpublish' : 'Publish', 'sm ghost', function () { publish(t.id, t.visibility !== 'public'); }));
-      if (t.visibility === 'public') acts.appendChild(btn('Copy link', 'sm ghost', function () { copyPublic(t.id); }));
+      acts.appendChild(btn('Publish…', 'sm ghost', function () { publishModal(t); }));
+      if (listed) acts.appendChild(btn('Copy link', 'sm ghost', function () { copyPublic(t.id); }));
       acts.appendChild(btn('Share…', 'sm ghost', function () { shareWith(t.id); }));
       acts.appendChild(btn('Delete', 'sm danger', function () { del(t.id); }));
     }
@@ -160,11 +229,42 @@
     A.load(id).then(function (r) { close(); setCurId(id); Store.cloudOpen(r.timeline.data); },
       function (e) { note(e.message || 'Could not open', 'error'); });
   }
-  function publish(id, makePublic) {
-    A.setVisibility(id, makePublic ? 'public' : 'private').then(function () { note(makePublic ? 'Published — anyone with the link can view ✓' : 'Set to private ✓'); if (makePublic) copyPublic(id); dashboard(); },
-      function (e) { note(e.message || 'Failed', 'error'); });
+  /* Publish flow: pick visibility + describe the timeline for the Discover gallery. */
+  function publishModal(t) {
+    var vis = t.visibility || 'private';
+    var card = openModal(
+      '<button class="ftac-x">×</button><h3>Publish “' + esc(t.title || 'Untitled') + '”</h3>' +
+      '<p class="sub" style="color:' + T.sub + '">Public = listed on Discover. Unlisted = only people with the link. Private = only you.</p>' +
+      '<div class="ftac-tabs" id="ftpb-vis">' +
+        ['private', 'unlisted', 'public'].map(function (v) { return '<div class="ftac-tab" data-v="' + v + '">' + v + '</div>'; }).join('') + '</div>' +
+      '<label class="sub" style="color:' + T.sub + '">Description (shown on Discover)</label>' +
+      '<textarea class="ftac-in" id="ftpb-desc" rows="3" maxlength="1000" placeholder="What is this timeline about?" style="background:' + T.field + ';border-color:' + T.line + ';color:' + T.ink + ';resize:vertical"></textarea>' +
+      '<label class="sub" style="color:' + T.sub + '">Tags (comma-separated, up to 8)</label>' + fld('ftpb-tags', 'text', 'fantasy, worldbuilding, history') +
+      '<div class="ftac-err" id="ftpb-err"></div>' +
+      '<button class="ftac-btn" id="ftpb-go" style="width:100%">Save</button>');
+    card.querySelector('#ftpb-desc').value = t.description || '';
+    card.querySelector('#ftpb-tags').value = (t.tags && t.tags.length) ? t.tags.join(', ') : '';
+    function paintVis() {
+      card.querySelectorAll('#ftpb-vis .ftac-tab').forEach(function (el) {
+        var on = el.dataset.v === vis;
+        el.style.background = on ? acc : 'transparent'; el.style.color = on ? '#fff' : T.ink; el.style.borderColor = on ? acc : T.line;
+      });
+    }
+    card.querySelectorAll('#ftpb-vis .ftac-tab').forEach(function (el) { el.onclick = function () { vis = el.dataset.v; paintVis(); }; });
+    paintVis();
+    card.querySelector('#ftpb-go').onclick = function () {
+      var b = card.querySelector('#ftpb-go'); b.disabled = true; b.textContent = '…';
+      var tags = card.querySelector('#ftpb-tags').value.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+      A.save(t.id, { visibility: vis, description: card.querySelector('#ftpb-desc').value.trim(), tags: tags })
+        .then(function () {
+          note(vis === 'public' ? 'Published on Discover ✓' : vis === 'unlisted' ? 'Unlisted — anyone with the link can view ✓' : 'Set to private ✓');
+          if (vis !== 'private') copyPublic(t.id);
+          dashboard();
+        }, function (e) { card.querySelector('#ftpb-err').textContent = e.message || 'Failed.'; b.disabled = false; b.textContent = 'Save'; });
+    };
   }
-  function publicUrl(id) { return location.origin + location.pathname + '?cloud=' + id; }
+  /* Share target is the detail page (title, author, likes, comments, open-in-app). */
+  function publicUrl(id) { return location.origin + location.pathname.replace(/[^/]*$/, '') + 'view.html?id=' + id; }
   function copyPublic(id) {
     var url = publicUrl(id);
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(function () { note('Public link copied ✓'); }, function () { prompt('Public link:', url); });
@@ -188,6 +288,8 @@
     chip.style.background = T.chip; chip.style.borderColor = T.line; chip.style.color = T.ink;
     chip.onclick = function () { A.isSignedIn() ? dashboard() : authForm(); };
     document.body.appendChild(chip); refreshChip();
+    // refresh the cached user once per load so profile fields (username…) stay current
+    if (A.isSignedIn() && A.refreshMe) A.refreshMe().then(refreshChip, function () {});
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();

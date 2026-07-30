@@ -47,15 +47,50 @@
   function create(title, app, data, visibility) { return api('/api/timelines', 'POST', { title: title, app: app, data: data, visibility: visibility || 'private' }); }
   function load(id) { return api('/api/timelines/' + id, 'GET'); }
   function loadPublic(id) { return api('/api/public/' + id, 'GET'); }
-  function save(id, patch) { return api('/api/timelines/' + id, 'PUT', patch); }        // patch: {data?, title?, visibility?}
+  function save(id, patch) { return api('/api/timelines/' + id, 'PUT', patch); }        // patch: {data?, title?, visibility?, description?, tags?, cover?}
   function remove(id) { return api('/api/timelines/' + id, 'DELETE'); }
   function setVisibility(id, visibility) { return save(id, { visibility: visibility }); }
   function share(id, email, permission) { return api('/api/timelines/' + id + '/share', 'POST', { email: email, permission: permission || 'view' }); }
+
+  // social (Level 3) — public feed, profiles, likes/favs, follows, comments, notifications
+  function qstr(params) {
+    var out = [];
+    for (var k in params) if (params[k] !== undefined && params[k] !== null && params[k] !== '') out.push(encodeURIComponent(k) + '=' + encodeURIComponent(params[k]));
+    return out.length ? '?' + out.join('&') : '';
+  }
+  function feed(params) { return api('/api/public' + qstr(params || {}), 'GET'); }       // {sort, app, tag, q, limit, offset}
+  function feedFollowing() { return api('/api/feed/following', 'GET'); }
+  function profile(username) { return api('/api/users/' + encodeURIComponent(username), 'GET'); }
+  function updateProfile(patch) { return api('/api/me/profile', 'PUT', patch); }        // {username?, displayName?, bio?, avatar?, bannerColor?}
+  function changeEmail(password, newEmail) { return api('/api/change-email', 'POST', { password: password, newEmail: newEmail }); }
+  function changePassword(cur, next) { return api('/api/change-password', 'POST', { currentPassword: cur, newPassword: next }); }
+  function like(id) { return api('/api/timelines/' + id + '/like', 'POST'); }
+  function unlike(id) { return api('/api/timelines/' + id + '/like', 'DELETE'); }
+  function favorite(id) { return api('/api/timelines/' + id + '/favorite', 'POST'); }
+  function unfavorite(id) { return api('/api/timelines/' + id + '/favorite', 'DELETE'); }
+  function follow(username) { return api('/api/users/' + encodeURIComponent(username) + '/follow', 'POST'); }
+  function unfollow(username) { return api('/api/users/' + encodeURIComponent(username) + '/follow', 'DELETE'); }
+  function comments(id) { return api('/api/public/' + id + '/comments', 'GET'); }
+  function comment(id, body, parentId) { return api('/api/public/' + id + '/comments', 'POST', { body: body, parentId: parentId || null }); }
+  function deleteComment(cid) { return api('/api/comments/' + cid, 'DELETE'); }
+  function notifications() { return api('/api/me/notifications', 'GET'); }
+  function readNotifications() { return api('/api/me/notifications/read', 'POST'); }
+  function library() { return api('/api/me/library', 'GET'); }
+  function report(targetType, targetId, reason) { return api('/api/report', 'POST', { targetType: targetType, targetId: targetId, reason: reason }); }
+  function countView(id) { return api('/api/public/' + id + '/view', 'POST'); }
+  function refreshMe() { return api('/api/me', 'GET').then(function (r) { setSession(null, r.user); return r.user; }); }
 
   window.ftAccount = {
     configured: configured, isSignedIn: isSignedIn, currentUser: currentUser,
     register: register, login: login, logout: logout,
     list: list, create: create, load: load, loadPublic: loadPublic,
-    save: save, remove: remove, setVisibility: setVisibility, share: share
+    save: save, remove: remove, setVisibility: setVisibility, share: share,
+    feed: feed, feedFollowing: feedFollowing, profile: profile, updateProfile: updateProfile,
+    changeEmail: changeEmail, changePassword: changePassword, refreshMe: refreshMe,
+    like: like, unlike: unlike, favorite: favorite, unfavorite: unfavorite,
+    follow: follow, unfollow: unfollow,
+    comments: comments, comment: comment, deleteComment: deleteComment,
+    notifications: notifications, readNotifications: readNotifications,
+    library: library, report: report, countView: countView
   };
 })();

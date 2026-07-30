@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<script src="js/ft-consent.js" defer></script>
+<title>Discover public timelines — FreeTimeline</title>
+<meta name="description" content="Browse public Universe and Biography timelines shared by the FreeTimeline community. Discover fantasy sagas, campaign lore, and life stories — trending, top, or newest.">
+<link rel="canonical" href="https://freetimeline.pt/discover.html">
+<meta name="theme-color" content="#050611">
+<link rel="alternate" type="application/rss+xml" href="/feed.xml" title="FreeTimeline Guides">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://freetimeline.pt/"},{"@type":"ListItem","position":2,"name":"Discover","item":"https://freetimeline.pt/discover.html"}]}</script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #050611;
+  --bg2: #080a18;
+  --surface: #0d0f20;
+  --surface2: #111328;
+  --border: rgba(255,255,255,0.06);
+  --border-mid: rgba(255,255,255,0.1);
+  --text: #e4e8f5;
+  --text-bright: #ffffff;
+  --muted: #aab3cc;
+  --dim: #8a93b0;
+  --gold: #d4af37;
+  --accent: #4a8fde;
+  --green: #4ade80;
+  --amber: #f4b84a;
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: -apple-system, 'Segoe UI', system-ui, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.7;
+}
+
+.page-wrap { display: flex; flex-direction: column; min-height: 100vh; }
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; height: 60px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(5,6,17,0.95);
+  backdrop-filter: blur(16px);
+  position: sticky; top: 0; z-index: 100;
+}
+.topbar-brand {
+  font-size: 1rem; font-weight: 800; color: #fff; text-decoration: none;
+  display: flex; align-items: center; gap: 6px;
+}
+.brand-infinity {
+  font-size: 1.4em;
+  background: linear-gradient(135deg, #5a80ff, #40c8ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.brand-name {
+  background: linear-gradient(135deg, #c8d4ff, #90d8ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.topbar-links { display: flex; align-items: center; gap: 24px; }
+.topbar-links a {
+  color: var(--muted); text-decoration: none;
+  font-size: 0.85rem; font-weight: 500; transition: color 0.2s;
+}
+.topbar-links a:hover, .topbar-links a[aria-current="page"] { color: var(--text-bright); }
+
+.main-content {
+  flex: 1; padding: 64px 40px 80px;
+  max-width: 1160px; margin: 0 auto; width: 100%;
+}
+
+.page-title {
+  font-size: 2.6rem; font-weight: 900; color: var(--text-bright);
+  margin-bottom: 12px; letter-spacing: -1px;
+}
+.page-subtitle {
+  font-size: 1.05rem; color: var(--muted);
+  margin-bottom: 32px; line-height: 1.7; max-width: 640px;
+}
+
+/* --- Controls --- */
+.disc-controls {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap; margin-bottom: 14px;
+}
+.disc-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.disc-tab {
+  font-family: inherit; font-size: 0.86rem; font-weight: 700;
+  padding: 9px 16px; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--border-mid);
+  color: var(--muted); cursor: pointer; transition: background .15s, border-color .15s, color .15s;
+}
+.disc-tab:hover { color: var(--text-bright); }
+.disc-tab[aria-pressed="true"] {
+  background: rgba(74,143,222,0.16); border-color: rgba(74,143,222,0.55); color: var(--accent);
+}
+.disc-filters { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.disc-select, .disc-search {
+  font-family: inherit; font-size: 0.86rem;
+  background: var(--surface); border: 1px solid var(--border-mid);
+  color: var(--text); border-radius: 10px; padding: 9px 14px;
+}
+.disc-search { min-width: 220px; }
+.disc-select:focus, .disc-search:focus { outline: none; border-color: var(--accent); }
+
+.disc-tagbar {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 18px;
+}
+.disc-tagbar .tagchip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.8rem; font-weight: 600; color: var(--accent);
+  background: rgba(74,143,222,0.12); border: 1px solid rgba(74,143,222,0.4);
+  border-radius: 999px; padding: 5px 8px 5px 12px;
+}
+.disc-tagbar .tagchip button {
+  background: none; border: 0; color: inherit; cursor: pointer;
+  font-size: 0.95rem; line-height: 1; padding: 2px;
+}
+
+.disc-status {
+  min-height: 1px;
+}
+.disc-status .msg-box {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 32px 28px; text-align: center;
+  color: var(--muted); font-size: 0.95rem; margin: 20px 0;
+}
+.disc-status .msg-box strong { display: block; color: var(--text-bright); font-size: 1.1rem; margin-bottom: 8px; }
+.disc-status .msg-box a.cta {
+  display: inline-block; margin-top: 14px; padding: 10px 20px;
+  border-radius: 10px; background: var(--accent); color: #fff;
+  text-decoration: none; font-weight: 700; font-size: 0.88rem;
+}
+.disc-status .msg-box a.cta:hover { filter: brightness(1.1); }
+.disc-status .msg-box button.retry {
+  margin-top: 14px; padding: 9px 18px; border-radius: 10px;
+  background: transparent; border: 1px solid var(--border-mid); color: var(--text);
+  font: inherit; font-weight: 700; font-size: 0.85rem; cursor: pointer;
+}
+
+/* --- Card grid (shared with profile.html) --- */
+.card-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
+  gap: 18px; margin-top: 8px;
+}
+.tl-card {
+  position: relative;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: border-color .15s, transform .15s;
+}
+.tl-card:hover { border-color: var(--border-mid); transform: translateY(-2px); }
+.tl-stretched-link { position: absolute; inset: 0; z-index: 1; }
+.tl-stretched-link:focus-visible { outline: 3px solid #ffd166; outline-offset: -3px; }
+.tl-cover {
+  position: relative; z-index: 0;
+  height: 108px; display: flex; align-items: center; justify-content: center;
+  font-size: 2.4rem; background: linear-gradient(135deg, rgba(74,143,222,0.25), rgba(74,143,222,0.08));
+}
+.tl-body { position: relative; padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 7px; flex: 1; }
+.tl-app-pill {
+  position: relative; z-index: 2; align-self: flex-start;
+  font-size: 0.65rem; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 999px; color: var(--dim); border: 1px solid var(--border-mid);
+}
+.tl-title {
+  font-size: 1.02rem; font-weight: 800; color: var(--text-bright);
+  display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
+}
+.tl-desc {
+  font-size: 0.86rem; color: var(--muted); line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  min-height: calc(0.86rem * 1.5 * 2);
+}
+.tl-author {
+  position: relative; z-index: 2; align-self: flex-start;
+  font-size: 0.8rem; color: var(--accent); text-decoration: none; font-weight: 600;
+}
+.tl-author:hover { text-decoration: underline; }
+.tl-tags { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: 6px; }
+.tl-tag {
+  font: inherit; font-size: 0.7rem; font-weight: 600; color: var(--muted);
+  background: var(--surface2); border: 1px solid var(--border-mid);
+  border-radius: 999px; padding: 3px 9px; cursor: pointer;
+}
+.tl-tag:hover { color: var(--text-bright); border-color: var(--accent); }
+.tl-stats { font-size: 0.78rem; color: var(--dim); margin-top: auto; padding-top: 4px; }
+
+.disc-loadmore-wrap { display: flex; justify-content: center; margin-top: 28px; }
+.disc-loadmore {
+  font: inherit; font-weight: 700; font-size: 0.88rem;
+  padding: 11px 26px; border-radius: 10px;
+  background: var(--surface2); border: 1px solid var(--border-mid); color: var(--text);
+  cursor: pointer;
+}
+.disc-loadmore:hover { border-color: var(--accent); color: var(--text-bright); }
+.disc-loadmore[disabled] { opacity: 0.6; cursor: default; }
+
+footer {
+  padding: 32px 40px;
+  border-top: 1px solid var(--border);
+  background: rgba(5,6,17,0.9);
+  margin-top: auto;
+}
+.footer-inner {
+  max-width: 1000px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 20px; flex-wrap: wrap;
+}
+.footer-brand {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.88rem; font-weight: 700; color: var(--dim);
+}
+.footer-links { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.footer-links a {
+  color: var(--dim); font-size: 0.82rem; text-decoration: none;
+  padding: 3px 6px; border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+.footer-links a:hover { color: var(--muted); background: rgba(255,255,255,0.04); }
+.footer-links .fdot { color: var(--dim); font-size: 0.65rem; }
+.footer-note {
+  font-size: 0.8rem; color: var(--dim); text-align: center;
+  width: 100%; padding-top: 12px; border-top: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .topbar { padding: 0 20px; }
+  .topbar-links { display: none; }
+  .main-content { padding: 40px 20px 60px; }
+  .page-title { font-size: 2rem; }
+  .disc-controls { flex-direction: column; align-items: stretch; }
+  .disc-filters { justify-content: stretch; }
+  .disc-search { flex: 1; min-width: 0; }
+  footer { padding: 24px 20px; }
+  .footer-inner { flex-direction: column; align-items: flex-start; }
+}
+
+.footer-links .ft-cookie-prefs{background:none;border:0;color:var(--dim);font:inherit;font-size:.82rem;padding:3px 6px;border-radius:6px;cursor:pointer;text-decoration:underline;text-underline-offset:2px;font-family:inherit;}
+.footer-links .ft-cookie-prefs:hover{color:var(--muted);background:rgba(255,255,255,.04);}
+
+/* --- PART 12: A11y baseline --- */
+.skip-link{position:absolute;left:-9999px;top:0;z-index:99999;background:#ffd166;color:#050611;padding:10px 16px;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;}
+.skip-link:focus{left:0;outline:3px solid #ffd166;outline-offset:2px;}
+:focus-visible{outline:3px solid #ffd166;outline-offset:2px;border-radius:4px;}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[tabindex]:focus-visible,summary:focus-visible{outline:3px solid #ffd166;outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:0.001ms!important;animation-iteration-count:1!important;transition-duration:0.001ms!important;scroll-behavior:auto!important;}}
+
+</style>
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://freetimeline.pt/discover.html">
+<meta property="og:title" content="Discover public timelines — FreeTimeline">
+<meta property="og:description" content="Browse public Universe and Biography timelines shared by the FreeTimeline community. Discover fantasy sagas, campaign lore, and life stories — trending, top, or newest.">
+<meta property="og:image" content="https://freetimeline.pt/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="FreeTimeline">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Discover public timelines — FreeTimeline">
+<meta name="twitter:description" content="Browse public Universe and Biography timelines shared by the FreeTimeline community. Trending, top, or newest.">
+<meta name="twitter:image" content="https://freetimeline.pt/og.png">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<div class="page-wrap">
+
+  <header class="topbar">
+    <a href="index.html" class="topbar-brand">
+      <span class="brand-infinity">&#8734;</span>
+      <span class="brand-name">FreeTimeline</span>
+    </a>
+    <nav class="topbar-links">
+      <a href="index.html">Home</a>
+      <a href="discover.html" aria-current="page">&#129497; Discover</a>
+      <a href="guides.html">Guides</a>
+      <a href="faq.html">Help</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="cookies.html">Cookies</a>
+    </nav>
+  </header>
+
+  <main class="main-content" id="main" tabindex="-1">
+    <h1 class="page-title">Discover</h1>
+    <p class="page-subtitle">Public Universe and Biography timelines shared by the FreeTimeline community. Browse what people are building, or <a href="universe.html" style="color: var(--accent);">publish your own</a>.</p>
+
+    <div class="disc-controls">
+      <div class="disc-tabs" role="group" aria-label="Sort timelines">
+        <button type="button" class="disc-tab" data-sort="trending" aria-pressed="true">Trending</button>
+        <button type="button" class="disc-tab" data-sort="top" aria-pressed="false">Top</button>
+        <button type="button" class="disc-tab" data-sort="recent" aria-pressed="false">Recent</button>
+        <button type="button" class="disc-tab" data-sort="following" aria-pressed="false">Following</button>
+      </div>
+      <div class="disc-filters">
+        <select id="disc-app" class="disc-select" aria-label="Filter by app">
+          <option value="">All apps</option>
+          <option value="universe">Universe</option>
+          <option value="biography">Biography</option>
+        </select>
+        <input type="search" id="disc-q" class="disc-search" placeholder="Search timelines&hellip;" aria-label="Search timelines">
+      </div>
+    </div>
+
+    <div id="disc-tagbar" class="disc-tagbar" hidden></div>
+
+    <div id="disc-status" class="disc-status" role="status" aria-live="polite"></div>
+    <div id="disc-grid" class="card-grid"></div>
+
+    <div class="disc-loadmore-wrap">
+      <button type="button" id="disc-more" class="disc-loadmore" hidden>Load more</button>
+    </div>
+  </main>
+<!-- AdSense slot: discover — above footer (replace data-ad-slot with a real unit ID from your AdSense console) -->
+<ins class="adsbygoogle" style="display:block;margin:32px auto;max-width:728px"
+     data-ad-client="ca-pub-4135034633295293"
+     data-ad-slot="5213958958"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+
+
+        <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="brand-infinity">&#8734;</span>
+        <span>FreeTimeline</span>
+      </div>
+      <nav class="footer-links">
+        <a href="about.html">About</a>
+        <span class="fdot">&#8226;</span>
+        <a href="contact.html">Contact</a>
+        <span class="fdot">&#8226;</span>
+        <a href="guides.html">Guides</a>
+        <span class="fdot">&#8226;</span>
+        <a href="discover.html">&#129497; Discover</a>
+        <span class="fdot">&#8226;</span>
+        <a href="faq.html">Help</a>
+        <span class="fdot">&#8226;</span>
+        <a href="pricing.html">Pricing</a>
+        <span class="fdot">&#8226;</span>
+        <a href="roadmap.html">Roadmap</a>
+        <span class="fdot">&#8226;</span>
+        <a href="terms.html">Terms</a>
+        <span class="fdot">&#8226;</span>
+        <a href="privacy.html">Privacy</a>
+        <span class="fdot">&#8226;</span>
+        <a href="cookies.html">Cookies</a>
+        <span class="fdot">&#8226;</span>
+        <button type="button" class="ft-cookie-prefs" id="ft-cookie-prefs-footer">Manage cookie preferences</button>
+      </nav>
+      <p class="footer-note">&copy; <span id="footer-year">2026</span> FreeTimeline &mdash; All data is saved locally in your browser.</p>
+    </div>
+  </footer>
+
+</div>
+
+<script src="js/ft-account.js"></script>
+<script src="js/ft-account-ui.js"></script>
+<script>(function(){var y=document.getElementById('footer-year');if(y)y.textContent=new Date().getFullYear();})();</script>
+<script>
+(function () {
+  'use strict';
+  var A = window.ftAccount;
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  var grid = document.getElementById('disc-grid');
+  var statusEl = document.getElementById('disc-status');
+  var moreBtn = document.getElementById('disc-more');
+  var tagbar = document.getElementById('disc-tagbar');
+  var appSel = document.getElementById('disc-app');
+  var qInput = document.getElementById('disc-q');
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.disc-tab'));
+
+  var state = { sort: 'trending', app: '', tag: '', q: '', offset: 0, limit: 24, loading: false };
+  var LIMIT = state.limit;
+
+  function setStatus(html) { statusEl.innerHTML = html; }
+  function clearStatus() { statusEl.innerHTML = ''; }
+
+  function paintTagbar() {
+    if (!state.tag) { tagbar.hidden = true; tagbar.innerHTML = ''; return; }
+    tagbar.hidden = false;
+    tagbar.innerHTML = '<span class="tagchip">#' + esc(state.tag) + '<button type="button" aria-label="Clear tag filter">&times;</button></span>';
+    tagbar.querySelector('button').onclick = function () { state.tag = ''; paintTagbar(); reload(); };
+  }
+
+  function appLabel(app) { return app === 'universe' ? 'Universe' : app === 'biography' ? 'Biography' : app; }
+  function coverStyle(cover) {
+    if (cover && cover.color) return 'background:' + cover.color + ';';
+    return '';
+  }
+  function coverEmoji(cover) { return (cover && cover.emoji) ? cover.emoji : '\u{1F570}️'; }
+
+  function cardEl(card) {
+    var el = document.createElement('article');
+    el.className = 'tl-card';
+    var author = card.author;
+    var authorHtml = author
+      ? '<a class="tl-author" href="profile.html?u=' + encodeURIComponent(author.username) + '">@' + esc(author.username) + '</a>'
+      : '';
+    var tagsHtml = (card.tags || []).slice(0, 6).map(function (t) {
+      return '<button type="button" class="tl-tag" data-tag="' + esc(t) + '">#' + esc(t) + '</button>';
+    }).join('');
+    el.innerHTML =
+      '<a class="tl-stretched-link" href="view.html?id=' + encodeURIComponent(card.id) + '" aria-label="Open ' + esc(card.title || 'Untitled timeline') + '"></a>' +
+      '<div class="tl-cover" style="' + coverStyle(card.cover) + '" aria-hidden="true">' + coverEmoji(card.cover) + '</div>' +
+      '<div class="tl-body">' +
+        '<span class="tl-app-pill">' + esc(appLabel(card.app)) + '</span>' +
+        '<h3 class="tl-title">' + esc(card.title || 'Untitled timeline') + '</h3>' +
+        '<p class="tl-desc">' + esc(card.description || '') + '</p>' +
+        authorHtml +
+        (tagsHtml ? '<div class="tl-tags">' + tagsHtml + '</div>' : '') +
+        '<div class="tl-stats">&#9829; ' + (card.likes | 0) + ' &middot; &#128172; ' + (card.comments | 0) + ' &middot; &#128065; ' + (card.views | 0) + '</div>' +
+      '</div>';
+    el.querySelectorAll('.tl-tag').forEach(function (btn) {
+      btn.addEventListener('click', function () { state.tag = btn.getAttribute('data-tag'); paintTagbar(); reload(); });
+    });
+    return el;
+  }
+
+  function emptyState() {
+    return '<div class="msg-box"><strong>Nothing here yet</strong>' +
+      'No public timelines match this filter yet.<br><a class="cta" href="universe.html">Open the app and publish your first timeline</a></div>';
+  }
+  function errorState() {
+    return '<div class="msg-box"><strong>Could not load</strong>Something went wrong reaching Discover — try again later.' +
+      '<br><button type="button" class="retry" id="disc-retry">Retry</button></div>';
+  }
+  function signInHint() {
+    return '<div class="msg-box"><strong>Sign in required</strong>Follow creators to see their timelines here.' +
+      '<br><button type="button" class="retry" id="disc-signin">Sign in</button></div>';
+  }
+
+  function wireRetry() {
+    var r = document.getElementById('disc-retry'); if (r) r.onclick = function () { reload(); };
+    var s = document.getElementById('disc-signin'); if (s) s.onclick = function () {
+      var chip = document.querySelector('.ftac-chip'); if (chip) chip.click();
+    };
+  }
+
+  function fetchPage() {
+    if (state.sort === 'following') {
+      if (!A || !A.isSignedIn()) return Promise.reject({ signedOut: true });
+      return A.feedFollowing();
+    }
+    return A.feed({ sort: state.sort, app: state.app || undefined, tag: state.tag || undefined, q: state.q || undefined, limit: state.limit, offset: state.offset });
+  }
+
+  function reload() {
+    state.offset = 0;
+    grid.innerHTML = '';
+    moreBtn.hidden = true;
+    load(true);
+  }
+
+  function load(isReload) {
+    if (state.loading) return;
+    state.loading = true;
+    if (isReload) setStatus('<div class="msg-box"><strong>Loading&hellip;</strong>Fetching public timelines.</div>');
+    fetchPage().then(function (r) {
+      state.loading = false;
+      var items = (r && r.items) || [];
+      clearStatus();
+      if (isReload && !items.length) { setStatus(emptyState()); moreBtn.hidden = true; return; }
+      items.forEach(function (card) { grid.appendChild(cardEl(card)); });
+      if (state.sort !== 'following') {
+        state.offset += items.length;
+        moreBtn.hidden = items.length < state.limit;
+      } else {
+        moreBtn.hidden = true;
+      }
+    }, function (e) {
+      state.loading = false;
+      if (e && e.signedOut) { setStatus(signInHint()); wireRetry(); moreBtn.hidden = true; return; }
+      setStatus(errorState()); wireRetry(); moreBtn.hidden = true;
+    });
+  }
+
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () {
+      tabs.forEach(function (o) { o.setAttribute('aria-pressed', o === t ? 'true' : 'false'); });
+      state.sort = t.getAttribute('data-sort');
+      reload();
+    });
+  });
+  appSel.addEventListener('change', function () { state.app = appSel.value; reload(); });
+
+  var qTimer = null;
+  qInput.addEventListener('input', function () {
+    clearTimeout(qTimer);
+    qTimer = setTimeout(function () { state.q = qInput.value.trim(); reload(); }, 400);
+  });
+
+  moreBtn.addEventListener('click', function () { load(false); });
+
+  // Pick up a ?tag= deep link, if present.
+  (function initFromQuery() {
+    try {
+      var p = new URLSearchParams(location.search);
+      if (p.get('tag')) { state.tag = p.get('tag'); paintTagbar(); }
+      if (p.get('app')) { state.app = p.get('app'); appSel.value = state.app; }
+      if (p.get('q')) { state.q = p.get('q'); qInput.value = state.q; }
+    } catch (_) {}
+  })();
+
+  if (!A || !A.configured || !A.configured()) {
+    setStatus(errorState());
+  } else {
+    load(true);
+  }
+})();
+</script>
+</body>
+</html>

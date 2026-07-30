@@ -78,6 +78,12 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+  <url>
+    <loc>https://freetimeline.pt/discover.html</loc>
+    <lastmod>2026-07-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
   <!-- Guide Articles -->
   <url>
     <loc>https://freetimeline.pt/guides/how-to-build-consistent-timeline-fantasy-novel.html</loc>

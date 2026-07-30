@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="robots" content="noindex, follow">
+<script src="js/ft-consent.js" defer></script>
+<title>Profile — FreeTimeline</title>
+<meta name="description" content="A FreeTimeline creator profile — public Universe and Biography timelines shared with the community.">
+<meta name="theme-color" content="#050611">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #050611;
+  --bg2: #080a18;
+  --surface: #0d0f20;
+  --surface2: #111328;
+  --border: rgba(255,255,255,0.06);
+  --border-mid: rgba(255,255,255,0.1);
+  --text: #e4e8f5;
+  --text-bright: #ffffff;
+  --muted: #aab3cc;
+  --dim: #8a93b0;
+  --gold: #d4af37;
+  --accent: #4a8fde;
+  --green: #4ade80;
+  --amber: #f4b84a;
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: -apple-system, 'Segoe UI', system-ui, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.7;
+}
+
+.page-wrap { display: flex; flex-direction: column; min-height: 100vh; }
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; height: 60px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(5,6,17,0.95);
+  backdrop-filter: blur(16px);
+  position: sticky; top: 0; z-index: 100;
+}
+.topbar-brand {
+  font-size: 1rem; font-weight: 800; color: #fff; text-decoration: none;
+  display: flex; align-items: center; gap: 6px;
+}
+.brand-infinity {
+  font-size: 1.4em;
+  background: linear-gradient(135deg, #5a80ff, #40c8ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.brand-name {
+  background: linear-gradient(135deg, #c8d4ff, #90d8ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.topbar-links { display: flex; align-items: center; gap: 24px; }
+.topbar-links a {
+  color: var(--muted); text-decoration: none;
+  font-size: 0.85rem; font-weight: 500; transition: color 0.2s;
+}
+.topbar-links a:hover { color: var(--text-bright); }
+
+.main-content {
+  flex: 1; padding: 0 40px 80px;
+  max-width: 1000px; margin: 0 auto; width: 100%;
+}
+
+/* --- Profile header --- */
+.profile-banner {
+  height: 160px; margin: 0 -40px 0; border-radius: 0 0 20px 20px;
+  background: linear-gradient(135deg, #24345e, #16223e);
+}
+.profile-head {
+  display: flex; align-items: flex-end; gap: 20px;
+  margin-top: -46px; padding: 0 4px 24px;
+  flex-wrap: wrap;
+}
+.profile-avatar {
+  width: 92px; height: 92px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.6rem; background: var(--accent);
+  border: 4px solid var(--bg); flex-shrink: 0;
+}
+.profile-idbox { flex: 1; min-width: 200px; padding-bottom: 4px; }
+.profile-name { font-size: 1.6rem; font-weight: 900; color: var(--text-bright); letter-spacing: -0.5px; }
+.profile-user { font-size: 0.95rem; color: var(--muted); margin-top: 2px; }
+.profile-actions { display: flex; gap: 10px; align-items: center; padding-bottom: 6px; flex-wrap: wrap; }
+.btn-follow {
+  font: 700 0.86rem/1 inherit; padding: 10px 20px; border-radius: 999px;
+  background: var(--accent); color: #fff; border: 1px solid var(--accent); cursor: pointer;
+}
+.btn-follow[aria-pressed="true"] { background: transparent; color: var(--text-bright); border-color: var(--border-mid); }
+.btn-follow:hover { filter: brightness(1.08); }
+.link-report { font-size: 0.78rem; color: var(--dim); background: none; border: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; font-family: inherit; }
+.link-report:hover { color: var(--muted); }
+
+.profile-bio { color: var(--text); font-size: 0.98rem; margin: 4px 0 18px; max-width: 640px; }
+.profile-meta { color: var(--dim); font-size: 0.84rem; margin-bottom: 20px; }
+.profile-stats { display: flex; gap: 22px; margin-bottom: 28px; flex-wrap: wrap; }
+.profile-stats .stat { font-size: 0.86rem; color: var(--muted); }
+.profile-stats .stat b { color: var(--text-bright); font-size: 1.05rem; display: block; }
+
+.section-title { font-size: 1.15rem; font-weight: 800; color: var(--text-bright); margin: 8px 0 16px; }
+
+.msg-box {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 32px 28px; text-align: center;
+  color: var(--muted); font-size: 0.95rem; margin: 20px 0;
+}
+.msg-box strong { display: block; color: var(--text-bright); font-size: 1.1rem; margin-bottom: 8px; }
+.msg-box button.retry {
+  margin-top: 14px; padding: 9px 18px; border-radius: 10px;
+  background: transparent; border: 1px solid var(--border-mid); color: var(--text);
+  font: inherit; font-weight: 700; font-size: 0.85rem; cursor: pointer;
+}
+
+/* --- Card grid (shared with discover.html) --- */
+.card-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
+  gap: 18px; margin-top: 8px;
+}
+.tl-card {
+  position: relative;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: border-color .15s, transform .15s;
+}
+.tl-card:hover { border-color: var(--border-mid); transform: translateY(-2px); }
+.tl-stretched-link { position: absolute; inset: 0; z-index: 1; }
+.tl-stretched-link:focus-visible { outline: 3px solid #ffd166; outline-offset: -3px; }
+.tl-cover {
+  position: relative; z-index: 0;
+  height: 108px; display: flex; align-items: center; justify-content: center;
+  font-size: 2.4rem; background: linear-gradient(135deg, rgba(74,143,222,0.25), rgba(74,143,222,0.08));
+}
+.tl-body { position: relative; padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 7px; flex: 1; }
+.tl-app-pill {
+  position: relative; z-index: 2; align-self: flex-start;
+  font-size: 0.65rem; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 999px; color: var(--dim); border: 1px solid var(--border-mid);
+}
+.tl-title {
+  font-size: 1.02rem; font-weight: 800; color: var(--text-bright);
+  display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
+}
+.tl-desc {
+  font-size: 0.86rem; color: var(--muted); line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  min-height: calc(0.86rem * 1.5 * 2);
+}
+.tl-tags { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: 6px; }
+.tl-tag {
+  font: inherit; font-size: 0.7rem; font-weight: 600; color: var(--muted);
+  background: var(--surface2); border: 1px solid var(--border-mid);
+  border-radius: 999px; padding: 3px 9px; cursor: pointer;
+}
+.tl-tag:hover { color: var(--text-bright); border-color: var(--accent); }
+.tl-stats { font-size: 0.78rem; color: var(--dim); margin-top: auto; padding-top: 4px; }
+
+footer {
+  padding: 32px 40px;
+  border-top: 1px solid var(--border);
+  background: rgba(5,6,17,0.9);
+  margin-top: auto;
+}
+.footer-inner {
+  max-width: 1000px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 20px; flex-wrap: wrap;
+}
+.footer-brand {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.88rem; font-weight: 700; color: var(--dim);
+}
+.footer-links { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.footer-links a {
+  color: var(--dim); font-size: 0.82rem; text-decoration: none;
+  padding: 3px 6px; border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+.footer-links a:hover { color: var(--muted); background: rgba(255,255,255,0.04); }
+.footer-links .fdot { color: var(--dim); font-size: 0.65rem; }
+.footer-note {
+  font-size: 0.8rem; color: var(--dim); text-align: center;
+  width: 100%; padding-top: 12px; border-top: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .topbar { padding: 0 20px; }
+  .topbar-links { display: none; }
+  .main-content { padding: 0 20px 60px; }
+  .profile-banner { margin: 0 -20px 0; }
+  footer { padding: 24px 20px; }
+  .footer-inner { flex-direction: column; align-items: flex-start; }
+}
+
+.footer-links .ft-cookie-prefs{background:none;border:0;color:var(--dim);font:inherit;font-size:.82rem;padding:3px 6px;border-radius:6px;cursor:pointer;text-decoration:underline;text-underline-offset:2px;font-family:inherit;}
+.footer-links .ft-cookie-prefs:hover{color:var(--muted);background:rgba(255,255,255,.04);}
+
+/* --- PART 12: A11y baseline --- */
+.skip-link{position:absolute;left:-9999px;top:0;z-index:99999;background:#ffd166;color:#050611;padding:10px 16px;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;}
+.skip-link:focus{left:0;outline:3px solid #ffd166;outline-offset:2px;}
+:focus-visible{outline:3px solid #ffd166;outline-offset:2px;border-radius:4px;}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[tabindex]:focus-visible,summary:focus-visible{outline:3px solid #ffd166;outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:0.001ms!important;animation-iteration-count:1!important;transition-duration:0.001ms!important;scroll-behavior:auto!important;}}
+
+</style>
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Profile — FreeTimeline">
+<meta property="og:description" content="A FreeTimeline creator profile — public Universe and Biography timelines shared with the community.">
+<meta property="og:image" content="https://freetimeline.pt/og.png">
+<meta name="twitter:card" content="summary">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<div class="page-wrap">
+
+  <header class="topbar">
+    <a href="index.html" class="topbar-brand">
+      <span class="brand-infinity">&#8734;</span>
+      <span class="brand-name">FreeTimeline</span>
+    </a>
+    <nav class="topbar-links">
+      <a href="index.html">Home</a>
+      <a href="discover.html">&#129497; Discover</a>
+      <a href="guides.html">Guides</a>
+      <a href="faq.html">Help</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="cookies.html">Cookies</a>
+    </nav>
+  </header>
+
+  <main class="main-content" id="main" tabindex="-1">
+    <div class="profile-banner" id="pf-banner" aria-hidden="true"></div>
+    <div id="pf-root">
+      <div class="msg-box" style="margin-top:40px;"><strong>Loading&hellip;</strong>Fetching this profile.</div>
+    </div>
+  </main>
+<!-- AdSense slot: profile — above footer (replace data-ad-slot with a real unit ID from your AdSense console) -->
+<ins class="adsbygoogle" style="display:block;margin:32px auto;max-width:728px"
+     data-ad-client="ca-pub-4135034633295293"
+     data-ad-slot="5213958958"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+
+
+        <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="brand-infinity">&#8734;</span>
+        <span>FreeTimeline</span>
+      </div>
+      <nav class="footer-links">
+        <a href="about.html">About</a>
+        <span class="fdot">&#8226;</span>
+        <a href="contact.html">Contact</a>
+        <span class="fdot">&#8226;</span>
+        <a href="guides.html">Guides</a>
+        <span class="fdot">&#8226;</span>
+        <a href="discover.html">&#129497; Discover</a>
+        <span class="fdot">&#8226;</span>
+        <a href="faq.html">Help</a>
+        <span class="fdot">&#8226;</span>
+        <a href="pricing.html">Pricing</a>
+        <span class="fdot">&#8226;</span>
+        <a href="roadmap.html">Roadmap</a>
+        <span class="fdot">&#8226;</span>
+        <a href="terms.html">Terms</a>
+        <span class="fdot">&#8226;</span>
+        <a href="privacy.html">Privacy</a>
+        <span class="fdot">&#8226;</span>
+        <a href="cookies.html">Cookies</a>
+        <span class="fdot">&#8226;</span>
+        <button type="button" class="ft-cookie-prefs" id="ft-cookie-prefs-footer">Manage cookie preferences</button>
+      </nav>
+      <p class="footer-note">&copy; <span id="footer-year">2026</span> FreeTimeline &mdash; All data is saved locally in your browser.</p>
+    </div>
+  </footer>
+
+</div>
+
+<script src="js/ft-account.js"></script>
+<script src="js/ft-account-ui.js"></script>
+<script>(function(){var y=document.getElementById('footer-year');if(y)y.textContent=new Date().getFullYear();})();</script>
+<script>
+(function () {
+  'use strict';
+  var A = window.ftAccount;
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  var root = document.getElementById('pf-root');
+  var banner = document.getElementById('pf-banner');
+
+  function appLabel(app) { return app === 'universe' ? 'Universe' : app === 'biography' ? 'Biography' : app; }
+  function coverStyle(cover) { return (cover && cover.color) ? 'background:' + cover.color + ';' : ''; }
+  function coverEmoji(cover) { return (cover && cover.emoji) ? cover.emoji : '\u{1F570}️'; }
+
+  function cardEl(card) {
+    var el = document.createElement('article');
+    el.className = 'tl-card';
+    var tagsHtml = (card.tags || []).slice(0, 6).map(function (t) {
+      return '<button type="button" class="tl-tag" data-tag="' + esc(t) + '">#' + esc(t) + '</button>';
+    }).join('');
+    el.innerHTML =
+      '<a class="tl-stretched-link" href="view.html?id=' + encodeURIComponent(card.id) + '" aria-label="Open ' + esc(card.title || 'Untitled timeline') + '"></a>' +
+      '<div class="tl-cover" style="' + coverStyle(card.cover) + '" aria-hidden="true">' + coverEmoji(card.cover) + '</div>' +
+      '<div class="tl-body">' +
+        '<span class="tl-app-pill">' + esc(appLabel(card.app)) + '</span>' +
+        '<h3 class="tl-title">' + esc(card.title || 'Untitled timeline') + '</h3>' +
+        '<p class="tl-desc">' + esc(card.description || '') + '</p>' +
+        (tagsHtml ? '<div class="tl-tags">' + tagsHtml + '</div>' : '') +
+        '<div class="tl-stats">&#9829; ' + (card.likes | 0) + ' &middot; &#128172; ' + (card.comments | 0) + ' &middot; &#128065; ' + (card.views | 0) + '</div>' +
+      '</div>';
+    el.querySelectorAll('.tl-tag').forEach(function (btn) {
+      btn.addEventListener('click', function () { location.href = 'discover.html?tag=' + encodeURIComponent(btn.getAttribute('data-tag')); });
+    });
+    return el;
+  }
+
+  function notFound(msg) {
+    banner.style.background = 'linear-gradient(135deg, #2a2438, #1a1628)';
+    root.innerHTML = '<div class="msg-box" style="margin-top:40px;"><strong>' + esc(msg) + '</strong>The profile you are looking for is unavailable.<br><a class="retry" href="discover.html" style="display:inline-block;margin-top:14px;padding:9px 18px;border-radius:10px;background:transparent;border:1px solid var(--border-mid);color:var(--text);text-decoration:none;font-weight:700;font-size:0.85rem;">Back to Discover</a></div>';
+  }
+  function errorLoading() {
+    root.innerHTML = '<div class="msg-box" style="margin-top:40px;"><strong>Could not load</strong>Something went wrong reaching this profile &mdash; try again later.<br><button type="button" class="retry" id="pf-retry">Retry</button></div>';
+    var r = document.getElementById('pf-retry'); if (r) r.onclick = boot;
+  }
+
+  function paint(username, data) {
+    var p = data.profile, timelines = data.timelines || [];
+    document.title = (p.displayName || p.username) + ' (@' + p.username + ') — FreeTimeline';
+    banner.style.background = p.bannerColor ? p.bannerColor : 'linear-gradient(135deg, #24345e, #16223e)';
+    var av = p.avatar || {};
+    var joined = p.joined ? new Date(p.joined).toLocaleDateString(undefined, { year: 'numeric', month: 'long' }) : '';
+    var isMe = !!p.isMe;
+    var signedIn = A && A.isSignedIn();
+
+    var followBtn = '';
+    if (!isMe) {
+      followBtn = '<button type="button" class="btn-follow" id="pf-follow" aria-pressed="' + (p.isFollowing ? 'true' : 'false') + '">' +
+        (p.isFollowing ? 'Following' : 'Follow') + '</button>';
+    }
+
+    root.innerHTML =
+      '<div class="profile-head">' +
+        '<div class="profile-avatar" style="' + (av.color ? 'background:' + av.color + ';' : '') + '" aria-hidden="true">' + esc(av.emoji || '\u{1F642}') + '</div>' +
+        '<div class="profile-idbox">' +
+          '<div class="profile-name">' + esc(p.displayName || p.username) + '</div>' +
+          '<div class="profile-user">@' + esc(p.username) + '</div>' +
+        '</div>' +
+        '<div class="profile-actions">' + followBtn +
+          (isMe ? '' : '<button type="button" class="link-report" id="pf-report">Report</button>') +
+        '</div>' +
+      '</div>' +
+      (p.bio ? '<p class="profile-bio">' + esc(p.bio) + '</p>' : '') +
+      (joined ? '<p class="profile-meta">Joined ' + esc(joined) + '</p>' : '') +
+      '<div class="profile-stats">' +
+        '<div class="stat"><b>' + (p.followers | 0) + '</b>Followers</div>' +
+        '<div class="stat"><b>' + (p.following | 0) + '</b>Following</div>' +
+        '<div class="stat"><b>' + (p.likesReceived | 0) + '</b>&#9829; received</div>' +
+      '</div>' +
+      '<h2 class="section-title">Public timelines</h2>' +
+      '<div id="pf-grid" class="card-grid"></div>';
+
+    var gridEl = document.getElementById('pf-grid');
+    if (!timelines.length) {
+      gridEl.outerHTML = '<div class="msg-box"><strong>No public timelines yet</strong>' + esc(p.displayName || p.username) + ' has not published anything publicly.</div>';
+    } else {
+      timelines.forEach(function (c) { gridEl.appendChild(cardEl(c)); });
+    }
+
+    var followBtnEl = document.getElementById('pf-follow');
+    if (followBtnEl) {
+      followBtnEl.addEventListener('click', function () {
+        if (!signedIn) { var chip = document.querySelector('.ftac-chip'); if (chip) chip.click(); return; }
+        var willFollow = followBtnEl.getAttribute('aria-pressed') !== 'true';
+        followBtnEl.disabled = true;
+        var call = willFollow ? A.follow(username) : A.unfollow(username);
+        call.then(function () {
+          followBtnEl.disabled = false;
+          followBtnEl.setAttribute('aria-pressed', willFollow ? 'true' : 'false');
+          followBtnEl.textContent = willFollow ? 'Following' : 'Follow';
+        }, function () { followBtnEl.disabled = false; });
+      });
+    }
+    var reportBtn = document.getElementById('pf-report');
+    if (reportBtn) {
+      reportBtn.addEventListener('click', function () {
+        if (!signedIn) { var chip = document.querySelector('.ftac-chip'); if (chip) chip.click(); return; }
+        var reason = prompt('Why are you reporting @' + username + '?');
+        if (!reason) return;
+        A.report('user', username, reason).then(function () { alert('Thanks — this profile has been reported.'); }, function () { alert('Could not send the report. Try again later.'); });
+      });
+    }
+  }
+
+  function boot() {
+    var params = new URLSearchParams(location.search);
+    var username = (params.get('u') || '').trim();
+    if (!username) { notFound('No profile specified'); return; }
+    if (!A || !A.configured || !A.configured()) { errorLoading(); return; }
+    root.innerHTML = '<div class="msg-box" style="margin-top:40px;"><strong>Loading&hellip;</strong>Fetching this profile.</div>';
+    A.profile(username).then(function (data) {
+      if (!data || !data.profile) { notFound('User not found'); return; }
+      paint(username, data);
+    }, function (e) {
+      if (e && /404|not found/i.test(e.message || '')) notFound('User not found');
+      else errorLoading();
+    });
+  }
+  boot();
+})();
+</script>
+</body>
+</html>
