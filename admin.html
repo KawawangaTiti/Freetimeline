@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
+<!-- No ads on this page, so a real CSP is possible (inline script/style are the page itself). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src https://freetimeline-api.break0utphp.workers.dev; base-uri 'none'; form-action 'none'">
 <title>FreeTimeline · Admin</title>
 <style>
   :root{--bg:#0d1020;--card:#151a2e;--line:#26304e;--ink:#e7ecf7;--sub:#93a0c4;--acc:#4f6bed;--danger:#e0605f;--good:#4bbd7f;--warn:#d9a441;

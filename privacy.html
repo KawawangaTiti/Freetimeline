@@ -288,7 +288,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 
   <main class="main-content" id="main" tabindex="-1">
     <h1 class="page-title">Privacy Policy</h1>
-    <p class="last-updated">Last Updated: May 11, 2026</p>
+    <p class="last-updated">Last Updated: July 30, 2026</p>
 
     <section class="legal-section">
       <h2>Introduction</h2>
@@ -298,19 +298,20 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 
     <div class="highlight-box">
       <h4>Our Core Privacy Principle</h4>
-      <p style="color: var(--muted); margin: 0;">FreeTimeline is built with privacy-by-design. Your timeline data (events, characters, memories, etc.) is stored exclusively in your browser's localStorage. We never collect, transmit, or store your timeline content on our servers. We cannot access your data because we never receive it.</p>
+      <p style="color: var(--muted); margin: 0;">FreeTimeline is local-first by design. No account is required, and by default your timeline data (events, characters, memories, etc.) is stored exclusively in your browser's localStorage &mdash; we never collect, transmit, or store it on our servers, because we never receive it. FreeTimeline also offers an <strong>optional free account</strong> for cloud save, publishing, and sharing. If you choose to create one, some data does leave your device &mdash; see "Optional Accounts &amp; Cloud" below for exactly what, where, and how to delete it.</p>
     </div>
 
     <section class="legal-section">
-      <h2>Information We Do NOT Collect</h2>
-      <p>To be absolutely clear about our privacy practices, here is what we do NOT collect:</p>
+      <h2>Information We Do NOT Collect (Local Mode)</h2>
+      <p>If you never create an account, here is what we do NOT collect:</p>
       <ul>
         <li>Your timeline data (events, characters, stories, memories)</li>
         <li>Personal information you enter into your timelines</li>
         <li>Images or attachments you add to your timelines</li>
-        <li>Account credentials (we don't require accounts)</li>
+        <li>Account credentials &mdash; no account is required to use the core tool</li>
         <li>Your real name, address, or phone number</li>
       </ul>
+      <p>If you opt into the free account described below, some of this changes for the data you explicitly choose to save or publish &mdash; see "Optional Accounts &amp; Cloud".</p>
     </section>
 
     <section class="legal-section">
@@ -329,7 +330,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 
     <section class="legal-section">
       <h2>Local Storage</h2>
-      <p>FreeTimeline uses your browser's localStorage to save your timeline data. This means:</p>
+      <p>By default, FreeTimeline uses your browser's localStorage to save your timeline data. This means:</p>
       <ul>
         <li>Your data is stored on your device, not on our servers</li>
         <li>We have no access to this data</li>
@@ -337,7 +338,38 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
         <li>Clearing your browser data will delete your timelines</li>
         <li>You can export your data at any time using the built-in export feature</li>
       </ul>
-      <p>For more details about what we store in localStorage, please see our <a href="cookies.html">Cookie Policy</a>.</p>
+      <p>This remains true unless you sign in to the optional account and explicitly save a timeline to the cloud, as described in the next section. For more details about what we store in localStorage, please see our <a href="cookies.html">Cookie Policy</a>.</p>
+    </section>
+
+    <section class="legal-section" id="optional-accounts">
+      <h2>Optional Accounts &amp; Cloud</h2>
+      <p>FreeTimeline never requires an account. If you choose to create one, it unlocks optional features: cloud save (so a timeline is available from any device), publishing to the public Discover gallery, and social features like likes, follows, and comments. Here is exactly what that involves.</p>
+      <h3>What we store when you create an account</h3>
+      <ul>
+        <li><strong>Email address</strong> &mdash; used to sign in and for account-related communication.</li>
+        <li><strong>Password</strong> &mdash; we never store your plain password. We store a <strong>salted hash</strong> generated with PBKDF2.</li>
+        <li><strong>Profile details you set</strong> &mdash; display name, username, bio, and avatar, if you choose to add them.</li>
+      </ul>
+      <p><strong>Note:</strong> we do not currently verify email addresses on signup. Do not use an account you don't control, and don't reuse a password from another site.</p>
+      <h3>What we store when you save to the cloud</h3>
+      <ul>
+        <li>The <strong>timeline JSON</strong> you explicitly chose to save (events, characters, notes, and any attachments included in it)</li>
+        <li>Its <strong>title, description, and tags</strong></li>
+        <li><strong>Timestamps</strong> for when it was created and last updated</li>
+      </ul>
+      <h3>Social data</h3>
+      <p>If you use social features, we store the data those features require: <strong>likes and favorites</strong>, <strong>follows</strong> (who you follow and who follows you), <strong>comments</strong> you post, <strong>notifications</strong> generated by activity on your content, and any <strong>reports</strong> you file or that are filed about content you posted.</p>
+      <h3>Where this data lives</h3>
+      <p>Account and cloud data is stored in <strong>Cloudflare D1</strong>, a database hosted in the <strong>Western Europe</strong> region.</p>
+      <h3>Visibility levels</h3>
+      <p>Each timeline you save has a visibility setting you control: <strong>private</strong> (only you can see it), <strong>unlisted</strong> (viewable only by people with the direct link), <strong>public</strong> (listed in the Discover gallery and visible to anyone), or <strong>shared</strong> (visible to specific people, where that feature is offered). Anything you set to public is, by definition, visible to other users and to search engines that crawl the Discover gallery &mdash; treat publishing the same way you would treat posting something publicly on the web.</p>
+      <h3>Deletion</h3>
+      <p>Deleting a timeline removes it from the database. Deleting your account removes your account record and the timelines, comments, likes, and follows associated with it. Deletion is not reversible on our end.</p>
+      <h3>Anti-abuse &amp; rate-limiting logs</h3>
+      <p>To prevent abuse (such as spam signups or scripted voting), we keep short-lived, IP-based rate-limiting logs for authentication and write endpoints. These are operational and are not used for tracking or advertising, and are retained only as long as needed for abuse prevention.</p>
+      <h3>Moderation</h3>
+      <p>Published content is subject to our content rules. We may unpublish or remove content that violates them, and we keep an internal audit log of moderation actions taken.</p>
+      <p>For questions about your account data, or to request export or deletion, contact <a href="mailto:privacy@freetimeline.pt">privacy@freetimeline.pt</a> or use the in-app account deletion option.</p>
     </section>
 
     <section class="legal-section">
@@ -366,10 +398,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 
     <section class="legal-section" id="third-party-processors">
       <h2>Third-Party Processors</h2>
-      <p>FreeTimeline relies on a small number of third-party service providers to operate the site. None of them receive your timeline data, because that data never leaves your browser. They do, however, process limited technical information (such as your IP address and request headers) on our behalf:</p>
+      <p>FreeTimeline relies on a small number of third-party service providers to operate the site. By default, none of them receive your timeline data, because that data never leaves your browser unless you opt into the account features described in "Optional Accounts &amp; Cloud" above. All providers below process limited technical information (such as your IP address and request headers) on our behalf; the account/cloud provider also processes the specific account and timeline data you choose to submit:</p>
       <ul>
         <li><strong>Google AdSense</strong> &mdash; serves the advertising that supports the free tier, and may set cookies described in our <a href="cookies.html">Cookie Policy</a>. See <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google's Privacy Policy</a> and the <a href="https://www.google.com/adsense/new/localized-terms" target="_blank" rel="noopener noreferrer">AdSense Programme Policies</a>.</li>
         <li><strong>DNS &amp; CDN host (Cloudflare)</strong> &mdash; routes traffic to freetimeline.pt and protects the site from abuse. See <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare's Privacy Policy</a>.</li>
+        <li><strong>Cloudflare (Workers &amp; D1 database, Western Europe region)</strong> &mdash; powers the optional account API and stores account and cloud-saved timeline data for users who opt in. See <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare's Privacy Policy</a>.</li>
       </ul>
       <p><strong>Data Processing Addendum (DPA) &mdash; AdSense.</strong> Where Google AdSense processes personal data on our behalf within the meaning of the GDPR, that processing is governed by the <a href="https://privacy.google.com/businesses/processorterms/" target="_blank" rel="noopener noreferrer">Google Ads Data Processing Terms</a>, which we have accepted. Google may also act as an independent controller for ad-personalisation purposes, as disclosed in its own privacy notices.</p>
       <p><strong>No analytics today.</strong> FreeTimeline does <em>not</em> currently use Google Analytics, Plausible, Matomo, or any other analytics platform. If we add a privacy-friendly analytics tool in the future, we will list it here and update the "Last Updated" date.</p>
@@ -389,6 +422,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
         <li>Detect and prevent security threats or fraud</li>
         <li>Display advertisements through our advertising partners</li>
         <li>Respond to your inquiries if you contact us</li>
+        <li>If you have an account: authenticate you, store the timelines you choose to save, and operate the features you use (publishing, likes, follows, comments, notifications)</li>
       </ul>
     </section>
 
@@ -396,17 +430,19 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
       <h2>Data Sharing</h2>
       <p>We do not sell, trade, or rent your personal information to others. We may share anonymized, aggregate statistics about site usage (such as total number of visitors) but this data cannot identify any individual.</p>
       <p>Our advertising partners (such as Google AdSense) have their own privacy policies governing their data practices. We encourage you to review their policies.</p>
+      <p>If you have an optional account, content you set to <strong>public</strong> or <strong>unlisted</strong> is, by design, shared with and viewable by other people who visit the Discover gallery or your share link &mdash; see "Optional Accounts &amp; Cloud" above for the visibility levels available and how to keep a timeline private.</p>
     </section>
 
     <section class="legal-section">
       <h2>Data Security</h2>
-      <p>We implement appropriate technical measures to protect against unauthorized access to our systems. However, since your timeline data is stored locally in your browser:</p>
+      <p>We implement appropriate technical measures to protect against unauthorized access to our systems. For your <strong>local</strong> timeline data, stored in your browser:</p>
       <ul>
         <li>The security of that data depends on your device and browser security</li>
         <li>We recommend keeping your browser updated</li>
         <li>We recommend regularly exporting backups of your important timelines</li>
         <li>Anyone with access to your browser can access your timeline data</li>
       </ul>
+      <p>For <strong>optional account and cloud data</strong>: passwords are stored as salted PBKDF2 hashes, never in plain text; data is transmitted over HTTPS; and the database is hosted on Cloudflare D1 in the Western Europe region. No online system is perfectly secure, so we recommend using a unique password and keeping regular exports of anything important, cloud-saved or not.</p>
     </section>
 
     <section class="legal-section">
@@ -424,7 +460,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
       <ul>
         <li><strong>Edge/access logs (IP address, browser, timestamps):</strong> legitimate interests (Art. 6(1)(f)) &mdash; keeping the Service secure, functioning, and free of abuse. This processing happens at the GitHub Pages/Cloudflare infrastructure level, not by bespoke tracking code we write.</li>
         <li><strong>Advertising cookies (Google AdSense):</strong> consent (Art. 6(1)(a)) &mdash; these only load after you press "Accept all" on the cookie banner. You can withdraw consent at any time via "Manage cookie preferences," which takes effect for future page loads.</li>
-        <li><strong>Timeline data in localStorage:</strong> not processed by us at all &mdash; it is created, read, and stored entirely on your own device, so no legal basis is needed on our side because we never receive it.</li>
+        <li><strong>Timeline data in localStorage (local mode):</strong> not processed by us at all &mdash; it is created, read, and stored entirely on your own device, so no legal basis is needed on our side because we never receive it.</li>
+        <li><strong>Optional account &amp; cloud-saved data:</strong> contractual necessity (Art. 6(1)(b)) &mdash; processing your email, password hash, profile, and the timelines/social data you submit is necessary to provide the account features you have chosen to use.</li>
         <li><strong>Emails you send us (support/contact):</strong> consent and/or legitimate interests in responding to your enquiry (Art. 6(1)(a)/(f)).</li>
       </ul>
     </section>
@@ -442,7 +479,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
         <li><strong>Right to Withdraw Consent:</strong> Where processing is based on consent (such as advertising cookies), you can withdraw it at any time via "Manage cookie preferences," without affecting the lawfulness of processing before withdrawal.</li>
         <li><strong>Right to Lodge a Complaint:</strong> You have the right to complain to your local data protection authority. In Portugal, this is the <a href="https://www.cnpd.pt/" target="_blank" rel="noopener noreferrer">Comissão Nacional de Proteção de Dados (CNPD)</a>. You can also complain to the supervisory authority in your own EU/EEA member state.</li>
       </ul>
-      <p>Because we do not store your timeline data, most of these rights apply only to server logs and contact information you may have provided.</p>
+      <p>If you have never created an account, we do not store your timeline data, so most of these rights apply only to server logs and contact information you may have provided. If you have an optional account, these rights also cover the account and cloud-saved data described in "Optional Accounts &amp; Cloud" above &mdash; you can exercise access, export, and deletion for that data directly in the app (account settings), or by emailing us.</p>
       <p>To exercise these rights, please contact us at <a href="mailto:privacy@freetimeline.pt">privacy@freetimeline.pt</a>. We aim to respond within one month, as required by Art. 12(3) GDPR.</p>
     </section>
 
