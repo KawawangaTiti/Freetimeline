@@ -65,6 +65,7 @@
       <div class="tab on" data-t="stats">Stats</div>
       <div class="tab" data-t="users">Users</div>
       <div class="tab" data-t="timelines">Timelines</div>
+      <div class="tab" data-t="reports">Reports</div>
       <div class="tab" data-t="audit">Audit log</div>
     </div>
     <div id="panel"></div>
@@ -108,7 +109,7 @@
   $('signout').onclick=function(){setTok('');showLogin()};
   document.querySelectorAll('.tab').forEach(function(t){t.onclick=function(){document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on')});t.classList.add('on');tab(t.dataset.t)}});
 
-  function tab(name){({stats:stats,users:users,timelines:timelines,audit:audit}[name]||stats)()}
+  function tab(name){({stats:stats,users:users,timelines:timelines,reports:reports,audit:audit}[name]||stats)()}
 
   async function stats(){
     panel.innerHTML='<p class="muted">Loading…</p>';
@@ -116,6 +117,7 @@
       var apps=(s.byApp||[]).map(function(a){return a.app+': '+a.c}).join(' · ');
       panel.innerHTML='<div class="cards">'+
         card(s.users,'Users')+card(s.timelines,'Timelines')+card(s.public,'Public')+card(s.newUsers24h,'New / 24h')+card(s.suspended,'Suspended')+
+        (s.likes!=null?card(s.likes,'Likes')+card(s.comments,'Comments')+card(s.follows,'Follows')+card(s.openReports,'Open reports'):'')+
       '</div><p class="muted">'+esc(apps)+'</p>';
     }catch(e){panel.innerHTML=errHtml(e)}
   }
@@ -145,7 +147,7 @@
   async function timelines(){
     panel.innerHTML='<div class="bar"><input id="t-q" placeholder="Search title…">'+
       '<select id="t-app"><option value="">All apps</option><option value="universe">Universe</option><option value="biography">Biography</option></select>'+
-      '<select id="t-vis"><option value="">All</option><option value="public">Public</option><option value="private">Private</option><option value="shared">Shared</option></select>'+
+      '<select id="t-vis"><option value="">All</option><option value="public">Public</option><option value="unlisted">Unlisted</option><option value="private">Private</option><option value="shared">Shared</option></select>'+
       '<button class="btn" id="t-s">Search</button></div><div id="t-list" class="muted">Loading…</div>';
     var run=function(){loadTimelines()};
     $('t-s').onclick=run;$('t-q').addEventListener('keydown',function(e){if(e.key==='Enter')run()});
@@ -157,13 +159,35 @@
       var qs='limit=100&q='+encodeURIComponent($('t-q').value||'')+'&app='+($('t-app').value||'')+'&visibility='+($('t-vis').value||'');
       var r=await api('/api/admin/timelines?'+qs);
       host.innerHTML='<table><thead><tr><th>Title</th><th>App</th><th>Vis</th><th>Updated</th><th></th></tr></thead><tbody>'+
-        r.items.map(function(t){return '<tr><td>'+esc(t.title)+'</td><td class="muted">'+esc(t.app)+'</td><td><span class="pill '+({public:'pub',private:'priv',shared:'shared'}[t.visibility])+'">'+t.visibility+'</span></td>'+
+        r.items.map(function(t){return '<tr><td>'+esc(t.title)+'</td><td class="muted">'+esc(t.app)+'</td><td><span class="pill '+({public:'pub',unlisted:'shared',private:'priv',shared:'shared'}[t.visibility]||'priv')+'">'+t.visibility+'</span></td>'+
           '<td class="mono">'+when(t.updated_at)+'</td><td class="acts">'+
           (t.visibility==='public'?'<button class="btn sm" data-unpub="'+t.id+'">Unpublish</button>':'')+
           '<button class="btn sm danger" data-tdel="'+t.id+'">Delete</button></td></tr>'}).join('')+
         '</tbody></table>'+(r.items.length?'':'<p class="muted">No timelines.</p>');
       host.querySelectorAll('[data-unpub]').forEach(function(b){b.onclick=function(){api('/api/admin/timelines/'+b.dataset.unpub+'/visibility','POST',{visibility:'private'}).then(loadTimelines)}});
       host.querySelectorAll('[data-tdel]').forEach(function(b){b.onclick=function(){if(!confirm('Delete this timeline permanently?'))return;api('/api/admin/timelines/'+b.dataset.tdel,'DELETE').then(loadTimelines).catch(function(e){alert(e.message)})}});
+    }catch(e){host.innerHTML=errHtml(e)}
+  }
+
+  async function reports(){
+    panel.innerHTML='<div class="bar"><select id="r-st"><option value="open">Open</option><option value="resolved">Resolved</option><option value="dismissed">Dismissed</option></select>'+
+      '<button class="btn" id="r-s">Refresh</button></div><div id="r-list" class="muted">Loading…</div>';
+    var run=function(){loadReports($('r-st').value)};
+    $('r-s').onclick=run;$('r-st').onchange=run;
+    loadReports('open');
+  }
+  async function loadReports(st){
+    var host=$('r-list');host.innerHTML='<p class="muted">Loading…</p>';
+    try{var r=await api('/api/admin/reports?limit=100&status='+encodeURIComponent(st||'open'));
+      host.innerHTML='<table><thead><tr><th>When</th><th>Type</th><th>Target</th><th>Reason</th><th></th></tr></thead><tbody>'+
+        r.items.map(function(x){return '<tr><td class="mono">'+when(x.created_at)+'</td><td>'+esc(x.target_type)+'</td>'+
+          '<td class="mono">'+esc(x.target_id)+(x.target_type==='timeline'?' <a href="view.html?id='+encodeURIComponent(x.target_id)+'" target="_blank" rel="noopener">open</a>':'')+'</td>'+
+          '<td>'+esc(x.reason||'')+'</td><td class="acts">'+
+          (x.status==='open'?'<button class="btn sm" data-res="'+esc(x.id)+'">Resolve</button><button class="btn sm" data-dis="'+esc(x.id)+'">Dismiss</button>':'<span class="pill priv">'+esc(x.status)+'</span>')+
+          '</td></tr>'}).join('')+
+        '</tbody></table>'+(r.items.length?'':'<p class="muted">No '+esc(st)+' reports.</p>');
+      host.querySelectorAll('[data-res]').forEach(function(b){b.onclick=function(){api('/api/admin/reports/'+b.dataset.res,'POST',{status:'resolved'}).then(function(){loadReports(st)})}});
+      host.querySelectorAll('[data-dis]').forEach(function(b){b.onclick=function(){api('/api/admin/reports/'+b.dataset.dis,'POST',{status:'dismissed'}).then(function(){loadReports(st)})}});
     }catch(e){host.innerHTML=errHtml(e)}
   }
 
