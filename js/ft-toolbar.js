@@ -78,8 +78,44 @@
       'box-shadow:0 2px 8px ' + (dark ? 'rgba(47,124,246,0.28)' : 'rgba(120,80,30,0.22)') + '}' +
     /* mobile uses hamburger + sheet; the injected extra tabs row is redundant there */
     '@media (max-width:767px){#ft-tabsrow{display:none}}' +
+    /* The floating widget stack (search / integrity / export / HUD) is anchored to the
+       bottom-left and sits ABOVE the mobile sheet, landing on top of its buttons. Hide
+       the stack while the sheet is open — the sheet already carries those actions. */
+    '@media (max-width:900px){body.ft-sheet-open .fts-fab,body.ft-sheet-open #ft-integrity-btn,' +
+      'body.ft-sheet-open #ftp-print-btn,body.ft-sheet-open #ft-hud-btn,' +
+      /* the touch hint pill is fixed too and lands across the sheet's buttons */
+      'body.ft-sheet-open #ft-touch-hint{display:none!important}}' +
     '';
   document.head.appendChild(st);
+
+  /* Mirror the mobile sheet's open state onto <body> so CSS can react to it.
+     The sheet is injected at runtime by the page, so wait for it to appear. */
+  (function trackSheet() {
+    if (typeof MutationObserver !== 'function') return;
+    var tries = 0;
+    function attach() {
+      var sheet = document.getElementById('tlb-sheet');
+      if (!sheet) return (++tries < 60);         // keep waiting (~30s), then give up
+      function sync() { document.body.classList.toggle('ft-sheet-open', sheet.classList.contains('open')); }
+      new MutationObserver(sync).observe(sheet, { attributes: true, attributeFilter: ['class'] });
+      sync();
+      /* Tapping the scrim did nothing — the only way out was the ≡ button again.
+         A scrim exists to be tapped, so close the sheet from it too. */
+      var scrim = document.getElementById('tlb-sheet-scrim');
+      if (scrim && !scrim.getAttribute('data-ft-close')) {
+        scrim.setAttribute('data-ft-close', '1');
+        scrim.addEventListener('click', function () {
+          sheet.classList.remove('open');
+          scrim.classList.remove('open');
+          sync();
+        });
+      }
+      return false;
+    }
+    if (attach()) {
+      var t = setInterval(function () { if (!attach()) clearInterval(t); }, 500);
+    }
+  })();
 
   function find(sub) {
     return Array.prototype.slice.call(tb.querySelectorAll('[onclick],label'))
@@ -236,6 +272,9 @@
     function seen() { try { if (localStorage.getItem(KEY)) return true; } catch (_) {} try { return !!sessionStorage.getItem(KEY); } catch (_) {} return false; }
     function markSeen() { try { localStorage.setItem(KEY, '1'); } catch (_) {} try { sessionStorage.setItem(KEY, '1'); } catch (_) {} }
     if (seen() || !ddData) return;
+    /* Mobile has neither the Data ▾ menu (it uses the ≡ sheet) nor Ctrl+K, so the tip
+       is wrong there — and at phone width it covers the top-left corner of the app. */
+    if (window.innerWidth < 900) return;
     var trg = ddData.querySelector('.ft-dd-trigger');
     if (!trg) return;
     var tip = document.createElement('div');
