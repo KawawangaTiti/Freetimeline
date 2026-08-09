@@ -6140,6 +6140,12 @@ const Store = {
   cloudOpen(data) { this.loadShared(data); }
 };
 
+/* `const Store` is a lexical global: it is NOT a property of window, so
+   ft-account-ui.js's `window.Store && Store.cloudExport` guard was always false
+   and the "☁ Save this timeline to cloud" button never rendered — signed-in
+   users could not save or publish anything. Publish the reference explicitly. */
+window.Store = Store;
+
   /* =====================================================
      UNDO / REDO HISTORY
      ===================================================== */
@@ -6937,7 +6943,7 @@ function updateStatusFilterBar() {
     return '<span class="cat-filter-chip' + (isActive ? '' : ' inactive') + '" ' +
       'style="background:' + col + ';border-color:' + col + ';" ' +
       'onclick="setStatusFilter(\'' + chipArg(st) + '\')" title="' + esc(st) + ' (' + cnt + ' events)">' +
-      esc(st) + (cnt > 0 ? ' <span style="opacity:0.8;font-size:10px">(' + cnt + ')</span>' : '') +
+      esc(st) + ' <span style="opacity:0.8;font-size:10px">(' + cnt + ')</span>' +
       '</span>';
   }).join('');
   chips.innerHTML = statusHtml;
@@ -7063,6 +7069,56 @@ function updateContinuityFilterBar() {
   if (typeof updateMobileActiveStrip === 'function') updateMobileActiveStrip();
 }
 
+/* Hide filter dropdowns that have nothing to filter by.
+   Ported from universe-timeline.js: a bar full of empty dropdowns reads as
+   "the filters do nothing". A dropdown counts as alive when its <select> has a
+   real value beyond the header (a "(N)" label only counts when N > 0), or when
+   its panel holds at least one chip. The placeholder spans ("No tags yet",
+   "Open a person's profile…") are not chips, so empty bars collapse. */
+function updateFilterVisibility() {
+  var bar = document.getElementById('fp-controls-bar');
+  if (!bar) return;
+  _filterVisBusy = true;
+  Array.prototype.forEach.call(bar.querySelectorAll('.fp-drop'), function (fp) {
+    var sel = fp.querySelector('select');
+    var alive = false;
+    if (sel) {
+      var opts = Array.prototype.slice.call(sel.options, 1); // skip the header option
+      alive = opts.some(function (o) {
+        var m = o.textContent.match(/\((\d+)\)\s*$/);
+        return m ? (+m[1] > 0) : (o.value !== '' && o.value !== 'compare');
+      });
+    }
+    if (!alive) {
+      var chips = fp.querySelectorAll('[class*="filter-chip"], .cf-chip');
+      alive = Array.prototype.some.call(chips, function (c) {
+        var m = c.textContent.match(/\((\d+)\)\s*$/); return m ? (+m[1] > 0) : true;
+      });
+    }
+    fp.style.display = alive ? '' : 'none';
+  });
+  _filterVisBusy = false;
+}
+var _filterVisBusy = false;
+
+/* The filter bars are refreshed from ~15 call sites; rather than patch each one,
+   watch the bar's contents and re-evaluate. Only childList/characterData is
+   observed, so our own display changes (an attribute) cannot re-trigger it. */
+(function watchFilterBar() {
+  function start() {
+    var bar = document.getElementById('fp-controls-bar');
+    if (!bar || typeof MutationObserver !== 'function') return;
+    var queued = false;
+    new MutationObserver(function () {
+      if (_filterVisBusy || queued) return;
+      queued = true;
+      requestAnimationFrame(function () { queued = false; updateFilterVisibility(); });
+    }).observe(bar, { childList: true, subtree: true, characterData: true });
+    updateFilterVisibility();
+  }
+  window.addEventListener('load', function () { setTimeout(start, 0); });
+})();
+
 /* True when the event is hidden by the single-continuity view.
    Canon-shared events (no continuityIds) are never hidden. */
 function hiddenByContinuity(ev) {
@@ -7090,7 +7146,9 @@ function updateCatFilterBar() {
       'style="background:' + info.color + ';border-color:' + info.color + ';" ' +
       'onclick="setCatFilter(\'' + chipArg(cat) + '\')" title="' + esc(cat) + ' (' + cnt + ' events)">' +
       info.icon + ' ' + esc(cat) +
-      (cnt > 0 ? ' <span style="opacity:0.8;font-size:10px">(' + cnt + ')</span>' : '') +
+      /* Always show the count (Universe parity): a chip without one reads as
+         "unknown", and updateFilterVisibility() needs it to spot a dead bar. */
+      ' <span style="opacity:0.8;font-size:10px">(' + cnt + ')</span>' +
       '</span>';
   }).join('');
 

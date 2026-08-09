@@ -242,7 +242,10 @@
     tip.setAttribute('role', 'status');
     // Fixed on <body> (not inside #toolbar, whose overflow clip would cut it off);
     // positioned under the Data▾ trigger via getBoundingClientRect, like placeMenu.
-    tip.style.cssText = 'position:fixed;z-index:495;width:max-content;max-width:240px;' +
+    // z-index stays BELOW the dropdown menus (490): the tip sits right under the
+    // Data▾ trigger, i.e. exactly where Data▾/Organise▾ open, and it used to swallow
+    // clicks meant for Save/Load — the very buttons it points at.
+    tip.style.cssText = 'position:fixed;z-index:489;width:max-content;max-width:240px;' +
       'background:' + T.panel + ';border:1px solid ' + T.line + ';border-radius:11px;padding:10px 12px;' +
       'box-shadow:0 14px 36px rgba(0,0,0,.34);color:' + T.ink + ';font-size:12.5px;line-height:1.45';
     tip.innerHTML = 'Your <b>Save / Load</b> buttons now live in the <b>Data ▾</b> menu. ' +
@@ -258,6 +261,10 @@
     function dismiss() { markSeen(); if (tip.parentNode) tip.remove();
       window.removeEventListener('resize', placeTip); window.removeEventListener('scroll', placeTip, true); }
     tip.querySelector('button').addEventListener('click', dismiss);
+    // Opening any toolbar menu means the hint has done its job — get it out of the way.
+    tb.addEventListener('click', function (e) {
+      if (e.target.closest && e.target.closest('.ft-dd-trigger')) dismiss();
+    }, true);
     document.body.appendChild(tip);
     placeTip();
     window.addEventListener('resize', placeTip);

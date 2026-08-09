@@ -6734,6 +6734,12 @@ const Store = {
   cloudOpen(data) { this.loadShared(data); }
 };
 
+/* `const Store` is a lexical global: it is NOT a property of window, so
+   ft-account-ui.js's `window.Store && Store.cloudExport` guard was always false
+   and the "☁ Save this timeline to cloud" button never rendered — signed-in
+   users could not save or publish anything. Publish the reference explicitly. */
+window.Store = Store;
+
   /* =====================================================
      UNDO / REDO HISTORY
      ===================================================== */
