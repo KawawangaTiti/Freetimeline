@@ -20,3 +20,7 @@ OVERNIGHT-WORKLOG.md
 .shots/
 test-results/
 playwright-report/
+
+# Chrono Ledger source documents — a separate commercial product.
+# These must never reach the public site via `git add -A`.
+chronoledger/
