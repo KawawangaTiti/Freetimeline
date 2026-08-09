@@ -192,7 +192,8 @@ body.mm-collapsed #minimap-show { display: inline-flex; }
 #minimap-jump button {
   padding: 8px 18px; min-height: 44px;
   background: linear-gradient(135deg, var(--v-accent, #3d82ff), var(--v-accent-2, #6aa6ff));
-  color: #fff; border: none; border-radius: 9px; cursor: pointer;
+  /* dark ink: the accent gradient is a light fill, so white on it measured 2.5:1 */
+  color: #0b1a2e; border: none; border-radius: 9px; cursor: pointer;
   font: inherit; font-size: 16px; font-weight: 700; letter-spacing: 0.3px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.30);
 }
@@ -263,7 +264,7 @@ body.mm-collapsed #minimap-show { display: inline-flex; }
 }
 .empty-state-btn {
   display: inline-flex; align-items: center; gap: 7px; padding: 11px 26px;
-  border-radius: 8px; background: linear-gradient(135deg,#3a60d0,#5a80ff);
+  border-radius: 8px; background: linear-gradient(135deg,#2f51b4,#4a6fe0);
   color: #fff; font-size: 14px; font-weight: 700; border: none; cursor: pointer;
   font-family: inherit; transition: filter 0.15s, transform 0.12s;
   box-shadow: 0 3px 14px rgba(80,120,255,0.32);
@@ -1278,9 +1279,11 @@ body { background: #07081a; }
 }
 .btn:active { transform: translateY(0); }
 
-/* Cyan accent (primary action) */
+/* Cyan accent (primary action).
+   Light stop deepened from #00b8e0 (2.35:1 under the white label) to #007f9b (4.64:1);
+   the hover keeps the brighter cyan so the button still lifts on hover. */
 .btn.accent {
-  background: linear-gradient(135deg, #00b8e0 0%, #0070c8 100%);
+  background: linear-gradient(135deg, #007f9b 0%, #0070c8 100%);
   border-color: rgba(0,190,230,0.55);
   color: #fff;
   font-weight: 700;
@@ -1380,9 +1383,12 @@ body { background: #07081a; }
   transform: none; box-shadow: none;
 }
 /* The one confident primary action. */
+/* Dark ink, not #fff: the brand gradient (#4a8fde → #40c8ff) is a light fill, so a
+   white label measured 2.5:1 on the most prominent button in the app. #0b1a2e is
+   5.2:1 against the darkest stop and keeps the gradient at full brand vibrancy. */
 #toolbar .btn.accent {
   background: linear-gradient(135deg, var(--v-accent), var(--v-accent-2));
-  border-color: transparent; color: #fff; font-weight: 700; padding: 8px 15px;
+  border-color: transparent; color: #0b1a2e; font-weight: 700; padding: 8px 15px;
   box-shadow: 0 2px 10px rgba(47,124,246,0.35);
 }
 #toolbar .btn.accent:hover { filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(47,124,246,0.45); }

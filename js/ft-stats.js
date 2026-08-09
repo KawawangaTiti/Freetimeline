@@ -67,7 +67,9 @@
   function theme(isUni) {
     return isUni
       ? { bg: '#0b1124', panel: '#111a31', line: '#1e2c4d', ink: '#e7ecf7', muted: '#8a97b8', accent: '#5a80ff', title: 'Chronicle Observatory', font: 'inherit' }
-      : { bg: '#faf6ef', panel: '#fffdf8', line: '#e6dac6', ink: '#3d2b1f', muted: '#8a7a63', accent: '#c99b3c', title: 'Life Dashboard', font: "Georgia, 'Times New Roman', serif" };
+      /* muted #7a6c57, not #8a7a63: the stat captions sit on the #fffdf8 panel and the
+         lighter tone only reached 4.1:1. */
+      : { bg: '#faf6ef', panel: '#fffdf8', line: '#e6dac6', ink: '#3d2b1f', muted: '#7a6c57', accent: '#c99b3c', title: 'Life Dashboard', font: "Georgia, 'Times New Roman', serif" };
   }
   function scoreColor(s) { return s >= 80 ? '#2ecc71' : s >= 60 ? '#27ae60' : s >= 40 ? '#f39c12' : s >= 20 ? '#e67e22' : '#e74c3c'; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }

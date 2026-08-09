@@ -8467,24 +8467,30 @@ const OBS_HELP_SECTIONS = [
   { id:'welcome',        label:'Welcome',                 coord:'α-00', kw:'overview introduction about begin' },
   { id:'getting-started',label:'Getting Started',         coord:'α-01', kw:'first steps begin new user' },
   { id:'saved-locally',  label:'What Is Saved Locally',   coord:'α-02', kw:'storage browser localstorage data privacy risk' },
+  { id:'toolbar',        label:'The Top Bar, Explained',  coord:'α-03', kw:'toolbar top bar menu data organise view help button where is find missing moved tabs row hud align layout floating' },
   { id:'creating-events',label:'Creating Events',         coord:'β-01', kw:'add event moment title date description' },
   { id:'timeline-nav',   label:'Timeline Navigation',     coord:'β-02', kw:'move scroll jump today reset view' },
   { id:'pan-zoom',       label:'Pan and Zoom',            coord:'β-03', kw:'zoom in out drag pinch wheel scale' },
+  { id:'calendars',      label:'Fantasy Calendars',       coord:'β-04', kw:'calendar month era year zero invented dates custom seasons reckoning' },
   { id:'tracks',         label:'Tracks / Universes',      coord:'γ-01', kw:'rows worlds stories containers' },
   { id:'people',         label:'People / Characters',     coord:'γ-02', kw:'characters cast dossier profile portrait' },
   { id:'categories',     label:'Categories',              coord:'γ-03', kw:'types tags classification battle discovery' },
-  { id:'search-filters', label:'Search and Filters',      coord:'γ-04', kw:'find filter chip universe status tone tag' },
+  { id:'search-filters', label:'Search and Filters',      coord:'γ-04', kw:'find filter chip universe status tone tag slash global full text search everything' },
   { id:'relationships',  label:'Relationships / Connections', coord:'δ-01', kw:'links bonds causes reveals arrows map' },
   { id:'story-mode',     label:'Story Mode',              coord:'δ-02', kw:'story arc line narrative follow chain' },
+  { id:'places-maps',    label:'Places & Maps',           coord:'δ-03', kw:'map place pin cartography sketch draw region world space nested sub-map generator atlas geography' },
+  { id:'alt-timelines',  label:'Alternate Timelines',     coord:'δ-04', kw:'continuity branch what if divergence variant parallel alternate version' },
   { id:'importing',      label:'Importing',               coord:'ε-01', kw:'load json file bring back restore open' },
-  { id:'backups',        label:'Creating Backups',        coord:'ε-02', kw:'export save json html copy file download' },
+  { id:'backups',        label:'Creating Backups',        coord:'ε-02', kw:'export save json html copy file download pdf print markdown obsidian' },
   { id:'restore',        label:'Restoring From Backup',   coord:'ε-03', kw:'import load replace overwrite rescue' },
   { id:'shortcuts',      label:'Keyboard Shortcuts',      coord:'ζ-01', kw:'keys hotkeys arrow escape plus minus' },
   { id:'mobile',         label:'Mobile Use',              coord:'ζ-02', kw:'phone tablet touch pinch tap drawer' },
   { id:'troubleshoot',   label:'Troubleshooting',         coord:'η-01', kw:'problems bug fix missing lost broken' },
+  { id:'integrity',      label:'The Integrity Check',     coord:'η-02', kw:'check shield validate orphan broken reference empty field invalid date problems audit' },
   { id:'faq',            label:'Frequently Asked',        coord:'θ-01', kw:'faq question answer common' },
-  { id:'privacy',        label:'Privacy & Data',          coord:'θ-02', kw:'privacy offline account cookies tracking' },
-  { id:'credits',        label:'About & Credits',         coord:'θ-03', kw:'credits about version copyright thanks' }
+  { id:'privacy',        label:'Privacy & Data',          coord:'θ-02', kw:'privacy offline account cookies tracking ads adsense consent' },
+  { id:'accounts',       label:'Account, Cloud & Sharing', coord:'θ-03', kw:'sign in sign up account cloud sync backup online share publish discover profile public unlisted' },
+  { id:'credits',        label:'About & Credits',         coord:'θ-04', kw:'credits about version copyright thanks' }
 ];
 
 let _obsHelpPrevFocus = null;
@@ -8588,6 +8594,12 @@ function obsHelpMarkup() {
     font-weight:500; font-size:26px; line-height:1.2; color:#eaf0ff;
     letter-spacing:-0.008em; margin:0 0 14px; }
   .obs-sec-lede{ font-size:15.5px; color:#bac7e2; margin-bottom:16px; max-width:64ch; }
+  /* Sub-heading inside a section — for the longer reference pages (top bar, maps). */
+  .obs-h3{ font-family:"Fraunces","Cormorant Garamond",Georgia,serif;
+    font-weight:500; font-size:18px; line-height:1.3; color:#dce6ff;
+    margin:22px 0 10px; padding-bottom:6px;
+    border-bottom:1px solid rgba(120,180,255,0.16); max-width:64ch; }
+  .obs-h3:first-child{ margin-top:0; }
   .obs-p{ margin:0 0 12px; color:#c2cde2; max-width:64ch; }
   .obs-p strong{ color:#ecf1ff; font-weight:600; }
   .obs-p em{ color:#a6c3ea; font-style:italic; }
@@ -8822,7 +8834,7 @@ function obsHelpMarkup() {
 <div class="obs-help" data-obs-help role="dialog" aria-label="Observatory Manual for Free Timeline Universe">
 
   <header class="obs-help-hero">
-    <div class="obs-hero-eyebrow">Observatory Manual · Star Catalogue · v8</div>
+    <div class="obs-hero-eyebrow">Observatory Manual · Star Catalogue · v9</div>
     <h1 class="obs-hero-title">A guide to charting your universe — <em>every coordinate explained</em>.</h1>
     <p class="obs-hero-sub">A complete field manual for Free Timeline Universe: how to build worlds, connect stories, protect your work, and move confidently through time. Search any topic, or pick a heading from the catalogue.</p>
     <div class="obs-search-wrap">
@@ -8878,12 +8890,14 @@ function obsHelpSectionsMarkup(){
       lede:'Five minutes is enough to place your first moment on the timeline.',
       body:`
         <ol class="obs-steps">
-          <li><b>Open the app.</b><span>Free Timeline Universe works the moment the page opens. There is no sign-up, no email, no account to create.</span></li>
-          <li><b>Create your first Universe.</b><span>A Universe is a container for one world or one story. Click <strong>Add Universe</strong> in the top bar. Give it a name like <em>My Fantasy Novel</em> and pick a colour.</span></li>
-          <li><b>Add your first event.</b><span>Click <strong>Add Event</strong>. Write a title, choose a date (any date — even an invented one), pick the Universe you just created, and press Save.</span></li>
+          <li><b>Open the app.</b><span>Free Timeline Universe works the moment the page opens. No sign-up and no email are required — an account exists but is entirely optional.</span></li>
+          <li><b>Create your first Universe.</b><span>A Universe is a container for one world or one story. Click <strong>＋ Universe</strong> in the top bar. Give it a name like <em>My Fantasy Novel</em> and pick a colour.</span></li>
+          <li><b>Add your first event.</b><span>Click <strong>＋ Event</strong>. Write a title, choose a date (any date — even an invented one), pick the Universe you just created, and press Save.</span></li>
           <li><b>Explore the timeline.</b><span>Your event appears as a dot on the main canvas. Drag the canvas to move through time. Use the + and − buttons, or your mouse wheel, to zoom.</span></li>
-          <li><b>Save a backup right away.</b><span>Before you invest hours, make one backup. Open the menu, choose <strong>Export JSON</strong>, and keep the file somewhere safe. This is important — read <em>What Is Saved Locally</em> next.</span></li>
+          <li><b>Save a backup right away.</b><span>Before you invest hours, make one backup: <strong>Data ▾ → JSON</strong>, and keep the file somewhere safe. This is important — read <em>What Is Saved Locally</em> next.</span></li>
         </ol>
+        <div class="obs-callout tip"><span class="obs-callout-tag">Lost already?</span>
+          If you cannot find a button, read <em>The Top Bar, Explained</em>. It maps every control in the app to the menu it now lives in.</div>
         <div class="obs-callout"><span class="obs-callout-tag">Suggestion</span>Start small. One universe, five events. You can always grow your world later.</div>`
     },
     'saved-locally': {
@@ -8891,7 +8905,7 @@ function obsHelpSectionsMarkup(){
       title:'What is saved locally',
       lede:'Your world lives inside this browser, on this device. Nothing is sent to the internet. This gives you privacy — and a responsibility.',
       body:`
-        <p class="obs-p">Free Timeline Universe saves your work in your browser's own storage. That storage stays on your computer or phone. No server ever sees your world. There is no account and no cloud sync.</p>
+        <p class="obs-p">Free Timeline Universe saves your work in your browser's own storage. That storage stays on your computer or phone, and by default no server ever sees your world. (There is an optional account that adds cloud save and publishing — nothing is uploaded unless you sign in and explicitly choose to. See <em>Account, Cloud &amp; Sharing</em>.)</p>
         <div class="obs-callout warn"><span class="obs-callout-tag">Important risk</span>
           Because your world is stored in this browser, it can be erased by things you would not normally worry about. Please read the list below carefully — it only takes a minute.</div>
         <p class="obs-p"><strong>Your world can disappear if any of these happen without a backup:</strong></p>
@@ -8906,6 +8920,37 @@ function obsHelpSectionsMarkup(){
         <div class="obs-callout tip"><span class="obs-callout-tag">The only true safety net</span>
           Export a backup file regularly and keep it somewhere outside the browser — for example, a folder on your computer, a cloud drive, or a USB stick. See <em>Creating Backups</em>.</div>
         <p class="obs-p">Autosave is always on. Every change you make is kept in this browser automatically. But autosave only protects against small things — like accidentally closing the tab. It does not protect against clearing the browser.</p>`
+    },
+    toolbar: {
+      coord:'α-03 · Instruments',
+      title:'The top bar, explained',
+      lede:'Almost every question that starts with "where is the button for…" is answered on this page. The controls are grouped into four menus, one row of view tabs, and a few floating buttons.',
+      body:`
+        <p class="obs-p">The app used to show every control at once. They are now grouped, so the top bar stays one calm row. Nothing was removed — it just moved into a menu. Here is the whole map.</p>
+
+        <h3 class="obs-h3">Row 1 — the top bar</h3>
+        <ol class="obs-steps">
+          <li><b>Universe picker</b><span>The dropdown on the far left jumps the view to a chosen universe.</span></li>
+          <li><b>← Menu</b><span>Leaves the app and goes back to the Free Timeline home page. Your work stays saved.</span></li>
+          <li><b>＋ Event · ＋ Universe</b><span>The two creation buttons, kept outside the menus because you use them constantly.</span></li>
+          <li><b>Data ▾</b><span><strong>Save HTML</strong>, <strong>JSON</strong> (the real backup), <strong>🔗 Share link</strong>, <strong>Load</strong>, and <strong>Blank</strong> (start an empty timeline). Everything about getting data in and out lives here.</span></li>
+          <li><b>Organise ▾</b><span><strong>🏷 Event categories</strong>, <strong>👥 Groups &amp; factions</strong>, and <strong>⑂ Alternate timelines</strong>. The editors that shape how your world is classified.</span></li>
+          <li><b>View ▾</b><span><strong>Story</strong> (story mode), <strong>Reset</strong>, <strong>Memories</strong>, <strong>Range</strong> (set the span the timeline covers), and <strong>Row</strong> (a slider for track height).</span></li>
+          <li><b>Today · Fit</b><span><strong>Today</strong> jumps to the present moment. <strong>Fit</strong> zooms out just enough to show every event you have.</span></li>
+          <li><b>Undo · Redo</b><span>Steps backward and forward through your recent changes.</span></li>
+          <li><b>✦ Saved locally</b><span>Not a button — a status light confirming your work is stored in this browser.</span></li>
+          <li><b>Help ▾</b><span><strong>Keys</strong> (the shortcut sheet), <strong>Help</strong> (this manual), and <strong>🗓 Calendar</strong> (custom calendars — see <em>Fantasy Calendars</em>).</span></li>
+        </ol>
+
+        <h3 class="obs-h3">Row 2 — the view tabs</h3>
+        <p class="obs-p">Under the top bar sits a row of tabs that swap what fills the screen: <strong>Timeline</strong>, <strong>Characters</strong>, <strong>Relations</strong>, <strong>Places</strong>, <strong>Stats</strong>, and <strong>List</strong>. Switching tabs never changes your data — it only changes the view. The same world is underneath all six.</p>
+
+        <h3 class="obs-h3">The floating buttons</h3>
+        <div class="obs-callout"><span class="obs-callout-tag">Corners of the screen</span>
+          <strong>🔍</strong> opens search (or just press <strong>/</strong>). <strong>🛡️ Check</strong> runs the integrity check. <strong>📤 Export ▾</strong> offers Print&nbsp;/&nbsp;PDF and Markdown. <strong>⚙</strong> lets you re-align the floating panels if they sit awkwardly on your screen. <strong>☁ Sign in</strong> is optional and explained in <em>Account, Cloud &amp; Sharing</em>.</div>
+
+        <div class="obs-callout tip"><span class="obs-callout-tag">If a button seems missing</span>
+          Check the three menus first — <strong>Data ▾</strong>, <strong>Organise ▾</strong>, <strong>View ▾</strong> — in that order. On a narrow window the top bar scrolls sideways, and on a phone it collapses into the <strong>≡</strong> menu.</div>`
     },
     'creating-events': {
       coord:'β-01 · Events',
@@ -8960,6 +9005,22 @@ function obsHelpSectionsMarkup(){
         </ol>
         <div class="obs-callout tip"><span class="obs-callout-tag">Good habit</span>Zoom out before you panic. A wide view usually reveals where your events really are.</div>`
     },
+    calendars: {
+      coord:'β-04 · Reckoning',
+      title:'Fantasy calendars',
+      lede:'Invented worlds rarely run on Gregorian months. You can define your own months, your own eras, and your own year zero — and the timeline will speak your world’s language.',
+      body:`
+        <p class="obs-p">Open <strong>Help ▾ → 🗓 Calendar</strong>. By default the app uses ordinary months and counts years the familiar way. Once you define a calendar, dates you type and dates the ruler shows follow your rules instead.</p>
+        <ol class="obs-steps">
+          <li><b>Custom months.</b><span>Replace the twelve standard months with your own — any number of them, with any names and any lengths. <em>Frostwane</em>, <em>The Long Sun</em>, <em>Second Reaping</em>: whatever your world calls them.</span></li>
+          <li><b>Eras.</b><span>Define named periods such as <em>Before the Sundering</em> / <em>After the Sundering</em>, or <em>First Age</em> / <em>Second Age</em>. Events then display with the era attached instead of AD/BC.</span></li>
+          <li><b>Year zero.</b><span>Choose the moment your world counts from. Everything before it counts backwards, exactly like BC does — but named by you.</span></li>
+        </ol>
+        <div class="obs-callout tip"><span class="obs-callout-tag">Set it early if you can</span>
+          A calendar changes how existing dates are <em>displayed</em>, not the order of your events — nothing is lost or reshuffled. Even so, defining it before you write hundreds of events saves you re-reading them later.</div>
+        <div class="obs-callout"><span class="obs-callout-tag">Still works normally</span>
+          If you are chronicling real history, or a story set in our world, simply skip this page. The ordinary calendar stays in place and needs no setup.</div>`
+    },
     tracks: {
       coord:'γ-01 · Tracks',
       title:'Tracks and universes',
@@ -9008,7 +9069,9 @@ function obsHelpSectionsMarkup(){
       title:'Search and filters',
       lede:'When your world grows large, search and filters are how you focus. Think of them as a set of lenses.',
       body:`
-        <p class="obs-p"><strong>Universal search:</strong> the search tool looks through event titles, descriptions, characters, and connections. Matching events are highlighted on the timeline.</p>
+        <div class="obs-callout tip"><span class="obs-callout-tag">The fastest way in</span>
+          Press <strong>/</strong> anywhere (or click the floating <strong>🔍</strong>) to open global search. It looks across events, characters and universes at once, highlights the match, and jumps you straight to it — arrow keys and Enter work, so you never need the mouse.</div>
+        <p class="obs-p"><strong>Filters</strong> are the other half. Where search finds one thing, filters change what the whole timeline shows.</p>
         <ol class="obs-steps">
           <li><b>Universe chips.</b><span>Click a universe at the top to show only that world. Click again to show all.</span></li>
           <li><b>Category filters.</b><span>Show only certain kinds of events — for example, only wars.</span></li>
@@ -9046,6 +9109,46 @@ function obsHelpSectionsMarkup(){
         </ol>
         <div class="obs-callout"><span class="obs-callout-tag">Great for</span>Previewing a plotline, checking that a quest has the right beats, or sharing a single arc with a collaborator through a backup file.</div>`
     },
+    'places-maps': {
+      coord:'δ-03 · Cartography',
+      title:'Places and maps',
+      lede:'The Places tab turns your world from a list of dates into a geography. Pin locations on a map, and let each pin open a map of its own.',
+      body:`
+        <p class="obs-p">Open the <strong>Places</strong> tab. You start with an empty canvas and a small toolbar. Everything here is optional — a timeline works perfectly without a single map.</p>
+
+        <h3 class="obs-h3">Getting a map to work on</h3>
+        <ol class="obs-steps">
+          <li><b>⬆ Upload image</b><span>Use a map you already have. Any image works — a scan, a render, a photo of something you drew on paper.</span></li>
+          <li><b>✏️ Draw map</b><span>Sketch one right here: coastlines, borders, and a library of symbols for forests, mountains, towns and the rest.</span></li>
+          <li><b>✨ Quick map</b><span>Generate a plausible map instantly. Good for filling in a region you have not designed yet.</span></li>
+          <li><b>⚙ Advanced</b><span>Three heavier tools, tucked away because most people never need them: a full fantasy-map studio, a grid painter with political countries and time epochs, and a <strong>space map generator</strong> for star fields, galaxies and star systems.</span></li>
+        </ol>
+
+        <h3 class="obs-h3">Pins, and pins inside pins</h3>
+        <p class="obs-p">Use <strong>＋ Place</strong> to drop a pin. A place can be linked to events, so opening it shows everything that happened there.</p>
+        <p class="obs-p">The important part: <strong>a pin can contain its own map</strong>. Click into a city pin on your world map and you get a map <em>of that city</em>, with its own pins, which can in turn contain their own maps. A breadcrumb across the top shows where you are and takes you back up.</p>
+
+        <h3 class="obs-h3">The scale ladder</h3>
+        <p class="obs-p">Maps can declare what they are, from largest to smallest: 🌌&nbsp;Universe · 🌀&nbsp;Galaxy · ☀️&nbsp;Star system · 🪐&nbsp;Planet · 🌍&nbsp;World · 🗺️&nbsp;Region · 🏰&nbsp;City. The app uses this to offer the right tools — space generators for the top three, terrain tools further down.</p>
+        <div class="obs-callout tip"><span class="obs-callout-tag">⤴ Zoom out</span>
+          Built the world first and only later decided it orbits something? <strong>⤴ Zoom out</strong> creates a new <em>parent</em> map one step up the ladder and turns your existing map into a pin on it. You can keep going all the way out to a galaxy.</div>
+        <div class="obs-callout warn"><span class="obs-callout-tag">Maps are heavy</span>
+          Map images are stored in this browser alongside everything else, and they are far larger than text. Keep exporting JSON backups — see <em>Creating Backups</em>.</div>`
+    },
+    'alt-timelines': {
+      coord:'δ-04 · Divergence',
+      title:'Alternate timelines',
+      lede:'For the "what if" version of your story: a branch where the treaty held, the heir survived, or the colony ship never launched.',
+      body:`
+        <p class="obs-p">Open <strong>Organise ▾ → ⑂ Alternate timelines</strong>. An alternate timeline (a <em>continuity</em>) is a labelled variant of your history. Events can be assigned to one, and you can then filter the timeline to show a single continuity at a time.</p>
+        <ol class="obs-steps">
+          <li><b>Create a continuity.</b><span>Give it a clear name — <em>Ember Branch</em>, <em>If Valemoor had fallen</em>, <em>Director’s cut</em>.</span></li>
+          <li><b>Assign events to it.</b><span>An event belonging to a continuity appears when that branch is shown and hides when it is not.</span></li>
+          <li><b>Filter to one branch.</b><span>Use the continuity filter to read a single version of history end to end, without the alternatives cluttering the view.</span></li>
+        </ol>
+        <div class="obs-callout tip"><span class="obs-callout-tag">Branch vs. universe</span>
+          Use a <strong>universe</strong> for a genuinely separate world with its own track. Use a <strong>continuity</strong> for a different version of the <em>same</em> world, sharing the same cast and the same dates.</div>`
+    },
     importing: {
       coord:'ε-01 · Import',
       title:'Importing',
@@ -9065,14 +9168,17 @@ function obsHelpSectionsMarkup(){
       lede:'A backup is a copy of your entire world saved to a file on your device. It is the single most important habit in this app.',
       body:`
         <ol class="obs-steps">
-          <li><b>Open the menu.</b><span>Find the <strong>Export JSON</strong> option.</span></li>
+          <li><b>Open <strong>Data ▾</strong> and choose <strong>JSON</strong>.</b><span>This is the real backup — the only format that can be loaded straight back into the app.</span></li>
           <li><b>Save the file.</b><span>Choose a location you trust — a backup folder, a cloud drive like Google Drive or iCloud, or a USB stick.</span></li>
           <li><b>Name it clearly.</b><span>Use names with dates or stage notes. Examples: <em>SpaceCampaign-2026-01-15</em>, <em>FantasyWorld-before-map-rewrite</em>, <em>MyNovel-chapter-12-complete</em>.</span></li>
           <li><b>Repeat regularly.</b><span>A good rhythm is: after every major writing session, before every big experiment, and before clearing your browser.</span></li>
         </ol>
-        <div class="obs-callout tip"><span class="obs-callout-tag">Two types of backups</span>
-          <strong>Export JSON</strong> is the full, re-importable backup — your primary safety net.
-          <strong>Save HTML</strong> (if available) produces a standalone page you can open in any browser to read the timeline, without importing.</div>
+        <div class="obs-callout tip"><span class="obs-callout-tag">One backup, three ways to share</span>
+          <strong>Data ▾ → JSON</strong> is the safety net: complete and re-importable.
+          <strong>Data ▾ → Save HTML</strong> gives a standalone page anyone can open and read in a browser, with no app and no import.
+          <strong>📤 Export ▾</strong> (the floating button) adds <strong>Print / PDF</strong> for a printable document, and <strong>Markdown (.md)</strong> for moving your world into a notes app such as Obsidian.</div>
+        <div class="obs-callout warn"><span class="obs-callout-tag">Only JSON comes back</span>
+          HTML, PDF and Markdown are for reading and sharing. None of them can be imported to rebuild your timeline — if you keep just one file, keep the JSON.</div>
         <div class="obs-callout warn"><span class="obs-callout-tag">When to back up</span>
           Before you clear browser history. Before you update your browser. Before you switch devices. Before any change you are nervous about.</div>`
     },
@@ -9083,7 +9189,7 @@ function obsHelpSectionsMarkup(){
       body:`
         <ol class="obs-steps">
           <li><b>Open the app in the browser you want to use.</b><span>The restored world will live in that browser going forward.</span></li>
-          <li><b>Choose Load / Import.</b><span>Pick the <em>.json</em> file you saved. If you only have an HTML backup, open the HTML file directly to read it, or use its export option to get the JSON again.</span></li>
+          <li><b>Open <strong>Data ▾ → Load</strong>.</b><span>Pick the <em>.json</em> file you saved. If you only have an HTML backup, open the HTML file directly to read it, or use its export option to get the JSON again.</span></li>
           <li><b>Confirm the replacement.</b><span>If a world is already open, importing replaces it. Export what you have first if you want to keep it.</span></li>
           <li><b>Verify everything is there.</b><span>Check event counts, character counts, and a few open events. Connections and images should all be present.</span></li>
         </ol>
@@ -9160,6 +9266,22 @@ function obsHelpSectionsMarkup(){
         <div class="obs-callout"><span class="obs-callout-tag">Still stuck?</span>
           Export a backup first (so nothing is lost), then try refreshing the page. The autosave will reload your world exactly as it was.</div>`
     },
+    integrity: {
+      coord:'η-02 · Audit',
+      title:'The integrity check',
+      lede:'A proofreader for the structure of your world. It looks for the small breakages that creep into any large chronicle and are almost impossible to spot by eye.',
+      body:`
+        <p class="obs-p">Click the floating <strong>🛡️ Check</strong> button. It scans your whole timeline and lists what looks wrong. The badge on the button shows the current count — a tick means nothing was found.</p>
+        <ol class="obs-steps">
+          <li><b>Broken references.</b><span>A connection pointing at an event you deleted, or an event linked to a character who no longer exists.</span></li>
+          <li><b>Invalid dates.</b><span>Dates the app cannot place on the timeline — typos, impossible days, malformed years.</span></li>
+          <li><b>Empty fields.</b><span>Events with no title, or records left blank when you were interrupted mid-thought.</span></li>
+        </ol>
+        <div class="obs-callout tip"><span class="obs-callout-tag">It never changes anything</span>
+          The check is strictly read-only. It reports; you decide. Nothing is deleted, repaired, or rewritten behind your back — so it is always safe to run.</div>
+        <div class="obs-callout"><span class="obs-callout-tag">A note on what it is not</span>
+          This checks the <em>structure</em> of your data, not the <em>logic</em> of your story. It cannot tell you that a character attends a feast two years after their death — that is still your job as the author.</div>`
+    },
     faq: {
       coord:'θ-01 · FAQ',
       title:'Frequently asked',
@@ -9182,25 +9304,52 @@ function obsHelpSectionsMarkup(){
       title:'Privacy & data',
       lede:'A short and plain summary of what this app does — and does not do — with your information.',
       body:`
+        <p class="obs-p">The short version: <strong>the app is local-first, and everything that leaves your device is something you switched on yourself.</strong></p>
+        <h3 class="obs-h3">By default, with no account</h3>
         <ol class="obs-steps">
-          <li><b>No account.</b><span>You are never asked for a name, email, password, or identity of any kind.</span></li>
-          <li><b>No server.</b><span>Your events, characters, universes, images, and backups live only on the device you use. They are not uploaded or synced.</span></li>
-          <li><b>No tracking.</b><span>There are no analytics, no ads, no cookies for advertising.</span></li>
-          <li><b>No sharing.</b><span>Nothing you write is visible to anyone else unless you personally share a backup file.</span></li>
+          <li><b>No account needed.</b><span>You are never required to give a name, email, or password. The app is fully usable without one.</span></li>
+          <li><b>Your world stays on your device.</b><span>Events, characters, universes, maps and images are written to this browser's storage. They are not uploaded anywhere.</span></li>
+          <li><b>Your writing is never read by us.</b><span>Because it never reaches a server, the contents of your timeline cannot be analysed, mined, or handed to an advertiser.</span></li>
+        </ol>
+        <h3 class="obs-h3">What is honestly not zero</h3>
+        <ol class="obs-steps">
+          <li><b>The site shows ads.</b><span>Advertising pays for the domain and hosting, which is what keeps the tool free. You are asked to accept or reject on your first visit, and you can change that choice later.</span></li>
+          <li><b>Ordinary server logs exist.</b><span>Like any website, the server records technical request data, and short-lived rate-limiting logs guard the sign-in endpoints against abuse.</span></li>
+          <li><b>An optional account changes the picture.</b><span>If you create one, the things you explicitly save or publish do reach a server. That is covered in <em>Account, Cloud &amp; Sharing</em>.</span></li>
         </ol>
         <div class="obs-callout warn"><span class="obs-callout-tag">Your responsibility</span>
-          Because your world lives on your device, protecting it is up to you. Keep backups outside the browser — in a folder, a cloud drive, or a USB stick.</div>`
+          Because your world lives on your device, protecting it is up to you. Keep backups outside the browser — in a folder, a cloud drive, or a USB stick.</div>
+        <div class="obs-callout"><span class="obs-callout-tag">The full text</span>
+          This page is a plain-language summary. The Privacy Policy on the website is the authoritative document.</div>`
+    },
+    accounts: {
+      coord:'θ-03 · Optional orbit',
+      title:'Account, cloud and sharing',
+      lede:'Everything on this page is opt-in. Skip it entirely and the app works exactly as described everywhere else in this manual.',
+      body:`
+        <p class="obs-p">There is a <strong>☁ Sign in</strong> button in the corner. You never have to press it. Creating a free account unlocks three things, and each one only ever moves the data you explicitly choose to move.</p>
+        <ol class="obs-steps">
+          <li><b>Cloud save.</b><span>Store a copy of a timeline on the server so you can open it from another device. Only the timelines you save are uploaded — signing in does not sweep up everything in your browser.</span></li>
+          <li><b>Publishing.</b><span>Put a timeline in the public <strong>Discover</strong> gallery, or keep it unlisted and share the link privately. Publishing is a deliberate, per-timeline action.</span></li>
+          <li><b>Social features.</b><span>A public profile, plus likes, follows and comments on published timelines.</span></li>
+        </ol>
+        <div class="obs-callout warn"><span class="obs-callout-tag">Published means public</span>
+          A timeline in the Discover gallery can be read by anyone. Think twice before publishing a world that contains private notes about real people. Unlisted is the middle ground: reachable by link, not listed in the gallery.</div>
+        <div class="obs-callout tip"><span class="obs-callout-tag">Cloud is not a backup</span>
+          Treat cloud save as convenience, not insurance. Your JSON export is still the real backup, because it is a file you hold, readable without this site and without an account.</div>
+        <div class="obs-callout"><span class="obs-callout-tag">Leaving</span>
+          Deleting your account removes the account record along with the timelines, comments, likes and follows attached to it. Export anything you want to keep before you do that.</div>`
     },
     credits: {
-      coord:'θ-03 · Colophon',
+      coord:'θ-04 · Colophon',
       title:'About & credits',
       lede:'About this tool and the people it is made for.',
       body:`
-        <p class="obs-p"><strong>Free Timeline Universe</strong> is a self-contained, offline-first worldbuilding app for writers, storytellers, game masters, artists, students, and historians of imagined worlds. It runs entirely in your browser, keeps your work private, and never asks for an account.</p>
-        <p class="obs-p">This Observatory Manual — the guide you are reading — was rebuilt to be searchable, accessible from the keyboard, and easy to read on any device. Every section of the app is documented here. If something is missing, the search bar will tell you.</p>
+        <p class="obs-p"><strong>Free Timeline Universe</strong> is a local-first worldbuilding app for writers, storytellers, game masters, artists, students, and historians of imagined worlds. It runs in your browser, keeps your work on your own device, and never requires an account.</p>
+        <p class="obs-p">This Observatory Manual — the guide you are reading — is searchable, navigable from the keyboard, and readable on any device. Every part of the app is documented here. If something is missing, the search bar will tell you.</p>
         <div class="obs-callout tip"><span class="obs-callout-tag">Thank you</span>
           This tool exists because people like you have imaginary worlds worth recording. Keep building.</div>
-        <p class="obs-p" style="color:#8a98b8; font-size:13px;">Manual v8 · Observatory edition · Free Timeline Universe</p>`
+        <p class="obs-p" style="color:#8a98b8; font-size:13px;">Manual v9 · Observatory edition · Free Timeline Universe</p>`
     }
   };
 

@@ -50,6 +50,10 @@ details.faq > summary::-webkit-details-marker { display:none; }
 details.faq > summary::after { content:'+'; color:var(--accent); font-size:1.4rem; font-weight:400; line-height:1; transition:transform .2s; }
 details.faq[open] > summary::after { content:'\2212'; }
 details.faq .faq-body { padding:0 0 20px; color:var(--muted); font-size:.96rem; line-height:1.75; }
+/* This page had no generic <a> colour, so links inside the FAQ fell back to the browser
+   default #0000EE — 2.02:1 against the near-black background. Matches the other pages. */
+details.faq .faq-body a { color:#8fb0ff; text-decoration:underline; text-underline-offset:2px; }
+details.faq .faq-body a:hover { color:#b8cdff; }
 details.faq .faq-body p { margin-bottom:10px; }
 details.faq .faq-body p:last-child { margin-bottom:0; }
 .cta-card { margin-top:48px; background:linear-gradient(135deg,rgba(74,143,222,.1),rgba(0,204,170,.06)); border:1px solid var(--border-mid); border-radius:16px; padding:28px; text-align:center; }

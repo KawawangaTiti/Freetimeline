@@ -130,6 +130,23 @@ function esc(s) {
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+/* Readable ink for a user-chosen fill colour. Track/category colours come from a
+   picker, so any label hardcoded to #fff breaks on the pale end of the range.
+   Returns whichever of near-black / white has the better WCAG contrast. */
+function inkOn(bg) {
+  var m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(bg || '').trim());
+  if (!m) return '#fff';
+  var h = m[1];
+  if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+  var ch = [0, 2, 4].map(function (i) {
+    var v = parseInt(h.slice(i, i + 2), 16) / 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  var L = 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];
+  // contrast against white vs against #1a1a1a (L ≈ 0.0103)
+  return (1.05 / (L + 0.05)) >= ((L + 0.05) / 0.0603) ? '#fff' : '#1a1a1a';
+}
+
 /* BE-15: make a label safe inside onclick="fn('...')". The browser HTML-decodes
    the attribute first, then runs it as JS, so escape for the JS single-quoted
    string FIRST (\ and ') then for the double-quoted HTML attribute (& " < >).
@@ -4526,8 +4543,8 @@ const M = {
 
     const charEvCount = S.events.filter(e => (e.characterIds||[]).includes(ch.id)).length;
 
-    const relationshipColors = { 'Family': '#b05070', 'Partner': '#9b59b6', 'Friend': '#3498db', 'Mentor': '#e09a3c', 'Colleague': '#4a9375', 'Other': '#95867a' };
-    const relCol = relationshipColors[ch.alignment] || '#95867a';
+    const relationshipColors = { 'Family': '#b05070', 'Partner': '#9b59b6', 'Friend': '#2a7ab0', 'Mentor': '#9c6b2a', 'Colleague': '#418166', 'Other': '#7f7368' };
+    const relCol = relationshipColors[ch.alignment] || '#7f7368';
     const _hdAccent = relCol;
 
     this.body().innerHTML =
@@ -6366,14 +6383,17 @@ function renderPeopleView() {
     return;
   }
 
-  var relationshipColors = { 'Family': '#b05070', 'Partner': '#9b59b6', 'Friend': '#3498db', 'Mentor': '#e09a3c', 'Colleague': '#4a9375', 'Other': '#95867a' };
+  var relationshipColors = { 'Family': '#b05070', 'Partner': '#9b59b6', 'Friend': '#2a7ab0', 'Mentor': '#9c6b2a', 'Colleague': '#418166', 'Other': '#7f7368' };
 
   grid.innerHTML = chars.map(function(ch) {
     var evCnt = S.events.filter(function(e) { return (e.characterIds||[]).includes(ch.id); }).length;
     var uniIds = getCharUniverseIds(ch);
     var tagsHTML = uniIds.slice(0, 4).map(function(uid) {
       var u = getU(uid);
-      return u ? '<span class="pv-tag" style="background:' + u.color + '">' + esc(u.name) + '</span>' : '';
+      // Track colours are user-chosen, so a hardcoded white label fails on the lighter
+      // ones. Pick the ink that actually contrasts with whatever colour they picked.
+      return u ? '<span class="pv-tag" style="background:' + u.color + ';color:' + inkOn(u.color) + '">'
+        + esc(u.name) + '</span>' : '';
     }).join('');
     if (uniIds.length > 4) {
       tagsHTML += '<span class="pv-tag" style="background:#8a7556">+' + (uniIds.length - 4) + '</span>';
@@ -6383,9 +6403,9 @@ function renderPeopleView() {
       ? '<img src="' + esc(ch.photo) + '" alt="' + esc(ch.name) + '">'
       : ch.name.split(' ').map(function(w){return w[0]||''}).join('').slice(0,2).toUpperCase();
 
-    var statusColors = { 'Living': '#4a9375', 'Passed Away': '#7a5a4a', 'Lost Touch': '#c08040', 'Unknown': '#95867a' };
-    var sCol = statusColors[ch.status] || '#95867a';
-    var relCol = relationshipColors[ch.alignment] || '#95867a';
+    var statusColors = { 'Living': '#418166', 'Passed Away': '#7a5a4a', 'Lost Touch': '#9e6a35', 'Unknown': '#7f7368' };
+    var sCol = statusColors[ch.status] || '#7f7368';
+    var relCol = relationshipColors[ch.alignment] || '#7f7368';
     var accent = relCol;
 
     var chipsHTML = '';
@@ -7442,7 +7462,7 @@ const ConnectionMap = {
       '<div class="rel-controls">'
       + '<input class="map-search" id="cm-search" placeholder="\uD83D\uDD0D Search people\u2026" aria-label="Search people on the map" oninput="ConnectionMap._search(this.value)">'
       + '<div class="rel-ctrl-filters">'
-      + '<span style="font-size:11px;color:#6080b0;flex-shrink:0">Filter:</span>'
+      + '<span style="font-size:11px;color:#4a6288;flex-shrink:0">Filter:</span>'
       + uniBtns
       + '</div>'
       + '<div class="rel-ctrl-btns">'
@@ -7655,11 +7675,11 @@ const ConnectionMap = {
         if (!ch) { tip.style.display = 'none'; return; }
         const evs = S.events.filter(ev => (ev.characterIds||[]).includes(ch.id));
         const unis = [...new Set(evs.map(ev => { const uu = S.lifeTracks.find(u => u.id === ev.universeId); return uu ? uu.name : null; }).filter(Boolean))];
-        const _relPal = { 'Family':'#b05070', 'Partner':'#9b59b6', 'Friend':'#3498db', 'Mentor':'#d08838', 'Colleague':'#4a9375', 'Other':'#95867a' };
-        const _statusPal = { 'Living':'#4a9375', 'Passed Away':'#b05060', 'Lost Touch':'#c17a2c' };
+        const _relPal = { 'Family':'#b05070', 'Partner':'#9b59b6', 'Friend':'#2a7ab0', 'Mentor':'#a0692b', 'Colleague':'#418166', 'Other':'#7f7368' };
+        const _statusPal = { 'Living':'#418166', 'Passed Away':'#b05060', 'Lost Touch':'#9e6a35' };
         tip.innerHTML = '<strong>' + esc(ch.name) + '</strong>'
           + (ch.aliases ? '<br><em>' + esc(ch.aliases) + '</em>' : '')
-          + (ch.alignment ? '<br><span style="color:' + (_relPal[ch.alignment]||'#95867a') + '">\u25CF</span> ' + esc(ch.alignment) : '')
+          + (ch.alignment ? '<br><span style="color:' + (_relPal[ch.alignment]||'#7f7368') + '">\u25CF</span> ' + esc(ch.alignment) : '')
           + (ch.status  ? '<br><span style="color:' + (_statusPal[ch.status]||'#8b6e4e') + '">\u25CF</span> ' + esc(ch.status) : '')
           + '<br>\uD83D\uDCC5 ' + evs.length + ' event' + (evs.length !== 1 ? 's' : '')
           + (unis.length ? '<br>\uD83C\uDF31 ' + esc(unis.join(', ')) : '')
@@ -9829,7 +9849,7 @@ window.addEventListener('DOMContentLoaded', function () {
     },
     setPlaceFilter: function (pid) { switchView('timeline'); setPlaceFilter(pid); },
     eventDateLabel: function (ev) { return ev.date || ''; },
-    accent: '#b07942'
+    accent: '#96632f'   /* ft-places paints white labels on this; #b07942 was 3.7:1 */
   });
   if (typeof updatePlaceFilterBar === 'function') updatePlaceFilterBar();
   if (typeof updateContinuityFilterBar === 'function') updateContinuityFilterBar();

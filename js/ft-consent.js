@@ -57,7 +57,7 @@
       '  border-radius:10px;font-size:0.92rem;font-weight:700;cursor:pointer;',
       '  border:1px solid rgba(255,255,255,0.18);font-family:inherit;',
       '  letter-spacing:0.2px;min-width:130px;}',
-      '#ft-consent-root .ftc-accept{background:linear-gradient(135deg,#3a60d0,#5a80ff);',
+      '#ft-consent-root .ftc-accept{background:linear-gradient(135deg,#2f51b4,#4a6fe0);',
       '  color:#fff;box-shadow:0 4px 14px rgba(80,120,255,0.28);}',
       '#ft-consent-root .ftc-reject{background:rgba(255,255,255,0.14);color:#fff;',
       '  border-color:rgba(255,255,255,0.4);}',

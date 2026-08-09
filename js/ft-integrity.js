@@ -237,7 +237,7 @@
       '#ft-integrity-btn .ftic-count{min-width:16px;height:16px;padding:0 4px;border-radius:8px;' +
       'font-size:11px;display:inline-flex;align-items:center;justify-content:center;' +
       'background:#c0392b;color:#fff}' +
-      '#ft-integrity-btn .ftic-count.ok{background:#2e8b57}' +
+      '#ft-integrity-btn .ftic-count.ok{background:#2a7d4e}' +   /* #2e8b57 was 4.25:1 on white */
       '#ft-integrity-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);' +
       'display:flex;align-items:center;justify-content:center;padding:16px}' +
       '#ft-integrity-panel{width:min(560px,100%);max-height:82vh;overflow:auto;' +

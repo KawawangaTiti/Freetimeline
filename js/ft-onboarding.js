@@ -73,7 +73,7 @@
       '#ft-onboarding-root .ftob-btn{min-height:38px;padding:8px 14px;border-radius:8px;',
       '  font-size:0.85rem;font-weight:700;cursor:pointer;font-family:inherit;',
       '  border:1px solid rgba(255,255,255,0.18)}',
-      '#ft-onboarding-root .ftob-primary{background:linear-gradient(135deg,#3a60d0,#5a80ff);color:#fff}',
+      '#ft-onboarding-root .ftob-primary{background:linear-gradient(135deg,#2f51b4,#4a6fe0);color:#fff}',
       '#ft-onboarding-root .ftob-dismiss{background:rgba(255,255,255,0.06);color:#c8d4ff}',
       '#ft-onboarding-root .ftob-btn:focus-visible{outline:3px solid #ffd166;outline-offset:2px}',
       '#ft-onboarding-root .ftob-close{position:absolute;top:8px;right:10px;',

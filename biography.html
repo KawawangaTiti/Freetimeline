@@ -87,8 +87,10 @@ body.modal-open { overflow: hidden; overscroll-behavior: none; }
 }
 .btn:focus-visible { outline: 2px solid #c4915a; outline-offset: 2px; }
 .btn:hover { background: rgba(255,255,255,0.16); color: #fff; border-color: rgba(255,255,255,0.22); }
+/* #96632f, not #b07942: white on the old tone measured 3.7:1, under the 4.5:1 floor.
+   The lighter #b07942 stays as the hover, so the button still brightens on hover. */
 .btn.accent {
-  background: #b07942; border-color: #c48a52; color: #fff; font-weight: 600;
+  background: #96632f; border-color: #a97139; color: #fff; font-weight: 600;
   box-shadow: 0 1px 8px rgba(176,121,66,0.3);
 }
 .btn.accent:hover { background: #c48a52; border-color: #d4a064; box-shadow: 0 2px 12px rgba(176,121,66,0.45); }
@@ -184,7 +186,8 @@ body.mm-collapsed #minimap-show { display: inline-flex; }
 #minimap-jump button {
   padding: 8px 18px; min-height: 44px;
   background: linear-gradient(135deg, var(--v-accent, #c4956a), var(--v-accent-2, #d8ad7e));
-  color: #fff; border: none; border-radius: 9px; cursor: pointer;
+  /* dark ink: the tan accent is a light fill, so white on it measured 2.3:1 */
+  color: #2a1b0e; border: none; border-radius: 9px; cursor: pointer;
   font: inherit; font-size: 16px; font-weight: 700; letter-spacing: 0.3px;
   box-shadow: 0 2px 12px rgba(60,30,10,0.25);
 }
@@ -772,7 +775,7 @@ input[type="color"] {
 .fp-drop.open .fp-drop-btn .fp-arrow { transform: rotate(180deg); }
 .fp-drop-badge {
   display: inline-flex; align-items: center; justify-content: center;
-  background: #b07942; color: #fff;
+  background: #96632f; color: #fff;
   border-radius: 10px; font-size: 10px; font-weight: 700;
   min-width: 16px; height: 16px; padding: 0 4px;
   margin-left: 2px;
@@ -1128,7 +1131,7 @@ input[type="color"] {
 .rel-ctrl-filters { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; flex: 1; min-width: 0; }
 .rel-ctrl-btns { display: flex; align-items: center; gap: 5px; flex-shrink: 0; margin-left: auto; }
 .rel-hint {
-  font-size: 11.5px; color: #8b6e4e; font-style: italic; flex-shrink: 0;
+  font-size: 11.5px; color: #7a5f42; font-style: italic; flex-shrink: 0;
   padding: 5px 16px; background: #f9f2df; border-bottom: 1px solid #e9dcb8;
   letter-spacing: .15px;
 }
@@ -2052,7 +2055,7 @@ input[type="color"] {
   gap: 7px;
   padding: 11px 26px;
   border-radius: 8px;
-  background: #b07942;
+  background: #96632f;   /* was #b07942 — 3.7:1 against the white label */
   color: #fff;
   font-size: 14px;
   font-weight: 700;
@@ -2063,7 +2066,7 @@ input[type="color"] {
   box-shadow: 0 3px 14px rgba(176,121,66,0.32);
 }
 .empty-state-btn:hover {
-  background: #96633a;
+  background: #7e5327;
   transform: translateY(-1px);
 }
   
@@ -2316,8 +2319,13 @@ input:focus, select:focus, textarea:focus, button:focus-visible {
   background: linear-gradient(135deg, #d0a57c 0%, #b88a60 100%) !important;
 }
 
-/* --- View tabs: premium pill design --- */
-.view-tab.active {
+/* --- View tabs: premium pill design ---
+   Scoped to the two DARK surfaces the cream ink was designed for: the top toolbar and
+   the mobile sheet. It used to be unscoped, so once ft-toolbar.js reparented the tabs
+   into the light #ft-tabsrow the active tab became cream-on-cream (1.02:1) — invisible.
+   #ft-tabsrow gets its own light-mode styling from ft-toolbar.js. */
+#toolbar .view-tab.active,
+.tlb-sheet-section .view-tab.active {
   background: linear-gradient(135deg, rgba(176,121,66,0.28) 0%, rgba(176,121,66,0.15) 100%) !important;
   border-color: rgba(176, 121, 66, 0.5) !important;
   color: #f0ce8a !important;
@@ -2502,19 +2510,26 @@ input:focus, select:focus, textarea:focus, button:focus-visible {
 #notif.warning { border-left: 4px solid #d4a030 !important; }
 #notif.info    { border-left: 4px solid #6a8aad !important; }
 
-/* --- Zoom controls: warmer style --- */
+/* --- Zoom controls: warmer style ---
+   #zoom-ctrl is a dark pill, so the buttons inside it must be transparent. The base
+   .zbtn rule paints them #fff; leaving that in place put cream glyphs (#e0c898) on a
+   white square (1.6:1) and hid the +/− and the percentage entirely. */
 #zoom-ctrl {
   background: rgba(50, 35, 20, 0.88) !important;
   border: 1px solid rgba(176, 121, 66, 0.22) !important;
   box-shadow: 0 4px 14px rgba(0,0,0,0.3) !important;
 }
-.zbtn {
-  color: #e0c898 !important;
+#zoom-ctrl .zbtn {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: #f0dcb4 !important;
 }
-.zbtn:hover { background: rgba(176, 121, 66, 0.2) !important; }
-#zoom-pct {
-  color: rgba(220, 195, 150, 0.7) !important;
-  border-color: rgba(176, 121, 66, 0.15) !important;
+#zoom-ctrl .zbtn:hover { background: rgba(230, 190, 130, 0.22) !important; }
+#zoom-ctrl #zoom-pct {
+  background: transparent !important;
+  color: #e8d3ab !important;
+  border-color: rgba(230, 190, 130, 0.28) !important;
 }
 
 /* --- Keyboard hint bar: refined --- */
@@ -3515,7 +3530,7 @@ input[type="color"]:focus-visible {
   letter-spacing: 0.3px;
   white-space: nowrap;
 }
-.pv-events-count .zero { color: #a89270; font-weight: 600; }
+.pv-events-count .zero { color: #7d6a4a; font-weight: 600; }
 
 /* Archive empty state */
 .pv-empty {
@@ -3926,7 +3941,8 @@ input[type="color"]:focus-visible {
     <div id="kbd-hint">
       &#128433; Drag to pan &nbsp;&middot;&nbsp; Scroll to pan &nbsp;&middot;&nbsp; Ctrl+Scroll to zoom &nbsp;&middot;&nbsp;
       Double-click on a track to add event &nbsp;&middot;&nbsp; Click any event dot to explore &nbsp;&middot;&nbsp;
-      &#9875; <strong style="cursor:pointer;color:#3f5bb5" onclick="UI.toggleKbd()">Keyboard Shortcuts</strong>
+      <!-- #kbd-hint is a dark bar; the old #3f5bb5 blue measured 1.66:1 on it. -->
+      &#9875; <strong style="cursor:pointer;color:#9dc4ff;text-decoration:underline" onclick="UI.toggleKbd()">Keyboard Shortcuts</strong>
     </div>
 
     <!-- Stats panel (bottom-left overlay) -->

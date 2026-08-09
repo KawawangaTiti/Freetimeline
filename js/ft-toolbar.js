@@ -17,11 +17,21 @@
 
   function lum(c) { var m = (c || '').match(/\d+/g); return m ? (0.299 * +m[0] + 0.587 * +m[1] + 0.114 * +m[2]) : 255; }
   var dark = lum(getComputedStyle(document.body).backgroundColor) < 128;
-  // Panel/line/ink pull from the page theme vars (which flip live on theme change) with a
-  // per-mode fallback so nothing breaks where the vars aren't defined. Hover stays static.
+  /* Dark mode (Universe) pulls from the page theme vars, which are authored for dark
+     surfaces and flip live on theme change.
+     Light mode (Biography) must NOT read --v-ink / --v-bd: on that page those vars are
+     scoped to the DARK top toolbar (--v-ink is #f3e6d2, a cream), so `var(--v-ink,#3d2b1f)`
+     resolved to cream and painted cream text on our light panels — the dropdown menus,
+     the coachmark and the whole tabs row were effectively invisible. Hard values here;
+     the fallbacks were never reached because the vars are defined. */
+  /* onAccent is dark in BOTH modes on purpose: each app's accent is a light fill
+     (Universe blue→cyan #4a8fde/#40c8ff, Biography tan #c4956a/#d8ad7e), so a white
+     label lands at 2.5:1 or worse. Dark ink measures 5.2:1+ on either gradient. */
   var T = dark
-    ? { panel: 'var(--v-panel,#111a31)', line: 'var(--v-bd,#26365c)', ink: 'var(--v-ink,#e7ecf7)', hover: 'rgba(255,255,255,0.08)' }
-    : { panel: 'var(--v-panel,#fffdf8)', line: 'var(--v-bd,#e6dac6)', ink: 'var(--v-ink,#3d2b1f)', hover: 'rgba(120,80,30,0.08)' };
+    ? { panel: 'var(--v-panel,#111a31)', line: 'var(--v-bd,#26365c)', ink: 'var(--v-ink,#e7ecf7)',
+        hover: 'rgba(255,255,255,0.08)', onAccent: '#0b1a2e' }
+    : { panel: '#fffdf8', line: '#e6dac6', ink: '#3d2b1f',
+        hover: 'rgba(120,80,30,0.08)', onAccent: '#2a1b0e' };
 
   var st = document.createElement('style');
   st.textContent =
@@ -61,8 +71,11 @@
     '#ft-tabsrow .view-tab{background:transparent;border:1px solid transparent;color:' + T.ink + ';opacity:.72;' +
       'font-size:13px;font-weight:600;padding:6px 14px;border-radius:9px;min-height:34px;cursor:pointer;white-space:nowrap}' +
     '#ft-tabsrow .view-tab:hover{background:' + T.hover + ';opacity:1}' +
+    /* onAccent, not a flat #fff: Biography's accent is a light tan (--v-accent #c4956a),
+       so white text on it measured 1.02:1. Dark ink there, white on Universe's blue. */
     '#ft-tabsrow .view-tab.active{background:linear-gradient(135deg,var(--v-accent,#2f7cf6),var(--v-accent-2,#40c8ff));' +
-      'border-color:transparent;color:#fff;font-weight:700;opacity:1;box-shadow:0 2px 8px rgba(47,124,246,0.28)}' +
+      'border-color:transparent;color:' + T.onAccent + ';font-weight:700;opacity:1;' +
+      'box-shadow:0 2px 8px ' + (dark ? 'rgba(47,124,246,0.28)' : 'rgba(120,80,30,0.22)') + '}' +
     /* mobile uses hamburger + sheet; the injected extra tabs row is redundant there */
     '@media (max-width:767px){#ft-tabsrow{display:none}}' +
     '';
