@@ -213,6 +213,31 @@ body.mm-collapsed #minimap-show { display: inline-flex; }
   position: absolute; bottom: 16px; right: 16px;
   display: flex; flex-direction: column; gap: 3px; z-index: 8;
 }
+/* Floating HUD / export / check / search buttons must never obscure the left tracks sidebar */
+#ft-integrity-btn {
+  left: auto !important;
+  right: 120px !important;
+  bottom: 16px !important;
+  z-index: 10 !important;
+}
+#ftp-print-btn {
+  left: auto !important;
+  right: 215px !important;
+  bottom: 16px !important;
+  z-index: 10 !important;
+}
+#ft-hud-btn {
+  left: auto !important;
+  right: 120px !important;
+  bottom: 60px !important;
+  z-index: 10 !important;
+}
+#ft-search-btn {
+  left: auto !important;
+  right: 165px !important;
+  bottom: 16px !important;
+  z-index: 10 !important;
+}
 /* H5: when the minimap is expanded (not collapsed) it occupies the bottom strip
    up to ~76px; lift the zoom controls above it so they don't overlap. On mobile
    (<600px) the minimap is hidden, so keep zoom in its default corner. */
@@ -3525,6 +3550,7 @@ input[type="color"]:focus-visible {
       <button class="btn"        onclick="Store.saveJSON()"    title="Export a lightweight JSON backup of all timeline data">JSON</button>
       <button class="btn"        onclick="Store.shareLink()"  title="Copy a shareable link — the timeline travels inside the link (no server; maps not included)">🔗 Share link</button>
       <button class="btn"        onclick="Store.importClick()" title="Load a previously saved HTML or JSON timeline archive">Load</button>
+      <button class="btn accent" onclick="Store.loadBattleRap()" title="Carregar Timeline Oficial de Battle Rap Português (LKO, SmokingBars, Multiversus, BRT, Street Rage...)">🎤 Battle Rap PT</button>
       <button class="btn danger" onclick="Store.blankTimeline()" title="Clear all universes, events, characters, and connections — a JSON backup is offered first">Blank</button>
       <!-- Tools (Stats / Story / Continuity Tour / Range) merged inline after Archive -->
       <button class="btn" onclick="UI.toggleStats()"    title="Toggle the live stats overlay panel  (S)"    id="stats-btn">Stats panel</button>

@@ -136,6 +136,15 @@
       } else if (k === 'characterIds' || k === 'universeIds' || k === 'counterpartIds' ||
                  k === 'placeIds' || k === 'continuityIds') {
         clean[k] = Array.isArray(v) ? v.filter(function (x) { return typeof x === 'string'; }) : [];
+      } else if (k === 'tags') {
+        /* Tags are a plain string array, so they used to fall through every
+           branch below and get dropped — every event lost its tags on import,
+           taking the tag filter bar with them. Keep them, bounded and trimmed. */
+        clean[k] = Array.isArray(v)
+          ? v.filter(function (x) { return typeof x === 'string'; })
+              .slice(0, 100)
+              .map(function (x) { return sanitiseString(x, 100); })
+          : [];
       } else if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean' || v === null) {
         clean[k] = v;
       } else if (isPlainObject(v)) {

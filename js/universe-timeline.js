@@ -6731,7 +6731,57 @@ const Store = {
       characters: S.characters, categories: S.categories, affiliations: S.affiliations,
       places: S.places, maps: S.maps, currentMapId: S.currentMapId, continuities: S.continuities, mapMeta: { has: false, w: 0, h: 0, name: '' } } };
   },
-  cloudOpen(data) { this.loadShared(data); }
+  cloudOpen(data) { this.loadShared(data); },
+  applyLoadedData(d, msg) {
+    S.universes    = d.universes   || [];
+    S.events       = d.events      || [];
+    S.connections  = d.connections || [];
+    S.characters   = d.characters  || [];
+    S.categories   = d.categories  || {};
+    S.affiliations = d.affiliations || [];
+    S.places       = d.places      || [];
+    S.maps         = Array.isArray(d.maps) ? d.maps : null;
+    S.currentMapId = (typeof d.currentMapId === 'string') ? d.currentMapId : 'root';
+    S.mapMeta      = d.mapMeta     || { has: false, w: 0, h: 0, name: '' };
+    S.continuities = d.continuities || [];
+    _continuityFilter = null;
+    delete S._mapDataUrl;
+    if (window.ftPlaces) { try { ftPlaces.mapStore.del(SKEY); } catch (_) {} }
+    if (window.ftPlacesClearSketch) window.ftPlacesClearSketch();
+    syncCategoriesFromState();
+    Store.autosave();
+    if (window.History && window.History.clear) window.History.clear();
+    clampPanY();
+    render();
+    updateCatFilterBar();
+    updateStatusFilterBar();
+    updateTagFilterBar();
+    updateToneFilterBar();
+    updatePlaceFilterBar();
+    updateContinuityFilterBar();
+    updateCharFilterSelect();
+    updateUniToggleBar();
+    updateFilterVisibility();
+    updateStatsPanel();
+    if (window.UI && typeof window.UI.fitToData === 'function') window.UI.fitToData();
+    notify(msg || 'Timeline carregada ✓', 'success');
+  },
+  loadBattleRap() {
+    var self = this;
+    ftConfirmGate('Deseja carregar a Timeline Oficial de Battle Rap Português? Isto irá carregar as ligas de rimas escritas (LKO, SmokingBars, Multiversus, BRT, etc.).', function () {
+      fetch('battle_rap_pt.json')
+        .then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        })
+        .then(function (d) {
+          self.applyLoadedData(d, 'Battle Rap Português carregado com sucesso! 🎤');
+        })
+        .catch(function (err) {
+          notify('Não foi possível carregar battle_rap_pt.json: ' + err.message, 'error');
+        });
+    }, { title: 'Carregar Battle Rap Português?', confirmLabel: 'Carregar', danger: false });
+  }
 };
 
 /* `const Store` is a lexical global: it is NOT a property of window, so
@@ -7251,8 +7301,27 @@ function renderStatsFullView() {
 window.addEventListener('DOMContentLoaded', () => {
   /* B-2: drop a stale blank-template save before we decide whether to load samples. */
   Store.clearSavedBlank();
-  const _hadSavedWork = Store.load();
-  if (!_hadSavedWork) loadSample();
+  let _hadSavedWork = false;
+  if (window.__INITIAL_TIMELINE_DATA__) {
+    const d = (typeof ftValidateImport === 'function')
+      ? ftValidateImport(window.__INITIAL_TIMELINE_DATA__, { kind: 'universe' })
+      : window.__INITIAL_TIMELINE_DATA__;
+    S.universes    = d.universes   || [];
+    S.events       = d.events      || [];
+    S.connections  = d.connections || [];
+    S.characters   = d.characters  || [];
+    S.categories   = d.categories  || {};
+    S.affiliations = d.affiliations || [];
+    S.places       = d.places      || [];
+    S.maps         = Array.isArray(d.maps) ? d.maps : null;
+    S.currentMapId = (typeof d.currentMapId === 'string') ? d.currentMapId : 'root';
+    S.mapMeta      = d.mapMeta     || { has: false, w: 0, h: 0, name: '' };
+    S.continuities = d.continuities || [];
+    _hadSavedWork = true;
+  } else {
+    _hadSavedWork = Store.load();
+    if (!_hadSavedWork) loadSample();
+  }
   Store.normalize();
   Store.autosave();
   if (!S.categories || Object.keys(S.categories).length === 0) {
@@ -7278,6 +7347,21 @@ window.addEventListener('DOMContentLoaded', () => {
   /* Level 2: a public cloud link (?cloud=ID) → fetch and open it. */
   var _cm = location.search.match(/[?&]cloud=([\w-]+)/);
   if (_cm && window.ftAccount) window.ftAccount.loadPublic(_cm[1]).then(function (r) { if (r && r.timeline) Store.loadShared(r.timeline.data); }).catch(function () {});
+  /* Preset / URL timeline loader (?timeline=battle-rap or ?preset=battle-rap or ?load=battle_rap_pt.json) */
+  var _pm = location.search.match(/[?&](?:timeline|preset|load)=([\w.-]+)/);
+  if (_pm) {
+    var pName = _pm[1];
+    var pFile = (pName === 'battle-rap' || pName === 'battle_rap' || pName === 'battlerap') ? 'battle_rap_pt.json' : pName;
+    if (!pFile.endsWith('.json')) pFile += '.json';
+    fetch(pFile).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function (d) {
+      if (d && (d.universes || d.events)) {
+        Store.applyLoadedData(d, 'Battle Rap Português carregado ✓');
+      }
+    }).catch(function () {});
+  }
 
   /* Frame the timeline on the actual data. The default range is geological
      (200,000 BC – 20,000 AD), leaving events as lost specks with nothing to
